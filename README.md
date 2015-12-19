@@ -72,29 +72,6 @@ If you don't have them, no worries, it's intalled automatically during **assigne
 ## New
 
 **v.0.1.0**
-* GBS_assignment: conduct a full assignment workflow using gsi_sim (a tool 
-developed by Eric C. Anderson for doing and simulating genetic stock 
-identification). The arguments in the \code{GBS_assignment} function were tailored for the 
-reality of GBS data for assignment analysis while maintaining a reproducible 
-workflow. The input data is a VCF file produced by STACKS. Individuals, 
-populations and markers can be filtered and/or selected in several ways using 
-blacklist, whitelist and other arguments. Map-independent imputation of missing 
-genotype using Random Forest or the most frequent category is also available. 
-Markers can be randomly selected for a classic LOO (Leave-One-Out) assignment 
-or chosen based on ranked Fst for a THL (Traing, Holdout, Leave-one-out) 
-assignment analysis. Global Fst are average by populations and computed using 
-Weir and Cockerham 1984 equations (results are identical to hierfstat wc 
-function).
-
-* Map-independent imputations using Random Forest or the most frequent allele are options also available for this function.
-* [gsi_sim] (https://github.com/eriqande/gsi_sim) is a tool developed by Eric C. Anderson for doing and simulating genetic stock identification.
-
-
-Before conducting the assignment, the VCF file can be filtered with:
-
-* a whitelist of markers (combination of CHROM, ID, POS)
-* a blacklist of individuals (to remove individuals or entire populations...)
-* also, a list of genotypes with bad coverage and/or genotype likelihood can be supplied to erase the genotypes before imputations (for more details look at the function: blacklist_erase_genotype).
 
 
 ## Roadmap of future developments:
