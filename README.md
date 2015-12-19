@@ -16,7 +16,7 @@ developed by Thibaul Jombart
 * The input file is a the VCF (*batch_x.vcf*) or haplotype (*batch_1.haplotypes.tsv*) file, produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/)
 * Individuals, populations and markers can be filtered and/or selected in several ways using blacklist, 
 whitelist and other arguments
-* Map-independent imputation of missing genotype using Random Forest or the most frequent category is also available. To test the impact of missing data on assignment analysis
+* Map-independent imputation of missing genotype using Random Forest or the most frequent category is also available to test the impact of missing data on assignment analysis
 * Markers can be randomly selected for a classic LOO (Leave-One-Out) assignment or 
 chosen based on ranked Fst (Weir & Cockerham, 1984) for a THL (Training, Holdout, Leave-one-out) assignment analysis
 * The impact of the minor allele frequency (local and global) can also be easily explored with custom thresholds
