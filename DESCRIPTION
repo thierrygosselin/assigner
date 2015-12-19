@@ -1,0 +1,41 @@
+Package: assigner
+Type: Package
+Title: Assignment Analysis with GBS/RAD Data using R
+Version: 0.1.0
+Date: 2015-12-19
+Encoding: UTF-8
+Authors@R: c(
+  person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
+  person("Laura", "Benestan", role = "ctb"),
+Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
+Description: Set of tools for assignment analysis and tailored for the reality
+of next-generation sequencing like GBS/RAD data.
+Depends:
+    R (>= 3.0.1),
+Imports:
+    dplyr,
+    reshape2,
+    ggplot2,
+    readr,
+    stringr,
+    stringi,
+    tidyr,
+    lazyeval,
+    adegenet,
+    randomForestSRC,
+    stringdist,
+    foreach,
+    doSNOW,
+    snow,
+    parallel,
+    doParallel,
+    purrr
+Suggests:
+    plyr,
+    hierfstat,
+    knitr,
+    rmarkdown
+License: GPL (>=2)
+LazyLoad: yes
+VignetteBuilder: knitr
+RoxygenNote: 5.0.1
