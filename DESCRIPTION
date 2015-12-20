@@ -6,7 +6,7 @@ Date: 2015-12-19
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
-  person("Laura", "Benestan", role = "ctb"),
+  person("Laura", "Benestan", role = "ctb"))
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
 Description: Set of tools for assignment analysis and tailored for the reality
 of next-generation sequencing like GBS/RAD data.
