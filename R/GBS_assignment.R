@@ -746,7 +746,7 @@ GBS_assignment <- function(vcf.file,
       options(rf.cores = parallel.core, mc.cores = parallel.core)
       
       # Start cluster registration backend
-      cl <- parallel::makeCluster(parallel.core)
+      cl <- parallel::makeCluster(parallel.core, outfile = "")
       doSNOW::registerDoSNOW(cl)
       
       # imputations using Random Forest with the package randomForestSRC
@@ -1238,7 +1238,7 @@ GBS_assignment <- function(vcf.file,
     
     # Start cluster registration backend
     # parallel.core <- 8 # test
-    cl <- parallel::makeCluster(parallel.core)
+    cl <- parallel::makeCluster(parallel.core, outfile = "")
     doSNOW::registerDoSNOW(cl)
     
     # Set seed for random sampling
@@ -1511,7 +1511,7 @@ Progress can also be monitored with activity in the folder...")
     opts <- list(progress = progress)
     
     # Start cluster registration backend
-    cl <- parallel::makeCluster(parallel.core)
+    cl <- parallel::makeCluster(parallel.core, outfile = "")
     doSNOW::registerDoSNOW(cl)
     
     
