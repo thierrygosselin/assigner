@@ -22,7 +22,6 @@ Imports:
     lazyeval,
     adegenet,
     randomForestSRC,
-    stringdist,
     foreach,
     doSNOW,
     snow,

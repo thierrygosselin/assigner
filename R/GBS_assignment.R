@@ -166,6 +166,7 @@ if (getRversion() >= "2.15.1")  utils::globalVariables(c("Catalog ID",
 #' @import foreach
 #' @import parallel
 #' @import doSNOW
+#' @import stringi
 #' @importFrom purrr map
 #' @importFrom purrr flatten
 #' @references Anderson, Eric C., Robin S. Waples, and Steven T. Kalinowski. (2008)
