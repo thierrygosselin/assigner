@@ -229,6 +229,11 @@ GBS_assignment <- function(vcf.file,
   FORMAT_ID <- NULL
   ID <- NULL
   '#CHROM' <- NULL
+  CHROM <- NULL
+  LOCUS <- NULL
+  POS <- NULL
+  ERASE <- NULL
+  N <- NULL
   INFO <- NULL
   REF <- NULL
   ALT <- NULL

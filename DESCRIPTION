@@ -20,19 +20,19 @@ Imports:
     stringi,
     tidyr,
     lazyeval,
-    adegenet,
     randomForestSRC,
     foreach,
-    doSNOW,
-    snow,
     parallel,
-    doParallel,
+    doSNOW,
     purrr
 Suggests:
     plyr,
     hierfstat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    snow,
+    adegenet,
+    doParallel
 License: GPL (>=2)
 LazyLoad: yes
 VignetteBuilder: knitr

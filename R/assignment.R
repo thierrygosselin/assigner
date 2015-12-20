@@ -198,6 +198,7 @@ assignment_genodive <- function(assignment.lmax, assignment.lhome,
 #' The figure will need some work in Adobe Illustrator or similar sofware.
 #' @param assignment.summary The assignment summary file created 
 #' with assignment_genodive function.
+#' @import ggplot2
 #' @references Meirmans PG, Van Tienderen PH (2004) genotype and genodive: 
 #' two programs for the analysis of genetic diversity of asexual organisms. 
 #' Molecular Ecology Notes, 4, 792-794.
