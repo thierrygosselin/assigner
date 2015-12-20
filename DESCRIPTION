@@ -9,7 +9,6 @@ Authors@R: c(
   person("Laura", "Benestan", role = "ctb"))
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
 Description: Set of tools for assignment analysis and tailored for the reality
-of next-generation sequencing like GBS/RAD data.
 Depends:
     R (>= 3.0.1),
 Imports:
