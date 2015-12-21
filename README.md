@@ -1,8 +1,6 @@
 # assigner
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-
-
 Next-generation sequencing techniques that reduce the size of the genome (e.g. genotype-by-sequencing (GBS) and
 restriction-site-associated DNA sequencing (RADseq)) produce huge numbers of markers that hold great potential and promises for assignment analysis. After hitting the bioinformatic wall with the different workflows you'll likely end up with several folders containing whitelist and blacklist of markers and individuals, data sets with various de novo and/or filtering parameters and missing data. This reality of GBS/RAD data is quite hard on GUI software traditionally used for assignment analysis. The end results is usually poor data exploration, constrained by time, and poor reproducibility.
 
@@ -15,7 +13,7 @@ This is the development page of the **assigner** package for the R software.
 
 * **conduct assignment analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
 by Eric C. Anderson
-* The input file is a the VCF (*batch_x.vcf*) or haplotype (*batch_1.haplotypes.tsv*) file, produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/)
+* The input file is in the VCF file format (Danecek et al. 2011) (*batch_x.vcf*) or haplotype (*batch_1.haplotypes.tsv*) file, produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013)
 * Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
 whitelist** and other arguments
 * **Map-independent imputation** of missing genotype using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
@@ -26,7 +24,7 @@ chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, H
 * The impact of the minor allele frequency (local and global) can also be easily explored with custom thresholds
 * Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
-* `ggplot2`-based plotting to view results of assignment and create publication-ready figures
+* `ggplot2`-based plotting to view assignment results and create publication-ready figures
 
 
 ## Installation
@@ -119,6 +117,8 @@ ANDERSON EC (2010) Assessing the power of informative subsets of loci for popula
 Catchen JM, Amores A, Hohenlohe PA et al. (2011) Stacks: Building and Genotyping Loci De Novo From Short-Read Sequences. G3, 1, 171–182.
 
 Catchen JM, Hohenlohe PA, Bassham S, Amores A, Cresko WA (2013) Stacks: an analysis tool set for population genomics. Molecular Ecology, 22, 3124–3140.
+
+Danecek P, Auton A, Abecasis G et al. (2011) The variant call format and VCFtools. Bioinformatics, 27, 2156–2158.
 
 Foll M, Gaggiotti O (2008) A Genome-Scan Method to Identify Selected Loci Appropriate for Both Dominant and Codominant Markers: A Bayesian Perspective. Genetics, 180, 977–993.
 

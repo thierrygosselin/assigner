@@ -169,6 +169,30 @@ if (getRversion() >= "2.15.1")  utils::globalVariables(c("Catalog ID",
 #' @import stringi
 #' @importFrom purrr map
 #' @importFrom purrr flatten
+
+#' @examples
+#' \dontrun{
+#' assignment.THL.1 <- GBS_assignment(
+#' vcf.file = "batch_1.vcf",
+#' whitelist.markers = "whitelist.vcf.txt",
+#' snp.LD = NULL,
+#' common.markers = TRUE,
+#' marker.number = c(500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, "all"),
+#' sampling.method = "ranked",
+#' THL = 1,
+#' blacklist.id = "blacklist.id.lobster.tsv",
+#' subsample = NULL,
+#' gsi_sim.filename = "lobster.gsi_sim.txt",
+#' keep.gsi.files = FALSE,
+#' pop.levels = c("QUE", "ONT")
+#' pop.id.start = 1, pop.id.end = 3,
+#' imputations = FALSE,
+#' parallel.core = 8)
+#' )
+#' }
+
+
+
 #' @references Anderson, Eric C., Robin S. Waples, and Steven T. Kalinowski. (2008)
 #' An improved method for predicting the accuracy of genetic stock identification.
 #' Canadian Journal of Fisheries and Aquatic Sciences 65, 7:1475-1486.
@@ -223,11 +247,11 @@ GBS_assignment <- function(vcf.file,
                            verbose = FALSE,
                            parallel.core = NULL) {
   
-  QUAL <- NULL
-  FILTER <- NULL
-  FORMAT <- NULL
-  FORMAT_ID <- NULL
-  ID <- NULL
+#   QUAL <- NULL
+  # FILTER <- NULL
+  # FORMAT <- NULL
+  # FORMAT_ID <- NULL
+  # ID <- NULL
   '#CHROM' <- NULL
   CHROM <- NULL
   LOCUS <- NULL
@@ -372,8 +396,8 @@ GBS_assignment <- function(vcf.file,
     comment = "##",
     progress = interactive()
   ) %>%
-    select(-c(QUAL, FILTER, INFO)) %>%
-    rename(LOCUS = ID, CHROM = `#CHROM`) %>%
+    select(-c(~QUAL, ~FILTER, ~INFO)) %>%
+    rename(LOCUS = ~ID, CHROM = `#CHROM`) %>%
     mutate(
       CHROM = stri_replace_all_fixed(CHROM, pattern = "un", replacement = "1")
     )
@@ -405,7 +429,7 @@ GBS_assignment <- function(vcf.file,
   message("Making the VCF population wise")
   vcf <- suppressWarnings(
     vcf %>%
-      tidyr::gather(INDIVIDUALS, FORMAT_ID, -c(CHROM, LOCUS, POS, REF, ALT)) %>% # Gather individuals in 1 colummn
+      tidyr::gather(INDIVIDUALS, ~FORMAT_ID, -c(CHROM, LOCUS, POS, REF, ALT)) %>% # Gather individuals in 1 colummn
       mutate( # Make population ready
         POP_ID = substr(INDIVIDUALS, pop.id.start, pop.id.end),
         POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = pop.labels, ordered =T),

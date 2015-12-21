@@ -197,6 +197,27 @@ containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
 will require 15 min.
 The Fst is based on Weir and Cockerham 1984 equations.
 }
+\examples{
+\dontrun{
+assignment.THL.1 <- GBS_assignment(
+vcf.file = "batch_1.vcf",
+whitelist.markers = "whitelist.vcf.txt",
+snp.LD = NULL,
+common.markers = TRUE,
+marker.number = c(500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, "all"),
+sampling.method = "ranked",
+THL = 1,
+blacklist.id = "blacklist.id.lobster.tsv",
+subsample = NULL,
+gsi_sim.filename = "lobster.gsi_sim.txt",
+keep.gsi.files = FALSE,
+pop.levels = c("QUE", "ONT")
+pop.id.start = 1, pop.id.end = 3,
+imputations = FALSE,
+parallel.core = 8)
+)
+}
+}
 \author{
 Thierry Gosselin \email{thierrygosselin@icloud.com}
 }
