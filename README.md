@@ -81,6 +81,7 @@ If you don't have them, no worries, it's intalled automatically during **assigne
 
 ## Roadmap of future developments:
 
+* The ability to provide the ranking of markers based on something else than Fst provided by the function. For example, Toolbox for Ranking and Evaluation of SNPs [TRES](http://mlkd.csd.auth.gr/bio/tres/), [BayeScan](http://cmpg.unibe.ch/software/BayeScan/) and [OutFLANK](https://github.com/whitlock/OutFLANK).
 * Documentation and vignettes
 * Workflow tutorial
 * Use Shiny and ggvis when subplots or facets are available

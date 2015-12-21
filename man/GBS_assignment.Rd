@@ -4,8 +4,8 @@
 \alias{GBS_assignment}
 \title{Assignment analysis in gsi_sim with GBS data produced by STACKS workflow}
 \usage{
-GBS_assignment(vcf.file, blacklist.genotype = NULL,
-  whitelist.markers = NULL, snp.LD = NULL, common.markers = NULL,
+GBS_assignment(vcf.file, whitelist.markers = NULL,
+  blacklist.genotype = NULL, snp.LD = NULL, common.markers = NULL,
   maf.local.threshold = NULL, maf.global.threshold = NULL,
   maf.pop.num.threshold = 1, maf.approach = "SNP", maf.operator = "OR",
   marker.number = "all", blacklist.id = NULL, pop.levels, pop.labels,
@@ -19,6 +19,13 @@ GBS_assignment(vcf.file, blacklist.genotype = NULL,
 \arguments{
 \item{vcf.file}{The VCF file created by STACKS.}
 
+\item{whitelist.markers}{(optional) A whitelist containing CHROM (character
+or integer) and/or LOCUS (integer) and/or
+POS (integer) columns header. To filter by CHROM and/or locus and/or by snp.
+The whitelist is in the working directory (e.g. "whitelist.txt").
+de novo CHROM column with 'un' need to be changed to 1. 
+Default \code{NULL} for no whitelist of markers.}
+
 \item{blacklist.genotype}{(optional) Useful to erase genotype with below 
 average quality, e.g. genotype with more than 2 alleles in diploid likely 
 sequencing errors or genotypes with poor genotype likelihood or coverage. 
@@ -31,13 +38,6 @@ INDIVIDUALS (character) columns header. The blacklist must be in the working
 directory (e.g. "blacklist.genotype.txt"). For de novo VCF, CHROM column 
 with 'un' need to be changed to 1. Default \code{NULL} for no blacklist of 
 genotypes to erase.}
-
-\item{whitelist.markers}{(optional) A whitelist containing CHROM (character
-or integer) and/or LOCUS (integer) and/or
-POS (integer) columns header. To filter by CHROM and/or locus and/or by snp.
-The whitelist is in the working directory (e.g. "whitelist.txt").
-de novo CHROM column with 'un' need to be changed to 1. 
-Default \code{NULL} for no whitelist of markers.}
 
 \item{snp.LD}{(optional) Minimize linkage disequilibrium (LD) by choosing
 among these 3 options: \code{"random"} selection, \code{"first"} or

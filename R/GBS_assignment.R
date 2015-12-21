@@ -193,8 +193,8 @@ if (getRversion() >= "2.15.1")  utils::globalVariables(c("Catalog ID",
 
 
 GBS_assignment <- function(vcf.file,
-                           blacklist.genotype = NULL,
                            whitelist.markers = NULL,
+                           blacklist.genotype = NULL,
                            snp.LD = NULL,
                            common.markers = NULL,
                            maf.local.threshold = NULL,
