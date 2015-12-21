@@ -13,19 +13,19 @@ This is the development page of the **assigner** package for the R software.
 
 **Use assigner to:**
 
-* conduct assignment analysis using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
+* **conduct assignment analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
 by Eric C. Anderson
 * The input file is a the VCF (*batch_x.vcf*) or haplotype (*batch_1.haplotypes.tsv*) file, produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/)
-* Individuals, populations and markers can be filtered and/or selected in several ways using blacklist, 
-whitelist and other arguments
-* Map-independent imputation of missing genotype using Random Forest or the most frequent category is also available to test the impact of missing data on assignment analysis
+* Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
+whitelist** and other arguments
+* **Map-independent imputation** of missing genotype using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
 * Genotypes of poor quality (e.g. in coverage, genotype likelihood or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument.
-* Markers can be randomly selected for a classic LOO (Leave-One-Out) assignment or 
-chosen based on ranked Fst (Weir & Cockerham, 1984) for a THL (Training, Holdout, Leave-one-out) assignment analysis
+* Markers can be randomly selected for a **classic LOO (Leave-One-Out) assignment** or 
+chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis**
 * use `iterations` argument to resample markers or individuals to get statistics!
 * The impact of the minor allele frequency (local and global) can also be easily explored with custom thresholds
-* Compute Paetkau's et al. (1997) **genotype likelihood ratio distance metric (Dlr)**
-* Import and summarise the assignment results from GenoDive (Meirmans and Van Tienderen, 2004)
+* Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
+* Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
 * `ggplot2`-based plotting to view results of assignment and create publication-ready figures
 
 
