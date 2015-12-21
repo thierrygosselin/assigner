@@ -249,9 +249,9 @@ GBS_assignment <- function(vcf.file,
   
 #   QUAL <- NULL
   # FILTER <- NULL
-  # FORMAT <- NULL
-  # FORMAT_ID <- NULL
-  # ID <- NULL
+  FORMAT <- NULL
+  FORMAT_ID <- NULL
+  ID <- NULL
   '#CHROM' <- NULL
   CHROM <- NULL
   LOCUS <- NULL
@@ -397,7 +397,7 @@ GBS_assignment <- function(vcf.file,
     progress = interactive()
   ) %>%
     select(-c(~QUAL, ~FILTER, ~INFO)) %>%
-    rename(LOCUS = ~ID, CHROM = `#CHROM`) %>%
+    rename(LOCUS = ID, CHROM = `#CHROM`) %>%
     mutate(
       CHROM = stri_replace_all_fixed(CHROM, pattern = "un", replacement = "1")
     )
@@ -429,7 +429,7 @@ GBS_assignment <- function(vcf.file,
   message("Making the VCF population wise")
   vcf <- suppressWarnings(
     vcf %>%
-      tidyr::gather(INDIVIDUALS, ~FORMAT_ID, -c(CHROM, LOCUS, POS, REF, ALT)) %>% # Gather individuals in 1 colummn
+      tidyr::gather(INDIVIDUALS, FORMAT_ID, -c(CHROM, LOCUS, POS, REF, ALT)) %>% # Gather individuals in 1 colummn
       mutate( # Make population ready
         POP_ID = substr(INDIVIDUALS, pop.id.start, pop.id.end),
         POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = pop.labels, ordered =T),
