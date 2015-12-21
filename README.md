@@ -14,8 +14,7 @@ This is the development page of the **assigner** package for the R software.
 **Use assigner to:**
 
 * conduct assignment analysis using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
-by Eric C. Anderson or [adegenet] (https://github.com/thibautjombart/adegenet), a R package
-developed by Thibaul Jombart
+by Eric C. Anderson
 * The input file is a the VCF (*batch_x.vcf*) or haplotype (*batch_1.haplotypes.tsv*) file, produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/)
 * Individuals, populations and markers can be filtered and/or selected in several ways using blacklist, 
 whitelist and other arguments
@@ -25,6 +24,8 @@ whitelist and other arguments
 chosen based on ranked Fst (Weir & Cockerham, 1984) for a THL (Training, Holdout, Leave-one-out) assignment analysis
 * use `iterations` argument to resample markers or individuals to get statistics!
 * The impact of the minor allele frequency (local and global) can also be easily explored with custom thresholds
+* Compute Paetkau's et al. (1997) **genotype likelihood ratio distance metric (Dlr)**
+* Import and summarise the assignment results from GenoDive (Meirmans and Van Tienderen, 2004)
 * `ggplot2`-based plotting to view results of assignment and create publication-ready figures
 
 
@@ -81,6 +82,7 @@ If you don't have them, no worries, it's intalled automatically during **assigne
 
 ## Roadmap of future developments:
 
+* Update the `GBS_assignment` to opt between GSI_SIM or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis
 * The ability to provide the ranking of markers based on something else than Fst (Weir and Cockerham, 1984) currently used in the function. e.g. Informativeness for Assignment Measure (In, Rosenberg et al. 2003), the Absolute Allele Frequency Differences (delta, δ, Shriver et al., 1997).
 * Provide ranking from other software: e.g. Toolbox for Ranking and Evaluation of SNPs [TRES](http://mlkd.csd.auth.gr/bio/tres/), [BayeScan](http://cmpg.unibe.ch/software/BayeScan/) and [OutFLANK](https://github.com/whitlock/OutFLANK).
 * Documentation and vignettes
@@ -125,6 +127,12 @@ Jombart T (2008) adegenet: a R package for the multivariate analysis of genetic 
 Jombart T, Ahmed I (2011) adegenet 1.3-1: new tools for the analysis of genome-wide SNP data. Bioinformatics, 27, 3070–3071.
 
 Kavakiotis I, Triantafyllidis A, Ntelidou D et al. (2015) TRES: Identification of Discriminatory and Informative SNPs from Population Genomic Data. Journal of Heredity, 106, 672–676.
+
+Meirmans PG, Van Tienderen PH (2004) genotype and genodive: two programs for the analysis of genetic diversity of asexual organisms. Molecular Ecology Notes, 4, 792-794.
+
+Paetkau D, Slade R, Burden M, Estoup A (2004) Genetic assignment methods for the direct, real-time estimation of migration rate: a simulation-based exploration of accuracy and power. Molecular Ecology, 13, 55-65.
+
+Paetkau D, Waits LP, Clarkson PL, Craighead L, Strobeck C (1997) An empirical evaluation of genetic distance statistics using microsatellite data from bear (Ursidae) populations. Genetics, 147, 1943-1957.
 
 Rosenberg NA, Li LM, Ward R, Pritchard JK (2003) Informativeness of genetic markers for inference of ancestry. American Journal of Human Genetics, 73, 1402–1422.
 
