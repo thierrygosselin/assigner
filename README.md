@@ -12,7 +12,7 @@ This is the development page of the **assigner** package for the R software.
 **Use assigner to:**
 
 * **conduct assignment analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
-by Eric C. Anderson
+by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010)
 * The input file is in the VCF file format (Danecek et al. 2011) (*batch_x.vcf*) or haplotype (*batch_1.haplotypes.tsv*) file, produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013)
 * Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
 whitelist** and other arguments
@@ -72,7 +72,7 @@ any directory. If you have no idea what i'm saying here, you might want to first
 read this short section of my tutorial on [GBS in the cloud] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time).
 
 On MacOSX, the fastest way is to put [gsi_sim] (https://github.com/eriqande/gsi_sim)
-binary, the \code{gsisim} executable, in the folder `/usr/local/bin`. 
+binary, the `gsisim` executable, in the folder `/usr/local/bin`. 
 To compile gsi_sim, follow the instruction on [Eric Anderson github page] (https://github.com/eriqande/gsi_sim).
 
 
@@ -123,7 +123,9 @@ Vignettes are in development, check periodically for updates.
 
 ## References
 
-ANDERSON EC (2010) Assessing the power of informative subsets of loci for population assignment: standard methods are upwardly biased. Molecular Ecology Resources, 10, 701–710.
+Anderson EC, Waples RS, Kalinowski ST (2008) An improved method for predicting the accuracy of genetic stock identification. Canadian Journal of Fisheries and Aquatic Sciences, 65, 1475–1486.
+
+Anderson EC (2010) Assessing the power of informative subsets of loci for population assignment: standard methods are upwardly biased. Molecular Ecology Resources, 10, 701–710.
 
 Catchen JM, Amores A, Hohenlohe PA et al. (2011) Stacks: Building and Genotyping Loci De Novo From Short-Read Sequences. G3, 1, 171–182.
 
