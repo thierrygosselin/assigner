@@ -3,19 +3,6 @@
 \name{GBS_assignment}
 \alias{GBS_assignment}
 \title{Assignment analysis in gsi_sim with GBS data produced by STACKS workflow}
-\usage{
-GBS_assignment(vcf.file, whitelist.markers = NULL,
-  blacklist.genotype = NULL, snp.LD = NULL, common.markers = NULL,
-  maf.local.threshold = NULL, maf.global.threshold = NULL,
-  maf.pop.num.threshold = 1, maf.approach = "SNP", maf.operator = "OR",
-  marker.number = "all", blacklist.id = NULL, pop.levels, pop.labels,
-  pop.id.start, pop.id.end, pop.select = "all", subsample = NULL,
-  sampling.method, THL = 1, iterations = 10, folder,
-  gsi_sim.filename = "gsi_sim_data.txt", keep.gsi.files, baseline = NULL,
-  mixture = NULL, imputations = FALSE, imputations.group = "populations",
-  num.tree = 100, iteration.rf = 10, split.number = 100,
-  verbose = FALSE, parallel.core = NULL)
-}
 \arguments{
 \item{vcf.file}{The VCF file created by STACKS.}
 
@@ -75,29 +62,6 @@ To use only 500 makers \code{marker.number = 500}.}
 a column header 'INDIVIDUALS'. The blacklist is in the working directory
 (e.g. "blacklist.txt").}
 
-\item{pop.levels}{(required) A character string with your populations ordered.}
-
-\item{pop.labels}{(optional) A character string of your populations labels.
-If you need to rename sampling sites in \code{pop.levels} or combined sites/pop
-into a different names, here is the place.}
-
-\item{pop.id.start}{The start of your population id
-in the name of your individual sample.}
-
-\item{pop.id.end}{The end of your population id
-in the name of your individual sample.}
-
-\item{pop.select}{(string) Conduct the assignment analysis on a
-selected list of populations. Default = \code{"all"}.
-e.g. \code{pop.select = "QUE"} to select QUE population samples.
-\code{pop.select = c("QUE", "ONT")} to select QUE and ONT population samples.}
-
-\item{subsample}{(Integer or Proportion) Default is no sumsampling, \code{subsample = NULL}.
-With a proportion argument \code{subsample = 0.15}, 15 percent of individuals
-in each populations are chosen randomly to represent the dataset.
-With \code{subsample = 36}, 36 individuals in each populations are chosen
-randomly to represent the dataset.}
-
 \item{sampling.method}{(character) Should the markers be randomly selected
 \code{"random"} for a classic Leave-One-Out (LOO) assignment or
 chosen based on ranked Fst \code{"ranked"}, used in a
@@ -135,6 +99,30 @@ The number of markers used will be appended to the name of the file.}
 \item{keep.gsi.files}{(Boolean) Default \code{FALSE} The input and output gsi_sim files
 will be deleted from the directory when finished processing.
 With \code{TRUE}, remember to allocate a large chunk of the disk space for the analysis.}
+
+\item{pop.levels}{(required) A character string with your populations ordered.}
+
+\item{pop.labels}{(optional) A character string for your populations labels.
+If you need to rename sampling sites in \code{pop.levels} or combined sites/pop
+into a different names, here is the place.}
+
+\item{pop.id.start}{The start of your population id
+in the name of your individual sample.}
+
+\item{pop.id.end}{The end of your population id
+in the name of your individual sample.}
+
+\item{pop.select}{(string) Conduct the assignment analysis on a
+selected list of populations. Default = \code{NULL} for no selection and keep
+all population.
+e.g. \code{pop.select = "QUE"} to select QUE population samples.
+\code{pop.select = c("QUE", "ONT")} to select QUE and ONT population samples.}
+
+\item{subsample}{(Integer or Proportion) Default is no sumsampling, \code{subsample = NULL}.
+With a proportion argument \code{subsample = 0.15}, 15 percent of individuals
+in each populations are chosen randomly to represent the dataset.
+With \code{subsample = 36}, 36 individuals in each populations are chosen
+randomly to represent the dataset.}
 
 \item{baseline}{(optional) A character string with your baseline id.
 From the \code{pop.id.start} and \code{pop.id.end} you isolate
@@ -198,12 +186,13 @@ will require 15 min.
 The Fst is based on Weir and Cockerham 1984 equations.
 }
 \note{
-\code{GBS_assignment} assumes that the command line version of GSI_SIM 
+\code{GBS_assignment} assumes that the command line version of gsi_sim 
 is properly installed and available on the command line, so it is executable from 
 any directory( more info on how to do this, here 
-\url{http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time}. On MacOSX, the easiest way is to put the binary,
-the gsisim executable, in the folder \code{/usr/local/bin}. To compile GSI_SIM,
-follow the instruction here: \url{https://github.com/eriqande/gsi_sim}.
+\url{http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time}.
+On MacOSX, the easiest way is to put the binary, the \code{gsisim} executable,
+in the folder \code{/usr/local/bin}. To compile gsi_sim, follow the 
+instruction here: \url{https://github.com/eriqande/gsi_sim}.
 }
 \examples{
 \dontrun{
