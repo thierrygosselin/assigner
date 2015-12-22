@@ -754,7 +754,7 @@ GBS_assignment <- function(vcf.file,
         imputed.dataset <-list() # create empty list
         # for (i in pop.list) {
         imputed.dataset <- foreach(i=pop.list, 
-                                   .packages = c("plyr", "dplyr", "tidyr", 
+                                   .packages = c("plyr", "dplyr", "reshape2", "tidyr", 
                                                  "stringi", "readr", 
                                                  "randomForestSRC")
         ) %dopar% {
@@ -1256,7 +1256,7 @@ GBS_assignment <- function(vcf.file,
     # foreach
     assignment.res <- foreach(mrl=markers.random.lists, 
                               .options.snow=opts, 
-                              .packages = c("dplyr", "tidyr", "stringi",
+                              .packages = c("dplyr", "reshape2", "tidyr", "stringi",
                                             "readr", "purrr")
     ) %dopar% {
       # mrl <- markers.random.lists[1] # test
@@ -1517,7 +1517,7 @@ Progress can also be monitored with activity in the folder...")
     i <- NULL
     assignment.res <- list()
     assignment.res <- foreach(i=iterations.list, .options.snow=opts, 
-                              .packages = c("dplyr", "tidyr", "stringi", "readr", 
+                              .packages = c("dplyr", "reshape2", "tidyr", "stringi", "readr", 
                                             "purrr")
     ) %dopar% {
       Sys.sleep(0.01)  # For progress bar
