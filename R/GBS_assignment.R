@@ -565,7 +565,12 @@ GBS_assignment <- function(vcf.file,
       select(MARKERS) %>%
       distinct(MARKERS)
     
-    message(stri_c("Number of original markers = ", n_distinct(vcf$MARKERS), "\n", "Number of markers present in all the populations = ", n_distinct(pop.filter$MARKERS), "\n", "Number of markers removed = ", n_distinct(vcf$MARKERS) - n_distinct(pop.filter$MARKERS)))
+    message(stri_c("Number of original markers = ", n_distinct(vcf$MARKERS), 
+                   "\n", "Number of markers present in all the populations = ", 
+                   n_distinct(pop.filter$MARKERS), "\n", 
+                   "Number of markers removed = ", 
+                   n_distinct(vcf$MARKERS) - n_distinct(pop.filter$MARKERS))
+    )
     vcf <- vcf %>% semi_join(pop.filter, by = "MARKERS")
   } # end common markers
   
