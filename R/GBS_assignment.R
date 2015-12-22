@@ -238,7 +238,7 @@ if (getRversion() >= "2.15.1"){
       'MARKERS', 'CURRENT', 'INFERRED', 'MARKER_NUMBER', 'MISSING_DATA',
       'ITERATIONS', 'METHOD', 'TOTAL', 'MEAN_i', 'MEAN', 'ASSIGNMENT_PERC',
       'SE', 'MEDIAN', 'MIN', 'MAX', 'QUANTILE25', 'QUANTILE75', 'SE_MIN',
-      'SE_MAX', '.'
+      'SE_MAX', '.', 'QUAL', 'FILTER', 'INFO'
     )
   )
 }
@@ -346,7 +346,7 @@ GBS_assignment <- function(vcf.file,
     comment = "##",
     progress = interactive()
   ) %>%
-    select(-c(~QUAL, ~FILTER, ~INFO)) %>%
+    select(-c(QUAL, FILTER, INFO)) %>%
     rename(LOCUS = ID, CHROM = `#CHROM`) %>%
     mutate(
       CHROM = stri_replace_all_fixed(CHROM, pattern = "un", replacement = "1")
@@ -406,7 +406,7 @@ GBS_assignment <- function(vcf.file,
   if (is.null(pop.select)){
     vcf <- vcf
   } else {
-    message(stri_c("Populations selected: ", pop.select, sep = ""))
+    message(c("Populations selected: ", pop.select))
     vcf <- suppressWarnings(
       vcf %>%
         filter(POP_ID %in% pop.select)
@@ -861,7 +861,7 @@ GBS_assignment <- function(vcf.file,
     
     # filename modification based with or without imputations
     if (imputations == FALSE) {
-      message("Output...No imputation")
+      # message("Output...No imputation")
       filename <- stri_replace_all_fixed(filename,
                                          pattern = ".txt",
                                          replacement = stri_c(
@@ -870,7 +870,7 @@ GBS_assignment <- function(vcf.file,
                                          )
       )
     } else {
-      message("Output...With imputations")
+      # message("Output...With imputations")
       filename <- stri_replace_all_fixed(filename,
                                          pattern = ".txt",
                                          replacement = stri_c(
@@ -895,7 +895,7 @@ GBS_assignment <- function(vcf.file,
       write_delim(x = pop.line, path = paste0(directory, filename), delim = "\n", append = TRUE, col_names = FALSE)
       write_delim(x = gsi_sim.split[[k]], path = paste0(directory, filename), delim = " ", append = TRUE, col_names = FALSE)
     }
-    message(stri_c("Data file (no imputation):", filename, "\nWritten to the working directory:", directory, sep = " "))
+    # message(stri_c("Data file (no imputation):", filename, "\nWritten to the working directory:", directory, sep = " "))
     return(filename)
   } # end function write gsi
   
@@ -942,22 +942,28 @@ GBS_assignment <- function(vcf.file,
       tidyr::gather(key = ALLELES_GROUP, ALLELES, -c(INDIVIDUALS, POP_ID, MARKERS))
     
     #pop
-    freq.al.locus.pop <- freq.al.locus %>%
-      group_by(POP_ID, MARKERS, ALLELES) %>%
-      tally %>%
-      full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS")) %>%
-      mutate(P = n/N_IND_GENE) %>% # Freq. Allele per pop
-      select(POP_ID, MARKERS, ALLELES, P) %>%
-      group_by(MARKERS, ALLELES) %>%
-      tidyr::spread(data = ., key = POP_ID, value = P) %>%
-      tidyr::gather(key = POP_ID, value = P, -c(MARKERS, ALLELES)) %>%
-      mutate(P = as.numeric(stri_replace_na(str = P, replacement = 0))) %>%
-      full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS"))
+    freq.al.locus.pop <- suppressWarnings(
+      freq.al.locus %>%
+        group_by(POP_ID, MARKERS, ALLELES) %>%
+        tally %>%
+        full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS")) %>%
+        mutate(P = n/N_IND_GENE) %>% # Freq. Allele per pop
+        select(POP_ID, MARKERS, ALLELES, P) %>%
+        group_by(MARKERS, ALLELES) %>%
+        tidyr::spread(data = ., key = POP_ID, value = P) %>%
+        tidyr::gather(key = POP_ID, value = P, -c(MARKERS, ALLELES)) %>%
+        mutate(P = as.numeric(stri_replace_na(str = P, replacement = 0))) %>%
+        full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS"))
+    )    
     
     freq.al.locus.global <- freq.al.locus %>%
       group_by(MARKERS, ALLELES) %>%
       tally %>%
-      full_join(ind.count.locus%>% rename(N = n), by = "MARKERS") %>%
+      full_join(
+        ind.count.locus %>%
+          rename(N = n), 
+        by = "MARKERS"
+      ) %>%
       mutate(pb = n/(2*N)) %>% # Global Freq. Allele
       select(MARKERS, ALLELES, pb)
     
@@ -1039,7 +1045,7 @@ GBS_assignment <- function(vcf.file,
       arrange(POP_ID, INDIVIDUALS)
     
     if (is.null(mixture)) {
-      message("No baseline or mixture data")
+      # message("No baseline or mixture data")
       input <- write_gsi(data = data.select, imputations = imputations, filename = gsi_sim.filename, i)
     } else {
       # Baseline
@@ -1058,7 +1064,7 @@ GBS_assignment <- function(vcf.file,
       
       # save file
       baseline.input <- write_gsi(data = baseline.data, imputations = imputations, filename = baseline.filename, i = i)
-      message(stri_paste("Baseline data file:", filename, "\nWritten to the working directory:", directory, sep = " "))
+      # message(stri_paste("Baseline data file:", filename, "\nWritten to the working directory:", directory, sep = " "))
       
       # Mixture
       mixture.data <- suppressWarnings(
@@ -1076,7 +1082,7 @@ GBS_assignment <- function(vcf.file,
       
       # save file
       mixture.input <- write_gsi(data = mixture.data, imputations = imputations, filename = mixture.filename, i = i)
-      message(stri_paste("Mixture data file:", filename, "\nWritten to the working directory:", directory, sep = " "))
+      # message(stri_paste("Mixture data file:", filename, "\nWritten to the working directory:", directory, sep = " "))
     } # end writing gsi files to disk
     
     # Run gsi_sim ------------------------------------------------------------
@@ -1162,7 +1168,7 @@ GBS_assignment <- function(vcf.file,
           mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>%
           select(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, ASSIGNMENT_PERC) %>%
           group_by(CURRENT, MARKER_NUMBER, MISSING_DATA) %>%
-          tidyr::spread(INFERRED, ASSIGNMENT_PERC) %>%
+          tidyr::spread(data = ., key = INFERRED, value = ASSIGNMENT_PERC) %>%
           tidyr::gather(INFERRED, ASSIGNMENT_PERC, -c(CURRENT, MARKER_NUMBER, MISSING_DATA)) %>%
           mutate(ASSIGNMENT_PERC = as.numeric(stri_replace_na(ASSIGNMENT_PERC, replacement = 0))) %>%
           filter(as.character(CURRENT) == as.character(INFERRED)) %>%
