@@ -66,6 +66,16 @@ sudo rm -R /Library/Frameworks/R.framework/Resources/library/package_name
 
 **Dependencies**
 
+**assigner** assumes that the command line version of [gsi_sim] (https://github.com/eriqande/gsi_sim) 
+is properly installed and available on the command line, so it is executable from 
+any directory. If you have no idea what i'm saying here, you might want to first 
+read this short section of my tutorial on [GBS in the cloud] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time).
+
+On MacOSX, the fastest way is to put [gsi_sim] (https://github.com/eriqande/gsi_sim)
+binary, the \code{gsisim} executable, in the folder `/usr/local/bin`. 
+To compile gsi_sim, follow the instruction on [Eric Anderson github page] (https://github.com/eriqande/gsi_sim).
+
+
 Here the list of packages that **assigner** is depending on:
 ```r
 dplyr, reshape2, ggplot2, readr, stringi, tidyr, purrr, lazyeval, adegenet, randomForestSRC, foreach, parallel, doParallel

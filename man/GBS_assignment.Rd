@@ -197,6 +197,14 @@ containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
 will require 15 min.
 The Fst is based on Weir and Cockerham 1984 equations.
 }
+\note{
+\code{GBS_assignment} assumes that the command line version of GSI_SIM 
+is properly installed and available on the command line, so it is executable from 
+any directory( more info on how to do this, here 
+\url{http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time}. On MacOSX, the easiest way is to put the binary,
+the gsisim executable, in the folder \code{/usr/local/bin}. To compile GSI_SIM,
+follow the instruction here: \url{https://github.com/eriqande/gsi_sim}.
+}
 \examples{
 \dontrun{
 assignment.THL.1 <- GBS_assignment(
