@@ -371,23 +371,22 @@ GBS_assignment <- function(vcf.file,
     if ("CHROM" %in% columns.names.whitelist){
       whitelist.markers$CHROM <- as.character(whitelist.markers$CHROM)
     }
-    vcf <- vcf %>%
-      semi_join(whitelist.markers, by = columns.names.whitelist)
+    vcf <- suppressWarnings(
+      vcf %>%
+        semi_join(whitelist.markers, by = columns.names.whitelist)
+    )
   }
   
   # Tidying the VCF to make it easy to work on the data for conversion *********
   message("Making the VCF population wise")
-  vcf <- suppressWarnings(
-    vcf %>%
+  vcf <- vcf %>%
       tidyr::gather(INDIVIDUALS, FORMAT_ID, -c(CHROM, LOCUS, POS, REF, ALT)) %>% # Gather individuals in 1 colummn
       mutate( # Make population ready
         POP_ID = substr(INDIVIDUALS, pop.id.start, pop.id.end),
-        POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = pop.labels, ordered =T),
-        POP_ID = droplevels(POP_ID),
+        POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = unique(pop.labels), ordered =T),
         INDIVIDUALS =  as.character(INDIVIDUALS)
       )
-  )
-  
+
   # Blacklist id ***************************************************************
   if (is.null(blacklist.id)) { # No blacklist of ID
     message("No individual blacklisted")
@@ -406,7 +405,8 @@ GBS_assignment <- function(vcf.file,
   if (is.null(pop.select)){
     vcf <- vcf
   } else {
-    message(c("Populations selected: ", pop.select))
+    
+    message(stri_c(length(pop.select), "population(s) selected", sep = " "))
     vcf <- suppressWarnings(
       vcf %>%
         filter(POP_ID %in% pop.select)
@@ -432,8 +432,10 @@ GBS_assignment <- function(vcf.file,
         sample_frac(subsample, replace = FALSE) %>% # sampling individuals for each pop
         arrange(POP_ID, INDIVIDUALS)
     }
-    vcf <- vcf %>%
-      semi_join(subsample.select, by = c("POP_ID", "INDIVIDUALS"))
+    vcf <- suppressWarnings(
+      vcf %>%
+        semi_join(subsample.select, by = c("POP_ID", "INDIVIDUALS"))
+    )
   } # end subsampling
   
   # Tidy VCF *******************************************************************
@@ -470,7 +472,7 @@ GBS_assignment <- function(vcf.file,
       # updating the whitelist of markers t have all columns that id markers
       whitelist.markers.ind <- vcf %>% select(CHROM, LOCUS, POS, INDIVIDUALS) %>% distinct(CHROM, LOCUS, POS, INDIVIDUALS)
       # updating the blacklist.genotype
-      blacklist.genotype <- semi_join(whitelist.markers.ind, blacklist.genotype, by = columns.names.blacklist.genotype)
+      blacklist.genotype <- suppressWarnings(semi_join(whitelist.markers.ind, blacklist.genotype, by = columns.names.blacklist.genotype))
     } else {
       blacklist.genotype <- blacklist.genotype
     }
@@ -479,7 +481,7 @@ GBS_assignment <- function(vcf.file,
     if (!is.null(blacklist.id)){
       message("Control check to remove blacklisted individuals 
               present in the blacklist of genotypes to erase.")
-      blacklist.genotype <- anti_join(blacklist.genotype, blacklist.id, by = "INDIVIDUALS")
+      blacklist.genotype <- suppressWarnings(anti_join(blacklist.genotype, blacklist.id, by = "INDIVIDUALS"))
     } else {
       blacklist.genotype <- blacklist.genotype
     }
@@ -488,13 +490,15 @@ GBS_assignment <- function(vcf.file,
     # by x column(s) of markers
     blacklist.genotype <- mutate(.data = blacklist.genotype, ERASE = rep("erase", n()))
     
-    vcf <- vcf %>%
-      full_join(blacklist.genotype, by = c("CHROM", "LOCUS", "POS", "INDIVIDUALS")) %>%
-      mutate(
-        ERASE = stri_replace_na(str = ERASE, replacement = "ok"),
-        GT = ifelse(ERASE == "erase", "./.", GT)
-      ) %>% 
-      select(-ERASE)
+    vcf <- suppressWarnings(
+      vcf %>%
+        full_join(blacklist.genotype, by = c("CHROM", "LOCUS", "POS", "INDIVIDUALS")) %>%
+        mutate(
+          ERASE = stri_replace_na(str = ERASE, replacement = "ok"),
+          GT = ifelse(ERASE == "erase", "./.", GT)
+        ) %>% 
+        select(-ERASE)
+    )
   } # end erase genotypes
   
   # dump unused object
@@ -571,7 +575,7 @@ GBS_assignment <- function(vcf.file,
                    "Number of markers removed = ", 
                    n_distinct(vcf$MARKERS) - n_distinct(pop.filter$MARKERS))
     )
-    vcf <- vcf %>% semi_join(pop.filter, by = "MARKERS")
+    vcf <- suppressWarnings(vcf %>% semi_join(pop.filter, by = "MARKERS"))
   } # end common markers
   
   # Minor Allele Frequency filter **********************************************
@@ -956,94 +960,103 @@ GBS_assignment <- function(vcf.file,
         full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS"))
     )    
     
-    freq.al.locus.global <- freq.al.locus %>%
-      group_by(MARKERS, ALLELES) %>%
-      tally %>%
-      full_join(
-        ind.count.locus %>%
-          rename(N = n), 
-        by = "MARKERS"
-      ) %>%
-      mutate(pb = n/(2*N)) %>% # Global Freq. Allele
-      select(MARKERS, ALLELES, pb)
+    freq.al.locus.global <- suppressWarnings(
+      freq.al.locus %>%
+        group_by(MARKERS, ALLELES) %>%
+        tally %>%
+        full_join(
+          ind.count.locus %>%
+            rename(N = n), 
+          by = "MARKERS"
+        ) %>%
+        mutate(pb = n/(2*N)) %>% # Global Freq. Allele
+        select(MARKERS, ALLELES, pb)
+    )    
     
-    mean.n.pop.corrected.per.locus <- ind.count.locus.pop %>%
-      group_by(MARKERS) %>%
-      summarise(nal_sq_sum = sum(nal_sq, na.rm = TRUE)) %>%
-      full_join(ind.count.locus, by = "MARKERS") %>%
-      mutate(nal_sq_sum_nt = (n - nal_sq_sum/n)) %>%
-      full_join(n.pop.locus, by = "MARKERS") %>%
-      mutate(ncal = nal_sq_sum_nt/(npl-1)) %>%
-      select(MARKERS, ncal)
+    mean.n.pop.corrected.per.locus <- suppressWarnings(
+      ind.count.locus.pop %>%
+        group_by(MARKERS) %>%
+        summarise(nal_sq_sum = sum(nal_sq, na.rm = TRUE)) %>%
+        full_join(ind.count.locus, by = "MARKERS") %>%
+        mutate(nal_sq_sum_nt = (n - nal_sq_sum/n)) %>%
+        full_join(n.pop.locus, by = "MARKERS") %>%
+        mutate(ncal = nal_sq_sum_nt/(npl-1)) %>%
+        select(MARKERS, ncal)
+    )
     
-    ncal <- freq.al.locus %>%
-      select(MARKERS, ALLELES) %>%
-      group_by(MARKERS, ALLELES) %>%
-      distinct(MARKERS, ALLELES) %>%
-      full_join(ind.count.locus, by = "MARKERS") %>%
-      rename(ntal = n) %>%
-      full_join(mean.n.pop.corrected.per.locus, by = "MARKERS")
+    ncal <- suppressWarnings(
+      freq.al.locus %>%
+        select(MARKERS, ALLELES) %>%
+        group_by(MARKERS, ALLELES) %>%
+        distinct(MARKERS, ALLELES) %>%
+        full_join(ind.count.locus, by = "MARKERS") %>%
+        rename(ntal = n) %>%
+        full_join(mean.n.pop.corrected.per.locus, by = "MARKERS")
+    )
     
-    fst.ranked <- data.genotyped %>%
-      mutate(het = ifelse(stri_sub(GT, 1, 1) != stri_sub(GT, 3, 3), 1, 0)) %>%
-      group_by(MARKERS, POP_ID) %>%
-      summarise(mho = sum(het, na.rm = TRUE)) %>%  # = the number of heterozygote individuals per pop and markers
-      group_by(MARKERS) %>%
-      tidyr::spread(data = ., key = POP_ID, value = mho) %>%
-      tidyr::gather(key = POP_ID, value = mho, -MARKERS) %>%
-      mutate(mho = as.numeric(stri_replace_na(str = mho, replacement = 0))) %>%
-      full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS")) %>%
-      mutate(
-        mhom = round(((2 * nal * P - mho)/2), 0),
-        dum = nal * (P - 2 * P^2) + mhom
-      ) %>%
-      group_by(MARKERS, ALLELES) %>%
-      full_join(freq.al.locus.global, by = c("MARKERS", "ALLELES")) %>%
-      mutate(
-        SSi = sum(dum, na.rm = TRUE),
-        dum1 = nal * (P - pb)^2
-      ) %>%
-      group_by(MARKERS, ALLELES) %>%
-      mutate(SSP = 2 * sum(dum1, na.rm = TRUE)) %>%
-      group_by(MARKERS, POP_ID) %>%
-      mutate(SSG = nal * P - mhom) %>%
-      group_by(MARKERS, ALLELES) %>%
-      full_join(ncal, by = c("MARKERS", "ALLELES")) %>%
-      full_join(n.pop.locus, by = "MARKERS") %>%
-      rename(ntalb = npl) %>%
-      mutate(
-        sigw = round(sum(SSG, na.rm = TRUE), 2)/ntal,
-        MSP = SSP/(ntalb - 1),
-        MSI = SSi/(ntal - ntalb),
-        sigb = 0.5 * (MSI - sigw),
-        siga = 1/2/ncal * (MSP - MSI)
-      ) %>%
-      group_by(MARKERS) %>%
-      summarise(
-        lsiga = sum(siga, na.rm = TRUE),
-        lsigb = sum(sigb, na.rm = TRUE),
-        lsigw = sum(sigw, na.rm = TRUE),
-        FST = round(lsiga/(lsiga + lsigb + lsigw), 6),
-        FIS = round(lsigb/(lsigb + lsigw), 6)
-      ) %>%
-      arrange(desc(FST)) %>%
-      select(MARKERS, FST) %>%
-      mutate(RANKING = seq(from = 1, to = n()))
-    
-    # select(MARKERS, FIS, FST)
+    fst.ranked <- suppressWarnings(
+      data.genotyped %>%
+        mutate(het = ifelse(stri_sub(GT, 1, 1) != stri_sub(GT, 3, 3), 1, 0)) %>%
+        group_by(MARKERS, POP_ID) %>%
+        summarise(mho = sum(het, na.rm = TRUE)) %>%  # = the number of heterozygote individuals per pop and markers
+        group_by(MARKERS) %>%
+        tidyr::spread(data = ., key = POP_ID, value = mho) %>%
+        tidyr::gather(key = POP_ID, value = mho, -MARKERS) %>%
+        mutate(mho = as.numeric(stri_replace_na(str = mho, replacement = 0))) %>%
+        full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS")) %>%
+        mutate(
+          mhom = round(((2 * nal * P - mho)/2), 0),
+          dum = nal * (P - 2 * P^2) + mhom
+        ) %>%
+        group_by(MARKERS, ALLELES) %>%
+        full_join(freq.al.locus.global, by = c("MARKERS", "ALLELES")) %>%
+        mutate(
+          SSi = sum(dum, na.rm = TRUE),
+          dum1 = nal * (P - pb)^2
+        ) %>%
+        group_by(MARKERS, ALLELES) %>%
+        mutate(SSP = 2 * sum(dum1, na.rm = TRUE)) %>%
+        group_by(MARKERS, POP_ID) %>%
+        mutate(SSG = nal * P - mhom) %>%
+        group_by(MARKERS, ALLELES) %>%
+        full_join(ncal, by = c("MARKERS", "ALLELES")) %>%
+        full_join(n.pop.locus, by = "MARKERS") %>%
+        rename(ntalb = npl) %>%
+        mutate(
+          sigw = round(sum(SSG, na.rm = TRUE), 2)/ntal,
+          MSP = SSP/(ntalb - 1),
+          MSI = SSi/(ntal - ntalb),
+          sigb = 0.5 * (MSI - sigw),
+          siga = 1/2/ncal * (MSP - MSI)
+        ) %>%
+        group_by(MARKERS) %>%
+        summarise(
+          lsiga = sum(siga, na.rm = TRUE),
+          lsigb = sum(sigb, na.rm = TRUE),
+          lsigw = sum(sigw, na.rm = TRUE),
+          FST = round(lsiga/(lsiga + lsigb + lsigw), 6),
+          FIS = round(lsigb/(lsigb + lsigw), 6)
+        ) %>%
+        arrange(desc(FST)) %>%
+        select(MARKERS, FST) %>%
+        mutate(RANKING = seq(from = 1, to = n()))
+    )
+      
+      # select(MARKERS, FIS, FST)
     return(fst.ranked)
   } # end Fst function
   
   # Assignment
   assignment_analysis <- function(data, missing.data, i){
-    data.select <- data %>%
-      semi_join(select.markers, by = "MARKERS") %>%
-      arrange(MARKERS) %>%  # make tidy
-      tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
-      arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES) %>%
-      dcast(INDIVIDUALS + POP_ID ~ MARKERS_ALLELES, value.var = "GT") %>%
-      arrange(POP_ID, INDIVIDUALS)
-    
+    data.select <- suppressWarnings(
+      data %>%
+        semi_join(select.markers, by = "MARKERS") %>%
+        arrange(MARKERS) %>%  # make tidy
+        tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
+        arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES) %>%
+        dcast(INDIVIDUALS + POP_ID ~ MARKERS_ALLELES, value.var = "GT") %>%
+        arrange(POP_ID, INDIVIDUALS)
+    )
     if (is.null(mixture)) {
       # message("No baseline or mixture data")
       input <- write_gsi(data = data.select, imputations = imputations, filename = gsi_sim.filename, i)
@@ -1123,9 +1136,9 @@ GBS_assignment <- function(vcf.file,
         mutate(
           CURRENT = factor(stri_sub(INDIVIDUALS, pop.id.start, pop.id.end), levels = pop.levels, labels = pop.labels, ordered = T),
           CURRENT = droplevels(CURRENT),
-          INFERRED = factor(INFERRED, levels = pop.labels, ordered = T),
+          INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = T),
           INFERRED = droplevels(INFERRED),
-          SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = pop.labels, ordered = T),
+          SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = T),
           SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
           SCORE = round(SCORE, 2),
           SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
@@ -1155,29 +1168,29 @@ GBS_assignment <- function(vcf.file,
     #       write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
     #     }
     
-    if(sampling.method == "ranked"){
-      if (THL == 1 | THL == "all"){
-        write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
-      } else{#THL != 1
-        assignment <- assignment %>%
-          group_by(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA) %>%
-          tally %>%
-          group_by(CURRENT, MARKER_NUMBER) %>%
-          mutate(TOTAL = sum(n)) %>%
-          ungroup() %>%
-          mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>%
-          select(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, ASSIGNMENT_PERC) %>%
-          group_by(CURRENT, MARKER_NUMBER, MISSING_DATA) %>%
-          tidyr::spread(data = ., key = INFERRED, value = ASSIGNMENT_PERC) %>%
-          tidyr::gather(INFERRED, ASSIGNMENT_PERC, -c(CURRENT, MARKER_NUMBER, MISSING_DATA)) %>%
-          mutate(ASSIGNMENT_PERC = as.numeric(stri_replace_na(ASSIGNMENT_PERC, replacement = 0))) %>%
-          filter(as.character(CURRENT) == as.character(INFERRED)) %>%
-          select(CURRENT, INFERRED, ASSIGNMENT_PERC, MARKER_NUMBER, MISSING_DATA) %>%
-          mutate(ITERATIONS = rep(unique(holdout$ITERATIONS), n()))
-        
-        write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
-      }
-    }
+#     if(sampling.method == "ranked"){
+#       if (THL == 1 | THL == "all"){
+#         write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
+#       } else{#THL != 1
+#         assignment <- assignment %>%
+#           group_by(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA) %>%
+#           tally %>%
+#           group_by(CURRENT, MARKER_NUMBER) %>%
+#           mutate(TOTAL = sum(n)) %>%
+#           ungroup() %>%
+#           mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>%
+#           select(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, ASSIGNMENT_PERC) %>%
+#           group_by(CURRENT, MARKER_NUMBER, MISSING_DATA) %>%
+#           tidyr::spread(data = ., key = INFERRED, value = ASSIGNMENT_PERC) %>%
+#           tidyr::gather(INFERRED, ASSIGNMENT_PERC, -c(CURRENT, MARKER_NUMBER, MISSING_DATA)) %>%
+#           mutate(ASSIGNMENT_PERC = as.numeric(stri_replace_na(ASSIGNMENT_PERC, replacement = 0))) %>%
+#           filter(as.character(CURRENT) == as.character(INFERRED)) %>%
+#           select(CURRENT, INFERRED, ASSIGNMENT_PERC, MARKER_NUMBER, MISSING_DATA) %>%
+#           mutate(ITERATIONS = rep(unique(holdout$ITERATIONS), n()))
+#         
+#         write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
+#       }
+#     } # end
     return(assignment)
   } # end assignment analysis function
   
@@ -1214,7 +1227,7 @@ GBS_assignment <- function(vcf.file,
     # test <- markers.random.selection.list[[101]]
     
     markers.random.lists.table <- as_data_frame(bind_rows(markers.random.lists))
-    write_tsv(x = markers.random.lists.table, path = paste0(directory, "markers.random.lists.tsv"), col_names = TRUE, append = FALSE)
+    write_tsv(x = markers.random.lists.table, path = paste0(directory, "markers.random.tsv"), col_names = TRUE, append = FALSE)
     
     # Start cluster registration backend
     # parallel.core <- 8 # test
@@ -1316,7 +1329,7 @@ GBS_assignment <- function(vcf.file,
         filter(as.character(CURRENT) == as.character(INFERRED)) %>%
         select(CURRENT, MEAN_i, MARKER_NUMBER, MISSING_DATA, ITERATIONS, METHOD) %>%
         mutate(
-          CURRENT = factor(CURRENT, levels = pop.labels, ordered = T),
+          CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = T),
           CURRENT = droplevels(CURRENT)
         ) %>%
         group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
@@ -1451,30 +1464,30 @@ GBS_assignment <- function(vcf.file,
       message("Holdout samples saved in your folder")
     } # end tracking holdout individuals
     
-    # Preparing file for saving to directory preliminary results
-    filename.ass.res <- "assignment.preliminiary.results.tsv"
-    if (THL == 1 | THL == "all"){
-      ass.res <- data_frame(INDIVIDUALS = character(0), 
-                            CURRENT = character(0), 
-                            INFERRED = character(0), 
-                            SCORE = integer(0), 
-                            MARKER_NUMBER = integer(0), 
-                            MISSING_DATA = character(0)
-      ) #create an empty dataframe
-    } else{#THL != 1... > 1 number or < 1 for proportions
-      ass.res <- data_frame(CURRENT = character(0),
-                            INFERRED = character(0),
-                            ASSIGNMENT_PERC = integer(0),
-                            MARKER_NUMBER = integer(0),
-                            ITERATIONS = integer(0),
-                            MISSING_DATA = character(0)
-      ) #create an empty dataframe
-    }
-    write_tsv(x = ass.res, 
-              path = paste0(directory,filename.ass.res), 
-              col_names = TRUE, 
-              append = FALSE
-    ) #create an empty file
+#     # Preparing file for saving to directory preliminary results
+#     filename.ass.res <- "assignment.preliminiary.results.tsv"
+#     if (THL == 1 | THL == "all"){
+#       ass.res <- data_frame(INDIVIDUALS = character(0), 
+#                             CURRENT = character(0), 
+#                             INFERRED = character(0), 
+#                             SCORE = integer(0), 
+#                             MARKER_NUMBER = integer(0), 
+#                             MISSING_DATA = character(0)
+#       ) #create an empty dataframe
+#     } else{#THL != 1... > 1 number or < 1 for proportions
+#       ass.res <- data_frame(CURRENT = character(0),
+#                             INFERRED = character(0),
+#                             ASSIGNMENT_PERC = integer(0),
+#                             MARKER_NUMBER = integer(0),
+#                             ITERATIONS = integer(0),
+#                             MISSING_DATA = character(0)
+#       ) #create an empty dataframe
+#     }
+#     write_tsv(x = ass.res, 
+#               path = paste0(directory,filename.ass.res), 
+#               col_names = TRUE, 
+#               append = FALSE
+#     ) #create an empty file
     
     
     # Going through the loop of holdout individuals
@@ -1634,7 +1647,7 @@ Progress can also be monitored with activity in the folder...")
         filter(as.character(CURRENT) == as.character(INFERRED)) %>% 
         select(CURRENT, MEAN_i, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
         mutate(
-          CURRENT = factor(CURRENT, levels = pop.labels, ordered = T),
+          CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = T),
           CURRENT = droplevels(CURRENT)
         ) %>% 
         group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>% 
