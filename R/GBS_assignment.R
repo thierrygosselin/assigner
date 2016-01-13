@@ -1403,16 +1403,9 @@ GBS_assignment <- function(vcf.file,
     if (THL == 1){
       # Will go through the individuals in the list one by one.
       iterations.list <- ind.pop.df$INDIVIDUALS
-      
       # Keep track of holdout individuals
       holdout.individuals <- ind.pop.df %>%
         mutate(ITERATIONS = stri_c("HOLDOUT", seq(1:n()), sep = "_"))
-      write_tsv(x = holdout.individuals, 
-                path = paste0(directory,"holdout.individuals.tsv"), 
-                col_names = TRUE, 
-                append = FALSE
-      )
-      message("Holdout samples saved in your folder")
     } else if (THL == "all") { # no holdout for that one
       iterations.list <- iterations
       holdout.individuals <- NULL
@@ -1434,11 +1427,6 @@ GBS_assignment <- function(vcf.file,
           iterations.list[[x]] <- holdout.individuals
         }
         holdout.individuals <- as.data.frame(bind_rows(iterations.list))
-        write_tsv(x = holdout.individuals,
-                  path = paste0(directory,"holdout.individuals.tsv"),
-                  col_names = TRUE,
-                  append = FALSE
-        )
       }
       
       # Create x (iterations) list of y (THL) individuals per pop.
@@ -1455,15 +1443,16 @@ GBS_assignment <- function(vcf.file,
           iterations.list[[x]] <- holdout.individuals
         }
         holdout.individuals <- as.data.frame(bind_rows(iterations.list))
-        write_tsv(x = holdout.individuals,
-                  path = paste0(directory,"holdout.individuals.tsv"),
-                  col_names = TRUE,
-                  append = FALSE
-        )
       }
       message("Holdout samples saved in your folder")
     } # end tracking holdout individuals
-    
+    write_tsv(x = holdout.individuals, 
+              path = paste0(directory,"holdout.individuals.tsv"), 
+              col_names = TRUE, 
+              append = FALSE
+    )
+    message("Holdout samples saved in your folder")
+
 #     # Preparing file for saving to directory preliminary results
 #     filename.ass.res <- "assignment.preliminiary.results.tsv"
 #     if (THL == 1 | THL == "all"){
@@ -1521,6 +1510,7 @@ Progress can also be monitored with activity in the folder...")
                                             "purrr")
     ) %dopar% {
       Sys.sleep(0.01)  # For progress bar
+      # i <- "TRI_48" #test
       
       # Ranking Fst with training dataset (keep holdout individuals out)
       if (THL == "all"){
@@ -1529,37 +1519,38 @@ Progress can also be monitored with activity in the folder...")
         if (imputations != FALSE){
           fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.individuals = NULL)
         }
-      } else{
+      } else if (THL == 1) {
+        holdout <- data.frame(INDIVIDUALS = i)
+        fst.ranked <- fst_WC84(data = vcf, holdout.individuals = holdout$INDIVIDUALS)
+        # fst.ranked <- fst_WC84(data = vcf, holdout.individuals = i)
+        if (imputations != FALSE){
+          fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.individuals = holdout$INDIVIDUALS)
+        }
+      } else {
         holdout <- data.frame(i)
         fst.ranked <- fst_WC84(data = vcf, holdout.individuals = holdout$INDIVIDUALS)
         if (imputations != FALSE){
           fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.individuals = holdout$INDIVIDUALS)
         }
+        
       }
       # holdout <- data.frame(iterations.list[2]) # for testing
       
       # Saving Fst
-      if (THL == 1){
-        colnames(holdout) <- "INDIVIDUALS"
-        i <-i
-        # i <- "BON_19" #test
-      } else if(THL == "all"){
-        i <-i
-      } else { # for THL != 1 (numbers and proportions)
+      if (THL != 1 & THL != "all") { # for THL != 1 (numbers and proportions)
         i <- unique(holdout$ITERATIONS)
       }
-      
       fst.ranked.filename <- stri_paste("fst.ranked_", i, ".tsv", sep = "") # No imputation
       write_tsv(x = fst.ranked, path = paste0(directory, fst.ranked.filename), 
                 col_names = TRUE, 
                 append = FALSE
       )
-      if (imputations != FALSE){
+      if (imputations != FALSE){  # With imputations
         fst.ranked.filename.imp <- stri_paste("fst.ranked_", i,
                                               "_imputed",
                                               ".tsv", 
                                               sep = ""
-        ) # With imputations
+        ) 
         write_tsv(x = fst.ranked.imp, 
                   path = paste0(directory, fst.ranked.filename.imp), 
                   col_names = TRUE, 

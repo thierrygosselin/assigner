@@ -6,7 +6,6 @@ restriction-site-associated DNA sequencing (RADseq)) produce huge numbers of mar
 
 **assigner** was tailored to make it easy to conduct assignment analysis using GBS/RAD data within R. Additionally, combining the use of tools like [RStudio] (https://www.rstudio.com) and [GitHub] (https://github.com) will make effortless documenting your workflows and pipelines.
 
-
 This is the development page of the **assigner** package for the R software.
 
 **Use assigner to:**
@@ -19,9 +18,9 @@ whitelist** and other arguments
 * **Map-independent imputation** of missing genotype using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
 * Genotypes of poor quality (e.g. in coverage, genotype likelihood or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument.
 * Markers can be randomly selected for a **classic LOO (Leave-One-Out) assignment** or 
-chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis**
+chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis** (reviewed in Anderson 2010)
 * use `iterations` argument to resample markers or individuals to get statistics!
-* The impact of the minor allele frequency (local and global) can also be easily explored with custom thresholds
+* The impact of the minor allele frequency, MAF, (local and global) can also be easily explored with custom thresholds
 * Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
 * `ggplot2`-based plotting to view assignment results and create publication-ready figures
@@ -42,7 +41,7 @@ install_github("thierrygosselin/assigner") # to install
 library(assigner) # to load
 ```
 
-**Note:**
+**Problems during installation:**
 
 Sometimes you'll get warnings while installing dependencies required for **assigner** or other R packages.
 ```r
