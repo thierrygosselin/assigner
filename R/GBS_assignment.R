@@ -1514,7 +1514,8 @@ Progress can also be monitored with activity in the folder...")
     opts <- list(progress = progress)
     
     # Start cluster registration backend
-    cl <- parallel::makeCluster(parallel.core, outfile = "")
+    # cl <- parallel::makeCluster(parallel.core, outfile = "") # test
+    cl <- parallel::makeCluster(parallel.core)
     doSNOW::registerDoSNOW(cl)
     
     # foreach
