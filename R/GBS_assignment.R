@@ -380,13 +380,13 @@ GBS_assignment <- function(vcf.file,
   # Tidying the VCF to make it easy to work on the data for conversion *********
   message("Making the VCF population wise")
   vcf <- vcf %>%
-      tidyr::gather(INDIVIDUALS, FORMAT_ID, -c(CHROM, LOCUS, POS, REF, ALT)) %>% # Gather individuals in 1 colummn
-      mutate( # Make population ready
-        POP_ID = substr(INDIVIDUALS, pop.id.start, pop.id.end),
-        POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = unique(pop.labels), ordered =T),
-        INDIVIDUALS =  as.character(INDIVIDUALS)
-      )
-
+    tidyr::gather(INDIVIDUALS, FORMAT_ID, -c(CHROM, LOCUS, POS, REF, ALT)) %>% # Gather individuals in 1 colummn
+    mutate( # Make population ready
+      POP_ID = substr(INDIVIDUALS, pop.id.start, pop.id.end),
+      POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = unique(pop.labels), ordered =T),
+      INDIVIDUALS =  as.character(INDIVIDUALS)
+    )
+  
   # Blacklist id ***************************************************************
   if (is.null(blacklist.id)) { # No blacklist of ID
     message("No individual blacklisted")
@@ -509,7 +509,7 @@ GBS_assignment <- function(vcf.file,
   subsample.select <- NULL
   
   
-  # LD control... keep only 1 SNP per haplotypes/reads (optional ***************
+  # LD control... keep only 1 SNP per haplotypes/reads (optional) ***************
   if (is.null(snp.LD)){
     vcf <- vcf
     snp.LD <- NULL
@@ -554,7 +554,7 @@ GBS_assignment <- function(vcf.file,
     arrange(CHROM, LOCUS, POS) %>%
     tidyr::unite(MARKERS, c(CHROM, LOCUS, POS), sep = "_")
   
-  # Markers in common between all populations (optional ************************
+  # Markers in common between all populations (optional) ***********************
   if (common.markers == FALSE) {
     vcf <- vcf
   } else { # keep only markers present in all pop
@@ -690,7 +690,7 @@ GBS_assignment <- function(vcf.file,
   
   
   # Change the genotype coding  ************************************************
-  # easier for integration in downstream conversion to gsi_sim
+  # easier for the integration in downstream conversion to gsi_sim
   message("Recoding genotypes for gsi_sim")
   vcf <- vcf %>%
     mutate(
@@ -707,7 +707,7 @@ GBS_assignment <- function(vcf.file,
     arrange(MARKERS, POP_ID) %>%
     select(-c(REF, ALT))
   
-  # more prep for the no imputation part
+  # more prep for the no imputation section
   gsim.prep <- vcf %>%
     tidyr::separate(col = GT, into = c("A1", "A2"), sep = "_") %>%  # separate the genotypes into alleles
     tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID))
@@ -831,8 +831,7 @@ GBS_assignment <- function(vcf.file,
       }
     }
     
-    # transform the imputed dataset into gsi_sim  ******************************
-    
+    # transform the imputed dataset into gsi_sim
     message("Imputed VCF into factory for conversion into gsi_sim...")
     gsi.prep.imp <- suppressWarnings(
       vcf.imp %>%
@@ -849,6 +848,7 @@ GBS_assignment <- function(vcf.file,
     select(MARKERS) %>% 
     distinct(MARKERS) %>% 
     arrange(MARKERS)
+  
   marker.number <- stri_replace_all_fixed(str = marker.number, pattern = "all", 
                                           replacement = nrow(unique.markers), 
                                           vectorize_all = TRUE)
@@ -904,16 +904,21 @@ GBS_assignment <- function(vcf.file,
   } # end function write gsi
   
   # Fst function: Weir & Cockerham 1984
-  fst_WC84 <- function(data, holdout.individuals){
+  fst_WC84 <- function(data, holdout.samples){
+    
+    # test
+    # data <- vcf
+    # holdout.samples <- holdout$INDIVIDUALS
+    
     pop.number <- n_distinct(data$POP_ID)
     
-    if (is.null(holdout.individuals)){ # use all the individuals
+    if (is.null(holdout.samples)){ # use all the individuals
       data.genotyped <- data %>%
         filter(GT != "0_0")
     } else{ # with holdout set
       data.genotyped <- data %>%
         filter(GT != "0_0") %>% # remove missing genotypes
-        filter(!INDIVIDUALS %in% holdout.individuals) # remove supplementary individual before ranking markers with Fst
+        filter(!INDIVIDUALS %in% holdout.samples) # remove supplementary individual before ranking markers with Fst
     }
     
     n.pop.locus <- data.genotyped %>%
@@ -1041,13 +1046,18 @@ GBS_assignment <- function(vcf.file,
         select(MARKERS, FST) %>%
         mutate(RANKING = seq(from = 1, to = n()))
     )
-      
-      # select(MARKERS, FIS, FST)
+    
+    # select(MARKERS, FIS, FST)
     return(fst.ranked)
   } # end Fst function
   
   # Assignment
   assignment_analysis <- function(data, missing.data, i){
+    
+    #test
+    # data <- gsim.prep
+    # missing.data <- "no.imputation"
+    
     data.select <- suppressWarnings(
       data %>%
         semi_join(select.markers, by = "MARKERS") %>%
@@ -1104,7 +1114,7 @@ GBS_assignment <- function(vcf.file,
       output.gsi <- stri_replace_all_fixed(input.gsi, pattern = "txt", replacement = "output.txt")
       system(paste("gsisim -b", input.gsi, "--self-assign > ", output.gsi))
     } else{
-      message("need to finish the function for this option :)")
+      message("this option is under construction :)")
     }
     # Option remove the input file from directory to save space
     if (keep.gsi.files == FALSE){
@@ -1163,34 +1173,34 @@ GBS_assignment <- function(vcf.file,
     }
     
     # saving preliminary results
-    #     if(sampling.method == "random"){
-    #       assignment <- mutate(.data = assignment, ITERATIONS = rep(i, n()))
-    #       write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
-    #     }
+    if(sampling.method == "random"){
+      assignment <- mutate(.data = assignment, ITERATIONS = rep(i, n()))
+      #       write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
+    }
     
-#     if(sampling.method == "ranked"){
-#       if (THL == 1 | THL == "all"){
-#         write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
-#       } else{#THL != 1
-#         assignment <- assignment %>%
-#           group_by(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA) %>%
-#           tally %>%
-#           group_by(CURRENT, MARKER_NUMBER) %>%
-#           mutate(TOTAL = sum(n)) %>%
-#           ungroup() %>%
-#           mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>%
-#           select(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, ASSIGNMENT_PERC) %>%
-#           group_by(CURRENT, MARKER_NUMBER, MISSING_DATA) %>%
-#           tidyr::spread(data = ., key = INFERRED, value = ASSIGNMENT_PERC) %>%
-#           tidyr::gather(INFERRED, ASSIGNMENT_PERC, -c(CURRENT, MARKER_NUMBER, MISSING_DATA)) %>%
-#           mutate(ASSIGNMENT_PERC = as.numeric(stri_replace_na(ASSIGNMENT_PERC, replacement = 0))) %>%
-#           filter(as.character(CURRENT) == as.character(INFERRED)) %>%
-#           select(CURRENT, INFERRED, ASSIGNMENT_PERC, MARKER_NUMBER, MISSING_DATA) %>%
-#           mutate(ITERATIONS = rep(unique(holdout$ITERATIONS), n()))
-#         
-#         write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
-#       }
-#     } # end
+    if(sampling.method == "ranked"){
+      # if (THL == 1 | THL == "all"){
+      #         write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
+      #       }
+      if (THL != 1 & THL != "all"){
+        assignment <- assignment %>%
+          group_by(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA) %>%
+          tally %>%
+          group_by(CURRENT, MARKER_NUMBER) %>%
+          mutate(TOTAL = sum(n)) %>%
+          ungroup() %>%
+          mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>%
+          select(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, ASSIGNMENT_PERC) %>%
+          group_by(CURRENT, MARKER_NUMBER, MISSING_DATA) %>%
+          tidyr::spread(data = ., key = INFERRED, value = ASSIGNMENT_PERC) %>%
+          tidyr::gather(INFERRED, ASSIGNMENT_PERC, -c(CURRENT, MARKER_NUMBER, MISSING_DATA)) %>%
+          mutate(ASSIGNMENT_PERC = as.numeric(stri_replace_na(ASSIGNMENT_PERC, replacement = 0))) %>%
+          filter(as.character(CURRENT) == as.character(INFERRED)) %>%
+          select(CURRENT, INFERRED, ASSIGNMENT_PERC, MARKER_NUMBER, MISSING_DATA) %>%
+          mutate(ITERATIONS = rep(i, n()))
+        # write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
+      }
+    }
     return(assignment)
   } # end assignment analysis function
   
@@ -1393,13 +1403,15 @@ GBS_assignment <- function(vcf.file,
   
   # Ranked method **************************************************************
   if (sampling.method == "ranked"){
-    message("Using THL method, ranking Fst with training samples...")
+    message("Conducting Assignment analysis with ranked markers")
+    
     # List of all individuals
     ind.pop.df<- vcf %>% 
       select(POP_ID, INDIVIDUALS) %>% 
       distinct(POP_ID, INDIVIDUALS)
     
     # THL selection
+    message("Using THL method, ranking Fst with training samples...")
     if (THL == 1){
       # Will go through the individuals in the list one by one.
       iterations.list <- ind.pop.df$INDIVIDUALS
@@ -1410,6 +1422,8 @@ GBS_assignment <- function(vcf.file,
       iterations.list <- iterations
       holdout.individuals <- NULL
       message("Warning: using all the individuals for ranking markers based on Fst\nNo holdout samples")
+      message("Recommended reading: \nAnderson, E. C. (2010) Assessing the power of informative subsets of
+loci for population assignment: standard methods are upwardly biased.\nMolecular ecology resources 10, 4:701-710.")
     } else {
       # Create x (iterations) list of y (THL) proportion of individuals per pop.
       if (stri_detect_fixed(THL, ".") & THL < 1) {
@@ -1452,31 +1466,32 @@ GBS_assignment <- function(vcf.file,
               append = FALSE
     )
     message("Holdout samples saved in your folder")
-
-#     # Preparing file for saving to directory preliminary results
-#     filename.ass.res <- "assignment.preliminiary.results.tsv"
-#     if (THL == 1 | THL == "all"){
-#       ass.res <- data_frame(INDIVIDUALS = character(0), 
-#                             CURRENT = character(0), 
-#                             INFERRED = character(0), 
-#                             SCORE = integer(0), 
-#                             MARKER_NUMBER = integer(0), 
-#                             MISSING_DATA = character(0)
-#       ) #create an empty dataframe
-#     } else{#THL != 1... > 1 number or < 1 for proportions
-#       ass.res <- data_frame(CURRENT = character(0),
-#                             INFERRED = character(0),
-#                             ASSIGNMENT_PERC = integer(0),
-#                             MARKER_NUMBER = integer(0),
-#                             ITERATIONS = integer(0),
-#                             MISSING_DATA = character(0)
-#       ) #create an empty dataframe
-#     }
-#     write_tsv(x = ass.res, 
-#               path = paste0(directory,filename.ass.res), 
-#               col_names = TRUE, 
-#               append = FALSE
-#     ) #create an empty file
+    
+    # test
+    #     # Preparing file for saving to directory preliminary results
+    #     filename.ass.res <- "assignment.preliminiary.results.tsv"
+    #     if (THL == 1 | THL == "all"){
+    #       ass.res <- data_frame(INDIVIDUALS = character(0), 
+    #                             CURRENT = character(0), 
+    #                             INFERRED = character(0), 
+    #                             SCORE = integer(0), 
+    #                             MARKER_NUMBER = integer(0), 
+    #                             MISSING_DATA = character(0)
+    #       ) #create an empty dataframe
+    #     } else{#THL != 1... > 1 number or < 1 for proportions
+    #       ass.res <- data_frame(CURRENT = character(0),
+    #                             INFERRED = character(0),
+    #                             ASSIGNMENT_PERC = integer(0),
+    #                             MARKER_NUMBER = integer(0),
+    #                             ITERATIONS = integer(0),
+    #                             MISSING_DATA = character(0)
+    #       ) #create an empty dataframe
+    #     }
+    #     write_tsv(x = ass.res, 
+    #               path = paste0(directory,filename.ass.res), 
+    #               col_names = TRUE, 
+    #               append = FALSE
+    #     ) #create an empty file
     
     
     # Going through the loop of holdout individuals
@@ -1509,32 +1524,33 @@ Progress can also be monitored with activity in the folder...")
                               .packages = c("dplyr", "reshape2", "tidyr", "stringi", "readr", 
                                             "purrr")
     ) %dopar% {
+      assignment.marker.loop <- list()
       Sys.sleep(0.01)  # For progress bar
       # i <- "TRI_48" #test
+      # i <- "CAR_01" #test
+      # i <- 1
+      # i <- 5
       
       # Ranking Fst with training dataset (keep holdout individuals out)
       if (THL == "all"){
         holdout <- NULL
-        fst.ranked <- fst_WC84(data = vcf, holdout.individuals = NULL)
+        fst.ranked <- fst_WC84(data = vcf, holdout.samples = NULL)
         if (imputations != FALSE){
-          fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.individuals = NULL)
+          fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.samples = NULL)
         }
       } else if (THL == 1) {
         holdout <- data.frame(INDIVIDUALS = i)
-        fst.ranked <- fst_WC84(data = vcf, holdout.individuals = holdout$INDIVIDUALS)
-        # fst.ranked <- fst_WC84(data = vcf, holdout.individuals = i)
+        fst.ranked <- fst_WC84(data = vcf, holdout.samples = holdout$INDIVIDUALS)
         if (imputations != FALSE){
-          fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.individuals = holdout$INDIVIDUALS)
+          fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.samples = holdout$INDIVIDUALS)
         }
       } else {
-        holdout <- data.frame(i)
-        fst.ranked <- fst_WC84(data = vcf, holdout.individuals = holdout$INDIVIDUALS)
+        holdout <- data.frame(iterations.list[i])
+        fst.ranked <- fst_WC84(data = vcf, holdout.samples = holdout$INDIVIDUALS)
         if (imputations != FALSE){
-          fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.individuals = holdout$INDIVIDUALS)
+          fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.samples = holdout$INDIVIDUALS)
         }
-        
       }
-      # holdout <- data.frame(iterations.list[2]) # for testing
       
       # Saving Fst
       if (THL != 1 & THL != "all") { # for THL != 1 (numbers and proportions)
@@ -1563,6 +1579,7 @@ Progress can also be monitored with activity in the folder...")
       for (m in marker.number) {
         # message("Marker number: ", m)
         # m <- 200 # test
+        # m <- 400 # test
         m <- as.numeric(m)
         
         # No imputation
@@ -1572,6 +1589,8 @@ Progress can also be monitored with activity in the folder...")
         
         # get the list of markers after filter
         markers.names <- unique(select.markers$MARKERS)
+        
+        # Assignment analysis without imputations
         assignment.no.imp <- assignment_analysis(data = gsim.prep, 
                                                  missing.data = "no.imputation", 
                                                  i = i
@@ -1599,6 +1618,8 @@ Progress can also be monitored with activity in the folder...")
               missing.data <- "imputed max global"
             }
           }
+          
+          # Assignment analysis WITH imputations
           assignment.imp <- assignment_analysis(data = gsi.prep.imp, 
                                                 missing.data = missing.data, 
                                                 i = i
@@ -1612,8 +1633,9 @@ Progress can also be monitored with activity in the folder...")
           assignment <- bind_rows(assignment.no.imp, assignment.imp)
         }
         m <- as.character(m)
-        assignment.res[[m]] <- assignment
+        assignment.marker.loop[[m]] <- assignment
       }  # End marker number loop for both with and without imputations
+      assignment.res[[i]] <- assignment.marker.loop
       return(assignment.res)
     }  # End holdout individuals loop
     stopCluster(cl)  # close parallel connection settings
@@ -1743,3 +1765,4 @@ Progress can also be monitored with activity in the folder...")
   
   return(assignment.summary.stats)
 } # end function
+
