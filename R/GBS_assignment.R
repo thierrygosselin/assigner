@@ -713,7 +713,9 @@ GBS_assignment <- function(vcf.file,
     tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID))
   
   # save.image("assignment.lobster.RData")  # test
+  # save.image("assignment.lobster.subsample.RData")  # test
   # load("assignment.lobster.RData")  # test
+  # load("assignment.lobster.subsample.RData")  # test
   
   # Imputations ****************************************************************
   if (imputations != "FALSE"){
@@ -1429,7 +1431,8 @@ loci for population assignment: standard methods are upwardly biased.\nMolecular
       if (stri_detect_fixed(THL, ".") & THL < 1) {
         # iterations <- 30 # test
         # THL <- 0.15 # test
-        iterations.list <- list()
+        holdout.individuals.list <- list()
+        iterations.list <- 1:iterations
         for (x in 1:iterations){
           holdout.individuals <- ind.pop.df %>%
             group_by(POP_ID) %>%
@@ -1438,14 +1441,15 @@ loci for population assignment: standard methods are upwardly biased.\nMolecular
             ungroup() %>%
             select(INDIVIDUALS) %>%
             mutate(ITERATIONS = rep(x, n()))
-          iterations.list[[x]] <- holdout.individuals
+          holdout.individuals.list[[x]] <- holdout.individuals
         }
-        holdout.individuals <- as.data.frame(bind_rows(iterations.list))
+        holdout.individuals <- as.data.frame(bind_rows(holdout.individuals.list))
       }
       
       # Create x (iterations) list of y (THL) individuals per pop.
       if (THL > 1) {
-        iterations.list <- list()
+        holdout.individuals.list <- list()
+        iterations.list <- 1:iterations
         for (x in 1:iterations){
           holdout.individuals <- ind.pop.df %>%
             group_by(POP_ID) %>%
@@ -1454,9 +1458,9 @@ loci for population assignment: standard methods are upwardly biased.\nMolecular
             ungroup() %>%
             select(INDIVIDUALS) %>%
             mutate(ITERATIONS = rep(x, n()))
-          iterations.list[[x]] <- holdout.individuals
+          holdout.individuals.list[[x]] <- holdout.individuals
         }
-        holdout.individuals <- as.data.frame(bind_rows(iterations.list))
+        holdout.individuals <- as.data.frame(bind_rows(holdout.individuals.list))
       }
       message("Holdout samples saved in your folder")
     } # end tracking holdout individuals
@@ -1521,11 +1525,11 @@ Progress can also be monitored with activity in the folder...")
     # foreach
     i <- NULL
     assignment.res <- list()
-    assignment.res <- foreach(i=iterations.list, .options.snow=opts, 
-                              .packages = c("dplyr", "reshape2", "tidyr", "stringi", "readr", 
-                                            "purrr")
+    assignment.res <- foreach(
+      i=iterations.list, .options.snow=opts, 
+      .packages = c("dplyr", "reshape2", "tidyr", "stringi", "readr", "purrr")
     ) %dopar% {
-      assignment.marker.loop <- list()
+      # assignment.marker.loop <- list()
       Sys.sleep(0.01)  # For progress bar
       # i <- "TRI_48" #test
       # i <- "CAR_01" #test
@@ -1546,7 +1550,7 @@ Progress can also be monitored with activity in the folder...")
           fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.samples = holdout$INDIVIDUALS)
         }
       } else {
-        holdout <- data.frame(iterations.list[i])
+        holdout <- data.frame(holdout.individuals.list[i])
         fst.ranked <- fst_WC84(data = vcf, holdout.samples = holdout$INDIVIDUALS)
         if (imputations != FALSE){
           fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.samples = holdout$INDIVIDUALS)
@@ -1634,21 +1638,26 @@ Progress can also be monitored with activity in the folder...")
           assignment <- bind_rows(assignment.no.imp, assignment.imp)
         }
         m <- as.character(m)
-        assignment.marker.loop[[m]] <- assignment
+        # assignment.marker.loop[[m]] <- assignment
+        assignment.res[[m]] <- assignment
       }  # End marker number loop for both with and without imputations
-      assignment.res[[i]] <- assignment.marker.loop
+      #       assignment.res[[i]] <- assignment.marker.loop
       return(assignment.res)
     }  # End holdout individuals loop
     stopCluster(cl)  # close parallel connection settings
     
     # Compiling the results
     message("Compiling results")
-    
-    # summary
     assignment.res.summary <- suppressWarnings(
       as_data_frame(bind_rows(purrr::flatten(assignment.res))) %>%
         mutate(METHOD = rep("THL", n()))
     )
+    
+    #     test delete after
+    #     if (THL == 1){
+    #       assignment.res.summary <- as_data_frame(bind_rows(purrr::flatten(purrr::flatten(assignment.res)))) %>% 
+    #         mutate(METHOD = rep("THL", n()))
+    #     } 
     
     if (THL == 1 | THL == "all"){
       assignment.stats.pop <- assignment.res.summary %>%
