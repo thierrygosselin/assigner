@@ -166,7 +166,6 @@
 
 #' @export
 #' @rdname GBS_assignment
-#' @import reshape2
 #' @import dplyr
 #' @import foreach
 #' @import parallel
@@ -331,6 +330,7 @@ GBS_assignment <- function(vcf.file,
       dir.create(file.path(directory))
     }
     message(stri_c("Folder: ", directory))
+    file.data <- NULL #unused object
   } else {
     directory <- stri_c(getwd(), "/", folder, "/", sep = "")
     dir.create(file.path(directory))
@@ -576,6 +576,7 @@ GBS_assignment <- function(vcf.file,
                    n_distinct(vcf$MARKERS) - n_distinct(pop.filter$MARKERS))
     )
     vcf <- suppressWarnings(vcf %>% semi_join(pop.filter, by = "MARKERS"))
+    pop.filter <- NULL # ununsed object
   } # end common markers
   
   # Minor Allele Frequency filter **********************************************
@@ -725,7 +726,9 @@ GBS_assignment <- function(vcf.file,
         GT = stri_replace_all_fixed(GT, pattern = "0_0", replacement = "NA", vectorize_all = FALSE),
         GT = replace(GT, which(GT == "NA"), NA)
       ) %>%
-      dcast(INDIVIDUALS + POP_ID ~ MARKERS, value.var = "GT") %>%
+      group_by(INDIVIDUALS, POP_ID) %>% 
+      tidyr::spread(data = ., key = MARKERS, value = GT) %>%
+      ungroup() %>% 
       arrange(POP_ID, INDIVIDUALS)
     
     if (imputations == "rf") {
@@ -756,7 +759,7 @@ GBS_assignment <- function(vcf.file,
         imputed.dataset <-list() # create empty list
         # for (i in pop.list) {
         imputed.dataset <- foreach(i=pop.list, 
-                                   .packages = c("plyr", "dplyr", "reshape2", "tidyr", 
+                                   .packages = c("plyr", "dplyr", "tidyr", 
                                                  "stringi", "readr", 
                                                  "randomForestSRC")
         ) %dopar% {
@@ -812,7 +815,9 @@ GBS_assignment <- function(vcf.file,
             # will take the global observed values by markers for those cases.
             group_by(MARKERS) %>%
             mutate(GT = stri_replace_na(GT, replacement = max(GT, na.rm = TRUE))) %>%
-            dcast(INDIVIDUALS + POP_ID ~ MARKERS, value.var = "GT")
+            group_by(INDIVIDUALS, POP_ID) %>% 
+            tidyr::spread(data = ., key = MARKERS, value = GT) %>%
+            ungroup()
         )
         
         vcf.prep <- NULL # remove unused object
@@ -826,7 +831,9 @@ GBS_assignment <- function(vcf.file,
             tidyr::gather(MARKERS, GT, -c(INDIVIDUALS, POP_ID)) %>%
             group_by(MARKERS) %>%
             mutate(GT = stri_replace_na(GT, replacement = max(GT, na.rm = TRUE))) %>%
-            dcast(INDIVIDUALS + POP_ID ~ MARKERS, value.var = "GT")
+            group_by(INDIVIDUALS, POP_ID) %>% 
+            tidyr::spread(data = ., key = MARKERS, value = GT) %>%
+            ungroup()
         )
         
         vcf.prep <- NULL # remove unused object
@@ -1059,16 +1066,18 @@ GBS_assignment <- function(vcf.file,
     #test
     # data <- gsim.prep
     # missing.data <- "no.imputation"
-    
     data.select <- suppressWarnings(
       data %>%
         semi_join(select.markers, by = "MARKERS") %>%
         arrange(MARKERS) %>%  # make tidy
         tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
         arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES) %>%
-        dcast(INDIVIDUALS + POP_ID ~ MARKERS_ALLELES, value.var = "GT") %>%
+        group_by(INDIVIDUALS, POP_ID) %>% 
+        tidyr::spread(data = ., key = MARKERS_ALLELES, value = GT) %>%
+        ungroup() %>% 
         arrange(POP_ID, INDIVIDUALS)
     )
+    
     if (is.null(mixture)) {
       # message("No baseline or mixture data")
       input <- write_gsi(data = data.select, imputations = imputations, filename = gsi_sim.filename, i)
@@ -1268,7 +1277,7 @@ GBS_assignment <- function(vcf.file,
     # foreach
     assignment.res <- foreach(mrl=markers.random.lists, 
                               .options.snow=opts, 
-                              .packages = c("dplyr", "reshape2", "tidyr", "stringi",
+                              .packages = c("dplyr", "tidyr", "stringi",
                                             "readr", "purrr")
     ) %dopar% {
       # mrl <- markers.random.lists[1] # test
@@ -1519,7 +1528,8 @@ Progress can also be monitored with activity in the folder...")
     
     # Start cluster registration backend
     # cl <- parallel::makeCluster(parallel.core, outfile = "") # test
-    cl <- parallel::makeCluster(parallel.core)
+    # cl <- parallel::makeCluster(parallel.core)
+    cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = paste0(directory, "parallel.computations.log")) # test
     doSNOW::registerDoSNOW(cl)
     
     # foreach
@@ -1527,7 +1537,8 @@ Progress can also be monitored with activity in the folder...")
     assignment.res <- list()
     assignment.res <- foreach(
       i=iterations.list, .options.snow=opts, 
-      .packages = c("dplyr", "reshape2", "tidyr", "stringi", "readr", "purrr")
+      .packages = c("dplyr", "tidyr", "stringi", "readr"),
+      .verbose = FALSE
     ) %dopar% {
       # assignment.marker.loop <- list()
       Sys.sleep(0.01)  # For progress bar
