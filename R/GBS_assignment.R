@@ -1653,6 +1653,17 @@ Progress can also be monitored with activity in the folder...")
         assignment.res[[m]] <- assignment
       }  # End marker number loop for both with and without imputations
       #       assignment.res[[i]] <- assignment.marker.loop
+      if (THL == 1) {
+        assignment.res.summary <- suppressWarnings(
+          as_data_frame(bind_rows(assignment.res)) %>%
+            mutate(METHOD = rep("THL", n()))
+        )
+      res.filename <- stri_paste("assignment_ind_", i, ".tsv", sep = "") # No imputation
+      write_tsv(x = assignment.res.summary, path = paste0(directory, res.filename), 
+                col_names = TRUE, 
+                append = FALSE
+      )
+      }
       return(assignment.res)
     }  # End holdout individuals loop
     stopCluster(cl)  # close parallel connection settings
