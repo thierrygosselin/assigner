@@ -1072,9 +1072,9 @@ GBS_assignment <- function(vcf.file,
         arrange(MARKERS) %>%  # make tidy
         tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
         arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES) %>%
-        group_by(INDIVIDUALS, POP_ID) %>% 
+        # group_by(INDIVIDUALS, POP_ID) %>% 
         tidyr::spread(data = ., key = MARKERS_ALLELES, value = GT) %>%
-        ungroup() %>% 
+        # ungroup() %>% 
         arrange(POP_ID, INDIVIDUALS)
     )
     
