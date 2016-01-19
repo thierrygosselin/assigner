@@ -23,7 +23,6 @@ Imports:
     foreach,
     parallel,
     doParallel,
-    doSNOW,
     purrr
 Suggests:
     plyr,

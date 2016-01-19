@@ -170,7 +170,6 @@
 #' @import foreach
 #' @import parallel
 #' @import doParallel
-#' @import doSNOW
 #' @import stringi
 #' @importFrom purrr map
 #' @importFrom purrr flatten
@@ -238,7 +237,7 @@ if (getRversion() >= "2.15.1"){
       'MARKERS', 'CURRENT', 'INFERRED', 'MARKER_NUMBER', 'MISSING_DATA',
       'ITERATIONS', 'METHOD', 'TOTAL', 'MEAN_i', 'MEAN', 'ASSIGNMENT_PERC',
       'SE', 'MEDIAN', 'MIN', 'MAX', 'QUANTILE25', 'QUANTILE75', 'SE_MIN',
-      'SE_MAX', '.', 'QUAL', 'FILTER', 'INFO'
+      'SE_MAX', '.', 'QUAL', 'FILTER', 'INFO', 'pb'
     )
   )
 }
@@ -738,8 +737,10 @@ GBS_assignment <- function(vcf.file,
       options(rf.cores = parallel.core, mc.cores = parallel.core)
       
       # Start cluster registration backend
-      cl <- parallel::makeCluster(parallel.core, outfile = "")
-      doSNOW::registerDoSNOW(cl)
+      cl <- parallel::makeCluster(parallel.core, methods = FALSE,outfile = "")
+      
+      # doSNOW::registerDoSNOW(cl)
+      doParallel::registerDoParallel(cl)
       
       # imputations using Random Forest with the package randomForestSRC
       impute_markers_rf <- function(x){
@@ -1253,8 +1254,9 @@ GBS_assignment <- function(vcf.file,
     
     # Start cluster registration backend
     # parallel.core <- 8 # test
-    cl <- parallel::makeCluster(parallel.core, outfile = "")
-    doSNOW::registerDoSNOW(cl)
+    cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = "")
+    # doSNOW::registerDoSNOW(cl)
+    doParallel::registerDoParallel(cl)
     
     # Set seed for random sampling
     random.seed <- sample(x = 1:1000000, size = 1)
@@ -1270,16 +1272,22 @@ GBS_assignment <- function(vcf.file,
             Progress can also be monitored with activity in the folder...")
     
     # Progress Bar during parallel computations
-    progress.max <- length(markers.random.lists)
-    pb <- txtProgressBar(max = progress.max, title = "Assignment in progress", style = 3, width = 85)
-    progress <- function(n) setTxtProgressBar(pb, n)
-    opts <- list(progress = progress)
+    #     progress.max <- length(markers.random.lists)
+    #     pb <- txtProgressBar(max = progress.max, title = "Assignment in progress", style = 3, width = 85)
+    #     progress <- function(n) setTxtProgressBar(pb, n)
+    #     opts <- list(progress = progress)
     
     # foreach
-    assignment.res <- foreach(mrl=markers.random.lists, 
-                              .options.snow=opts, 
-                              .packages = c("dplyr", "tidyr", "stringi",
-                                            "readr", "purrr")
+    #     assignment.res <- foreach(mrl=markers.random.lists, 
+    #                               .options.snow=opts, 
+    #                               .packages = c("dplyr", "tidyr", "stringi",
+    #                                             "readr", "purrr")
+    #     ) %dopar% {
+    
+    assignment.res <- foreach(
+      mrl=markers.random.lists,
+      .packages = c("dplyr", "tidyr", "stringi", "readr", "purrr"),
+      .verbose = FALSE
     ) %dopar% {
       # mrl <- markers.random.lists[1] # test
       # mrl <- as_data_frame(purrr::flatten(mrl)) # test
@@ -1331,7 +1339,7 @@ GBS_assignment <- function(vcf.file,
       
       return(assignment)
     } # End of iterations for both with and without imputations
-    message(stri_c("Summarizing the assignment analysis results"))
+    message("Summarizing the assignment analysis results")
     stopCluster(cl) # close parallel connection settings
     
     # Compiling the results
@@ -1514,40 +1522,40 @@ First sign of progress may take some time
 Progress can also be monitored with activity in the folder...")
     
     # Progress Bar during parallel computations
-#     if (THL == 1){
-#       progress.max <- length(iterations.list)
-#     } else {
-#       progress.max <- iterations
-#     }
-#     pb <- txtProgressBar(max = progress.max, 
-#                          title = "Assignment in progress", 
-#                          style = 3, 
-#                          width = 85
-#     )
-#     progress <- function(n) setTxtProgressBar(pb, n)
-#     opts <- list(progress = progress)
-#     
+    #     if (THL == 1){
+    #       progress.max <- length(iterations.list)
+    #     } else {
+    #       progress.max <- iterations
+    #     }
+    #     pb <- txtProgressBar(max = progress.max, 
+    #                          title = "Assignment in progress", 
+    #                          style = 3, 
+    #                          width = 85
+    #     )
+    #     progress <- function(n) setTxtProgressBar(pb, n)
+    #     opts <- list(progress = progress)
+    #     
     # Start cluster registration backend
-    # cl <- parallel::makeCluster(parallel.core, outfile = "") # test
+    cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = "") # test
     # cl <- parallel::makeCluster(parallel.core)
-    cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = paste0(directory, "parallel.computations.log")) # test
+    # cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = paste0(directory, "parallel.computations.log")) # test
     # doSNOW::registerDoSNOW(cl)
     doParallel::registerDoParallel(cl)
     
     # foreach
     i <- NULL
     assignment.res <- list()
-#     assignment.res <- foreach(
-#       i=iterations.list, .options.snow=opts, 
-#       .packages = c("dplyr", "tidyr", "stringi", "readr"),
-#       .verbose = FALSE
-#     ) %dopar% {
-      
-      assignment.res <- foreach(
-        i=iterations.list, 
-        .packages = c("dplyr", "tidyr", "stringi", "readr"),
-        .verbose = FALSE
-      ) %dopar% {
+    #     assignment.res <- foreach(
+    #       i=iterations.list, .options.snow=opts, 
+    #       .packages = c("dplyr", "tidyr", "stringi", "readr"),
+    #       .verbose = FALSE
+    #     ) %dopar% {
+    
+    assignment.res <- foreach(
+      i=iterations.list, 
+      .packages = c("dplyr", "tidyr", "stringi", "readr"),
+      .verbose = FALSE
+    ) %dopar% {
       
       
       # assignment.marker.loop <- list()
@@ -1558,6 +1566,7 @@ Progress can also be monitored with activity in the folder...")
       # i <- 5
       
       # Ranking Fst with training dataset (keep holdout individuals out)
+      message("Ranking markers based on Fst")
       if (THL == "all"){
         holdout <- NULL
         fst.ranked <- fst_WC84(data = vcf, holdout.samples = NULL)
@@ -1602,6 +1611,7 @@ Progress can also be monitored with activity in the folder...")
       
       # Markers numbers loop
       # Create empty lists to feed the results
+      message("Going throught the marker.number")
       for (m in marker.number) {
         # message("Marker number: ", m)
         # m <- 200 # test
@@ -1663,16 +1673,17 @@ Progress can also be monitored with activity in the folder...")
         assignment.res[[m]] <- assignment
       }  # End marker number loop for both with and without imputations
       #       assignment.res[[i]] <- assignment.marker.loop
+      message("Summarizing the assignment analysis results by iterations and marker group")
       if (THL == 1) {
         assignment.res.summary <- suppressWarnings(
           as_data_frame(bind_rows(assignment.res)) %>%
             mutate(METHOD = rep("THL", n()))
         )
-      res.filename <- stri_paste("assignment_ind_", i, ".tsv", sep = "") # No imputation
-      write_tsv(x = assignment.res.summary, path = paste0(directory, res.filename), 
-                col_names = TRUE, 
-                append = FALSE
-      )
+        res.filename <- stri_paste("assignment_ind_", i, ".tsv", sep = "") # No imputation
+        write_tsv(x = assignment.res.summary, path = paste0(directory, res.filename), 
+                  col_names = TRUE, 
+                  append = FALSE
+        )
       }
       return(assignment.res)
     }  # End holdout individuals loop
