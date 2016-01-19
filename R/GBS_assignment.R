@@ -169,6 +169,7 @@
 #' @import dplyr
 #' @import foreach
 #' @import parallel
+#' @import doParallel
 #' @import doSNOW
 #' @import stringi
 #' @importFrom purrr map
@@ -1513,33 +1514,42 @@ First sign of progress may take some time
 Progress can also be monitored with activity in the folder...")
     
     # Progress Bar during parallel computations
-    if (THL == 1){
-      progress.max <- length(iterations.list)
-    } else {
-      progress.max <- iterations
-    }
-    pb <- txtProgressBar(max = progress.max, 
-                         title = "Assignment in progress", 
-                         style = 3, 
-                         width = 85
-    )
-    progress <- function(n) setTxtProgressBar(pb, n)
-    opts <- list(progress = progress)
-    
+#     if (THL == 1){
+#       progress.max <- length(iterations.list)
+#     } else {
+#       progress.max <- iterations
+#     }
+#     pb <- txtProgressBar(max = progress.max, 
+#                          title = "Assignment in progress", 
+#                          style = 3, 
+#                          width = 85
+#     )
+#     progress <- function(n) setTxtProgressBar(pb, n)
+#     opts <- list(progress = progress)
+#     
     # Start cluster registration backend
     # cl <- parallel::makeCluster(parallel.core, outfile = "") # test
     # cl <- parallel::makeCluster(parallel.core)
     cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = paste0(directory, "parallel.computations.log")) # test
-    doSNOW::registerDoSNOW(cl)
+    # doSNOW::registerDoSNOW(cl)
+    doParallel::registerDoParallel(cl)
     
     # foreach
     i <- NULL
     assignment.res <- list()
-    assignment.res <- foreach(
-      i=iterations.list, .options.snow=opts, 
-      .packages = c("dplyr", "tidyr", "stringi", "readr"),
-      .verbose = FALSE
-    ) %dopar% {
+#     assignment.res <- foreach(
+#       i=iterations.list, .options.snow=opts, 
+#       .packages = c("dplyr", "tidyr", "stringi", "readr"),
+#       .verbose = FALSE
+#     ) %dopar% {
+      
+      assignment.res <- foreach(
+        i=iterations.list, 
+        .packages = c("dplyr", "tidyr", "stringi", "readr"),
+        .verbose = FALSE
+      ) %dopar% {
+      
+      
       # assignment.marker.loop <- list()
       Sys.sleep(0.01)  # For progress bar
       # i <- "TRI_48" #test

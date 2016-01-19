@@ -22,6 +22,7 @@ Imports:
     randomForestSRC,
     foreach,
     parallel,
+    doParallel,
     doSNOW,
     purrr
 Suggests:
@@ -30,8 +31,7 @@ Suggests:
     knitr,
     rmarkdown,
     snow,
-    adegenet,
-    doParallel
+    adegenet
 License: GPL (>=2)
 LazyLoad: yes
 VignetteBuilder: knitr
