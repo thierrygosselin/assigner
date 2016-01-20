@@ -1783,6 +1783,10 @@ Progress can also be monitored with activity in the folder...")
       # THL != 1 or "all"
       # summary stats
       assignment.stats.pop <- assignment.res.summary %>%
+        mutate(
+          CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
+          CURRENT = droplevels(CURRENT)
+        ) %>%
         group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
         summarise(
           MEAN = round(mean(ASSIGNMENT_PERC), 2),
