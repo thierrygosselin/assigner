@@ -1219,7 +1219,7 @@ GBS_assignment <- function(vcf.file,
           ) %>% 
           group_by(CURRENT, MARKER_NUMBER, MISSING_DATA) %>%
           summarise(
-            n = length(CURRENT[CURRENT == INFERRED]),
+            n = length(CURRENT[as.character(CURRENT) == as.character(INFERRED)]),
             TOTAL = length(CURRENT)
           ) %>%
           ungroup() %>% 
@@ -1463,8 +1463,8 @@ loci for population assignment: standard methods are upwardly biased.\nMolecular
     } else {
       # Create x (iterations) list of y (THL) proportion of individuals per pop.
       if (stri_detect_fixed(THL, ".") & THL < 1) {
-        # iterations <- 30 # test
-        # THL <- 0.15 # test
+        # iterations <- 5 # test
+        # THL <- 0.4 # test
         holdout.individuals.list <- list()
         iterations.list <- 1:iterations
         for (x in 1:iterations){
@@ -1720,7 +1720,7 @@ Progress can also be monitored with activity in the folder...")
         ) %>% 
         group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
         summarise(
-          n = length(CURRENT[CURRENT == INFERRED]),
+          n = length(CURRENT[as.character(CURRENT) == as.character(INFERRED)]),
           TOTAL = length(CURRENT)
         ) %>%
         ungroup() %>% 
@@ -1783,6 +1783,10 @@ Progress can also be monitored with activity in the folder...")
       # THL != 1 or "all"
       # summary stats
       assignment.stats.pop <- assignment.res.summary %>%
+        mutate(
+          CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
+          CURRENT = droplevels(CURRENT)
+        ) %>%
         group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
         summarise(
           MEAN = round(mean(ASSIGNMENT_PERC), 2),
