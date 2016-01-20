@@ -1196,22 +1196,38 @@ GBS_assignment <- function(vcf.file,
       #         write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
       #       }
       if (THL != 1 & THL != "all"){
-        assignment <- assignment %>%
-          group_by(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA) %>%
-          tally %>%
-          group_by(CURRENT, MARKER_NUMBER) %>%
-          mutate(TOTAL = sum(n)) %>%
-          ungroup() %>%
-          mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>%
-          select(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, ASSIGNMENT_PERC) %>%
-          group_by(CURRENT, MARKER_NUMBER, MISSING_DATA) %>%
-          tidyr::spread(data = ., key = INFERRED, value = ASSIGNMENT_PERC) %>%
-          tidyr::gather(INFERRED, ASSIGNMENT_PERC, -c(CURRENT, MARKER_NUMBER, MISSING_DATA)) %>%
-          mutate(ASSIGNMENT_PERC = as.numeric(stri_replace_na(ASSIGNMENT_PERC, replacement = 0))) %>%
-          filter(as.character(CURRENT) == as.character(INFERRED)) %>%
-          select(CURRENT, INFERRED, ASSIGNMENT_PERC, MARKER_NUMBER, MISSING_DATA) %>%
-          mutate(ITERATIONS = rep(i, n()))
+        #         assignment <- assignment %>%
+        #           group_by(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA) %>%
+        #           tally %>%
+        #           group_by(CURRENT, MARKER_NUMBER) %>%
+        #           mutate(TOTAL = sum(n)) %>%
+        #           ungroup() %>%
+        #           mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>%
+        #           select(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, ASSIGNMENT_PERC) %>%
+        #           group_by(CURRENT, MARKER_NUMBER, MISSING_DATA) %>%
+        #           tidyr::spread(data = ., key = INFERRED, value = ASSIGNMENT_PERC) %>%
+        #           tidyr::gather(INFERRED, ASSIGNMENT_PERC, -c(CURRENT, MARKER_NUMBER, MISSING_DATA)) %>%
+        #           mutate(ASSIGNMENT_PERC = as.numeric(stri_replace_na(ASSIGNMENT_PERC, replacement = 0))) %>%
+        #           filter(as.character(CURRENT) == as.character(INFERRED)) %>%
+        #           select(CURRENT, INFERRED, ASSIGNMENT_PERC, MARKER_NUMBER, MISSING_DATA) %>%
+        #           mutate(ITERATIONS = rep(i, n()))
         # write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
+        assignment <- assignment %>%
+          mutate(
+            CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
+            CURRENT = droplevels(CURRENT)
+          ) %>% 
+          group_by(CURRENT, MARKER_NUMBER, MISSING_DATA) %>%
+          summarise(
+            n = length(CURRENT[CURRENT == INFERRED]),
+            TOTAL = length(CURRENT)
+          ) %>%
+          ungroup() %>% 
+          mutate(
+            ASSIGNMENT_PERC = round(n/TOTAL*100, 0),
+            ITERATIONS = rep(i, n())
+          ) %>% 
+          select(-n, -TOTAL)
       }
     }
     return(assignment)
@@ -1696,37 +1712,45 @@ Progress can also be monitored with activity in the folder...")
         mutate(METHOD = rep("THL", n()))
     )
     
-    #     test delete after
-    #     if (THL == 1){
-    #       assignment.res.summary <- as_data_frame(bind_rows(purrr::flatten(purrr::flatten(assignment.res)))) %>% 
-    #         mutate(METHOD = rep("THL", n()))
-    #     } 
-    
     if (THL == 1 | THL == "all"){
       assignment.stats.pop <- assignment.res.summary %>%
-        group_by(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, METHOD) %>% 
-        tally %>% 
-        group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>% 
-        mutate(TOTAL = sum(n)) %>% 
-        ungroup() %>% 
-        mutate(MEAN_i = round(n/TOTAL*100, 0)) %>% 
-        filter(as.character(CURRENT) == as.character(INFERRED)) %>% 
-        select(CURRENT, MEAN_i, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
         mutate(
-          CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = T),
+          CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
           CURRENT = droplevels(CURRENT)
         ) %>% 
-        group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>% 
+        group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
         summarise(
-          MEAN = round(mean(MEAN_i), 2),
-          SE = round(sqrt(var(MEAN_i)/length(MEAN_i)), 2),
-          MIN = round(min(MEAN_i), 2),
-          MAX = round(max(MEAN_i), 2),
-          MEDIAN = round(median(MEAN_i), 2),
-          QUANTILE25 = round(quantile(MEAN_i, 0.25), 2),
-          QUANTILE75 = round(quantile(MEAN_i, 0.75), 2)
+          n = length(CURRENT[CURRENT == INFERRED]),
+          TOTAL = length(CURRENT)
         ) %>%
-        arrange(CURRENT, MARKER_NUMBER)
+        ungroup() %>% 
+        mutate(MEAN = round(n/TOTAL*100, 0)) %>% 
+        select(-n, -TOTAL)
+      
+      #       assignment.stats.pop <- assignment.res.summary %>%
+      #         group_by(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, METHOD) %>% 
+      #         tally %>% 
+      #         group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>% 
+      #         mutate(TOTAL = sum(n)) %>% 
+      #         ungroup() %>% 
+      #         mutate(MEAN_i = round(n/TOTAL*100, 0)) %>% 
+      #         filter(as.character(CURRENT) == as.character(INFERRED)) %>% 
+      #         select(CURRENT, MEAN_i, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
+      #         mutate(
+      #           CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = T),
+      #           CURRENT = droplevels(CURRENT)
+      #         ) %>% 
+      #         group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>% 
+      #         summarise(
+      #           MEAN = round(mean(MEAN_i), 2),
+      #           SE = round(sqrt(var(MEAN_i)/length(MEAN_i)), 2),
+      #           MIN = round(min(MEAN_i), 2),
+      #           MAX = round(max(MEAN_i), 2),
+      #           MEDIAN = round(median(MEAN_i), 2),
+      #           QUANTILE25 = round(quantile(MEAN_i, 0.25), 2),
+      #           QUANTILE75 = round(quantile(MEAN_i, 0.75), 2)
+      #         ) %>%
+      #         arrange(CURRENT, MARKER_NUMBER)
       
       pop.levels.assignment.stats.overall <- c(levels(assignment.stats.pop$CURRENT), "OVERALL")
       
@@ -1754,6 +1778,7 @@ Progress can also be monitored with activity in the folder...")
             SE_MAX = MEAN + SE
           )
       )
+      
     } else {
       # THL != 1 or "all"
       # summary stats
