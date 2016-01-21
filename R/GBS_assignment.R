@@ -1726,7 +1726,6 @@ Progress can also be monitored with activity in the folder...")
         ungroup() %>% 
         mutate(MEAN = round(n/TOTAL*100, 0)) %>% 
         select(-n, -TOTAL)
-      
       #       assignment.stats.pop <- assignment.res.summary %>%
       #         group_by(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, METHOD) %>% 
       #         tally %>% 
