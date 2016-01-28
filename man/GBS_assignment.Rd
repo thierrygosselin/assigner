@@ -124,6 +124,11 @@ in each populations are chosen randomly to represent the dataset.
 With \code{subsample = 36}, 36 individuals in each populations are chosen
 randomly to represent the dataset.}
 
+\item{iterations.subsample}{(Integer) The number of iterations to repeat 
+subsampling, default: \code{iterations.subsample = 1}.
+With \code{subsample = 20} and \code{iterations.subsample = 10},
+20 individuals/populations will be randomly chosen 10 times.}
+
 \item{baseline}{(optional) A character string with your baseline id.
 From the \code{pop.id.start} and \code{pop.id.end} you isolate
 the baseline and mixture group. Here you need to give the id for
