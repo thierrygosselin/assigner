@@ -84,8 +84,11 @@ If you don't have them, no worries, it's intalled automatically during **assigne
 
 ## New
 
-**v.0.1.0**
-
+**v.0.1.1**
+* `subsample` and `iterations.subsample` were implemented to analyse the impact of 
+sample size on assignment. Usefull in the case of large bias in individuals 
+between populations. The `iterations.subsample` argument creates x subsample 
+dataset.
 
 ## Roadmap of future developments:
 

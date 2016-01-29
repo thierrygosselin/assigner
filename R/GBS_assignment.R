@@ -1328,9 +1328,9 @@ GBS_assignment <- function(vcf.file,
       
       mrl <- NULL
       res <- list()
-      message("Starting parallel computations for the assignment analysis\n
-              First sign of progress may take some time\n
-              Progress can also be monitored with activity in the folder...")
+      message("Starting parallel computations for the assignment analysis
+First sign of progress may take some time
+Progress can be monitored with activity in the folder...")
       
       # Progress Bar during parallel computations
       #     progress.max <- length(markers.random.lists)
@@ -1577,8 +1577,8 @@ GBS_assignment <- function(vcf.file,
       
       # Going through the loop of holdout individuals
       message("Starting parallel computations for the assignment analysis
-              First sign of progress may take some time
-              Progress can also be monitored with activity in the folder...")
+First sign of progress may take some time
+Progress can be monitored with activity in the folder...")
       
       # Progress Bar during parallel computations
       #     if (THL == 1){
@@ -1648,9 +1648,9 @@ GBS_assignment <- function(vcf.file,
         }
         
         # Saving Fst
-        if (THL != 1 & THL != "all") { # for THL != 1 (numbers and proportions)
-          i <- unique(holdout$ITERATIONS)
-        }
+#         if (THL != 1 & THL != "all") { # for THL != 1 (numbers and proportions)
+#           i <- unique(holdout$ITERATIONS)
+#         }
         
         fst.ranked.filename <- stri_join("fst.ranked_", i, ".tsv", sep = "") # No imputation
         write_tsv(x = fst.ranked, path = paste0(directory.subsample, fst.ranked.filename), 
@@ -1776,7 +1776,7 @@ GBS_assignment <- function(vcf.file,
         
         
         message("Summarizing the assignment analysis results by iterations and marker group")
-        if (THL == 1) {
+        # if (THL == 1) {
 #           assignment.res.summary <- suppressWarnings(
 #             as_data_frame(bind_rows(assignment.marker)) %>%
 #               mutate(METHOD = rep("THL", n()))
@@ -1792,9 +1792,9 @@ GBS_assignment <- function(vcf.file,
                     col_names = TRUE, 
                     append = FALSE
           )
-        }
+        # }
         return(assignment.res.summary)
-      }  # End holdout individuals loop
+      }  # End assignment ranking function
       # stopCluster(cl)  # close parallel connection settings
       
       # using mclapply
@@ -1805,7 +1805,7 @@ GBS_assignment <- function(vcf.file,
         mc.preschedule = FALSE, 
         mc.silent = FALSE, 
         mc.cores = parallel.core,
-        marker.number
+        marker.number = marker.number
         )
 #       , 
 #         vcf = vcf,
