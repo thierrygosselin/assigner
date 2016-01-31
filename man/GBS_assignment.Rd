@@ -164,8 +164,11 @@ OpenMP version see \code{\link[randomForestSRC]{randomForestSRC-package}}.
 If not selected \code{detectCores()-1} is used as default.}
 }
 \value{
-Depending on arguments selected several files are written to the disk.
-In your global environment the results of the assignment analysis.
+Depending on arguments selected, several files are written to the your
+working directory or \code{folder}
+The output in your global environment is a list. To view the assignment results
+\code{$assignment} to view the ggplot2 figure \code{$plot.assignment}. 
+See example below.
 }
 \description{
 \code{gsi_sim} is a tool for doing and simulating genetic stock
@@ -201,23 +204,38 @@ instruction here: \url{https://github.com/eriqande/gsi_sim}.
 }
 \examples{
 \dontrun{
-assignment.THL.1 <- GBS_assignment(
+assignment.treefrog <- GBS_assignment(
 vcf.file = "batch_1.vcf",
 whitelist.markers = "whitelist.vcf.txt",
 snp.LD = NULL,
 common.markers = TRUE,
-marker.number = c(500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, "all"),
+marker.number = c(500, 5000, "all"),
 sampling.method = "ranked",
-THL = 1,
+THL = 0.3,
 blacklist.id = "blacklist.id.lobster.tsv",
-subsample = NULL,
-gsi_sim.filename = "lobster.gsi_sim.txt",
+subsample = 25,
+iterations.subsample = 10
+gsi_sim.filename = "treefrog.txt",
 keep.gsi.files = FALSE,
-pop.levels = c("QUE", "ONT")
-pop.id.start = 1, pop.id.end = 3,
+pop.levels = c("PAN", "COS")
+pop.id.start = 5, pop.id.end = 7,
 imputations = FALSE,
-parallel.core = 8)
+parallel.core = 12
 )
+
+Since the 'folder' argument is missing, it will be created automatically
+inside your working directory.
+
+To create a dataframe with the assignment results: 
+assignment <- assignment.treefrog$assignment.
+
+To plot the assignment using ggplot2 and facet 
+(with subsample by current pop):
+assignment.treefrog$plot.assignment + facet_grid(SUBSAMPLE~CURRENT).
+
+To save the plot:
+ggsave("assignment.treefrog.THL.subsample.pdf", height = 35, 
+width = 60,dpi = 600, units = "cm", useDingbats = F)
 }
 }
 \author{

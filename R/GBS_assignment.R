@@ -157,8 +157,11 @@
 #' containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
 #' will require 15 min.
 #' The Fst is based on Weir and Cockerham 1984 equations.
-#' @return Depending on arguments selected several files are written to the disk.
-#' In your global environment the results of the assignment analysis.
+#' @return Depending on arguments selected, several files are written to the your
+#' working directory or \code{folder}
+#' The output in your global environment is a list. To view the assignment results
+#' \code{$assignment} to view the ggplot2 figure \code{$plot.assignment}. 
+#' See example below.
 
 #' @note \code{GBS_assignment} assumes that the command line version of gsi_sim 
 #' is properly installed and available on the command line, so it is executable from 
@@ -180,25 +183,39 @@
 
 #' @examples
 #' \dontrun{
-#' assignment.THL.1 <- GBS_assignment(
+#' assignment.treefrog <- GBS_assignment(
 #' vcf.file = "batch_1.vcf",
 #' whitelist.markers = "whitelist.vcf.txt",
 #' snp.LD = NULL,
 #' common.markers = TRUE,
-#' marker.number = c(500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, "all"),
+#' marker.number = c(500, 5000, "all"),
 #' sampling.method = "ranked",
-#' THL = 1,
+#' THL = 0.3,
 #' blacklist.id = "blacklist.id.lobster.tsv",
-#' subsample = NULL,
-#' gsi_sim.filename = "lobster.gsi_sim.txt",
+#' subsample = 25,
+#' iterations.subsample = 10
+#' gsi_sim.filename = "treefrog.txt",
 #' keep.gsi.files = FALSE,
-#' pop.levels = c("QUE", "ONT")
-#' pop.id.start = 1, pop.id.end = 3,
+#' pop.levels = c("PAN", "COS")
+#' pop.id.start = 5, pop.id.end = 7,
 #' imputations = FALSE,
-#' parallel.core = 8)
+#' parallel.core = 12
 #' )
+#' 
+#' Since the 'folder' argument is missing, it will be created automatically
+#' inside your working directory.
+#' 
+#' To create a dataframe with the assignment results: 
+#' assignment <- assignment.treefrog$assignment.
+#' 
+#' To plot the assignment using ggplot2 and facet 
+#' (with subsample by current pop):
+#' assignment.treefrog$plot.assignment + facet_grid(SUBSAMPLE~CURRENT).
+#' 
+#' To save the plot:
+#' ggsave("assignment.treefrog.THL.subsample.pdf", height = 35, 
+#' width = 60,dpi = 600, units = "cm", useDingbats = F)
 #' }
-
 
 
 #' @references Anderson, Eric C., Robin S. Waples, and Steven T. Kalinowski. (2008)
@@ -241,7 +258,7 @@ if (getRversion() >= "2.15.1"){
       'MARKERS', 'CURRENT', 'INFERRED', 'MARKER_NUMBER', 'MISSING_DATA',
       'ITERATIONS', 'METHOD', 'TOTAL', 'MEAN_i', 'MEAN', 'ASSIGNMENT_PERC',
       'SE', 'MEDIAN', 'MIN', 'MAX', 'QUANTILE25', 'QUANTILE75', 'SE_MIN',
-      'SE_MAX', '.', 'QUAL', 'FILTER', 'INFO', 'pb'
+      'SE_MAX', '.', 'QUAL', 'FILTER', 'INFO', 'pb', 'SUBSAMPLE'
     )
   )
 }
@@ -2010,6 +2027,87 @@ Progress can be monitored with activity in the folder...")
   )
   res <- bind_rows(res)
   write_tsv(x = res, path = paste0(directory, "assignment.results.tsv"), col_names = TRUE, append = FALSE)
-  return(res)
+  
+  # Summary of the subsampling iterations
+  if(iterations.subsample > 1){
+    res.pop <- res %>%
+      filter(CURRENT != "OVERALL") %>%
+      group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
+      rename(ASSIGNMENT_PERC = MEAN) %>%
+      summarise(
+        MEAN = round(mean(ASSIGNMENT_PERC), 2),
+        SE = round(sqrt(var(ASSIGNMENT_PERC)/length(ASSIGNMENT_PERC)), 2),
+        MIN = round(min(ASSIGNMENT_PERC), 2),
+        MAX = round(max(ASSIGNMENT_PERC), 2),
+        MEDIAN = round(median(ASSIGNMENT_PERC), 2),
+        QUANTILE25 = round(quantile(ASSIGNMENT_PERC, 0.25), 2),
+        QUANTILE75 = round(quantile(ASSIGNMENT_PERC, 0.75), 2)
+        ) %>% 
+      mutate(SUBSAMPLE = rep("OVERALL", n())) %>%
+      arrange(CURRENT, MARKER_NUMBER)
+    
+    res.overall <- res.pop %>% 
+      group_by(MARKER_NUMBER, MISSING_DATA, METHOD) %>%
+      rename(ASSIGNMENT_PERC = MEAN) %>%
+      summarise(
+        MEAN = round(mean(ASSIGNMENT_PERC), 2),
+        SE = round(sqrt(var(ASSIGNMENT_PERC)/length(ASSIGNMENT_PERC)), 2),
+        MIN = round(min(ASSIGNMENT_PERC), 2),
+        MAX = round(max(ASSIGNMENT_PERC), 2),
+        MEDIAN = round(median(ASSIGNMENT_PERC), 2),
+        QUANTILE25 = round(quantile(ASSIGNMENT_PERC, 0.25), 2),
+        QUANTILE75 = round(quantile(ASSIGNMENT_PERC, 0.75), 2)
+      ) %>%
+      mutate(
+        CURRENT = rep("OVERALL", n()),
+        SUBSAMPLE = rep("OVERALL", n())
+      ) %>% 
+      arrange(CURRENT, MARKER_NUMBER)
+    
+    res.pop.overall <- suppressWarnings(
+      bind_rows(res.pop, res.overall) %>%
+        mutate(CURRENT = factor(CURRENT, levels = levels(res.pop$CURRENT), ordered = TRUE)) %>%
+        arrange(CURRENT, MARKER_NUMBER) %>%
+        mutate(
+          SE_MIN = MEAN - SE,
+          SE_MAX = MEAN + SE
+        ) %>%
+        select(CURRENT, MARKER_NUMBER, MEAN, MEDIAN, SE, MIN, MAX, QUANTILE25, QUANTILE75, SE_MIN, SE_MAX, METHOD, MISSING_DATA, SUBSAMPLE)
+    )
+
+    res <- bind_rows(
+      res %>% 
+        mutate(SUBSAMPLE = as.character(SUBSAMPLE)), 
+      res.pop.overall) %>% 
+      mutate(SUBSAMPLE = factor(SUBSAMPLE, levels = c(1:iterations.subsample, "OVERALL"), ordered = TRUE)) %>% 
+      arrange(CURRENT, MARKER_NUMBER, SUBSAMPLE)
+    
+    # unused objects
+    res.pop.overall <- NULL
+    res.overall <- NULL
+    res.pop <- NULL
+  } # End summary of the subsampling iterations
+  
+  # Assignment plot
+  plot.assignment <- ggplot(res, aes(x = factor(MARKER_NUMBER), y = MEAN))+
+    geom_point(size = 2, alpha = 0.5) +
+    geom_errorbar(aes(ymin = SE_MIN, ymax = SE_MAX), width = 0.3) +
+    scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100))+
+    labs(x = "Marker number")+
+    labs(y = "Assignment success (%)")+
+    theme_bw()+
+    theme(
+      legend.position = "bottom",      
+      panel.grid.minor.x = element_blank(), 
+      panel.grid.major.y = element_line(colour = "grey60", linetype = "dashed"), 
+      axis.title.x = element_text(size = 10, family = "Helvetica", face = "bold"), 
+      axis.text.x = element_text(size = 8, family = "Helvetica", face = "bold", angle = 90, hjust = 0.5, vjust = 0.5), 
+      axis.title.y = element_text(size = 10, family = "Helvetica", face = "bold"), 
+      axis.text.y = element_text(size = 10, family = "Helvetica", face = "bold")
+    )
+
+  # results
+  res.list <- list(assignment = res, plot.assignment = plot.assignment)
+  return(res.list)
 } # end GBS_assignment
 
