@@ -1192,7 +1192,8 @@ GBS_assignment <- function(vcf.file,
         input.gsi <- stri_join(directory.subsample,input)
         output.gsi <- stri_replace_all_fixed(input.gsi, pattern = "txt", replacement = "output.txt")
         system(paste("gsisim -b", input.gsi, "--self-assign > ", output.gsi))
-      } else{
+        Sys.sleep(0.01)
+        } else{
         message("this option is under construction :)")
       }
       # Option remove the input file from directory to save space
