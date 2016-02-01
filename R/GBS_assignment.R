@@ -324,6 +324,7 @@ GBS_assignment <- function(vcf.file,
   if (sampling.method == "ranked" & missing(THL)) THL <- 1 # THL
   if (missing(iterations)) iterations <- 10
   if (THL == "all") iterations <- 1
+  if (THL == 1) iterations <- 1
   if (missing(gsi_sim.filename)) gsi_sim.filename <- "gsi_sim_data.txt"
   if (missing(keep.gsi.files)) keep.gsi.files <- FALSE
   if (missing(baseline)) baseline <- NULL # Baseline
