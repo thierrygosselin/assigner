@@ -41,6 +41,24 @@ install_github("thierrygosselin/assigner") # to install
 library(assigner) # to load
 ```
 
+Step 3 Install [gsi_sim] (https://github.com/eriqande/gsi_sim):
+
+**assigner** assumes that the command line version of [gsi_sim] (https://github.com/eriqande/gsi_sim) 
+is properly installed and available on the command line, so it is executable from 
+any directory. If you have no idea what i'm saying here, you might want to first 
+read this short section of my tutorial on [GBS in the cloud] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time).
+
+The fastest way is to put [gsi_sim] (https://github.com/eriqande/gsi_sim)
+binary, the `gsisim` executable, in the folder `/usr/local/bin`. 
+To compile gsi_sim, follow the instruction on [Eric Anderson github page] (https://github.com/eriqande/gsi_sim).
+
+```r
+# Mac OSX
+cp ~/gsi_sim/gsi_sim-Darwin /usr/local/bin/gsi_sim
+# Linux
+cp ~/gsi_sim/gsi_sim-Linux /usr/local/bin/gsi_sim
+```
+
 **Problems during installation:**
 
 Sometimes you'll get warnings while installing dependencies required for **assigner** or other R packages.
@@ -65,16 +83,6 @@ sudo rm -R /Library/Frameworks/R.framework/Resources/library/package_name
 
 **Dependencies**
 
-**assigner** assumes that the command line version of [gsi_sim] (https://github.com/eriqande/gsi_sim) 
-is properly installed and available on the command line, so it is executable from 
-any directory. If you have no idea what i'm saying here, you might want to first 
-read this short section of my tutorial on [GBS in the cloud] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time).
-
-On MacOSX, the fastest way is to put [gsi_sim] (https://github.com/eriqande/gsi_sim)
-binary, the `gsisim` executable, in the folder `/usr/local/bin`. 
-To compile gsi_sim, follow the instruction on [Eric Anderson github page] (https://github.com/eriqande/gsi_sim).
-
-
 Here the list of packages that **assigner** is depending on:
 ```r
 dplyr, reshape2, ggplot2, readr, stringi, tidyr, purrr, lazyeval, adegenet, randomForestSRC, foreach, parallel, doParallel
@@ -84,11 +92,19 @@ If you don't have them, no worries, it's intalled automatically during **assigne
 
 ## New
 
+**v.0.1.2**
+* new version to update with gsi_sim new install instruction for Linux and Mac.
+After re-installing assigner package, follow the instruction to re-install 
+the new [gsi_sim] (https://github.com/eriqande/gsi_sim). 
+And delete the old binary 'gsisim' in the /usr/local/bin folder
+with the following Terminal command: `sudo rm /usr/local/bin/gsisim`
+
 **v.0.1.1**
 * `subsample` and `iterations.subsample` were implemented to analyse the impact of 
 sample size on assignment. Usefull in the case of large bias in individuals 
 between populations. The `iterations.subsample` argument creates x subsample 
 dataset.
+
 
 ## Roadmap of future developments:
 

@@ -196,9 +196,9 @@ The Fst is based on Weir and Cockerham 1984 equations.
 \note{
 \code{GBS_assignment} assumes that the command line version of gsi_sim 
 is properly installed and available on the command line, so it is executable from 
-any directory( more info on how to do this, here 
+any directory (more info on how to do this, here 
 \url{http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time}.
-On MacOSX, the easiest way is to put the binary, the \code{gsisim} executable,
+The easiest way is to put the binary, the \code{gsi_sim} executable,
 in the folder \code{/usr/local/bin}. To compile gsi_sim, follow the 
 instruction here: \url{https://github.com/eriqande/gsi_sim}.
 }

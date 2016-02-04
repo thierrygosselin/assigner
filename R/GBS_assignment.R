@@ -165,9 +165,9 @@
 
 #' @note \code{GBS_assignment} assumes that the command line version of gsi_sim 
 #' is properly installed and available on the command line, so it is executable from 
-#' any directory( more info on how to do this, here 
+#' any directory (more info on how to do this, here 
 #' \url{http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time}.
-#' On MacOSX, the easiest way is to put the binary, the \code{gsisim} executable,
+#' The easiest way is to put the binary, the \code{gsi_sim} executable,
 #' in the folder \code{/usr/local/bin}. To compile gsi_sim, follow the 
 #' instruction here: \url{https://github.com/eriqande/gsi_sim}.
 
@@ -1192,7 +1192,7 @@ GBS_assignment <- function(vcf.file,
         input.gsi <- stri_join(directory.subsample,input)
         output.gsi <- stri_replace_all_fixed(input.gsi, pattern = "txt", replacement = "output.txt")
         setwd(directory.subsample)
-        system(paste("gsisim -b", input.gsi, "--self-assign > ", output.gsi))
+        system(paste("gsi_sim -b", input.gsi, "--self-assign > ", output.gsi))
         } else{
         message("this option is under construction :)")
       }
