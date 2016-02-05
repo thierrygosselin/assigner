@@ -49,7 +49,7 @@ any directory. If you have no idea what i'm saying here, you might want to first
 read this short section of my tutorial on [GBS in the cloud] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time).
 
 The fastest way is to put [gsi_sim] (https://github.com/eriqande/gsi_sim)
-binary, the `gsisim` executable, in the folder `/usr/local/bin`. 
+binary, the `gsi_sim` executable, in the folder `/usr/local/bin`. 
 
 ```r
 # Mac OSX
