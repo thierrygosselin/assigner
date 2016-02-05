@@ -133,8 +133,10 @@ dataset.
 
 * Update the `GBS_assignment` to opt between GSI_SIM or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis
 * The ability to use a dataframe of individuals, populations and genotypes as input.
+* Import a strata file for those of you working with individuals with no pop name in it.
 * The ability to provide the ranking of markers based on something else than Fst (Weir and Cockerham, 1984) currently used in the function. e.g. Informativeness for Assignment Measure (In, Rosenberg et al. 2003), the Absolute Allele Frequency Differences (delta, δ, Shriver et al., 1997).
 * Provide ranking from other software: e.g. Toolbox for Ranking and Evaluation of SNPs [TRES](http://mlkd.csd.auth.gr/bio/tres/), [BayeScan](http://cmpg.unibe.ch/software/BayeScan/) and [OutFLANK](https://github.com/whitlock/OutFLANK).
+* Would be very cool to use genotype likelihood information to get more accurate assignment.
 * Documentation and vignettes
 * Workflow tutorial
 * Use Shiny and ggvis when subplots or facets are available
