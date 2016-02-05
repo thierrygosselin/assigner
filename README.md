@@ -19,7 +19,7 @@ whitelist** and other arguments
 * Genotypes of poor quality (e.g. in coverage, genotype likelihood or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument.
 * Markers can be randomly selected for a **classic LOO (Leave-One-Out) assignment** or 
 chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis** (reviewed in Anderson 2010)
-* use `iterations` argument to resample markers or individuals to get statistics!
+* use `iteration.thl` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
 * The impact of the minor allele frequency, MAF, (local and global) can also be easily explored with custom thresholds
 * Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
@@ -49,7 +49,7 @@ any directory. If you have no idea what i'm saying here, you might want to first
 read this short section of my tutorial on [GBS in the cloud] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time).
 
 The fastest way is to put [gsi_sim] (https://github.com/eriqande/gsi_sim)
-binary, the `gsisim` executable, in the folder `/usr/local/bin`. 
+binary, the `gsi_sim` executable, in the folder `/usr/local/bin`. 
 
 ```r
 # Mac OSX
