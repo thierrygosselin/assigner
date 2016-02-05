@@ -929,7 +929,7 @@ GBS_assignment <- function(vcf.file,
     
     if(length(removing.marker) > 0){
       message.marker <- stri_c(removing.marker, collapse = ", ")
-      message("removing marker.number higher than the max number of markers: ", message.marker)
+      message("Removing marker.number higher than the max number of markers: ", message.marker)
     }
     
     marker.number <- purrr::discard(.x = marker.number, .p = marker.number > nrow(unique.markers))
