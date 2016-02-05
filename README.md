@@ -50,13 +50,26 @@ read this short section of my tutorial on [GBS in the cloud] (http://gbs-cloud-t
 
 The fastest way is to put [gsi_sim] (https://github.com/eriqande/gsi_sim)
 binary, the `gsisim` executable, in the folder `/usr/local/bin`. 
-To compile gsi_sim, follow the instruction on [Eric Anderson github page] (https://github.com/eriqande/gsi_sim).
 
 ```r
 # Mac OSX
-cp ~/gsi_sim/gsi_sim-Darwin /usr/local/bin/gsi_sim
+# git the repo and submodules
+cd ~/Downloads/ # or any directory
+sudo git clone https://github.com/eriqande/gsi_sim.git
+cd gsi_sim/
+sudo git submodule init
+sudo git submodule update
+sudo cp ~/gsi_sim/gsi_sim-Darwin /usr/local/bin/gsi_sim
+sudo rm -R ~/Downloads/gsi_sim
+
 # Linux
-cp ~/gsi_sim/gsi_sim-Linux /usr/local/bin/gsi_sim
+cd ~/Downloads/ # or any directory
+sudo git clone https://github.com/eriqande/gsi_sim.git
+cd gsi_sim/
+sudo git submodule init
+sudo git submodule update
+sudo cp ~/gsi_sim/gsi_sim-Linux /usr/local/bin/gsi_sim
+sudo rm -R ~/Downloads/gsi_sim
 ```
 
 **Problems during installation:**
@@ -91,6 +104,16 @@ If you don't have them, no worries, it's intalled automatically during **assigne
 
 
 ## New
+
+**v.0.1.3**
+* Changed arguments `THL` to `thl` and `snp.LD` to `snp.ld` to follow convention.
+* `iterations.subsample` changed to `iteration.subsample`.
+* `iterations` changed to `iteration.thl` to avoid confusion with other iteration arguments.
+* Removed `baseline` and `mixture` arguments from the function `GBS_assignment`.
+These options will be re-introduce later in a separate function.
+* Using `marker.number` higher than the number of markers in the data set was causing
+problems. This could arise when using arguments that removed markers from the dataset
+(e.g. `snp.ld`, `common.markers`, and `maf` filters.
 
 **v.0.1.2**
 * new version to update with gsi_sim new install instruction for Linux and Mac.

@@ -26,7 +26,7 @@ directory (e.g. "blacklist.genotype.txt"). For de novo VCF, CHROM column
 with 'un' need to be changed to 1. Default \code{NULL} for no blacklist of 
 genotypes to erase.}
 
-\item{snp.LD}{(optional) Minimize linkage disequilibrium (LD) by choosing
+\item{snp.ld}{(optional) Minimize linkage disequilibrium (LD) by choosing
 among these 3 options: \code{"random"} selection, \code{"first"} or
 \code{"last"} SNP on the same read/haplotype. Default = \code{NULL}.}
 
@@ -65,30 +65,30 @@ a column header 'INDIVIDUALS'. The blacklist is in the working directory
 \item{sampling.method}{(character) Should the markers be randomly selected
 \code{"random"} for a classic Leave-One-Out (LOO) assignment or
 chosen based on ranked Fst \code{"ranked"}, used in a
-Training-Holdout-Leave One Out (THL) assignment ?}
+Training-Holdout-Leave One Out (thl) assignment ?}
 
-\item{THL}{(character, integer, proportion) For \code{sampling.method = "ranked"} only.
+\item{thl}{(character, integer, proportion) For \code{sampling.method = "ranked"} only.
 Default \code{1}, 1 individual sample is used as holdout. This individual is not
 participating in the markers ranking. For each marker number,
 the analysis will be repeated with all the indiviuals in the data set
 (e.g. 500 individuals, 500 times 500, 1000, 2000 markers).
 If a proportion is used e.g. \code{0.15},= 15% of individuals in each
 populations are chosen randomly as holdout individuals.
-With \code{THL = "all"} all individuals are used for ranking (not good) and
-\code{iterations} argument below is set to \code{1} by default.
-For the other THL values, you can create different holdout individuals lists
-with the \code{iterations} argument below.}
+With \code{thl = "all"} all individuals are used for ranking (not good) and
+\code{iteration.thl} argument below is set to \code{1} by default.
+For the other thl values, you can create different holdout individuals lists
+with the \code{iteration.thl} argument below.}
 
-\item{iterations}{With random marker selection the iterations argument =
+\item{iteration.thl}{With random marker selection the iterations argument =
 the number of iterations to repeat marker resampling, default is \code{10}
 With \code{marker.number = c(500, 1000)} and default iterations setting,
 500 markers will be randomly chosen 10 times and 1000 markers will be randomly
-chosen 10 times. For the ranked method, using \code{THL = 1}, the analysis
+chosen 10 times. For the ranked method, using \code{thl = 1}, the analysis
 will be repeated for each individuals in the data set for every
-\code{marker.number} selected. With a proportion argument \code{THL = 0.15},
+\code{marker.number} selected. With a proportion argument \code{thl = 0.15},
 15% of individuals in each populations are chosen randomly as holdout
 individuals and this process is reapeated the number of times chosen by the
-\code{iterations} value.}
+\code{iteration.thl} value.}
 
 \item{folder}{(optional) The name of the folder created in the working directory to save the files/results.}
 
@@ -124,18 +124,10 @@ in each populations are chosen randomly to represent the dataset.
 With \code{subsample = 36}, 36 individuals in each populations are chosen
 randomly to represent the dataset.}
 
-\item{iterations.subsample}{(Integer) The number of iterations to repeat 
-subsampling, default: \code{iterations.subsample = 1}.
-With \code{subsample = 20} and \code{iterations.subsample = 10},
+\item{iteration.subsample}{(Integer) The number of iterations to repeat 
+subsampling, default: \code{iteration.subsample = 1}.
+With \code{subsample = 20} and \code{iteration.subsample = 10},
 20 individuals/populations will be randomly chosen 10 times.}
-
-\item{baseline}{(optional) A character string with your baseline id.
-From the \code{pop.id.start} and \code{pop.id.end} you isolate
-the baseline and mixture group. Here you need to give the id for
-baseline e.g. \code{c("QUE-ADU", "ONT-ADU")}.}
-
-\item{mixture}{(optional) But required if bseline was selected. A character
-string with your mixture id. e.g. \code{c("QUE-JUV", "ONT-JUV")}.}
 
 \item{imputations}{Should a map-independent imputations of markers be
 computed. Available choices are: (1) \code{FALSE} for no imputation.
@@ -181,7 +173,7 @@ markers can be filtered and/or selected in several ways using blacklist,
 whitelist and other arguments. Map-independent imputation of missing genotype
 using Random Forest or the most frequent category is also available.
 Markers can be randomly selected for a classic LOO (Leave-One-Out)
-assignment or chosen based on ranked Fst for a THL
+assignment or chosen based on ranked Fst for a thl
 (Training, Holdout, Leave-one-out) assignment analysis.
 }
 \details{
@@ -207,14 +199,14 @@ instruction here: \url{https://github.com/eriqande/gsi_sim}.
 assignment.treefrog <- GBS_assignment(
 vcf.file = "batch_1.vcf",
 whitelist.markers = "whitelist.vcf.txt",
-snp.LD = NULL,
+snp.ld = NULL,
 common.markers = TRUE,
 marker.number = c(500, 5000, "all"),
 sampling.method = "ranked",
-THL = 0.3,
+thl = 0.3,
 blacklist.id = "blacklist.id.lobster.tsv",
 subsample = 25,
-iterations.subsample = 10
+iteration.subsample = 10
 gsi_sim.filename = "treefrog.txt",
 keep.gsi.files = FALSE,
 pop.levels = c("PAN", "COS")
