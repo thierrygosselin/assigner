@@ -113,7 +113,7 @@ If you don't have them, no worries, it's intalled automatically during **assigne
 These options will be re-introduce later in a separate function.
 * Using `marker.number` higher than the number of markers in the data set was causing
 problems. This could arise when using arguments that removed markers from the dataset
-(e.g. `snp.ld`, `common.markers`, and `maf` filters.
+(e.g. `snp.ld`, `common.markers`, and `maf` filters).
 
 **v.0.1.2**
 * new version to update with gsi_sim new install instruction for Linux and Mac.
