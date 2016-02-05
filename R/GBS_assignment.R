@@ -923,6 +923,7 @@ GBS_assignment <- function(vcf.file,
     marker.number <- stri_replace_all_fixed(str = marker.number, pattern = "all", 
                                             replacement = nrow(unique.markers), 
                                             vectorize_all = TRUE)
+    marker.number <- as.numeric(marker.number)
     
     # In marker.number, remove marker group higher than the max number of markers
     removing.marker <- purrr::keep(.x = marker.number, .p = marker.number > nrow(unique.markers))
