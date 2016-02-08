@@ -59,8 +59,8 @@ sudo git clone https://github.com/eriqande/gsi_sim.git
 cd gsi_sim/
 sudo git submodule init
 sudo git submodule update
-sudo cp ~/Downloads/gsi_sim/gsi_sim-Darwin /usr/local/bin/gsi_sim
 cd ..
+sudo cp ~/Downloads/gsi_sim/gsi_sim-Darwin /usr/local/bin/gsi_sim
 sudo rm -R ~/Downloads/gsi_sim
 
 # Linux
@@ -69,8 +69,8 @@ sudo git clone https://github.com/eriqande/gsi_sim.git
 cd gsi_sim/
 sudo git submodule init
 sudo git submodule update
-sudo cp ~/Downloads/gsi_sim/gsi_sim-Linux /usr/local/bin/gsi_sim
 cd ..
+sudo cp ~/Downloads/gsi_sim/gsi_sim-Linux /usr/local/bin/gsi_sim
 sudo rm -R ~/Downloads/gsi_sim
 ```
 
