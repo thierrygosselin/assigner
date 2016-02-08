@@ -10,7 +10,7 @@ This is the development page of the **assigner** package for the R software.
 
 **Use assigner to:**
 
-* **conduct assignment analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
+* **Conduct assignment analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
 by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010)
 * The input file is in the VCF file format (Danecek et al. 2011) (*batch_x.vcf*) or haplotype (*batch_1.haplotypes.tsv*) file, produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013)
 * Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
@@ -19,11 +19,12 @@ whitelist** and other arguments
 * Genotypes of poor quality (e.g. in coverage, genotype likelihood or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument.
 * Markers can be randomly selected for a **classic LOO (Leave-One-Out) assignment** or 
 chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis** (reviewed in Anderson 2010)
-* use `iteration.thl` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
+* Use `iteration.thl` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
 * The impact of the minor allele frequency, MAF, (local and global) can also be easily explored with custom thresholds
 * Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
 * `ggplot2`-based plotting to view assignment results and create publication-ready figures
+* Fast computations with optimized codes to run in parallel!
 
 
 ## Installation
@@ -104,6 +105,27 @@ dplyr, reshape2, ggplot2, readr, stringi, tidyr, purrr, lazyeval, adegenet, rand
 ```
 If you don't have them, no worries, it's intalled automatically during **assigner** installation. If you have them, it's your job to update them, because i'm usually using the latest versions...
 
+## Parallel computation and Cloud Computing
+
+Most of the function in **assigner** were designed to be as fast as possible. 
+Using computer with 16GB RAM is recommended. 
+With more CPU and Memory comes faster computation time. 
+If you decide to keep intermediate files during assignment analysis, 
+you will need a large external drive (disk space is cheap use Thunderbold cables). 
+Solid State Drive will provide fast input/output. 
+
+If disk space and computer power is an issue, cloud computing with [Google Cloud Compute Engine] (https://cloud.google.com/compute/) and 
+[Amazon Elastic Cloud Compute] (https://aws.amazon.com/ec2/) is cheap and can be used easily. 
+
+A tutorial and pipeline along an Amazon Machine Image (AMI) are available 
+in our [tutorial-workflow] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/). 
+
+The AMI is preloaded gsi_sim and the required R packages. 
+Following a few steps [link] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/10_use_rstudio.html), 
+you can have [RStudio server] (https://www.rstudio.com/) running and used through your web browser!
+
+The Amazon image can be imported into Google Cloud Compute Engine to start a new compute engine virtual machine [link] (https://cloud.google.com/compute/docs/creating-custom-image#import_an_ami_image). 
+
 
 ## New
 
@@ -125,9 +147,9 @@ And delete the old binary 'gsisim' in the /usr/local/bin folder
 with the following Terminal command: `sudo rm /usr/local/bin/gsisim`
 
 **v.0.1.1**
-* `subsample` and `iterations.subsample` were implemented to analyse the impact of 
+* `subsample` and `iteration.subsample` were implemented to analyse the impact of 
 sample size on assignment. Usefull in the case of large bias in individuals 
-between populations. The `iterations.subsample` argument creates x subsample 
+between populations. The `iteration.subsample` argument creates x subsample 
 dataset.
 
 
