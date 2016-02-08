@@ -121,7 +121,7 @@ A tutorial and pipeline along an Amazon Machine Image (AMI) are available
 in our [tutorial-workflow] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/). 
 
 The AMI is preloaded with **gsi_sim** and the required **R packages**. 
-Following a few steps [link] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/10_use_rstudio.html), 
+Following a few steps: [link] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/10_use_rstudio.html), 
 you can have [RStudio server] (https://www.rstudio.com/) running and used through your web browser!
 
 The Amazon image can be imported into Google Cloud Compute Engine to start a new compute engine virtual machine [link] (https://cloud.google.com/compute/docs/creating-custom-image#import_an_ami_image). 
