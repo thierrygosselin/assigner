@@ -479,7 +479,7 @@ GBS_assignment <- function(vcf.file,
     
     vcf <- suppressWarnings(
       vcf %>%
-        full_join(blacklist.genotype, by = c("CHROM", "LOCUS", "POS", "INDIVIDUALS")) %>%
+        full_join(blacklist.genotype, by = columns.names.blacklist.genotype) %>%
         mutate(
           ERASE = stri_replace_na(str = ERASE, replacement = "ok"),
           GT = ifelse(ERASE == "erase", "./.", GT)
