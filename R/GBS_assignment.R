@@ -462,6 +462,7 @@ GBS_assignment <- function(vcf.file,
       whitelist.markers.ind <- vcf %>% select(CHROM, LOCUS, POS, INDIVIDUALS) %>% distinct(CHROM, LOCUS, POS, INDIVIDUALS)
       # updating the blacklist.genotype
       blacklist.genotype <- suppressWarnings(semi_join(whitelist.markers.ind, blacklist.genotype, by = columns.names.blacklist.genotype))
+      columns.names.blacklist.genotype <- colnames(blacklist.genotype)
     }
     
     # control check to remove blacklisted individuals from the blacklist of genotypes
@@ -471,21 +472,22 @@ GBS_assignment <- function(vcf.file,
       message("Control check to remove blacklisted individuals 
               present in the blacklist of genotypes to erase.")
       blacklist.genotype <- suppressWarnings(anti_join(blacklist.genotype, blacklist.id, by = "INDIVIDUALS"))
+      columns.names.blacklist.genotype <- colnames(blacklist.genotype)
     }
     
     # Add one column that will allow to include the blacklist in the dataset 
     # by x column(s) of markers
     blacklist.genotype <- mutate(.data = blacklist.genotype, ERASE = rep("erase", n()))
     
-    vcf <- suppressWarnings(
-      vcf %>%
-        full_join(blacklist.genotype, by = columns.names.blacklist.genotype) %>%
-        mutate(
-          ERASE = stri_replace_na(str = ERASE, replacement = "ok"),
-          GT = ifelse(ERASE == "erase", "./.", GT)
-        ) %>% 
-        select(-ERASE)
-    )
+      vcf <- suppressWarnings(
+        vcf %>%
+          full_join(blacklist.genotype, by = columns.names.blacklist.genotype) %>%
+          mutate(
+            ERASE = stri_replace_na(str = ERASE, replacement = "ok"),
+            GT = ifelse(ERASE == "erase", "./.", GT)
+          ) %>% 
+          select(-ERASE)
+      )
   } # end erase genotypes
   
   # dump unused object
