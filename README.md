@@ -111,8 +111,8 @@ Most of the function in **assigner** were designed to be as fast as possible.
 Using computer with 16GB RAM is recommended. 
 With more CPU and Memory comes faster computation time. 
 If you decide to keep intermediate files during assignment analysis, 
-you will need a large external drive (disk space is cheap use Thunderbold cables). 
-Solid State Drive will provide fast input/output. 
+you will need a large external drive (disk space is cheap). 
+Solid State Drive and thunderbolt cables will provide fast input/output. 
 
 If disk space and computer power is an issue, cloud computing with [Google Cloud Compute Engine] (https://cloud.google.com/compute/) and 
 [Amazon Elastic Cloud Compute] (https://aws.amazon.com/ec2/) is cheap and can be used easily. 
