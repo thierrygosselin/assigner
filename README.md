@@ -120,7 +120,7 @@ If disk space and computer power is an issue, cloud computing with [Google Cloud
 A tutorial and pipeline along an Amazon Machine Image (AMI) are available 
 in our [tutorial-workflow] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/). 
 
-The AMI is preloaded gsi_sim and the required R packages. 
+The AMI is preloaded with **gsi_sim** and the required **R packages**. 
 Following a few steps [link] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/10_use_rstudio.html), 
 you can have [RStudio server] (https://www.rstudio.com/) running and used through your web browser!
 
