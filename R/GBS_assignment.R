@@ -453,24 +453,24 @@ GBS_assignment <- function(vcf.file,
     }
     
     # control check to keep only whitelisted markers from the blacklist of genotypes
-    if (!is.null(whitelist.markers)){
+    if (is.null(whitelist.markers)){
+      blacklist.genotype <- blacklist.genotype
+    } else {
       message("Control check to keep only whitelisted markers 
               present in the blacklist of genotypes to erase.")
-      # updating the whitelist of markers t have all columns that id markers
+      # updating the whitelist of markers to have all columns that id markers
       whitelist.markers.ind <- vcf %>% select(CHROM, LOCUS, POS, INDIVIDUALS) %>% distinct(CHROM, LOCUS, POS, INDIVIDUALS)
       # updating the blacklist.genotype
       blacklist.genotype <- suppressWarnings(semi_join(whitelist.markers.ind, blacklist.genotype, by = columns.names.blacklist.genotype))
-    } else {
-      blacklist.genotype <- blacklist.genotype
     }
     
     # control check to remove blacklisted individuals from the blacklist of genotypes
-    if (!is.null(blacklist.id)){
+    if (is.null(blacklist.id)){
+      blacklist.genotype <- blacklist.genotype
+    } else {
       message("Control check to remove blacklisted individuals 
               present in the blacklist of genotypes to erase.")
       blacklist.genotype <- suppressWarnings(anti_join(blacklist.genotype, blacklist.id, by = "INDIVIDUALS"))
-    } else {
-      blacklist.genotype <- blacklist.genotype
     }
     
     # Add one column that will allow to include the blacklist in the dataset 
