@@ -1,13 +1,13 @@
 # Write a gsi_sim file from STACKS VCF file
 
-#' @name GBS_assignment
+#' @name assignment_ngs
 #' @title Assignment analysis in gsi_sim with GBS data produced by STACKS workflow
 #' @description \code{gsi_sim} is a tool for doing and simulating genetic stock
 #' identification and developed by Eric C. Anderson.
-#' The arguments in the \code{GBS_assignment} function were tailored for the
+#' The arguments in the \code{assignment_ngs} function were tailored for the
 #' reality of GBS data for assignment analysis while
 #' maintaining a reproducible workflow.
-#' The input data is a VCF file produced by STACKS. Individuals, populations and
+#' The input data is a VCF file produced by STACKS or a data frame. Individuals, populations and
 #' markers can be filtered and/or selected in several ways using blacklist,
 #' whitelist and other arguments. Map-independent imputation of missing genotype
 #' using Random Forest or the most frequent category is also available.
@@ -15,7 +15,13 @@
 #' assignment or chosen based on ranked Fst for a thl
 #' (Training, Holdout, Leave-one-out) assignment analysis.
 
-#' @param vcf.file The VCF file created by STACKS.
+#' @param vcf.file The default VCF file created by STACKS.
+#' @param df.file Default: \code{df.file = NULL} A data frame with tab separated
+#' columns. The 1st column is the \code{POP_ID}, 2nd colum 
+#' the \code{INDIVIDUALS} and the remaining columns are the markers IDs
+#' containing genotypes in the format: 3 digits per allele
+#' and no space between alleles (e.g. 235240 : allele1 = 235 and allele2 = 240).
+#' Missing genotypes are coded \code{000000}.
 #' @param whitelist.markers (optional) A whitelist containing CHROM (character
 #' or integer) and/or LOCUS (integer) and/or
 #' POS (integer) columns header. To filter by CHROM and/or locus and/or by snp.
@@ -104,9 +110,17 @@
 #' If you need to rename sampling sites in \code{pop.levels} or combined sites/pop
 #' into a different names, here is the place.
 #' @param pop.id.start The start of your population id
-#' in the name of your individual sample.
+#' in the name of your individual sample. Your individuals are identified 
+#' in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
+#' then, \code{pop.id.start} = 5. If you didn't name your individuals
+#' with the pop id in it, use the \code{strata} argument. 
 #' @param pop.id.end The end of your population id
-#' in the name of your individual sample.
+#' in the name of your individual sample. Your individuals are identified 
+#' in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
+#' then, \code{pop.id.end} = 7. If you didn't name your individuals
+#' with the pop id in it, use the \code{strata} argument.
+#' @param strata (optional) A tab delimited file with 2 columns with header:
+#' \code{INDIVIDUALS} and \code{POP_ID}. Default: \code{strata = NULL}.
 
 #' @param pop.select (string) Conduct the assignment analysis on a
 #' selected list of populations. Default = \code{NULL} for no selection and keep
@@ -143,7 +157,10 @@
 #' programming of Random Forest imputations. For more info on how to install the
 #' OpenMP version see \code{\link[randomForestSRC]{randomForestSRC-package}}.
 #' If not selected \code{detectCores()-1} is used as default.
-#' @details The imputations using Random Forest requires more time to compute
+#' @details You need to have either the \code{pop.id.start} and \code{pop.id.end}
+#' or the \code{strata} argument, to identify your populations.
+#' 
+#' The imputations using Random Forest requires more time to compute
 #' and can take several
 #' minutes and hours depending on the size of the dataset and polymorphism of
 #' the species used. e.g. with a low polymorphic taxa, and a data set
@@ -156,7 +173,7 @@
 #' \code{$assignment} to view the ggplot2 figure \code{$plot.assignment}. 
 #' See example below.
 
-#' @note \code{GBS_assignment} assumes that the command line version of gsi_sim 
+#' @note \code{assignment_ngs} assumes that the command line version of gsi_sim 
 #' is properly installed and available on the command line, so it is executable from 
 #' any directory (more info on how to do this, here 
 #' \url{http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time}.
@@ -165,7 +182,7 @@
 #' instruction here: \url{https://github.com/eriqande/gsi_sim}.
 
 #' @export
-#' @rdname GBS_assignment
+#' @rdname assignment_ngs
 #' @import dplyr
 #' @import foreach
 #' @import parallel
@@ -178,7 +195,7 @@
 
 #' @examples
 #' \dontrun{
-#' assignment.treefrog <- GBS_assignment(
+#' assignment.treefrog <- assignment_ngs(
 #' vcf.file = "batch_1.vcf",
 #' whitelist.markers = "whitelist.vcf.txt",
 #' snp.ld = NULL,
@@ -236,7 +253,7 @@
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
 # required to pass the R CMD check and have 'no visible binding for global variable'
-if (getRversion() >= "2.15.1"){
+if (getRversion() >= "2.15.1") {
   utils::globalVariables(
     c('ID', '#CHROM', 'CHROM', 'FORMAT', 'INDIVIDUALS', 'FORMAT_ID', 'LOCUS',
       'POS', 'REF', 'ALT', 'POP_ID', 'READ_DEPTH', 'ALLELE_DEPTH', 'GL',
@@ -258,7 +275,8 @@ if (getRversion() >= "2.15.1"){
   )
 }
 
-GBS_assignment <- function(vcf.file,
+assignment_ngs <- function(vcf.file,
+                           df.file = NULL,
                            whitelist.markers = NULL,
                            blacklist.genotype = NULL,
                            snp.ld = NULL,
@@ -274,6 +292,7 @@ GBS_assignment <- function(vcf.file,
                            pop.labels,
                            pop.id.start, 
                            pop.id.end,
+                           strata = NULL,
                            pop.select = NULL,
                            subsample = NULL,
                            iteration.subsample = 1,
@@ -294,7 +313,9 @@ GBS_assignment <- function(vcf.file,
   message("Assignment analysis using stackr and gsi_sim")
   
   # Checking for missing and/or default arguments ******************************
-  if (missing(vcf.file)) stop("VCF file required")
+  if (missing(vcf.file)) vcf.file <- NULL
+  if (missing(df.file)) df.file <- NULL
+  if (missing(vcf.file) & missing(df.file)) stop("One input file is required")
   if (missing(whitelist.markers)) whitelist.markers <- NULL # no Whitelist
   if (missing(blacklist.genotype)) blacklist.genotype <- NULL # no genotype to erase
   if (missing(snp.ld)) snp.ld <- NULL
@@ -308,8 +329,13 @@ GBS_assignment <- function(vcf.file,
   if (missing(blacklist.id)) blacklist.id <- NULL # No blacklist of ID
   if (missing(pop.levels)) stop("pop.levels required")
   if (missing(pop.labels)) pop.labels <- pop.levels # pop.labels
-  if (missing(pop.id.start)) stop("pop.id.start required")
-  if (missing(pop.id.end)) stop("pop.id.end required")
+  if (missing(strata) & missing(pop.id.start) & missing(pop.id.end)) {
+    stop("pop.id.start and pop.id.end or strata arguments are required to 
+         identify your populations")
+  }
+  if (missing(pop.id.start)) pop.id.start <- NULL
+  if (missing(pop.id.end)) pop.id.end <- NULL
+  if (missing(strata)) strata <- NULL
   if (missing(pop.select)) pop.select <- NULL
   if (missing(subsample)) subsample <- NULL
   if (missing(iteration.subsample)) iteration.subsample <- 1
@@ -329,7 +355,7 @@ GBS_assignment <- function(vcf.file,
   if (missing(parallel.core) | is.null(parallel.core)) parallel.core <- detectCores()-1
   
   # Create a folder based on filename to save the output files *****************
-  if (missing(folder)){
+  if (missing(folder)) {
     # Get date and time to have unique filenaming
     file.date <- stri_replace_all_fixed(Sys.time(), pattern = " EDT", replacement = "")
     file.date <- stri_replace_all_fixed(file.date, pattern = c("-", " ", ":"), replacement = c("", "@", ""), vectorize_all = FALSE)
@@ -352,27 +378,43 @@ GBS_assignment <- function(vcf.file,
     message(stri_join("Folder: ", directory))
   }
   
-  # Import/read VCF ************************************************************
-  message("Importing the VCF...")
-  vcf <- read_delim(
-    vcf.file,
-    delim = "\t",
-    comment = "##",
-    progress = interactive()
-  ) %>%
-    select(-c(QUAL, FILTER, INFO)) %>%
-    rename(LOCUS = ID, CHROM = `#CHROM`) %>%
-    mutate(
-      CHROM = stri_replace_all_fixed(CHROM, pattern = "un", replacement = "1")
-    )
-  
-  # Detect STACKS version ******************************************************
-  if (stri_detect_fixed(vcf$FORMAT[1], "AD")) {
-    stacks.version <- "new"
-  } else{
-    stacks.version <- "old"
+  # Import data ****************************************************************
+  if (is.null(vcf.file)) {
+    message("Importing the data frame")
+    vcf <- read_tsv(file = df.file, col_names = TRUE) %>% 
+      tidyr::gather(key = LOCUS, value = GT, -c(INDIVIDUALS, POP_ID)) %>% 
+      mutate(
+        POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = unique(pop.labels), ordered =T),
+        GT = stri_pad_right(str = GT, width = 6, pad = "0")
+      )
+  } else {
+    message("Importing the VCF...")
+    vcf <- read_delim(
+      vcf.file,
+      delim = "\t",
+      comment = "##",
+      progress = interactive()
+    ) %>%
+      select(-c(QUAL, FILTER, INFO)) %>%
+      rename(LOCUS = ID, CHROM = `#CHROM`) %>%
+      mutate(
+        CHROM = stri_replace_all_fixed(CHROM, pattern = "un", replacement = "1")
+      )
   }
-  vcf <- vcf %>% select(-FORMAT)
+  # Detect STACKS version ******************************************************
+  if (!is.null(vcf.file)) {
+    if (stri_detect_fixed(vcf$FORMAT[1], "AD")) {
+      stacks.version <- "new"
+    } else {
+      stacks.version <- "old"
+    }
+    vcf <- vcf %>% select(-FORMAT)
+  }
+  
+  # Import strata file if used *************************************************
+  if (!is.null(strata)) {
+    strata <- read_tsv(file = strata, col_names = TRUE, col_types = "cc")
+  }
   
   # Whitelist of markers *******************************************************
   if (is.null(whitelist.markers)) { # no Whitelist
@@ -382,7 +424,7 @@ GBS_assignment <- function(vcf.file,
     message("Filtering the VCF with the whitelist from your directory")
     whitelist.markers <- read_tsv(whitelist.markers, col_names = TRUE)
     columns.names.whitelist <- colnames(whitelist.markers)
-    if ("CHROM" %in% columns.names.whitelist){
+    if ("CHROM" %in% columns.names.whitelist) {
       whitelist.markers$CHROM <- as.character(whitelist.markers$CHROM)
     }
     vcf <- suppressWarnings(
@@ -392,15 +434,23 @@ GBS_assignment <- function(vcf.file,
   }
   
   # Tidying the VCF to make it easy to work on the data for conversion *********
-  message("Making the VCF population wise")
-  vcf <- vcf %>%
-    tidyr::gather(INDIVIDUALS, FORMAT_ID, -c(CHROM, LOCUS, POS, REF, ALT)) %>% # Gather individuals in 1 colummn
-    mutate( # Make population ready
-      POP_ID = substr(INDIVIDUALS, pop.id.start, pop.id.end),
-      POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = unique(pop.labels), ordered =T),
-      INDIVIDUALS =  as.character(INDIVIDUALS)
-    )
-  
+  if (!is.null(vcf.file)) {
+    message("Making the VCF population wise")
+    vcf <- vcf %>%
+      tidyr::gather(INDIVIDUALS, FORMAT_ID, -c(CHROM, LOCUS, POS, REF, ALT)) # Gather individuals in 1 colummn
+    
+    if (is.null(strata)){
+      vcf <- vcf %>%
+        mutate( # Make population ready
+          POP_ID = substr(INDIVIDUALS, pop.id.start, pop.id.end),
+          POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = unique(pop.labels), ordered =T),
+          INDIVIDUALS =  as.character(INDIVIDUALS)
+        )
+    } else {
+      vcf <- vcf %>%
+        left_join(strata, by = "INDIVIDUALS")
+    }
+  }
   # Blacklist id ***************************************************************
   if (is.null(blacklist.id)) { # No blacklist of ID
     message("No individual blacklisted")
@@ -416,7 +466,7 @@ GBS_assignment <- function(vcf.file,
   }
   
   # Pop select *****************************************************************
-  if (is.null(pop.select)){
+  if (is.null(pop.select)) {
     vcf <- vcf
   } else {
     message(stri_join(length(pop.select), "population(s) selected", sep = " "))
@@ -427,35 +477,60 @@ GBS_assignment <- function(vcf.file,
   }
   
   # Tidy VCF *******************************************************************
-  message("Tidy vcf into factory for conversion into gsi_sim ...")
-  if (stacks.version == "new"){ # with new version of stacks > v.1.29
-    vcf <- vcf %>%
-      tidyr::separate(FORMAT_ID, c("GT", "READ_DEPTH", "ALLELE_DEPTH", "GL"),
-                      sep = ":", extra = "warn") %>%
-      select(-c(READ_DEPTH, ALLELE_DEPTH, GL))
-  } else { # stacks version prior to v.1.29 had no Allele Depth field...
-    vcf <- vcf %>%
-      tidyr::separate(FORMAT_ID, c("GT", "READ_DEPTH", "GL"),
-                      sep = ":", extra = "warn") %>%
-      select(-c(READ_DEPTH, GL))
+  if (!is.null(vcf.file)) {
+    message("Tidy vcf into factory for conversion into gsi_sim ...")
+    if (stacks.version == "new") { # with new version of stacks > v.1.29
+      vcf <- vcf %>%
+        tidyr::separate(FORMAT_ID, c("GT", "READ_DEPTH", "ALLELE_DEPTH", "GL"),
+                        sep = ":", extra = "warn") %>%
+        select(-c(READ_DEPTH, ALLELE_DEPTH, GL))
+    } else { # stacks version prior to v.1.29 had no Allele Depth field...
+      vcf <- vcf %>%
+        tidyr::separate(FORMAT_ID, c("GT", "READ_DEPTH", "GL"),
+                        sep = ":", extra = "warn") %>%
+        select(-c(READ_DEPTH, GL))
+    }
   }
   
   # Blacklist genotypes ********************************************************
   if (is.null(blacklist.genotype)) { # no Whitelist
     message("No genotype to erase")
-    vcf <- vcf
   } else {
     message("Erasing genotype with the blacklist")
     blacklist.genotype <- read_tsv(blacklist.genotype, col_names = TRUE)
     columns.names.blacklist.genotype <- colnames(blacklist.genotype)
-    if ("CHROM" %in% columns.names.blacklist.genotype){
+    if ("CHROM" %in% columns.names.blacklist.genotype) {
       columns.names.blacklist.genotype$CHROM <- as.character(columns.names.blacklist.genotype$CHROM)
     }
     
+    # control check to keep only individuals in pop.select
+    if (!is.null(pop.select)) {
+      message("Control check to keep only individuals present in pop.select")
+      # updating the blacklist.genotype
+      if (is.null(strata)){
+        blacklist.genotype <- suppressWarnings(
+          blacklist.genotype  %>% 
+            mutate( # Make population ready
+              POP_ID = substr(INDIVIDUALS, pop.id.start, pop.id.end),
+              POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = unique(pop.labels), ordered =T),
+              INDIVIDUALS =  as.character(INDIVIDUALS) 
+            ) %>% 
+            filter(POP_ID %in% pop.select) %>% 
+            select(-POP_ID)
+        )
+      } else {
+        blacklist.genotype <- suppressWarnings(
+          blacklist.genotype %>%
+            left_join(strata, by = "INDIVIDUALS") %>% 
+            filter(POP_ID %in% pop.select) %>% 
+            select(-POP_ID)
+        )
+      }
+    }
+    
     # control check to keep only whitelisted markers from the blacklist of genotypes
-    if (is.null(whitelist.markers)){
+    if (!is.null(whitelist.markers)) {
       blacklist.genotype <- blacklist.genotype
-    } else {
       message("Control check to keep only whitelisted markers 
 present in the blacklist of genotypes to erase.")
       # updating the whitelist of markers to have all columns that id markers
@@ -466,9 +541,7 @@ present in the blacklist of genotypes to erase.")
     }
     
     # control check to remove blacklisted individuals from the blacklist of genotypes
-    if (is.null(blacklist.id)){
-      blacklist.genotype <- blacklist.genotype
-    } else {
+    if (!is.null(blacklist.id)) {
       message("Control check to remove blacklisted individuals 
 present in the blacklist of genotypes to erase.")
       blacklist.genotype <- suppressWarnings(anti_join(blacklist.genotype, blacklist.id, by = "INDIVIDUALS"))
@@ -479,15 +552,15 @@ present in the blacklist of genotypes to erase.")
     # by x column(s) of markers
     blacklist.genotype <- mutate(.data = blacklist.genotype, ERASE = rep("erase", n()))
     
-      vcf <- suppressWarnings(
-        vcf %>%
-          full_join(blacklist.genotype, by = columns.names.blacklist.genotype) %>%
-          mutate(
-            ERASE = stri_replace_na(str = ERASE, replacement = "ok"),
-            GT = ifelse(ERASE == "erase", "./.", GT)
-          ) %>% 
-          select(-ERASE)
-      )
+    vcf <- suppressWarnings(
+      vcf %>%
+        full_join(blacklist.genotype, by = columns.names.blacklist.genotype) %>%
+        mutate(
+          ERASE = stri_replace_na(str = ERASE, replacement = "ok"),
+          GT = ifelse(ERASE == "erase", "./.", GT)
+        ) %>% 
+        select(-ERASE)
+    )
   } # end erase genotypes
   
   # dump unused object
@@ -497,13 +570,13 @@ present in the blacklist of genotypes to erase.")
   
   # subsampling data ***********************************************************
   # Function:
-  subsampling_data <- function(iteration.subsample, ...){
+  subsampling_data <- function(iteration.subsample, ...) {
     # message(paste0("Creating data subsample: ", iteration.subsample))
-    if (is.null(subsample)){
+    if (is.null(subsample)) {
       subsample.select <- ind.pop.df %>% 
         mutate(SUBSAMPLE = rep(iteration.subsample, n()))
-    } else{
-      if (subsample > 1){ # integer
+    } else {
+      if (subsample > 1) { # integer
         subsample.select <- ind.pop.df %>%
           group_by(POP_ID) %>%
           sample_n(subsample, replace = FALSE) %>% # sampling individuals for each pop
@@ -511,7 +584,7 @@ present in the blacklist of genotypes to erase.")
           mutate(SUBSAMPLE = rep(iteration.subsample, n())) %>% 
           ungroup()
       }
-      if (subsample < 1){ # proportion
+      if (subsample < 1) { # proportion
         subsample.select <- ind.pop.df %>%
           group_by(POP_ID) %>%
           sample_frac(subsample, replace = FALSE) %>% # sampling individuals for each pop
@@ -533,9 +606,9 @@ present in the blacklist of genotypes to erase.")
   subsample.list <- map(.x = 1:iteration.subsample, .f = subsampling_data, subsample = subsample)
   
   # keep track of subsampling individuals and write to directory
-  if (is.null(subsample)){
+  if (is.null(subsample)) {
     message("Subsampling: not selected")
-  } else{
+  } else {
     message("Subsampling: selected")
     subsampling.individuals <- bind_rows(subsample.list)
     write_tsv(x = subsampling.individuals, path = paste0(directory, "subsampling.individuals.tsv"), col_names = TRUE, append = FALSE)
@@ -547,23 +620,24 @@ present in the blacklist of genotypes to erase.")
   
   # assignment analysis ********************************************************
   # Function:
-  assignment_function <- function(data, ...){
+  assignment_function <- function(data, ...) {
     # data <- subsample.list[[1]] # test
     subsampling.individuals <- data
     subsample.id <- unique(subsampling.individuals$SUBSAMPLE)
     
-    if (!is.null(subsample)){
+    if (!is.null(subsample)) {
       message(paste("Analyzing subsample: ", subsample.id))
     }
     
     # Updating directories for subsampling
-    if(is.null(subsample)){
+    if (is.null(subsample)) {
       directory.subsample <- directory
     } else {
       directory.subsample <- paste0(directory, "subsample_", subsample.id, "/")
       dir.create(file.path(directory.subsample))
     }
     
+    # Keep only the subsample in the VCF
     vcf <- vcf %>%
       semi_join(subsampling.individuals, by = c("POP_ID", "INDIVIDUALS"))
     
@@ -572,14 +646,14 @@ present in the blacklist of genotypes to erase.")
     subsampling.individuals <- NULL
     
     # LD control... keep only 1 SNP per haplotypes/reads (optional) ************
-    if (is.null(snp.ld)){
+    if (is.null(snp.ld)) {
       vcf <- vcf
       snp.ld <- NULL
-    } else{
+    } else {
       message("Minimizing LD...")
       snp.locus <- vcf %>% select(LOCUS, POS) %>% distinct(POS)
       # Random selection
-      if (snp.ld == "random"){
+      if (snp.ld == "random") {
         snp.select <- snp.locus %>%
           group_by(LOCUS) %>%
           sample_n(size = 1, replace = FALSE)
@@ -587,7 +661,7 @@ present in the blacklist of genotypes to erase.")
       }
       
       # Fist SNP on the read
-      if (snp.ld == "first"){
+      if (snp.ld == "first") {
         snp.select <- snp.locus %>%
           group_by(LOCUS) %>%
           summarise(POS = min(POS))
@@ -595,7 +669,7 @@ present in the blacklist of genotypes to erase.")
       }
       
       # Last SNP on the read
-      if (snp.ld == "last"){
+      if (snp.ld == "last") {
         snp.select <- snp.locus %>%
           group_by(LOCUS) %>%
           summarise(POS = max(POS))
@@ -608,13 +682,17 @@ present in the blacklist of genotypes to erase.")
     } # end of snp.ld control
     
     # Unique markers id: combine CHROM, LOCUS and POS into MARKERS *************
-    vcf <- vcf %>%
-      mutate(
-        POS = stri_pad_left(str = POS, width = 8, pad = "0"),
-        LOCUS = stri_pad_left(str = LOCUS, width = 8, pad = "0")
-      ) %>%
-      arrange(CHROM, LOCUS, POS) %>%
-      tidyr::unite(MARKERS, c(CHROM, LOCUS, POS), sep = "_")
+    if (is.null(vcf.file)) {
+      vcf <- vcf %>% rename(MARKERS = LOCUS)
+    } else {
+      vcf <- vcf %>%
+        mutate(
+          POS = stri_pad_left(str = POS, width = 8, pad = "0"),
+          LOCUS = stri_pad_left(str = LOCUS, width = 8, pad = "0")
+        ) %>%
+        arrange(CHROM, LOCUS, POS) %>%
+        tidyr::unite(MARKERS, c(CHROM, LOCUS, POS), sep = "_")
+    }
     
     # Markers in common between all populations (optional) *********************
     if (common.markers == FALSE) {
@@ -623,26 +701,35 @@ present in the blacklist of genotypes to erase.")
       message("Using markers common in all populations")
       pop.number <- n_distinct(vcf$POP_ID)
       
-      pop.filter <- vcf %>%
-        filter(GT != "./.") %>%
-        group_by(MARKERS) %>%
-        filter(n_distinct(POP_ID) == pop.number) %>%
-        arrange(MARKERS) %>%
-        select(MARKERS) %>%
-        distinct(MARKERS)
-      
+      if (is.null(vcf.file)) { # for data frame input
+        pop.filter <- vcf %>%
+          filter(GT != "000000") %>%
+          group_by(MARKERS) %>%
+          filter(n_distinct(POP_ID) == pop.number) %>%
+          arrange(MARKERS) %>%
+          select(MARKERS) %>%
+          distinct(MARKERS)
+      } else { # for vcf input
+        pop.filter <- vcf %>%
+          filter(GT != "./.") %>%
+          group_by(MARKERS) %>%
+          filter(n_distinct(POP_ID) == pop.number) %>%
+          arrange(MARKERS) %>%
+          select(MARKERS) %>%
+          distinct(MARKERS)
+      }
       message(stri_join("Number of original markers = ", n_distinct(vcf$MARKERS), 
-                     "\n", "Number of markers present in all the populations = ", 
-                     n_distinct(pop.filter$MARKERS), "\n", 
-                     "Number of markers removed = ", 
-                     n_distinct(vcf$MARKERS) - n_distinct(pop.filter$MARKERS))
+                        "\n", "Number of markers present in all the populations = ", 
+                        n_distinct(pop.filter$MARKERS), "\n", 
+                        "Number of markers removed = ", 
+                        n_distinct(vcf$MARKERS) - n_distinct(pop.filter$MARKERS))
       )
       vcf <- suppressWarnings(vcf %>% semi_join(pop.filter, by = "MARKERS"))
       pop.filter <- NULL # ununsed object
     } # end common markers
     
     # Minor Allele Frequency filter ********************************************
-    if (is.null(maf.global.threshold) | is.null(maf.local.threshold)){ # no MAF
+    if (is.null(maf.global.threshold) | is.null(maf.local.threshold)) { # no MAF
       vcf <- vcf
     } else { # with MAF
       message("Filtering the VCF with MAF")
@@ -677,7 +764,7 @@ present in the blacklist of genotypes to erase.")
       # maf.global.threshold <- 0.1 # for test
       # maf.pop.num.threshold <- 1  # for test
       
-      if (maf.approach == "haplotype"){
+      if (maf.approach == "haplotype") {
         vcf.maf <- tidyr::separate(data = vcf, col = MARKERS, into = c("CHROM", "LOCUS", "POS"), sep = "_", remove = FALSE, extra = "warn")
         
         if (maf.operator == "OR") {
@@ -711,7 +798,7 @@ present in the blacklist of genotypes to erase.")
         }
         vcf.maf <- vcf %>% select(-c(CHROM, LOCUS, POS))
       } else { # SNP approach
-        if(maf.operator == "OR") {
+        if (maf.operator == "OR") {
           vcf.maf <- vcf %>%
             group_by(MARKERS, POP_ID) %>%
             summarise(
@@ -742,10 +829,10 @@ present in the blacklist of genotypes to erase.")
         }
       }
       message(stri_join("The number of MARKERS removed by the MAF filters = ", 
-                     n_distinct(vcf$MARKERS)-n_distinct(vcf.maf$MARKERS), "\n", 
-                     "The number of MARKERS before -> after the MAF filters: ", 
-                     n_distinct(vcf$MARKERS)," -> ", n_distinct(vcf.maf$MARKERS), 
-                     " MARKERS"))
+                        n_distinct(vcf$MARKERS)-n_distinct(vcf.maf$MARKERS), "\n", 
+                        "The number of MARKERS before -> after the MAF filters: ", 
+                        n_distinct(vcf$MARKERS)," -> ", n_distinct(vcf.maf$MARKERS), 
+                        " MARKERS"))
       
       vcf <- vcf.maf %>% select(-c(MAF_LOCAL, MAF_GLOBAL))
       vcf.maf <- NULL # remove unused object
@@ -754,58 +841,69 @@ present in the blacklist of genotypes to erase.")
     
     # Change the genotype coding  **********************************************
     # easier for the integration in downstream conversion to gsi_sim
-    message("Recoding genotypes for gsi_sim")
-    vcf <- vcf %>%
-      mutate(
-        REF= stri_replace_all_fixed(str = REF, pattern = c("A", "C", "G", "T"), replacement = c("1", "2", "3", "4"), vectorize_all = FALSE), # replace nucleotide with numbers
-        ALT = stri_replace_all_fixed(str = ALT, pattern = c("A", "C", "G", "T"), replacement = c("1", "2", "3", "4"), vectorize_all = FALSE),# replace nucleotide with numbers
-        GT = ifelse(GT == "0/0", stri_join(REF, REF, sep = "_"),
-                    ifelse(GT == "1/1",  stri_join(ALT, ALT, sep = "_"),
-                           ifelse(GT == "0/1", stri_join(REF, ALT, sep = "_"),
-                                  ifelse(GT == "1/0", stri_join(ALT, REF, sep = "_"), "0_0")
-                           )
-                    )
-        )
-      ) %>%
-      arrange(MARKERS, POP_ID) %>%
-      select(-c(REF, ALT))
-    
+    if (is.null(df.file)) { # for VCF input
+      message("Recoding genotypes for gsi_sim")
+      vcf <- vcf %>%
+        mutate(
+          REF= stri_replace_all_fixed(str = REF, pattern = c("A", "C", "G", "T"), replacement = c("1", "2", "3", "4"), vectorize_all = FALSE), # replace nucleotide with numbers
+          ALT = stri_replace_all_fixed(str = ALT, pattern = c("A", "C", "G", "T"), replacement = c("1", "2", "3", "4"), vectorize_all = FALSE),# replace nucleotide with numbers
+          GT = ifelse(GT == "0/0", stri_join(REF, REF, sep = "_"),
+                      ifelse(GT == "1/1",  stri_join(ALT, ALT, sep = "_"),
+                             ifelse(GT == "0/1", stri_join(REF, ALT, sep = "_"),
+                                    ifelse(GT == "1/0", stri_join(ALT, REF, sep = "_"), "0_0")
+                             )
+                      )
+          )
+        ) %>%
+        arrange(MARKERS, POP_ID) %>%
+        select(-c(REF, ALT))
+    }
     # more prep for the no imputation section
-    gsim.prep <- vcf %>%
-      tidyr::separate(col = GT, into = c("A1", "A2"), sep = "_") %>%  # separate the genotypes into alleles
-      tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID))
-    
-    # save.image("assignment.lobster.RData")  # test
-    # save.image("assignment.lobster.subsample.RData")  # test
-    # load("assignment.lobster.RData")  # test
-    # load("assignment.lobster.subsample.RData")  # test
+    if (is.null(df.file)) { # for VCF input
+      gsim.prep <- vcf %>%
+        tidyr::separate(col = GT, into = c("A1", "A2"), sep = "_") %>%  # separate the genotypes into alleles
+        tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID))
+    } else { # for df input
+      gsim.prep <- vcf %>% 
+        tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3) %>%  # separate the genotypes into alleles
+        tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID))
+    }
     
     # Imputations **************************************************************
-    if (imputations != "FALSE"){
-      
-      vcf.prep <- vcf %>%
-        mutate(
-          GT = stri_replace_all_fixed(GT, pattern = "0_0", replacement = "NA", vectorize_all = FALSE),
-          GT = replace(GT, which(GT == "NA"), NA)
-        ) %>%
-        group_by(INDIVIDUALS, POP_ID) %>% 
-        tidyr::spread(data = ., key = MARKERS, value = GT) %>%
-        ungroup() %>% 
-        arrange(POP_ID, INDIVIDUALS)
-      
+    if (imputations != "FALSE") {
+      if (is.null(df.file)) { # for VCF input
+        vcf.prep <- vcf %>%
+          mutate(
+            GT = stri_replace_all_fixed(GT, pattern = "0_0", replacement = "NA", vectorize_all = FALSE),
+            GT = replace(GT, which(GT == "NA"), NA)
+          ) %>%
+          group_by(INDIVIDUALS, POP_ID) %>% 
+          tidyr::spread(data = ., key = MARKERS, value = GT) %>%
+          ungroup() %>% 
+          arrange(POP_ID, INDIVIDUALS)
+      } else { # for df input
+        vcf.prep <- vcf %>%
+          mutate(
+            GT = stri_replace_all_fixed(GT, pattern = "000000", replacement = "NA", vectorize_all = FALSE),
+            GT = replace(GT, which(GT == "NA"), NA)
+          ) %>%
+          group_by(INDIVIDUALS, POP_ID) %>% 
+          tidyr::spread(data = ., key = MARKERS, value = GT) %>%
+          ungroup() %>% 
+          arrange(POP_ID, INDIVIDUALS)
+      } # prep file for imputation
       if (imputations == "rf") {
-        
         # Parallel computations options
         options(rf.cores = parallel.core, mc.cores = parallel.core)
         
         # Start cluster registration backend
-        cl <- parallel::makeCluster(parallel.core, methods = FALSE,outfile = "")
+        cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = "")
         
         # doSNOW::registerDoSNOW(cl)
         doParallel::registerDoParallel(cl)
         
         # imputations using Random Forest with the package randomForestSRC
-        impute_markers_rf <- function(x){
+        impute_markers_rf <- function(x) {
           randomForestSRC::impute.rfsrc(data = x,
                                         ntree = num.tree,
                                         nodesize = 1,
@@ -816,7 +914,7 @@ present in the blacklist of genotypes to erase.")
         
         # imputations by populations (default) or globally
         # default by pop
-        if (imputations.group == "populations"){
+        if (imputations.group == "populations") {
           message("Imputations computed by populations, take a break...")
           df.split.pop <- split(x = vcf.prep, f = vcf.prep$POP_ID) # slip data frame by population
           pop.list <- names(df.split.pop) # list the pop
@@ -852,19 +950,17 @@ present in the blacklist of genotypes to erase.")
           imputed.dataset <- NULL
           vcf.prep <- NULL
           
-        } else if (imputations.group == "global"){
-          # Globally (not by pop_id)
+        } # End imputation RF populations
+        if (imputations.group == "global") { # Globally (not by pop_id)
           message("Imputations computed globally, take a break...")
           vcf.prep <- plyr::colwise(factor, exclude = NA)(vcf.prep)
           vcf.imp <- impute_markers_rf(vcf.prep)
           
           vcf.prep <- NULL # remove unused object
-          
-        }
-        
-      } else if (imputations == "max") {
-        
-        if (imputations.group == "populations"){
+        } # End imputation RF global
+      } # End imputation RF
+      if (imputations == "max") { # End imputation max
+        if (imputations.group == "populations") {
           message("Imputations computed by populations")
           
           vcf.imp <- suppressWarnings(
@@ -886,7 +982,8 @@ present in the blacklist of genotypes to erase.")
           
           vcf.prep <- NULL # remove unused object
           
-        } else if (imputations.group == "global"){
+        } # End imputation max populations 
+        if (imputations.group == "global") {
           # Globally (not by pop_id)
           message("Imputations computed globally")
           
@@ -901,17 +998,26 @@ present in the blacklist of genotypes to erase.")
           )
           
           vcf.prep <- NULL # remove unused object
-        }
-      }
+        } # End imputation max global 
+      } # End imputations max
       
       # transform the imputed dataset into gsi_sim
-      message("Imputed VCF into factory for conversion into gsi_sim...")
-      gsi.prep.imp <- suppressWarnings(
-        vcf.imp %>%
-          tidyr::gather(key = MARKERS, GT, -c(INDIVIDUALS, POP_ID)) %>% # make tidy
-          tidyr::separate(col = GT, into = c("A1", "A2"), sep = "_") %>%  # separate the genotypes into alleles
-          tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID)) # make tidy
-      )
+      if (is.null(df.file)) { # for VCF input
+        message("Imputed VCF into factory for conversion into gsi_sim...")
+        gsi.prep.imp <- suppressWarnings(
+          vcf.imp %>%
+            tidyr::gather(key = MARKERS, GT, -c(INDIVIDUALS, POP_ID)) %>% # make tidy
+            tidyr::separate(col = GT, into = c("A1", "A2"), sep = "_") %>%  # separate the genotypes into alleles
+            tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID)) # make tidy
+        )
+      } else { # for df input
+        gsim.prep <- suppressWarnings(
+          vcf.imp %>% 
+            tidyr::gather(key = MARKERS, GT, -c(INDIVIDUALS, POP_ID)) %>% # make tidy
+            tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3) %>%  # separate the genotypes into alleles
+            tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID))
+        )    
+      }
     } # End imputations
     
     # Sampling of markers ******************************************************
@@ -921,7 +1027,7 @@ present in the blacklist of genotypes to erase.")
       select(MARKERS) %>% 
       distinct(MARKERS) %>% 
       arrange(MARKERS)
-
+    
     marker.number <- stri_replace_all_fixed(str = marker.number, pattern = "all", 
                                             replacement = nrow(unique.markers), 
                                             vectorize_all = TRUE)
@@ -930,7 +1036,7 @@ present in the blacklist of genotypes to erase.")
     # In marker.number, remove marker group higher than the max number of markers
     removing.marker <- purrr::keep(.x = marker.number, .p = marker.number > nrow(unique.markers))
     
-    if(length(removing.marker) > 0){
+    if (length(removing.marker) > 0) {
       message.marker <- stri_c(removing.marker, collapse = ", ")
       message("Removing marker.number higher than the max number of markers: ", message.marker)
     }
@@ -940,19 +1046,33 @@ present in the blacklist of genotypes to erase.")
     
     # Functions ******************************************************************
     # Fst function: Weir & Cockerham 1984
-    fst_WC84 <- function(data, holdout.samples, ...){
+    fst_WC84 <- function(data, holdout.samples, ...) {
       # data <- vcf # test
       # holdout.samples <- holdout$INDIVIDUALS # test
       
+      # data.type <- data$GT[[1]] # VCF vs DF # test
       pop.number <- n_distinct(data$POP_ID)
       
-      if (is.null(holdout.samples)){ # use all the individuals
-        data.genotyped <- data %>%
-          filter(GT != "0_0")
-      } else{ # with holdout set
-        data.genotyped <- data %>%
-          filter(GT != "0_0") %>% # remove missing genotypes
-          filter(!INDIVIDUALS %in% holdout.samples) # remove supplementary individual before ranking markers with Fst
+      if (is.null(holdout.samples)) { # use all the individuals
+        if (is.null(df.file)) { # for VCF input
+          # if (stri_detect_fixed(data.type, "_")){ # for VCF file input # test
+          data.genotyped <- data %>%
+            filter(GT != "0_0")
+        } else { # for df file input
+          data.genotyped <- data %>%
+            filter(GT != "000000")
+        }
+      } else { # with holdout set
+        if (is.null(df.file)) { # for VCF input
+          # if (stri_detect_fixed(data.type, "_")){ # for VCF file input
+          data.genotyped <- data %>%
+            filter(GT != "0_0") %>% # remove missing genotypes
+            filter(!INDIVIDUALS %in% holdout.samples) # remove supplementary individual before ranking markers with Fst
+        } else { # for df file input
+          data.genotyped <- data %>%
+            filter(GT != "000000") %>% # remove missing genotypes
+            filter(!INDIVIDUALS %in% holdout.samples) # remove supplementary individual before ranking markers with Fst
+        }
       }
       
       n.pop.locus <- data.genotyped %>%
@@ -976,13 +1096,18 @@ present in the blacklist of genotypes to erase.")
         )
       
       #common
-      freq.al.locus <- data.genotyped %>%
-        mutate(
-          A1 = stri_sub(GT, 1, 1),
-          A2 = stri_sub(GT, 3, 3)
-        ) %>%
-        select(-GT) %>%
-        tidyr::gather(key = ALLELES_GROUP, ALLELES, -c(INDIVIDUALS, POP_ID, MARKERS))
+      if (is.null(df.file)) { # for VCF input
+        # if (stri_detect_fixed(data.type, "_")){ # for VCF file input
+        freq.al.locus <- data.genotyped %>%
+          mutate(A1 = stri_sub(GT, 1, 1), A2 = stri_sub(GT, 3, 3)) %>% 
+          select(-GT) %>%
+          tidyr::gather(key = ALLELES_GROUP, ALLELES, -c(INDIVIDUALS, POP_ID, MARKERS))
+        # tidyr::separate(col = GT, into = c("A1", "A2"), sep = "_") %>%  # test takes longer
+      } else { # for DF file input
+        freq.al.locus <- data.genotyped %>%
+          tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3) %>%  # separate the genotypes into alleles
+          tidyr::gather(key = ALLELES_GROUP, ALLELES, -c(INDIVIDUALS, POP_ID, MARKERS))
+      }
       
       #pop
       freq.al.locus.pop <- suppressWarnings(
@@ -1032,10 +1157,17 @@ present in the blacklist of genotypes to erase.")
           rename(ntal = n) %>%
           full_join(mean.n.pop.corrected.per.locus, by = "MARKERS")
       )
+      if (is.null(df.file)) { # for VCF input
+        # if (stri_detect_fixed(data.type, "_")){ # for VCF file input
+        data.genotyped.het <- data.genotyped %>%
+          mutate(het = ifelse(stri_sub(GT, 1, 1) != stri_sub(GT, 3, 3), 1, 0))
+      } else { # for DF file input
+        data.genotyped.het <- data.genotyped %>%
+          mutate(het = ifelse(stri_sub(GT, 1, 3) != stri_sub(GT, 4, 6), 1, 0))
+      }
       
       fst.ranked <- suppressWarnings(
-        data.genotyped %>%
-          mutate(het = ifelse(stri_sub(GT, 1, 1) != stri_sub(GT, 3, 3), 1, 0)) %>%
+        data.genotyped.het %>%
           group_by(MARKERS, POP_ID) %>%
           summarise(mho = sum(het, na.rm = TRUE)) %>%  # = the number of heterozygote individuals per pop and markers
           group_by(MARKERS) %>%
@@ -1082,11 +1214,23 @@ present in the blacklist of genotypes to erase.")
       )
       
       # select(MARKERS, FIS, FST)
+      # remove unused objects
+      data.genotyped <- NULL
+      data.genotyped.het <- NULL
+      n.pop.locus <- NULL
+      ind.count.locus <- NULL
+      ind.count.locus.pop <- NULL
+      freq.al.locus <- NULL
+      freq.al.locus.pop <- NULL
+      freq.al.locus.global <- NULL
+      mean.n.pop.corrected.per.locus <- NULL
+      ncal <- NULL
+      
       return(fst.ranked)
     } # end Fst function
-
+    
     # Write the files
-    write_gsi <- function (data, markers.names, imputations, filename, i, m, ...){
+    write_gsi <- function (data, markers.names, imputations, filename, i, m, ...) {
       
       data$POP_ID <- droplevels(x = data$POP_ID)
       n.individuals <- n_distinct(data$INDIVIDUALS)  # number of individuals
@@ -1094,7 +1238,7 @@ present in the blacklist of genotypes to erase.")
       data <- suppressWarnings(data %>% select(-POP_ID))  # remove pop id
       gsi_sim.split <- split(data, pop)  # split gsi_sim by populations
       filename <- filename  # gsi_sim filename
-
+      
       # filename modification based with or without imputations
       if (imputations == FALSE) {
         # message("Output...No imputation")
@@ -1136,7 +1280,7 @@ present in the blacklist of genotypes to erase.")
     } # end write gsi function
     
     # Assignment
-    assignment_analysis <- function(data, select.markers, markers.names, missing.data, i, m, holdout, ...){
+    assignment_analysis <- function(data, select.markers, markers.names, missing.data, i, m, holdout, ...) {
       # data <- gsim.prep #test
       # missing.data <- "no.imputation" #test
       data.select <- suppressWarnings(
@@ -1145,15 +1289,13 @@ present in the blacklist of genotypes to erase.")
           arrange(MARKERS) %>%  # make tidy
           tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
           arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES) %>%
-          # group_by(INDIVIDUALS, POP_ID) %>% 
           tidyr::spread(data = ., key = MARKERS_ALLELES, value = GT) %>%
-          # ungroup() %>% 
           arrange(POP_ID, INDIVIDUALS)
       )
       
       # Write gsi_sim input file to directory
       input <- write_gsi(data = data.select, markers.names = markers.names, imputations = imputations, filename = gsi_sim.filename, i = i, m = m)
-
+      
       # Run gsi_sim ------------------------------------------------------------
       input.gsi <- stri_join(directory.subsample,input)
       output.gsi <- stri_replace_all_fixed(input.gsi, pattern = "txt", replacement = "output.txt")
@@ -1161,13 +1303,11 @@ present in the blacklist of genotypes to erase.")
       system(paste("gsi_sim -b", input.gsi, "--self-assign > ", output.gsi))
       
       # Option remove the input file from directory to save space
-      if (keep.gsi.files == FALSE){
-        file.remove(input.gsi)
-      }
+      if (keep.gsi.files == FALSE) file.remove(input.gsi)
       
       # Get Assignment results -------------------------------------------------
       # Keep track of the holdout individual
-      if(sampling.method == "ranked"){
+      if (sampling.method == "ranked") {
         if (thl == "all") {
           holdout.id <- NULL
         } else {
@@ -1186,63 +1326,69 @@ present in the blacklist of genotypes to erase.")
           tidyr::separate(ASSIGN, c("INFERRED", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
           tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
           tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
-          tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss") %>%
-          mutate(
-            CURRENT = factor(stri_sub(INDIVIDUALS, pop.id.start, pop.id.end), levels = pop.levels, labels = pop.labels, ordered = T),
-            CURRENT = droplevels(CURRENT),
-            INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = T),
-            INFERRED = droplevels(INFERRED),
-            SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = T),
-            SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
-            SCORE = round(SCORE, 2),
-            SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
-            MARKER_NUMBER = as.numeric(rep(n.locus, n())),
-            MISSING_DATA = rep(missing.data, n())
-          ) %>%
-          select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, MISSING_DATA) %>%
-          arrange(CURRENT) %>%
-          select(INDIVIDUALS, CURRENT, INFERRED, SCORE, MARKER_NUMBER, MISSING_DATA)
+          tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss")
       )
       
-      if(sampling.method == "ranked"){
+      if (is.null(strata)){
+        assignment <- suppressWarnings(
+          assignment %>%
+            mutate(
+              CURRENT = factor(stri_sub(INDIVIDUALS, pop.id.start, pop.id.end), levels = pop.levels, labels = pop.labels, ordered = T),
+              CURRENT = droplevels(CURRENT),
+              INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = T),
+              INFERRED = droplevels(INFERRED),
+              SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = T),
+              SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
+              SCORE = round(SCORE, 2),
+              SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
+              MARKER_NUMBER = as.numeric(rep(n.locus, n())),
+              MISSING_DATA = rep(missing.data, n())
+            ) %>%
+            select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, MISSING_DATA) %>%
+            arrange(CURRENT) %>%
+            select(INDIVIDUALS, CURRENT, INFERRED, SCORE, MARKER_NUMBER, MISSING_DATA)
+        )
+      } else {
+        assignment <- suppressWarnings(
+          assignment %>%
+            left_join(strata, by = "INDIVIDUALS") %>%
+            rename(CURRENT = POP_ID) %>% 
+            mutate(
+              CURRENT = factor(CURRENT, levels = pop.levels, labels = pop.labels, ordered = T),
+              CURRENT = droplevels(CURRENT),
+              INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = T),
+              INFERRED = droplevels(INFERRED),
+              SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = T),
+              SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
+              SCORE = round(SCORE, 2),
+              SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
+              MARKER_NUMBER = as.numeric(rep(n.locus, n())),
+              MISSING_DATA = rep(missing.data, n())
+            ) %>%
+            select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, MISSING_DATA) %>%
+            arrange(CURRENT) %>%
+            select(INDIVIDUALS, CURRENT, INFERRED, SCORE, MARKER_NUMBER, MISSING_DATA)
+        )
+      }
+      if (sampling.method == "ranked") {
         if (thl == "all") {
           assignment <- assignment
-        } else{
+        } else {
           assignment <- filter(.data = assignment, INDIVIDUALS %in% holdout.id)
         }
       }
       
-      if (keep.gsi.files == FALSE){
-        file.remove(output.gsi)
-      }
+      # Option remove the output file from directory to save space
+      if (keep.gsi.files == FALSE) file.remove(output.gsi)
       
       # saving preliminary results
-      if(sampling.method == "random"){
+      if (sampling.method == "random") {
         assignment <- mutate(.data = assignment, ITERATIONS = rep(i, n()))
         #       write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
       }
       
-      if(sampling.method == "ranked"){
-        # if (thl == 1 | thl == "all"){
-        #         write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
-        #       }
-        if (thl != 1 & thl != "all"){
-          #         assignment <- assignment %>%
-          #           group_by(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA) %>%
-          #           tally %>%
-          #           group_by(CURRENT, MARKER_NUMBER) %>%
-          #           mutate(TOTAL = sum(n)) %>%
-          #           ungroup() %>%
-          #           mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>%
-          #           select(CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, ASSIGNMENT_PERC) %>%
-          #           group_by(CURRENT, MARKER_NUMBER, MISSING_DATA) %>%
-          #           tidyr::spread(data = ., key = INFERRED, value = ASSIGNMENT_PERC) %>%
-          #           tidyr::gather(INFERRED, ASSIGNMENT_PERC, -c(CURRENT, MARKER_NUMBER, MISSING_DATA)) %>%
-          #           mutate(ASSIGNMENT_PERC = as.numeric(stri_replace_na(ASSIGNMENT_PERC, replacement = 0))) %>%
-          #           filter(as.character(CURRENT) == as.character(INFERRED)) %>%
-          #           select(CURRENT, INFERRED, ASSIGNMENT_PERC, MARKER_NUMBER, MISSING_DATA) %>%
-          #           mutate(ITERATIONS = rep(i, n()))
-          # write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
+      if (sampling.method == "ranked") {
+        if (thl != 1 & thl != "all") {
           assignment <- assignment %>%
             mutate(
               CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
@@ -1263,9 +1409,9 @@ present in the blacklist of genotypes to erase.")
       }
       return(assignment)
     } # end assignment analysis function
-   
+    
     # Random method ************************************************************
-    if (sampling.method == "random"){
+    if (sampling.method == "random") {
       message("Conducting Assignment analysis with markers selected randomly")
       # Number of times to repeat the sampling of markers
       iterations.list <- 1:iteration.thl
@@ -1276,7 +1422,7 @@ present in the blacklist of genotypes to erase.")
       # Plan A is faster
       
       # Function: Random selection of marker function + iteration.thl
-      marker_selection <- function(iteration.thl){
+      marker_selection <- function(iteration.thl) {
         m <- as.numeric(m)
         select.markers <- sample_n(tbl = unique.markers, size = m, replace = FALSE) %>%
           arrange(MARKERS) %>%
@@ -1289,7 +1435,7 @@ present in the blacklist of genotypes to erase.")
       
       message("Making a list containing all the markers combinations")
       # Go through the function with the marker number selected
-      for (m in marker.number){
+      for (m in marker.number) {
         res <- purrr::map(.x = iterations.list, .f = marker_selection)
         markers.random.lists[[m]] <- res
       }
@@ -1310,7 +1456,7 @@ present in the blacklist of genotypes to erase.")
       # set.seed(random.seed)
       parallel::clusterSetRNGStream(cl = cl, iseed = random.seed)
       random.seed <- data.frame(RANDOM_SEED_NUMBER = random.seed)
-      write_tsv(x = random.seed, path = paste0(directory.subsample, "random_seed_GBS_assignment.tsv"), col_names = TRUE, append = FALSE)
+      write_tsv(x = random.seed, path = paste0(directory.subsample, "random_seed_assignment_ngs.tsv"), col_names = TRUE, append = FALSE)
       
       mrl <- NULL
       res <- list()
@@ -1356,16 +1502,16 @@ Progress can be monitored with activity in the folder...")
         
         # With imputations
         if (imputations != FALSE) {# with imputations
-          if (imputations == "rf"){
-            if (imputations.group == "populations"){
+          if (imputations == "rf") {
+            if (imputations.group == "populations") {
               missing.data <- "imputed RF populations"
-            } else{
+            } else {
               missing.data <- "imputed RF global"
             }
           } else {
-            if (imputations.group == "populations"){
+            if (imputations.group == "populations") {
               missing.data <- "imputed max populations"
-            } else{
+            } else {
               missing.data <- "imputed max global"
             }
           }
@@ -1378,7 +1524,7 @@ Progress can be monitored with activity in the folder...")
         #compile assignment results each marker number for the iteration
         if (imputations == FALSE) {
           assignment <- assignment.no.imp
-        } else{
+        } else {
           assignment <- bind_rows(assignment.no.imp, assignment.imp)
         }
         assignment <- mutate(.data = assignment, ITERATIONS = rep(i, n()))
@@ -1452,7 +1598,7 @@ Progress can be monitored with activity in the folder...")
       # assignment results
       if (imputations == FALSE) {
         filename.assignment.res <- stri_join("assignment.res", "no.imputation", sampling.method, "tsv", sep = ".")
-      } else{ # with imputations
+      } else { # with imputations
         filename.assignment.res <- stri_join("assignment.res", "imputed", sampling.method, "tsv", sep = ".")
       }
       write_tsv(x = assignment.res, path = paste0(directory.subsample,filename.assignment.res), col_names = TRUE, append = FALSE)
@@ -1460,14 +1606,14 @@ Progress can be monitored with activity in the folder...")
       # assignment summary stats
       if (imputations == FALSE) {
         filename.assignment.sum <- stri_join("assignment.summary.stats", "no.imputation", sampling.method, "tsv", sep = ".")
-      } else{ # with imputations
+      } else { # with imputations
         filename.assignment.sum <- stri_join("assignment.summary.stats", "imputed", sampling.method, "tsv", sep = ".")
       }
       write_tsv(x = assignment.summary.stats, path = paste0(directory.subsample,filename.assignment.sum), col_names = TRUE, append = FALSE)
     } # end method random
     
     # Ranked method ************************************************************
-    if (sampling.method == "ranked"){
+    if (sampling.method == "ranked") {
       message("Conducting Assignment analysis with ranked markers")
       
       # List of all individuals
@@ -1477,7 +1623,7 @@ Progress can be monitored with activity in the folder...")
       
       # thl selection
       message("Using thl method, ranking Fst with training samples...")
-      if (thl == 1){
+      if (thl == 1) {
         # Will go through the individuals in the list one by one.
         iterations.list <- ind.pop.df$INDIVIDUALS
         # Keep track of holdout individuals
@@ -1496,7 +1642,7 @@ Progress can be monitored with activity in the folder...")
           # thl <- 0.4 # test
           holdout.individuals.list <- list()
           iterations.list <- 1:iteration.thl
-          for (x in 1:iteration.thl){
+          for (x in 1:iteration.thl) {
             holdout.individuals <- ind.pop.df %>%
               group_by(POP_ID) %>%
               sample_frac(thl, replace = FALSE) %>%  # sampling fraction for each pop
@@ -1513,7 +1659,7 @@ Progress can be monitored with activity in the folder...")
         if (thl > 1) {
           holdout.individuals.list <- list()
           iterations.list <- 1:iteration.thl
-          for (x in 1:iteration.thl){
+          for (x in 1:iteration.thl) {
             holdout.individuals <- ind.pop.df %>%
               group_by(POP_ID) %>%
               sample_n(thl, replace = FALSE) %>% # sampling individuals for each pop
@@ -1534,40 +1680,13 @@ Progress can be monitored with activity in the folder...")
       )
       message("Holdout samples saved in your folder")
       
-      # test
-      #     # Preparing file for saving to directory preliminary results
-      #     filename.ass.res <- "assignment.preliminiary.results.tsv"
-      #     if (thl == 1 | thl == "all"){
-      #       ass.res <- data_frame(INDIVIDUALS = character(0), 
-      #                             CURRENT = character(0), 
-      #                             INFERRED = character(0), 
-      #                             SCORE = integer(0), 
-      #                             MARKER_NUMBER = integer(0), 
-      #                             MISSING_DATA = character(0)
-      #       ) #create an empty dataframe
-      #     } else{#thl != 1... > 1 number or < 1 for proportions
-      #       ass.res <- data_frame(CURRENT = character(0),
-      #                             INFERRED = character(0),
-      #                             ASSIGNMENT_PERC = integer(0),
-      #                             MARKER_NUMBER = integer(0),
-      #                             ITERATIONS = integer(0),
-      #                             MISSING_DATA = character(0)
-      #       ) #create an empty dataframe
-      #     }
-      #     write_tsv(x = ass.res, 
-      #               path = paste0(directory,filename.ass.res), 
-      #               col_names = TRUE, 
-      #               append = FALSE
-      #     ) #create an empty file
-      
-      
       # Going through the loop of holdout individuals
       message("Starting parallel computations for the assignment analysis
 First sign of progress may take some time
 Progress can be monitored with activity in the folder...")
       
       # Progress Bar during parallel computations
-      #     if (thl == 1){
+      #     if (thl == 1) {
       #       progress.max <- length(iterations.list)
       #     } else {
       #       progress.max <- iterations
@@ -1589,7 +1708,7 @@ Progress can be monitored with activity in the folder...")
       
       # foreach
       # i <- NULL
-#       assignment.res <- list()
+      #       assignment.res <- list()
       ## foreach with progress bar option using SNOW
       #     assignment.res <- foreach(
       #       i=iterations.list, .options.snow=opts, 
@@ -1603,8 +1722,7 @@ Progress can be monitored with activity in the folder...")
       #         .verbose = FALSE
       #       ) %dopar% {
       
-      assignment_ranking <- function(iterations.list, ...){
-        # Sys.sleep(0.01)  # For progress bar
+      assignment_ranking <- function(iterations.list, ...) {
         # i <- "TRI_09" #test
         # i <- "CAR_01" #test
         # i <- 1
@@ -1613,22 +1731,22 @@ Progress can be monitored with activity in the folder...")
         
         # Ranking Fst with training dataset (keep holdout individuals out)
         message("Ranking markers based on Fst")
-        if (thl == "all"){
+        if (thl == "all") {
           holdout <- NULL
           fst.ranked <- fst_WC84(data = vcf, holdout.samples = NULL)
-          if (imputations != FALSE){
+          if (imputations != FALSE) {
             fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.samples = NULL)
           }
         } else if (thl == 1) {
           holdout <- data.frame(INDIVIDUALS = i)
           fst.ranked <- fst_WC84(data = vcf, holdout.samples = holdout$INDIVIDUALS)
-          if (imputations != FALSE){
+          if (imputations != FALSE) {
             fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.samples = holdout$INDIVIDUALS)
           }
         } else {
           holdout <- data.frame(holdout.individuals.list[i])
           fst.ranked <- fst_WC84(data = vcf, holdout.samples = holdout$INDIVIDUALS)
-          if (imputations != FALSE){
+          if (imputations != FALSE) {
             fst.ranked.imp <- fst_WC84(data = vcf.imp, holdout.samples = holdout$INDIVIDUALS)
           }
         }
@@ -1641,11 +1759,11 @@ Progress can be monitored with activity in the folder...")
           append = FALSE
         )
         
-        if (imputations != FALSE){  # With imputations
+        if (imputations != FALSE) {  # With imputations
           fst.ranked.filename.imp <- stri_join("fst.ranked_", i,
-                                                "_imputed",
-                                                ".tsv", 
-                                                sep = ""
+                                               "_imputed",
+                                               ".tsv", 
+                                               sep = ""
           ) 
           write_tsv(x = fst.ranked.imp, 
                     path = paste0(directory.subsample, fst.ranked.filename.imp), 
@@ -1658,18 +1776,11 @@ Progress can be monitored with activity in the folder...")
         # Create empty lists to feed the results
         message("Going throught the marker.number")
         assignment.marker <- list()
-        assignment_marker_loop <- function(m, ...){
+        assignment_marker_loop <- function(m, ...) {
           message("Marker number: ", m)
-          # for (m in marker.number) {
-          # message("Marker number: ", m)
           # m <- 200 # test
           # m <- 400 # test
-          # rm(m) # test
           m <- as.numeric(m)
-          # No imputation
-#           select.markers <- fst.ranked %>%
-#             filter(row_number() <= m) %>%
-#             select(MARKERS)
           RANKING <- NULL
           select.markers <- filter(.data = fst.ranked, RANKING <= m) %>%
             select(MARKERS)
@@ -1689,25 +1800,22 @@ Progress can be monitored with activity in the folder...")
           
           # With imputations
           if (imputations != FALSE) {  # with imputations
-#             select.markers <- fst.ranked.imp %>%  # not the same in no imputation
-#               filter(row_number() <= m) %>%
-#               select(MARKERS)
             select.markers <- filter(.data = fst.ranked.imp, RANKING <= m) %>%
               select(MARKERS)
             
             # get the list of markers after filter
             markers.names <- unique(select.markers$MARKERS)  # not the same in no imputation
             
-            if (imputations == "rf"){
-              if (imputations.group == "populations"){
+            if (imputations == "rf") {
+              if (imputations.group == "populations") {
                 missing.data <- "imputed RF populations"
-              } else{
+              } else {
                 missing.data <- "imputed RF global"
               }
             } else {
-              if (imputations.group == "populations"){
+              if (imputations.group == "populations") {
                 missing.data <- "imputed max populations"
-              } else{
+              } else {
                 missing.data <- "imputed max global"
               }
             }
@@ -1727,7 +1835,7 @@ Progress can be monitored with activity in the folder...")
           #compile assignment results each marker number for the iteration
           if (imputations == FALSE) {# with imputations
             assignment <- assignment.no.imp
-          } else{
+          } else {
             assignment <- bind_rows(assignment.no.imp, assignment.imp)
           }
           m <- as.character(m)
@@ -1757,17 +1865,17 @@ Progress can be monitored with activity in the folder...")
         
         
         message("Summarizing the assignment analysis results by iterations and marker group")
-
-          assignment.res.summary <- suppressWarnings(
-            bind_rows(purrr::flatten(assignment.marker)) %>%
-              mutate(METHOD = rep("thl", n()))
-          )
-          
-          res.filename <- stri_join("assignment_ind_", i, ".tsv", sep = "") # No imputation
-          write_tsv(x = assignment.res.summary, path = paste0(directory.subsample, res.filename), 
-                    col_names = TRUE, 
-                    append = FALSE
-          )
+        
+        assignment.res.summary <- suppressWarnings(
+          bind_rows(purrr::flatten(assignment.marker)) %>%
+            mutate(METHOD = rep("thl", n()))
+        )
+        
+        res.filename <- stri_join("assignment_ind_", i, ".tsv", sep = "") # No imputation
+        write_tsv(x = assignment.res.summary, path = paste0(directory.subsample, res.filename), 
+                  col_names = TRUE, 
+                  append = FALSE
+        )
         # }
         return(assignment.res.summary)
       }  # End assignment ranking function
@@ -1782,16 +1890,16 @@ Progress can be monitored with activity in the folder...")
         mc.silent = FALSE, 
         mc.cores = parallel.core,
         marker.number = marker.number
-        )
-
+      )
+      
       # Compiling the results
       message("Compiling results")
       assignment.res.summary <- suppressWarnings(
-       bind_rows(assignment.res) %>%
+        bind_rows(assignment.res) %>%
           mutate(METHOD = rep("thl", n()))
       )
       
-      if (thl == 1 | thl == "all"){
+      if (thl == 1 | thl == "all") {
         assignment.stats.pop <- assignment.res.summary %>%
           mutate(
             CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
@@ -1885,7 +1993,7 @@ Progress can be monitored with activity in the folder...")
       # assignment results
       if (imputations == FALSE) {
         filename.assignment.res <- stri_join("assignment.res", "no.imputation", sampling.method, "tsv", sep = ".")
-      } else{ # with imputations
+      } else { # with imputations
         filename.assignment.res <- stri_join("assignment.res", "imputed", sampling.method, "tsv", sep = ".")
       }
       write_tsv(x = assignment.res.summary, path = paste0(directory.subsample,filename.assignment.res), col_names = TRUE, append = FALSE)
@@ -1893,7 +2001,7 @@ Progress can be monitored with activity in the folder...")
       # assignment summary stats
       if (imputations == FALSE) {
         filename.assignment.sum <- stri_join("assignment.summary.stats", "no.imputation", sampling.method, "tsv", sep = ".")
-      } else{ # with imputations
+      } else { # with imputations
         filename.assignment.sum <- stri_join("assignment.summary.stats", "imputed", sampling.method, "tsv", sep = ".")
       }
       write_tsv(x = assignment.summary.stats, path = paste0(directory.subsample,filename.assignment.sum), col_names = TRUE, append = FALSE)
@@ -1903,7 +2011,7 @@ Progress can be monitored with activity in the folder...")
     assignment.summary.stats <- assignment.summary.stats %>% 
       mutate(SUBSAMPLE = rep(subsample.id, n()))
     return(assignment.summary.stats)
-} # end assignment_function
+  } # end assignment_function
   
   res <- map(.x = subsample.list, .f = assignment_function,
              vcf = vcf,
@@ -1936,7 +2044,7 @@ Progress can be monitored with activity in the folder...")
   write_tsv(x = res, path = paste0(directory, "assignment.results.tsv"), col_names = TRUE, append = FALSE)
   
   # Summary of the subsampling iterations
-  if(iteration.subsample > 1){
+  if (iteration.subsample > 1) {
     res.pop <- res %>%
       filter(CURRENT != "OVERALL") %>%
       group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
@@ -1949,7 +2057,7 @@ Progress can be monitored with activity in the folder...")
         MEDIAN = round(median(ASSIGNMENT_PERC), 2),
         QUANTILE25 = round(quantile(ASSIGNMENT_PERC, 0.25), 2),
         QUANTILE75 = round(quantile(ASSIGNMENT_PERC, 0.75), 2)
-        ) %>% 
+      ) %>% 
       mutate(SUBSAMPLE = rep("OVERALL", n())) %>%
       arrange(CURRENT, MARKER_NUMBER)
     
@@ -1981,7 +2089,7 @@ Progress can be monitored with activity in the folder...")
         ) %>%
         select(CURRENT, MARKER_NUMBER, MEAN, MEDIAN, SE, MIN, MAX, QUANTILE25, QUANTILE75, SE_MIN, SE_MAX, METHOD, MISSING_DATA, SUBSAMPLE)
     )
-
+    
     res <- bind_rows(
       res %>% 
         mutate(SUBSAMPLE = as.character(SUBSAMPLE)), 
@@ -2012,9 +2120,9 @@ Progress can be monitored with activity in the folder...")
       axis.title.y = element_text(size = 10, family = "Helvetica", face = "bold"), 
       axis.text.y = element_text(size = 10, family = "Helvetica", face = "bold")
     )
-
+  
   # results
   res.list <- list(assignment = res, plot.assignment = plot.assignment)
   return(res.list)
-} # end GBS_assignment
+} # end assignment_ngs
 

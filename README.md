@@ -129,6 +129,13 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 ## New
 
+**v.0.1.4**
+* Changed function name, from `GBS_assignment` to `assignment_ngs`. Stands for
+assignment with next-generation sequencing data.
+* New argument `df.file` if you don't have a VCF file. See documentation.
+* New argument `strata` if you don't have population id or other metadata info 
+in the individual name.  See documentation.
+
 **v.0.1.3**
 * Changed arguments `THL` to `thl` and `snp.LD` to `snp.ld` to follow convention.
 * `iterations.subsample` changed to `iteration.subsample`.
@@ -155,7 +162,7 @@ dataset.
 
 ## Roadmap of future developments:
 
-* Update the `GBS_assignment` to opt between GSI_SIM or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis
+* Update the `assignment_ngs` to opt between GSI_SIM or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis
 * The ability to use a dataframe of individuals, populations and genotypes as input.
 * Import a strata file for those of you working with individuals with no pop name in it.
 * The ability to provide the ranking of markers based on something else than Fst (Weir and Cockerham, 1984) currently used in the function. e.g. Informativeness for Assignment Measure (In, Rosenberg et al. 2003), the Absolute Allele Frequency Differences (delta, δ, Shriver et al., 1997).

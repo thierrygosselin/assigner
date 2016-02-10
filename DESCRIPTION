@@ -1,14 +1,14 @@
 Package: assigner
 Type: Package
-Title: Assignment Analysis with GBS/RAD Data using R
-Version: 0.1.3
-Date: 2015-02-05
+Title: Assignment Analysis with GBS/RADseq Data using R
+Version: 0.1.4
+Date: 2015-02-10
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
   person("Laura", "Benestan", role = "ctb"))
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
-Description: Set of tools for assignment analysis, tailored for GBS/RAD data.
+Description: Set of tools for assignment analysis, tailored for GBS/RADseq data.
 Depends:
     R (>= 3.0.1),
 Imports:
