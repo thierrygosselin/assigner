@@ -157,13 +157,15 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 ## New
 
+**v.0.1.5**
+* bug fix in `method = "random"` and `imputation`
+
 **v.0.1.4**
 * Changed function name, from `GBS_assignment` to `assignment_ngs`. Stands for
 assignment with next-generation sequencing data.
 * New argument `df.file` if you don't have a VCF file. See documentation.
 * New argument `strata` if you don't have population id or other metadata info 
 in the individual name.  See documentation.
-* bug fix in `method = "random"` and `imputation`
 
 **v.0.1.3**
 * Changed arguments `THL` to `thl` and `snp.LD` to `snp.ld` to follow convention.
@@ -181,12 +183,6 @@ After re-installing assigner package, follow the instruction to re-install
 the new [gsi_sim] (https://github.com/eriqande/gsi_sim). 
 And delete the old binary 'gsisim' in the /usr/local/bin folder
 with the following Terminal command: `sudo rm /usr/local/bin/gsisim`
-
-**v.0.1.1**
-* `subsample` and `iteration.subsample` were implemented to analyse the impact of 
-sample size on assignment. Usefull in the case of large bias in individuals 
-between populations. The `iteration.subsample` argument creates x subsample 
-dataset.
 
 
 ## Roadmap of future developments:
