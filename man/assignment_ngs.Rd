@@ -82,11 +82,11 @@ the analysis will be repeated with all the indiviuals in the data set
 If a proportion is used e.g. \code{0.15},= 15% of individuals in each
 populations are chosen randomly as holdout individuals.
 With \code{thl = "all"} all individuals are used for ranking (not good) and
-\code{iteration.thl} argument below is set to \code{1} by default.
+\code{iteration.method} argument below is set to \code{1} by default.
 For the other thl values, you can create different holdout individuals lists
-with the \code{iteration.thl} argument below.}
+with the \code{iteration.method} argument below.}
 
-\item{iteration.thl}{With random marker selection the iterations argument =
+\item{iteration.method}{With random marker selection the iterations argument =
 the number of iterations to repeat marker resampling, default is \code{10}
 With \code{marker.number = c(500, 1000)} and default iterations setting,
 500 markers will be randomly chosen 10 times and 1000 markers will be randomly
@@ -95,7 +95,7 @@ will be repeated for each individuals in the data set for every
 \code{marker.number} selected. With a proportion argument \code{thl = 0.15},
 15% of individuals in each populations are chosen randomly as holdout
 individuals and this process is reapeated the number of times chosen by the
-\code{iteration.thl} value.}
+\code{iteration.method} value.}
 
 \item{folder}{(optional) The name of the folder created in the working directory to save the files/results.}
 

@@ -19,7 +19,7 @@ whitelist** and other arguments
 * Genotypes of poor quality (e.g. in coverage, genotype likelihood or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument.
 * Markers can be randomly selected for a **classic LOO (Leave-One-Out) assignment** or 
 chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis** (reviewed in Anderson 2010)
-* Use `iteration.thl` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
+* Use `iteration.method` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
 * The impact of the minor allele frequency, MAF, (local and global) can also be easily explored with custom thresholds
 * Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
@@ -28,9 +28,9 @@ chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, H
 
 
 ## Installation
-You can try out the dev version of **assigner**. Follow the 2 steps below:
+You can try out the dev version of **assigner**. Follow the 4 steps below:
 
-Step 1 You will need the package *devtools*
+Step 1 You will need the package **devtools**
 ```r
 install.packages("devtools") # to install
 library(devtools) # to load
@@ -42,7 +42,35 @@ install_github("thierrygosselin/assigner") # to install
 library(assigner) # to load
 ```
 
-Step 3 Install [gsi_sim] (https://github.com/eriqande/gsi_sim):
+Step 3 For faster imputations, you need to install an OpenMP enabled **randomForestSRC package** [website](http://www.ccs.miami.edu/~hishwaran/rfsrc.html).
+
+Option 1: From source (Linux & Mac OSX)
+
+```r
+# Terminal
+cd ~/Downloads
+curl -O https://cran.r-project.org/src/contrib/randomForestSRC_2.0.7.tar.gz
+tar -zxvf randomForestSRC_2.0.7.tar.gz
+cd randomForestSRC
+autoconf
+# Back in R:
+install.packages(pkgs = "~/Downloads/randomForestSRC", repos = NULL, type = "source")
+```
+Option 2: Use a pre-compiled binary (Mac OSX & Windows) [instructions here] (http://www.ccs.miami.edu/~hishwaran/rfsrc.html) or quick copy/paste solution below:
+
+```r
+# Mac OSX
+library("devtools")
+install_url(url = "http://www.ccs.miami.edu/~hishwaran/rfsrc/randomForestSRC_2.0.7.tgz")
+```
+
+```r
+# Windows
+library("devtools")
+install_url(url = "http://www.ccs.miami.edu/~hishwaran/rfsrc/randomForestSRC_2.0.7.zip")
+```
+
+Step 4 Install [gsi_sim] (https://github.com/eriqande/gsi_sim):
 
 **assigner** assumes that the command line version of [gsi_sim] (https://github.com/eriqande/gsi_sim) 
 is properly installed and available on the command line, so it is executable from 
@@ -135,11 +163,12 @@ assignment with next-generation sequencing data.
 * New argument `df.file` if you don't have a VCF file. See documentation.
 * New argument `strata` if you don't have population id or other metadata info 
 in the individual name.  See documentation.
+* bug fix in `method = "random"` and `imputation`
 
 **v.0.1.3**
 * Changed arguments `THL` to `thl` and `snp.LD` to `snp.ld` to follow convention.
 * `iterations.subsample` changed to `iteration.subsample`.
-* `iterations` changed to `iteration.thl` to avoid confusion with other iteration arguments.
+* `iterations` changed to `iteration.method` to avoid confusion with other iteration arguments.
 * Removed `baseline` and `mixture` arguments from the function `GBS_assignment`.
 These options will be re-introduce later in a separate function.
 * Using `marker.number` higher than the number of markers in the data set was causing
@@ -208,6 +237,8 @@ Catchen JM, Hohenlohe PA, Bassham S, Amores A, Cresko WA (2013) Stacks: an analy
 Danecek P, Auton A, Abecasis G et al. (2011) The variant call format and VCFtools. Bioinformatics, 27, 2156–2158.
 
 Foll M, Gaggiotti O (2008) A Genome-Scan Method to Identify Selected Loci Appropriate for Both Dominant and Codominant Markers: A Bayesian Perspective. Genetics, 180, 977–993.
+
+Ishwaran H. and Kogalur U.B. (2015). Random Forests for Survival, Regression and Classification (RF-SRC), R package version 1.6.1.
 
 Jombart T (2008) adegenet: a R package for the multivariate analysis of genetic markers. Bioinformatics, 24, 1403–1405.
 

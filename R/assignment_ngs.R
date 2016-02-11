@@ -83,10 +83,10 @@
 #' If a proportion is used e.g. \code{0.15},= 15% of individuals in each
 #' populations are chosen randomly as holdout individuals.
 #' With \code{thl = "all"} all individuals are used for ranking (not good) and
-#' \code{iteration.thl} argument below is set to \code{1} by default.
+#' \code{iteration.method} argument below is set to \code{1} by default.
 #' For the other thl values, you can create different holdout individuals lists
-#' with the \code{iteration.thl} argument below.
-#' @param iteration.thl With random marker selection the iterations argument =
+#' with the \code{iteration.method} argument below.
+#' @param iteration.method With random marker selection the iterations argument =
 #' the number of iterations to repeat marker resampling, default is \code{10}
 #' With \code{marker.number = c(500, 1000)} and default iterations setting,
 #' 500 markers will be randomly chosen 10 times and 1000 markers will be randomly
@@ -95,7 +95,7 @@
 #' \code{marker.number} selected. With a proportion argument \code{thl = 0.15},
 #' 15% of individuals in each populations are chosen randomly as holdout
 #' individuals and this process is reapeated the number of times chosen by the
-#' \code{iteration.thl} value.
+#' \code{iteration.method} value.
 
 
 #' @param folder (optional) The name of the folder created in the working directory to save the files/results.
@@ -298,7 +298,7 @@ assignment_ngs <- function(vcf.file,
                            iteration.subsample = 1,
                            sampling.method,
                            thl = 1,
-                           iteration.thl = 10,
+                           iteration.method = 10,
                            folder,
                            gsi_sim.filename = "gsi_sim_data.txt",
                            keep.gsi.files,
@@ -341,9 +341,9 @@ assignment_ngs <- function(vcf.file,
   if (missing(iteration.subsample)) iteration.subsample <- 1
   if (missing(sampling.method)) stop("Sampling method required")
   if (sampling.method == "ranked" & missing(thl)) thl <- 1 # thl
-  if (missing(iteration.thl)) iteration.thl <- 10
-  if (thl == "all") iteration.thl <- 1
-  if (thl == 1) iteration.thl <- 1
+  if (missing(iteration.method)) iteration.method <- 10
+  if (sampling.method  == "ranked" & thl == "all") iteration.method <- 1
+  if (sampling.method == "ranked" & thl == 1) iteration.method <- 1
   if (missing(gsi_sim.filename)) gsi_sim.filename <- "gsi_sim_data.txt"
   if (missing(keep.gsi.files)) keep.gsi.files <- FALSE
   if (missing(imputations)) imputations <- FALSE
@@ -353,6 +353,7 @@ assignment_ngs <- function(vcf.file,
   if (missing(split.number)) split.number <- 100
   if (missing(verbose)) verbose <- FALSE
   if (missing(parallel.core) | is.null(parallel.core)) parallel.core <- detectCores()-1
+  
   
   # Create a folder based on filename to save the output files *****************
   if (missing(folder)) {
@@ -561,7 +562,7 @@ present in the blacklist of genotypes to erase.")
         ) %>% 
         select(-ERASE)
     )
-  } # end erase genotypes
+  } # End erase genotypes
   
   # dump unused object
   blacklist.id <- NULL
@@ -594,13 +595,7 @@ present in the blacklist of genotypes to erase.")
       }
     }
     return(subsample.select)
-  } # end subsampling function
-  
-  # subsample <- 15 # test
-  # subsample <- NULL # test
-  # iteration.subsample <- 5 # test
-  # iteration.subsample <- 1 # test
-  
+  } # End subsampling function
   # create the subsampling list
   ind.pop.df <- vcf %>% select(POP_ID, INDIVIDUALS) %>% distinct(POP_ID, INDIVIDUALS)
   subsample.list <- map(.x = 1:iteration.subsample, .f = subsampling_data, subsample = subsample)
@@ -612,7 +607,7 @@ present in the blacklist of genotypes to erase.")
     message("Subsampling: selected")
     subsampling.individuals <- bind_rows(subsample.list)
     write_tsv(x = subsampling.individuals, path = paste0(directory, "subsampling.individuals.tsv"), col_names = TRUE, append = FALSE)
-  } # end subsampling
+  } # End subsampling
   
   # unused objects
   subsampling.individuals <- NULL
@@ -679,7 +674,7 @@ present in the blacklist of genotypes to erase.")
       # filtering the VCF to minimize LD
       vcf <- vcf %>% semi_join(snp.select, by = c("LOCUS", "POS"))
       message("Filtering the tidy VCF to minimize LD by keeping only 1 SNP per short read/haplotype")
-    } # end of snp.ld control
+    } # End of snp.ld control
     
     # Unique markers id: combine CHROM, LOCUS and POS into MARKERS *************
     if (is.null(vcf.file)) {
@@ -692,7 +687,7 @@ present in the blacklist of genotypes to erase.")
         ) %>%
         arrange(CHROM, LOCUS, POS) %>%
         tidyr::unite(MARKERS, c(CHROM, LOCUS, POS), sep = "_")
-    }
+    } # End Unique markers id
     
     # Markers in common between all populations (optional) *********************
     if (common.markers == FALSE) {
@@ -726,7 +721,7 @@ present in the blacklist of genotypes to erase.")
       )
       vcf <- suppressWarnings(vcf %>% semi_join(pop.filter, by = "MARKERS"))
       pop.filter <- NULL # ununsed object
-    } # end common markers
+    } # End common markers
     
     # Minor Allele Frequency filter ********************************************
     if (is.null(maf.global.threshold) | is.null(maf.local.threshold)) { # no MAF
@@ -836,8 +831,7 @@ present in the blacklist of genotypes to erase.")
       
       vcf <- vcf.maf %>% select(-c(MAF_LOCAL, MAF_GLOBAL))
       vcf.maf <- NULL # remove unused object
-    } # end of MAF filters
-    
+    } # End of MAF filters
     
     # Change the genotype coding  **********************************************
     # easier for the integration in downstream conversion to gsi_sim
@@ -891,57 +885,83 @@ present in the blacklist of genotypes to erase.")
           tidyr::spread(data = ., key = MARKERS, value = GT) %>%
           ungroup() %>% 
           arrange(POP_ID, INDIVIDUALS)
-      } # prep file for imputation
+      } # End prep file for imputation
+      # Imputation with Random Forest
       if (imputations == "rf") {
         # Parallel computations options
         options(rf.cores = parallel.core, mc.cores = parallel.core)
         
         # Start cluster registration backend
-        cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = "")
+        # cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = "")
         
         # doSNOW::registerDoSNOW(cl)
-        doParallel::registerDoParallel(cl)
+        # doParallel::registerDoParallel(cl)
         
         # imputations using Random Forest with the package randomForestSRC
-        impute_markers_rf <- function(x) {
+        impute_genotype_rf <- function(x) {
           randomForestSRC::impute.rfsrc(data = x,
                                         ntree = num.tree,
                                         nodesize = 1,
                                         nsplit = split.number,
                                         nimpute = iteration.rf,
                                         do.trace = verbose)
-        }
+        } # End of imputation function
         
-        # imputations by populations (default) or globally
-        # default by pop
+        # Random Forest by pop
         if (imputations.group == "populations") {
           message("Imputations computed by populations, take a break...")
           df.split.pop <- split(x = vcf.prep, f = vcf.prep$POP_ID) # slip data frame by population
           pop.list <- names(df.split.pop) # list the pop
           imputed.dataset <-list() # create empty list
-          # for (i in pop.list) {
-          imputed.dataset <- foreach(i=pop.list, 
-                                     .packages = c("plyr", "dplyr", "tidyr", 
-                                                   "stringi", "readr", 
-                                                   "randomForestSRC")
-          ) %dopar% {
-            sep.pop <- df.split.pop[[i]]
+          # imputed.dataset <- foreach(i=pop.list, 
+          #                            .packages = c("plyr", "dplyr", "tidyr", 
+          #                                          "stringi", "readr", 
+          #                                          "randomForestSRC")
+          # ) %dopar% {
+          #   sep.pop <- df.split.pop[[i]]
+          #   sep.pop <- suppressWarnings(
+          #     plyr::colwise(factor, exclude = NA)(sep.pop)
+          #   )
+          #   # message of progress for imputations by population
+          #   message(paste("Completed imputations for pop ", i, sep = ""))
+          #   imputed.dataset[[i]] <- impute_markers_rf(sep.pop)
+          # }
+          
+          # Function to go through the populations
+          impute_rf_pop <- function(pop.list, ...){
+            sep.pop <- df.split.pop[[pop.list]]
             sep.pop <- suppressWarnings(
               plyr::colwise(factor, exclude = NA)(sep.pop)
             )
             # message of progress for imputations by population
-            message(paste("Completed imputations for pop ", i, sep = ""))
-            imputed.dataset[[i]] <- impute_markers_rf(sep.pop)
-          }
-          # close parallel connection settings
-          stopCluster(cl)
-          message("Almost finished with the imputations...")
-          vcf.imp <- suppressWarnings(as.data.frame(bind_rows(imputed.dataset)))
+            message(paste("Completed imputations for pop ", pop.list, sep = ""))
+            # imputed.dataset[[i]] <- impute_markers_rf(sep.pop) # test with foreach
+            imputed.dataset <- impute_genotype_rf(sep.pop)
+            return(imputed.dataset)
+          } # End impute_rf_pop
           
-          # Second round of imputations: remove introduced NA if some pop don't have the markers by using
-          # RF globally
+          vcf.imp <- list()
+          vcf.imp <- parallel::mclapply(
+            X = pop.list, 
+            FUN = impute_rf_pop, 
+            mc.preschedule = FALSE, 
+            mc.silent = FALSE, 
+            mc.cores = parallel.core
+          )
+          
+          # Compiling the results
+          message("Compiling imputations results")
+          vcf.imp <- suppressWarnings(bind_rows(vcf.imp))
+          
+          # close parallel connection settings
+          # stopCluster(cl)
+          # message("Almost finished with the imputations...")
+          # vcf.imp <- suppressWarnings(as.data.frame(bind_rows(imputed.dataset)))
+          
+          # Second round of imputations (globally) to remove introduced NA 
+          # In case that some pop don't have the markers
           vcf.imp <- suppressWarnings(plyr::colwise(factor, exclude = NA)(vcf.imp)) # Make the columns factor
-          vcf.imp <- impute_markers_rf(vcf.imp) # impute globally
+          vcf.imp <- impute_genotype_rf(vcf.imp) # impute globally
           
           # dump unused objects
           df.split.pop <- NULL
@@ -951,14 +971,16 @@ present in the blacklist of genotypes to erase.")
           vcf.prep <- NULL
           
         } # End imputation RF populations
+        # Random Forest global
         if (imputations.group == "global") { # Globally (not by pop_id)
           message("Imputations computed globally, take a break...")
           vcf.prep <- plyr::colwise(factor, exclude = NA)(vcf.prep)
-          vcf.imp <- impute_markers_rf(vcf.prep)
+          vcf.imp <- impute_genotype_rf(vcf.prep)
           
           vcf.prep <- NULL # remove unused object
         } # End imputation RF global
       } # End imputation RF
+      # Imputation using the most common genotype
       if (imputations == "max") { # End imputation max
         if (imputations.group == "populations") {
           message("Imputations computed by populations")
@@ -1000,23 +1022,30 @@ present in the blacklist of genotypes to erase.")
           vcf.prep <- NULL # remove unused object
         } # End imputation max global 
       } # End imputations max
-      
       # transform the imputed dataset into gsi_sim
       if (is.null(df.file)) { # for VCF input
         message("Imputed VCF into factory for conversion into gsi_sim...")
+        vcf.imp <- suppressWarnings(
+          vcf.imp %>%
+            tidyr::gather(key = MARKERS, GT, -c(INDIVIDUALS, POP_ID))
+        )
+        
         gsi.prep.imp <- suppressWarnings(
           vcf.imp %>%
-            tidyr::gather(key = MARKERS, GT, -c(INDIVIDUALS, POP_ID)) %>% # make tidy
             tidyr::separate(col = GT, into = c("A1", "A2"), sep = "_") %>%  # separate the genotypes into alleles
             tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID)) # make tidy
         )
       } else { # for df input
-        gsim.prep <- suppressWarnings(
+        vcf.imp <- suppressWarnings(
+          vcf.imp %>%
+            tidyr::gather(key = MARKERS, GT, -c(INDIVIDUALS, POP_ID))
+        ) 
+        
+        gsim.prep.imp <- suppressWarnings(
           vcf.imp %>% 
-            tidyr::gather(key = MARKERS, GT, -c(INDIVIDUALS, POP_ID)) %>% # make tidy
             tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3) %>%  # separate the genotypes into alleles
             tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID))
-        )    
+        )
       }
     } # End imputations
     
@@ -1227,10 +1256,10 @@ present in the blacklist of genotypes to erase.")
       ncal <- NULL
       
       return(fst.ranked)
-    } # end Fst function
+    } # End fst_WC84 function
     
     # Write the files
-    write_gsi <- function (data, markers.names, imputations, filename, i, m, ...) {
+    write_gsi <- function (data, markers.names, filename, i, m, ...) {
       
       data$POP_ID <- droplevels(x = data$POP_ID)
       n.individuals <- n_distinct(data$INDIVIDUALS)  # number of individuals
@@ -1239,26 +1268,26 @@ present in the blacklist of genotypes to erase.")
       gsi_sim.split <- split(data, pop)  # split gsi_sim by populations
       filename <- filename  # gsi_sim filename
       
-      # filename modification based with or without imputations
-      if (imputations == FALSE) {
-        # message("Output...No imputation")
-        filename <- stri_replace_all_fixed(filename,
-                                           pattern = "txt",
-                                           replacement = stri_join(
-                                             i, m, 
-                                             "no.imputation", "txt", sep = "."
-                                           )
-        )
-      } else {
-        # message("Output...With imputations")
-        filename <- stri_replace_all_fixed(filename,
-                                           pattern = "txt",
-                                           replacement = stri_join(
-                                             i, m, 
-                                             "imputed", "txt", sep = "."
-                                           )
-        )
-      }
+      # # filename modification based with or without imputations
+      # if (imputations == FALSE) {
+      #   # message("Output...No imputation")
+      #   filename <- stri_replace_all_fixed(filename,
+      #                                      pattern = "txt",
+      #                                      replacement = stri_join(
+      #                                        i, m, 
+      #                                        "no.imputation", "txt", sep = "."
+      #                                      )
+      #   )
+      # } else {
+      #   # message("Output...With imputations")
+      #   filename <- stri_replace_all_fixed(filename,
+      #                                      pattern = "txt",
+      #                                      replacement = stri_join(
+      #                                        i, m, 
+      #                                        "imputed", "txt", sep = "."
+      #                                      )
+      #   )
+      # }
       
       # directory <- getwd() # test
       # Line 1: number of individuals and the number of markers
@@ -1277,10 +1306,10 @@ present in the blacklist of genotypes to erase.")
       }
       # message(stri_join("Data file (no imputation):", filename, "\nWritten to the working directory:", directory, sep = " "))
       return(filename)
-    } # end write gsi function
+    } # End write_gsi function
     
     # Assignment
-    assignment_analysis <- function(data, select.markers, markers.names, missing.data, i, m, holdout, ...) {
+    assignment_analysis <- function(data, select.markers, markers.names, missing.data, i, m, holdout, filename, ...) {
       # data <- gsim.prep #test
       # missing.data <- "no.imputation" #test
       data.select <- suppressWarnings(
@@ -1294,7 +1323,8 @@ present in the blacklist of genotypes to erase.")
       )
       
       # Write gsi_sim input file to directory
-      input <- write_gsi(data = data.select, markers.names = markers.names, imputations = imputations, filename = gsi_sim.filename, i = i, m = m)
+      input <- write_gsi(data = data.select, markers.names = markers.names, filename = filename, i = i, m = m)
+      # input <- write_gsi(data = data.select, markers.names = markers.names, filename = gsi_sim.filename, i = i, m = m)
       
       # Run gsi_sim ------------------------------------------------------------
       input.gsi <- stri_join(directory.subsample,input)
@@ -1408,26 +1438,26 @@ present in the blacklist of genotypes to erase.")
         }
       }
       return(assignment)
-    } # end assignment analysis function
+    } # End assignment_analysis function
     
     # Random method ************************************************************
     if (sampling.method == "random") {
       message("Conducting Assignment analysis with markers selected randomly")
       # Number of times to repeat the sampling of markers
-      iterations.list <- 1:iteration.thl
+      iterations.list <- 1:iteration.method
       # iterations.list <- 1:200 # test
       
       # Plan A: use a list containing all the lists of marker combinations
       # Plan B: use nesting foreach loop (%:%)
       # Plan A is faster
       
-      # Function: Random selection of marker function + iteration.thl
-      marker_selection <- function(iteration.thl) {
+      # Function: Random selection of marker function + iteration.method
+      marker_selection <- function(iteration.method) {
         m <- as.numeric(m)
         select.markers <- sample_n(tbl = unique.markers, size = m, replace = FALSE) %>%
           arrange(MARKERS) %>%
           mutate(
-            ITERATIONS = rep(iteration.thl, n()),
+            ITERATIONS = rep(iteration.method, n()),
             MARKER_NUMBER = rep(m, n())
           )
       }
@@ -1447,47 +1477,30 @@ present in the blacklist of genotypes to erase.")
       
       # Start cluster registration backend
       # parallel.core <- 8 # test
-      cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = "")
+      # cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = "")
       # doSNOW::registerDoSNOW(cl)
-      doParallel::registerDoParallel(cl)
+      # doParallel::registerDoParallel(cl)
       
       # Set seed for random sampling
       random.seed <- sample(x = 1:1000000, size = 1)
       # set.seed(random.seed)
-      parallel::clusterSetRNGStream(cl = cl, iseed = random.seed)
+      # parallel::clusterSetRNGStream(cl = cl, iseed = random.seed)
       random.seed <- data.frame(RANDOM_SEED_NUMBER = random.seed)
       write_tsv(x = random.seed, path = paste0(directory.subsample, "random_seed_assignment_ngs.tsv"), col_names = TRUE, append = FALSE)
       
-      mrl <- NULL
-      res <- list()
       message("Starting parallel computations for the assignment analysis
 First sign of progress may take some time
 Progress can be monitored with activity in the folder...")
-      
-      # Progress Bar during parallel computations
-      #     progress.max <- length(markers.random.lists)
-      #     pb <- txtProgressBar(max = progress.max, title = "Assignment in progress", style = 3, width = 85)
-      #     progress <- function(n) setTxtProgressBar(pb, n)
-      #     opts <- list(progress = progress)
-      
-      # foreach
-      #     assignment.res <- foreach(mrl=markers.random.lists, 
-      #                               .options.snow=opts, 
-      #                               .packages = c("dplyr", "tidyr", "stringi",
-      #                                             "readr", "purrr")
-      #     ) %dopar% {
-      
-      assignment.res <- foreach(
-        mrl=markers.random.lists,
-        .packages = c("dplyr", "tidyr", "stringi", "readr", "purrr"),
-        .verbose = FALSE
-      ) %dopar% {
+      mrl <- NULL
+      holdout <- NULL
+      assignment.random <- list()
+      assignment_random <- function(markers.random.lists, ...) {
+        mrl <- markers.random.lists
         # mrl <- markers.random.lists[1] # test
-        # mrl <- as_data_frame(purrr::flatten(mrl)) # test
-        Sys.sleep(0.01)                             # for progress bar
         mrl <- data.frame(mrl)                      # marker random list
         i <- as.numeric(unique(mrl$ITERATIONS))     # iteration
         m <- as.numeric(unique(mrl$MARKER_NUMBER))  # number of marker selected
+        
         select.markers <- mrl %>%                   # markers
           ungroup() %>% 
           select(MARKERS) %>% 
@@ -1495,10 +1508,28 @@ Progress can be monitored with activity in the folder...")
         
         # get the list of loci after filter
         markers.names <- unique(select.markers$MARKERS)
-        assignment.no.imp <- assignment_analysis(data = gsim.prep, 
-                                                 missing.data = "no.imputation", 
-                                                 i  = i
+        
+        # Assignment analysis without imputations
+        filename <- stri_replace_all_fixed(gsi_sim.filename,
+                                           pattern = "txt",
+                                           replacement = stri_join(
+                                             i, m, 
+                                             "no.imputation", "txt", sep = "."
+                                           )
         )
+        
+        assignment.no.imp <- assignment_analysis(data = gsim.prep,
+                                                 select.markers = select.markers,
+                                                 markers.names = markers.names,
+                                                 missing.data = "no.imputation", 
+                                                 i = i, 
+                                                 m = m,
+                                                 holdout = NULL,
+                                                 filename = filename
+        )
+        
+        # unused objects
+        filename <- NULL
         
         # With imputations
         if (imputations != FALSE) {# with imputations
@@ -1515,27 +1546,53 @@ Progress can be monitored with activity in the folder...")
               missing.data <- "imputed max global"
             }
           }
-          assignment.imp <- assignment_analysis(data = gsi.prep.imp, 
-                                                missing.data = missing.data, 
-                                                i = i
+          # Assignment analysis WITH imputations
+          filename <- stri_replace_all_fixed(gsi_sim.filename,
+                                             pattern = "txt",
+                                             replacement = stri_join(
+                                               i, m, 
+                                               "imputed", "txt", sep = "."
+                                             )
           )
-        }
-        
+          assignment.imp <- assignment_analysis(data = gsi.prep.imp,
+                                                select.markers = select.markers,
+                                                markers.names = markers.names,
+                                                missing.data = missing.data, 
+                                                i = i,
+                                                m = m,
+                                                holdout = holdout,
+                                                filename = filename
+          )
+          # unused objects
+          select.markers <- NULL
+          markers.names <- NULL
+        } # End with imputations
+
         #compile assignment results each marker number for the iteration
         if (imputations == FALSE) {
           assignment <- assignment.no.imp
+          gsi.prep.imp <- NULL
+          vcf.imp <- NULL
         } else {
           assignment <- bind_rows(assignment.no.imp, assignment.imp)
         }
         assignment <- mutate(.data = assignment, ITERATIONS = rep(i, n()))
         return(assignment)
       } # End of iterations for both with and without imputations
-      message("Summarizing the assignment analysis results")
-      stopCluster(cl) # close parallel connection settings
       
+      assignment.res <- NULL
+      assignment.res <- parallel::mclapply(
+        X = markers.random.lists, 
+        FUN = assignment_random, 
+        mc.preschedule = FALSE, 
+        mc.silent = FALSE, 
+        mc.cores = parallel.core
+      )
+
       # Compiling the results
+      message("Compiling results")
       assignment.res <- suppressWarnings(
-        as_data_frame(bind_rows(assignment.res))%>%
+        bind_rows(assignment.res)%>%
           mutate(METHOD = rep("LOO", n()))
       )
       
@@ -1590,7 +1647,7 @@ Progress can be monitored with activity in the folder...")
           mutate(
             SE_MIN = MEAN - SE,
             SE_MAX = MEAN + SE,
-            ITERATIONS = rep(iteration.thl, n())
+            ITERATIONS = rep(iteration.method, n())
           ) %>%
           select(CURRENT, MARKER_NUMBER, MEAN, MEDIAN, SE, MIN, MAX, QUANTILE25, QUANTILE75, SE_MIN, SE_MAX, METHOD, MISSING_DATA, ITERATIONS)
       )
@@ -1610,7 +1667,7 @@ Progress can be monitored with activity in the folder...")
         filename.assignment.sum <- stri_join("assignment.summary.stats", "imputed", sampling.method, "tsv", sep = ".")
       }
       write_tsv(x = assignment.summary.stats, path = paste0(directory.subsample,filename.assignment.sum), col_names = TRUE, append = FALSE)
-    } # end method random
+    } # End method random
     
     # Ranked method ************************************************************
     if (sampling.method == "ranked") {
@@ -1630,7 +1687,7 @@ Progress can be monitored with activity in the folder...")
         holdout.individuals <- ind.pop.df %>%
           mutate(ITERATIONS = stri_join("HOLDOUT", seq(1:n()), sep = "_"))
       } else if (thl == "all") { # no holdout for that one
-        iterations.list <- iteration.thl
+        iterations.list <- iteration.method
         holdout.individuals <- NULL
         message("Warning: using all the individuals for ranking markers based on Fst\nNo holdout samples")
         message("Recommended reading: \nAnderson, E. C. (2010) Assessing the power of informative subsets of
@@ -1638,11 +1695,11 @@ Progress can be monitored with activity in the folder...")
       } else {
         # Create x (iterations) list of y (thl) proportion of individuals per pop.
         if (stri_detect_fixed(thl, ".") & thl < 1) {
-          # iteration.thl <- 5 # test
+          # iteration.method <- 5 # test
           # thl <- 0.4 # test
           holdout.individuals.list <- list()
-          iterations.list <- 1:iteration.thl
-          for (x in 1:iteration.thl) {
+          iterations.list <- 1:iteration.method
+          for (x in 1:iteration.method) {
             holdout.individuals <- ind.pop.df %>%
               group_by(POP_ID) %>%
               sample_frac(thl, replace = FALSE) %>%  # sampling fraction for each pop
@@ -1658,8 +1715,8 @@ Progress can be monitored with activity in the folder...")
         # Create x (iterations) list of y (thl) individuals per pop.
         if (thl > 1) {
           holdout.individuals.list <- list()
-          iterations.list <- 1:iteration.thl
-          for (x in 1:iteration.thl) {
+          iterations.list <- 1:iteration.method
+          for (x in 1:iteration.method) {
             holdout.individuals <- ind.pop.df %>%
               group_by(POP_ID) %>%
               sample_n(thl, replace = FALSE) %>% # sampling individuals for each pop
@@ -1672,7 +1729,7 @@ Progress can be monitored with activity in the folder...")
           holdout.individuals <- as.data.frame(bind_rows(holdout.individuals.list))
         }
         message("Holdout samples saved in your folder")
-      } # end tracking holdout individuals
+      } # End tracking holdout individuals
       write_tsv(x = holdout.individuals, 
                 path = paste0(directory.subsample,"holdout.individuals.tsv"), 
                 col_names = TRUE, 
@@ -1684,43 +1741,6 @@ Progress can be monitored with activity in the folder...")
       message("Starting parallel computations for the assignment analysis
 First sign of progress may take some time
 Progress can be monitored with activity in the folder...")
-      
-      # Progress Bar during parallel computations
-      #     if (thl == 1) {
-      #       progress.max <- length(iterations.list)
-      #     } else {
-      #       progress.max <- iterations
-      #     }
-      #     pb <- txtProgressBar(max = progress.max, 
-      #                          title = "Assignment in progress", 
-      #                          style = 3, 
-      #                          width = 85
-      #     )
-      #     progress <- function(n) setTxtProgressBar(pb, n)
-      #     opts <- list(progress = progress)
-      #     
-      # Start cluster registration backend
-      # cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = "") # test
-      # cl <- parallel::makeCluster(parallel.core)
-      # cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = paste0(directory, "parallel.computations.log")) # test
-      # doSNOW::registerDoSNOW(cl)
-      # doParallel::registerDoParallel(cl)
-      
-      # foreach
-      # i <- NULL
-      #       assignment.res <- list()
-      ## foreach with progress bar option using SNOW
-      #     assignment.res <- foreach(
-      #       i=iterations.list, .options.snow=opts, 
-      #       .packages = c("dplyr", "tidyr", "stringi", "readr"),
-      #       .verbose = FALSE
-      #     ) %dopar% {
-      
-      #       assignment.res <- foreach(
-      #         i=iterations.list, 
-      #         .packages = c("dplyr", "tidyr", "stringi", "readr"),
-      #         .verbose = FALSE
-      #       ) %dopar% {
       
       assignment_ranking <- function(iterations.list, ...) {
         # i <- "TRI_09" #test
@@ -1772,10 +1792,9 @@ Progress can be monitored with activity in the folder...")
           )
         }
         
-        # Markers numbers loop
-        # Create empty lists to feed the results
+        # Markers numbers loop function
         message("Going throught the marker.number")
-        assignment.marker <- list()
+        assignment.marker <- list() # Create empty lists to feed the results
         assignment_marker_loop <- function(m, ...) {
           message("Marker number: ", m)
           # m <- 200 # test
@@ -1789,17 +1808,32 @@ Progress can be monitored with activity in the folder...")
           markers.names <- unique(select.markers$MARKERS)
           
           # Assignment analysis without imputations
+          filename <- stri_replace_all_fixed(gsi_sim.filename,
+                                             pattern = "txt",
+                                             replacement = stri_join(
+                                               i, m, 
+                                               "no.imputation", "txt", sep = "."
+                                             )
+          )
           assignment.no.imp <- assignment_analysis(data = gsim.prep,
                                                    select.markers = select.markers,
                                                    markers.names = markers.names,
                                                    missing.data = "no.imputation", 
                                                    i = i, 
                                                    m = m,
-                                                   holdout = holdout
+                                                   holdout = holdout,
+                                                   filename = filename
           )
+          
+          # unused objects
+          select.markers <- NULL
+          markers.names <- NULL
+          RANKING <- NULL
+          filename <- NULL
           
           # With imputations
           if (imputations != FALSE) {  # with imputations
+            
             select.markers <- filter(.data = fst.ranked.imp, RANKING <= m) %>%
               select(MARKERS)
             
@@ -1821,20 +1855,35 @@ Progress can be monitored with activity in the folder...")
             }
             
             # Assignment analysis WITH imputations
+            filename <- stri_replace_all_fixed(gsi_sim.filename,
+                                               pattern = "txt",
+                                               replacement = stri_join(
+                                                 i, m, 
+                                                 "imputed", "txt", sep = "."
+                                               )
+            )
             assignment.imp <- assignment_analysis(data = gsi.prep.imp,
                                                   select.markers = select.markers,
                                                   markers.names = markers.names,
                                                   missing.data = missing.data, 
                                                   i = i,
-                                                  select.markers = select.markers,
                                                   m = m,
-                                                  holdout = holdout
+                                                  holdout = holdout,
+                                                  filename = filename
             )
-          }
+            
+            # unused objects
+            select.markers <- NULL
+            markers.names <- NULL
+            RANKING <- NULL
+          } # End with imputations
           
           #compile assignment results each marker number for the iteration
           if (imputations == FALSE) {# with imputations
             assignment <- assignment.no.imp
+            fst.ranked.imp <- NULL
+            gsi.prep.imp <- NULL
+            vcf.imp <- NULL
           } else {
             assignment <- bind_rows(assignment.no.imp, assignment.imp)
           }
@@ -1847,31 +1896,33 @@ Progress can be monitored with activity in the folder...")
           .x = marker.number, 
           .f = assignment_marker_loop,
           fst.ranked = fst.ranked,
+          fst.ranked.imp = fst.ranked.imp,
           i = i,
           vcf = vcf,
           gsim.prep = gsim.prep,
+          vcf = vcf.imp,
+          gsim.prep.imp = gsim.prep.imp,
           pop.levels = pop.levels,
           pop.labels = pop.labels,
           pop.id.start =  pop.id.start,
           pop.id.end = pop.id.end,
           sampling.method = sampling.method,
           thl = thl,
-          iteration.thl = iteration.thl,
+          iteration.method = iteration.method,
           gsi_sim.filename = gsi_sim.filename,
           keep.gsi.files = keep.gsi.files,
           imputations = imputations,
           parallel.core = parallel.core
         )
         
-        
         message("Summarizing the assignment analysis results by iterations and marker group")
         
         assignment.res.summary <- suppressWarnings(
           bind_rows(purrr::flatten(assignment.marker)) %>%
-            mutate(METHOD = rep("thl", n()))
+            mutate(METHOD = rep(stri_join("thl_", thl) , n()))
         )
         
-        res.filename <- stri_join("assignment_ind_", i, ".tsv", sep = "") # No imputation
+        res.filename <- stri_join("assignment_", i, ".tsv", sep = "") # No imputation
         write_tsv(x = assignment.res.summary, path = paste0(directory.subsample, res.filename), 
                   col_names = TRUE, 
                   append = FALSE
@@ -1879,7 +1930,6 @@ Progress can be monitored with activity in the folder...")
         # }
         return(assignment.res.summary)
       }  # End assignment ranking function
-      # stopCluster(cl)  # close parallel connection settings
       
       # using mclapply
       assignment.res <- list()
@@ -1896,7 +1946,8 @@ Progress can be monitored with activity in the folder...")
       message("Compiling results")
       assignment.res.summary <- suppressWarnings(
         bind_rows(assignment.res) %>%
-          mutate(METHOD = rep("thl", n()))
+          mutate(METHOD = rep(stri_join("thl_", thl) , n()))
+        
       )
       
       if (thl == 1 | thl == "all") {
@@ -1987,7 +2038,7 @@ Progress can be monitored with activity in the folder...")
             mutate(CURRENT = factor(CURRENT, levels = pop.levels.assignment.stats.overall, ordered = TRUE)) %>%
             arrange(CURRENT, MARKER_NUMBER)
         )
-      } # end thl != 1
+      } # End thl != 1
       
       # Write the tables to directory
       # assignment results
@@ -2005,13 +2056,13 @@ Progress can be monitored with activity in the folder...")
         filename.assignment.sum <- stri_join("assignment.summary.stats", "imputed", sampling.method, "tsv", sep = ".")
       }
       write_tsv(x = assignment.summary.stats, path = paste0(directory.subsample,filename.assignment.sum), col_names = TRUE, append = FALSE)
-    } # end of ranked thl method
+    } # End of ranked thl method
     
     # update the assignment with subsampling iterations id
     assignment.summary.stats <- assignment.summary.stats %>% 
       mutate(SUBSAMPLE = rep(subsample.id, n()))
     return(assignment.summary.stats)
-  } # end assignment_function
+  } # End assignment_function
   
   res <- map(.x = subsample.list, .f = assignment_function,
              vcf = vcf,
@@ -2029,7 +2080,7 @@ Progress can be monitored with activity in the folder...")
              pop.id.end = pop.id.end,
              sampling.method = sampling.method,
              thl = thl,
-             iteration.thl = iteration.thl,
+             iteration.method = iteration.method,
              gsi_sim.filename = gsi_sim.filename,
              keep.gsi.files = keep.gsi.files,
              imputations = imputations,
@@ -2124,5 +2175,5 @@ Progress can be monitored with activity in the folder...")
   # results
   res.list <- list(assignment = res, plot.assignment = plot.assignment)
   return(res.list)
-} # end assignment_ngs
+} # End assignment_ngs
 
