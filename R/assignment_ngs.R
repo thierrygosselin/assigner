@@ -24,10 +24,11 @@
 #' Missing genotypes are coded \code{000000}.
 #' @param whitelist.markers (optional) A whitelist containing CHROM (character
 #' or integer) and/or LOCUS (integer) and/or
-#' POS (integer) columns header. To filter by CHROM and/or locus and/or by snp.
+#' POS (integer) columns header. To filter by chromosome and/or locus and/or by snp.
 #' The whitelist is in the working directory (e.g. "whitelist.txt").
 #' de novo CHROM column with 'un' need to be changed to 1. 
-#' Default \code{NULL} for no whitelist of markers.
+#' Default \code{NULL} for no whitelist of markers. In the VCF, the column ID is
+#' the LOCUS identification.  
 
 #' @param blacklist.genotype (optional) Useful to erase genotype with below 
 #' average quality, e.g. genotype with more than 2 alleles in diploid likely 
@@ -120,7 +121,10 @@
 #' then, \code{pop.id.end} = 7. If you didn't name your individuals
 #' with the pop id in it, use the \code{strata} argument.
 #' @param strata (optional) A tab delimited file with 2 columns with header:
-#' \code{INDIVIDUALS} and \code{POP_ID}. Default: \code{strata = NULL}.
+#' \code{INDIVIDUALS} and \code{POP_ID}. Default: \code{strata = NULL}. With a 
+#' \code{df.file} the strata is the INDIVIDUALS and POP_ID columns, 
+#' unless a strata file is used. In the later case, the strata file will have
+#' priority.
 
 #' @param pop.select (string) Conduct the assignment analysis on a
 #' selected list of populations. Default = \code{NULL} for no selection and keep
@@ -315,7 +319,7 @@ assignment_ngs <- function(vcf.file,
   # Checking for missing and/or default arguments ******************************
   if (missing(vcf.file)) vcf.file <- NULL
   if (missing(df.file)) df.file <- NULL
-  if (missing(vcf.file) & missing(df.file)) stop("One input file is required")
+  if (missing(vcf.file) & missing(df.file)) stop("Input file missing")
   if (missing(whitelist.markers)) whitelist.markers <- NULL # no Whitelist
   if (missing(blacklist.genotype)) blacklist.genotype <- NULL # no genotype to erase
   if (missing(snp.ld)) snp.ld <- NULL
@@ -329,7 +333,7 @@ assignment_ngs <- function(vcf.file,
   if (missing(blacklist.id)) blacklist.id <- NULL # No blacklist of ID
   if (missing(pop.levels)) stop("pop.levels required")
   if (missing(pop.labels)) pop.labels <- pop.levels # pop.labels
-  if (missing(strata) & missing(pop.id.start) & missing(pop.id.end)) {
+  if (missing(df.file) & missing(strata) & missing(pop.id.start) & missing(pop.id.end)) {
     stop("pop.id.start and pop.id.end or strata arguments are required to 
          identify your populations")
   }
@@ -413,9 +417,11 @@ assignment_ngs <- function(vcf.file,
   }
   
   # Import strata file if used *************************************************
-  if (!is.null(strata)) {
+  if (is.null(strata) | is.null(vcf.file)) {
+    strata <- vcf %>% select(INDIVIDUALS, POP_ID) %>% distinct(INDIVIDUALS)
+  } else {
     strata <- read_tsv(file = strata, col_names = TRUE, col_types = "cc")
-  }
+  }  
   
   # Whitelist of markers *******************************************************
   if (is.null(whitelist.markers)) { # no Whitelist
@@ -2167,7 +2173,7 @@ Progress can be monitored with activity in the folder...")
       panel.grid.minor.x = element_blank(), 
       panel.grid.major.y = element_line(colour = "grey60", linetype = "dashed"), 
       axis.title.x = element_text(size = 10, family = "Helvetica", face = "bold"), 
-      axis.text.x = element_text(size = 8, family = "Helvetica", face = "bold", angle = 90, hjust = 0.5, vjust = 0.5), 
+      axis.text.x = element_text(size = 8, family = "Helvetica", face = "bold", angle = 90, hjust = 1, vjust = 0.5), 
       axis.title.y = element_text(size = 10, family = "Helvetica", face = "bold"), 
       axis.text.y = element_text(size = 10, family = "Helvetica", face = "bold")
     )
