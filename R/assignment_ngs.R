@@ -417,9 +417,11 @@ assignment_ngs <- function(vcf.file,
   }
   
   # Import strata file if used *************************************************
-  if (is.null(strata) | is.null(vcf.file)) {
+  if (!is.null(df.file)) {
     strata <- vcf %>% select(INDIVIDUALS, POP_ID) %>% distinct(INDIVIDUALS)
-  } else {
+  } 
+  
+  if (!is.null(strata)) {
     strata <- read_tsv(file = strata, col_names = TRUE, col_types = "cc")
   }  
   
@@ -450,12 +452,16 @@ assignment_ngs <- function(vcf.file,
       vcf <- vcf %>%
         mutate( # Make population ready
           POP_ID = substr(INDIVIDUALS, pop.id.start, pop.id.end),
-          POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = unique(pop.labels), ordered =T),
+          POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered =TRUE),
           INDIVIDUALS =  as.character(INDIVIDUALS)
         )
     } else {
       vcf <- vcf %>%
-        left_join(strata, by = "INDIVIDUALS")
+        left_join(strata, by = "INDIVIDUALS") %>% 
+        mutate( # Make population ready
+          POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered =TRUE),
+          INDIVIDUALS =  as.character(INDIVIDUALS)
+        )
     }
   }
   # Blacklist id ***************************************************************
@@ -464,7 +470,7 @@ assignment_ngs <- function(vcf.file,
     vcf <- vcf
   } else { # With blacklist of ID
     message("Using the blacklisted id from the directory")
-    blacklist.id <- read_tsv(blacklist.id, col_names = T)
+    blacklist.id <- read_tsv(blacklist.id, col_names = TRUE)
     vcf <- suppressWarnings(
       vcf %>%
         anti_join(blacklist.id, by = "INDIVIDUALS") %>%
@@ -1387,14 +1393,16 @@ present in the blacklist of genotypes to erase.")
       } else {
         assignment <- suppressWarnings(
           assignment %>%
+            mutate(INDIVIDUALS = as.character(INDIVIDUALS)) %>% 
             left_join(strata, by = "INDIVIDUALS") %>%
             rename(CURRENT = POP_ID) %>% 
             mutate(
-              CURRENT = factor(CURRENT, levels = pop.levels, labels = pop.labels, ordered = T),
+              CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered =TRUE),
+              # CURRENT = factor(CURRENT, levels = pop.levels, labels = pop.labels, ordered = TRUE),
               CURRENT = droplevels(CURRENT),
-              INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = T),
+              INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = TRUE),
               INFERRED = droplevels(INFERRED),
-              SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = T),
+              SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = TRUE),
               SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
               SCORE = round(SCORE, 2),
               SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
