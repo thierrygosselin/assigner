@@ -20,9 +20,7 @@ Imports:
     tidyr,
     lazyeval,
     randomForestSRC,
-    foreach,
     parallel,
-    doParallel,
     purrr
 Suggests:
     plyr,

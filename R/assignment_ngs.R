@@ -188,9 +188,7 @@
 #' @export
 #' @rdname assignment_ngs
 #' @import dplyr
-#' @import foreach
 #' @import parallel
-#' @import doParallel
 #' @import stringi
 #' @importFrom purrr map
 #' @importFrom purrr flatten
@@ -903,12 +901,6 @@ present in the blacklist of genotypes to erase.")
         # Parallel computations options
         options(rf.cores = parallel.core, mc.cores = parallel.core)
         
-        # Start cluster registration backend
-        # cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = "")
-        
-        # doSNOW::registerDoSNOW(cl)
-        # doParallel::registerDoParallel(cl)
-        
         # imputations using Random Forest with the package randomForestSRC
         impute_genotype_rf <- function(x) {
           randomForestSRC::impute.rfsrc(data = x,
@@ -1488,12 +1480,6 @@ present in the blacklist of genotypes to erase.")
       
       markers.random.lists.table <- as_data_frame(bind_rows(markers.random.lists))
       write_tsv(x = markers.random.lists.table, path = paste0(directory.subsample, "markers.random.tsv"), col_names = TRUE, append = FALSE)
-      
-      # Start cluster registration backend
-      # parallel.core <- 8 # test
-      # cl <- parallel::makeCluster(parallel.core, methods = FALSE, outfile = "")
-      # doSNOW::registerDoSNOW(cl)
-      # doParallel::registerDoParallel(cl)
       
       # Set seed for random sampling
       random.seed <- sample(x = 1:1000000, size = 1)
