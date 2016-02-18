@@ -450,7 +450,7 @@ assignment_ngs <- function(vcf.file,
       vcf <- vcf %>%
         mutate( # Make population ready
           POP_ID = substr(INDIVIDUALS, pop.id.start, pop.id.end),
-          POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered =TRUE),
+          POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered = TRUE),
           INDIVIDUALS =  as.character(INDIVIDUALS)
         )
     } else {
