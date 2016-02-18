@@ -1367,7 +1367,7 @@ present in the blacklist of genotypes to erase.")
           tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss")
       )
       
-      if (is.null(strata)){
+      if (!is.null(pop.id.start)){
         assignment <- suppressWarnings(
           assignment %>%
             mutate(
