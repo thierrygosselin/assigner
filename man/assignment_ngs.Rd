@@ -11,7 +11,9 @@ columns. The 1st column is the \code{POP_ID}, 2nd colum
 the \code{INDIVIDUALS} and the remaining columns are the markers IDs
 containing genotypes in the format: 3 digits per allele
 and no space between alleles (e.g. 235240 : allele1 = 235 and allele2 = 240).
-Missing genotypes are coded \code{000000}.}
+Missing genotypes are coded \code{000000}. Note that \code{POP_ID} column can
+be any hierarchical grouping. See the argument \code{strata} for other means
+of controlling grouping used in the assignment.}
 
 \item{whitelist.markers}{(optional) A whitelist containing CHROM (character
 or integer) and/or LOCUS (integer) and/or
@@ -127,10 +129,10 @@ then, \code{pop.id.end} = 7. If you didn't name your individuals
 with the pop id in it, use the \code{strata} argument.}
 
 \item{strata}{(optional) A tab delimited file with 2 columns with header:
-\code{INDIVIDUALS} and \code{POP_ID}. Default: \code{strata = NULL}. With a 
+\code{INDIVIDUALS} and \code{STRATA}. Default: \code{strata = NULL}. With a 
 \code{df.file} the strata is the INDIVIDUALS and POP_ID columns, 
 unless a strata file is used. In the later case, the strata file will have
-priority.}
+priority. The \code{STRATA} column can be any hierarchical grouping.}
 
 \item{pop.select}{(string) Conduct the assignment analysis on a
 selected list of populations. Default = \code{NULL} for no selection and keep

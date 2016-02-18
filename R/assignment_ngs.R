@@ -21,7 +21,9 @@
 #' the \code{INDIVIDUALS} and the remaining columns are the markers IDs
 #' containing genotypes in the format: 3 digits per allele
 #' and no space between alleles (e.g. 235240 : allele1 = 235 and allele2 = 240).
-#' Missing genotypes are coded \code{000000}.
+#' Missing genotypes are coded \code{000000}. Note that \code{POP_ID} column can
+#' be any hierarchical grouping. See the argument \code{strata} for other means
+#' of controlling grouping used in the assignment.
 #' @param whitelist.markers (optional) A whitelist containing CHROM (character
 #' or integer) and/or LOCUS (integer) and/or
 #' POS (integer) columns header. To filter by chromosome and/or locus and/or by snp.
@@ -121,10 +123,10 @@
 #' then, \code{pop.id.end} = 7. If you didn't name your individuals
 #' with the pop id in it, use the \code{strata} argument.
 #' @param strata (optional) A tab delimited file with 2 columns with header:
-#' \code{INDIVIDUALS} and \code{POP_ID}. Default: \code{strata = NULL}. With a 
+#' \code{INDIVIDUALS} and \code{STRATA}. Default: \code{strata = NULL}. With a 
 #' \code{df.file} the strata is the INDIVIDUALS and POP_ID columns, 
 #' unless a strata file is used. In the later case, the strata file will have
-#' priority.
+#' priority. The \code{STRATA} column can be any hierarchical grouping.
 
 #' @param pop.select (string) Conduct the assignment analysis on a
 #' selected list of populations. Default = \code{NULL} for no selection and keep
@@ -272,7 +274,7 @@ if (getRversion() >= "2.15.1") {
       'MARKERS', 'CURRENT', 'INFERRED', 'MARKER_NUMBER', 'MISSING_DATA',
       'ITERATIONS', 'METHOD', 'TOTAL', 'MEAN_i', 'MEAN', 'ASSIGNMENT_PERC',
       'SE', 'MEDIAN', 'MIN', 'MAX', 'QUANTILE25', 'QUANTILE75', 'SE_MIN',
-      'SE_MAX', '.', 'QUAL', 'FILTER', 'INFO', 'pb', 'SUBSAMPLE'
+      'SE_MAX', '.', 'QUAL', 'FILTER', 'INFO', 'pb', 'SUBSAMPLE', 'STRATA'
     )
   )
 }
@@ -387,7 +389,7 @@ assignment_ngs <- function(vcf.file,
     vcf <- read_tsv(file = df.file, col_names = TRUE) %>% 
       tidyr::gather(key = LOCUS, value = GT, -c(INDIVIDUALS, POP_ID)) %>% 
       mutate(
-        POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = F), levels = unique(pop.labels), ordered =T),
+        POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered =T),
         GT = stri_pad_right(str = GT, width = 6, pad = "0")
       )
   } else {
@@ -415,13 +417,16 @@ assignment_ngs <- function(vcf.file,
   }
   
   # Import strata file if used *************************************************
-  if (!is.null(df.file)) {
-    strata <- vcf %>% select(INDIVIDUALS, POP_ID) %>% distinct(INDIVIDUALS)
-  } 
+  if (!is.null(df.file) & is.null(strata)) {
+    strata.df <- vcf %>% select(INDIVIDUALS, POP_ID) %>% distinct(INDIVIDUALS)
+  }
   
   if (!is.null(strata)) {
-    strata <- read_tsv(file = strata, col_names = TRUE, col_types = "cc")
-  }  
+    strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
+      rename(POP_ID = STRATA)
+  }
+  
+  
   
   # Whitelist of markers *******************************************************
   if (is.null(whitelist.markers)) { # no Whitelist
@@ -453,13 +458,11 @@ assignment_ngs <- function(vcf.file,
           POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered = TRUE),
           INDIVIDUALS =  as.character(INDIVIDUALS)
         )
-    } else {
+    } else { # Make population ready
       vcf <- vcf %>%
-        left_join(strata, by = "INDIVIDUALS") %>% 
-        mutate( # Make population ready
-          POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered =TRUE),
-          INDIVIDUALS =  as.character(INDIVIDUALS)
-        )
+        mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
+        left_join(strata.df, by = "INDIVIDUALS") %>% 
+        mutate(POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered =TRUE))
     }
   }
   # Blacklist id ***************************************************************
@@ -532,7 +535,8 @@ assignment_ngs <- function(vcf.file,
       } else {
         blacklist.genotype <- suppressWarnings(
           blacklist.genotype %>%
-            left_join(strata, by = "INDIVIDUALS") %>% 
+            mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
+            left_join(strata.df, by = "INDIVIDUALS") %>% 
             filter(POP_ID %in% pop.select) %>% 
             select(-POP_ID)
         )
@@ -1386,7 +1390,7 @@ present in the blacklist of genotypes to erase.")
         assignment <- suppressWarnings(
           assignment %>%
             mutate(INDIVIDUALS = as.character(INDIVIDUALS)) %>% 
-            left_join(strata, by = "INDIVIDUALS") %>%
+            left_join(strata.df, by = "INDIVIDUALS") %>%
             rename(CURRENT = POP_ID) %>% 
             mutate(
               CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered =TRUE),
@@ -1420,7 +1424,6 @@ present in the blacklist of genotypes to erase.")
       # saving preliminary results
       if (sampling.method == "random") {
         assignment <- mutate(.data = assignment, ITERATIONS = rep(i, n()))
-        #       write_tsv(x = assignment, path = paste0(directory,filename.ass.res), col_names = FALSE, append = TRUE) #create an empty file
       }
       
       if (sampling.method == "ranked") {
@@ -1591,8 +1594,9 @@ Progress can be monitored with activity in the folder...")
 
       # Compiling the results
       message("Compiling results")
+      
       assignment.res <- suppressWarnings(
-        bind_rows(assignment.res)%>%
+          bind_rows(assignment.res) %>%
           mutate(METHOD = rep("LOO", n()))
       )
       
@@ -1622,9 +1626,9 @@ Progress can be monitored with activity in the folder...")
           ) %>%
           arrange(CURRENT, MARKER_NUMBER)
       )
-      
+
       pop.levels.assignment.stats.overall <- c(levels(assignment.stats.pop$CURRENT), "OVERALL")
-      
+
       assignment.stats.overall <- assignment.stats.pop %>%
         group_by(MARKER_NUMBER, MISSING_DATA, METHOD) %>%
         rename(ASSIGNMENT_PERC = MEAN) %>%
@@ -1639,7 +1643,7 @@ Progress can be monitored with activity in the folder...")
         ) %>%
         mutate(CURRENT = rep("OVERALL", n())) %>%
         arrange(CURRENT, MARKER_NUMBER)
-      
+
       assignment.summary.stats <- suppressWarnings(
         bind_rows(assignment.stats.pop, assignment.stats.overall) %>%
           mutate(CURRENT = factor(CURRENT, levels = pop.levels.assignment.stats.overall, ordered = TRUE)) %>%
@@ -1651,6 +1655,7 @@ Progress can be monitored with activity in the folder...")
           ) %>%
           select(CURRENT, MARKER_NUMBER, MEAN, MEDIAN, SE, MIN, MAX, QUANTILE25, QUANTILE75, SE_MIN, SE_MAX, METHOD, MISSING_DATA, ITERATIONS)
       )
+
       # Write the tables to directory
       # assignment results
       if (imputations == FALSE) {
@@ -1927,7 +1932,6 @@ Progress can be monitored with activity in the folder...")
                   col_names = TRUE, 
                   append = FALSE
         )
-        # }
         return(assignment.res.summary)
       }  # End assignment ranking function
       
@@ -1947,7 +1951,6 @@ Progress can be monitored with activity in the folder...")
       assignment.res.summary <- suppressWarnings(
         bind_rows(assignment.res) %>%
           mutate(METHOD = rep(stri_join("thl_", thl) , n()))
-        
       )
       
       if (thl == 1 | thl == "all") {
@@ -2063,7 +2066,7 @@ Progress can be monitored with activity in the folder...")
       mutate(SUBSAMPLE = rep(subsample.id, n()))
     return(assignment.summary.stats)
   } # End assignment_function
-  
+
   res <- map(.x = subsample.list, .f = assignment_function,
              vcf = vcf,
              snp.ld = snp.ld,
@@ -2093,7 +2096,7 @@ Progress can be monitored with activity in the folder...")
   )
   res <- bind_rows(res)
   write_tsv(x = res, path = paste0(directory, "assignment.results.tsv"), col_names = TRUE, append = FALSE)
-  
+
   # Summary of the subsampling iterations
   if (iteration.subsample > 1) {
     res.pop <- res %>%
