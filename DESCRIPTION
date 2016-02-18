@@ -14,21 +14,22 @@ Depends:
 Imports:
     dplyr,
     ggplot2,
-    readr,
-    stringr,
-    stringi,
-    tidyr,
     lazyeval,
-    randomForestSRC,
     parallel,
-    purrr
+    purrr,
+    randomForestSRC,
+    readr,
+    stringi,
+    stringr,
+    tidyr
 Suggests:
-    plyr,
+    adegenet,
+    devtools,
     hierfstat,
     knitr,
+    plyr,
     rmarkdown,
-    snow,
-    adegenet
+    snow
 License: GPL (>=2)
 LazyLoad: yes
 VignetteBuilder: knitr
