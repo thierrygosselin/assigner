@@ -231,7 +231,7 @@ Under construction
 Here an example on how to read the GenoDive assignment output file in order to 
 use the arguments in the `dlr` and the `plot_assignment_dlr` functions correctly.
 
-![](vignettes/dlr.example.pdf)
+![](vignettes/dlr.example.png)
 
 
 Vignettes are in development, check periodically for updates.
