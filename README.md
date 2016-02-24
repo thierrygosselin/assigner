@@ -158,7 +158,7 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New
 
 **v.0.1.6**
-* Input file argument is now `data` and covers the three type of file the 
+* Input file argument is now `data` and covers the three types of files the 
 function can use: VCF file, PLINK tped/tfam or data frame of genotypes file.
 * Huge number of markers (> 50 000 markers) can now be imported in PLINK 
 tped/tfam format. The first 2 columns of the `tfam` file will be used for the 
