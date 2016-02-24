@@ -296,21 +296,37 @@ plot_assignment_stacked_bar <- function(assignment.summary, pop.levels) {
 } # Figure function: assignment stacked bar function
 
 
-
+#' @name plot_assignment_dlr
 #' @title Assignment plot of genotype likelihood.
 #' @description Create a figure similar to Paetkau's et al. (2004) Fig 6.
-#' @param data The assignment results from GENODIVE, home likelihood or likelihood ratio.
-#' @param l.skip The number of lines to skip before the individuals info.
-#' @param sites.levels An optional character string with your sites names in 
-#' the same order as the pop levels.
-#' @param pop.labels The pop label to identify your sampling sites.
-#' @param pop.levels An optional character string with your populations ordered.
-#' @param pop.id.start The start of your population id 
-#' in the name of your individual sample.
-#' @param pop.id.end The end of your population id 
-#' in the name of your individual sample.
-#' @param number.individuals The number of individuals analysed.
-#' @param number.pop The number of populations analysed.
+#' 
+#' @param data The output assignment file (home likelihood or
+#' likelihood ratio statistics) from GENODIVE.
+#' @param l.skip (integer) The number of lines to skip before the individuals info
+#' in GenoDive assignment results (see Vignette).
+#' @param number.individuals (integer) The number of individuals analysed.
+
+#' @param number.pop (integer) The number of populations analysed.
+#' @param pop.id.start (Optional) The start of your population id
+#' in the name of your individual sample. Your individuals are identified 
+#' in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
+#' then, \code{pop.id.start} = 5. If you didn't name your individuals
+#' with the pop id in it, use the \code{strata} argument. 
+#' @param pop.id.end (Optional) The end of your population id
+#' in the name of your individual sample. Your individuals are identified 
+#' in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
+#' then, \code{pop.id.end} = 7. If you didn't name your individuals
+#' with the pop id in it, use the \code{strata} argument.
+#' @param strata (optional) A tab delimited file with 2 columns with header:
+#' \code{INDIVIDUALS} and \code{STRATA}. Default: \code{strata = NULL}.
+#' The \code{STRATA} column is used here as the populations id of your sample. 
+
+#' @param pop.levels A character string with your sampling sites or populations 
+#' in the order you prefer (for tables and figure).
+#' @param pop.labels (optional) A character string for your populations labels.
+#' If you need to rename sampling sites in \code{pop.levels} or combined sites/pop
+#' into a different names, here is the place.
+
 #' @param POPA First population to compare.
 #' @param POPB Second population to compare (with A).
 #' @param dlr (optional) Character string with Dlr value.
@@ -327,7 +343,8 @@ plot_assignment_stacked_bar <- function(assignment.summary, pop.levels) {
 #' @return A list with the assignment table and the assignment plot.
 #' @import dplyr
 #' @import readr
-#' @importFrom stringr str_sub
+#' @import lazyeval
+#' @import stringi
 #' @export 
 #' @rdname plot_assignment_dlr
 #' @references Paetkau D, Slade R, Burden M, Estoup A (2004)
@@ -339,52 +356,89 @@ plot_assignment_stacked_bar <- function(assignment.summary, pop.levels) {
 #' Molecular Ecology Notes, 4, 792-794.
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
+
+# required to pass the R CMD check and have 'no visible binding for global variable'
+if (getRversion() >= "2.15.1") {
+  utils::globalVariables(
+    c('INDIVIDUALS', 'Current', 'Inferred', 'Lik_max', 'Lik_home', 'Lik_ratio', 
+      'POP_ID', 'RATIO', 'DLR', 'DLR_RELATIVE')
+  )
+}
+
 plot_assignment_dlr <- function(data, 
-                                   l.skip, 
-                                   sites.levels,
-                                   pop.labels,
-                                   pop.levels,
-                                   pop.id.start, 
-                                   pop.id.end, 
-                                   number.individuals, 
-                                   number.pop,
-                                   POPA, POPB,
-                                   dlr, x.dlr, y.dlr,
-                                   fst, x.fst, y.fst,
-                                   filename,
-                                   plot.width, plot.height, plot.dpi) {
+                                l.skip, 
+                                number.individuals, 
+                                number.pop, 
+                                pop.id.start, 
+                                pop.id.end, 
+                                pop.levels, 
+                                pop.labels, 
+                                strata,
+                                POPA, POPB,
+                                dlr, x.dlr, y.dlr,
+                                fst, x.fst, y.fst,
+                                filename,
+                                plot.width, plot.height, plot.dpi) {
   
-  Individuals <- NULL
-  Current <- NULL
-  Inferred <- NULL
-  Lik_max <- NULL
-  Lik_home <- NULL
-  Lik_ratio <- NULL
-  Populations <- NULL
+  if (missing(data)) stop("GenoDive file missing")
+  if (missing(strata)) strata <- NULL
+  if (missing(pop.id.start)) pop.id.start <- NULL
+  if (missing(pop.id.end)) pop.id.end <- NULL
+  if (is.null(strata) & is.null(pop.id.start) & is.null(pop.id.end)) {
+    stop("pop.id.start and pop.id.end or strata arguments are required to 
+         identify your populations")
+  }
+  if (missing(pop.labels)) pop.labels <- pop.levels
+  if (missing(filename)) filename <- NULL
   
-  # create a new vector to assign the class of the column during the import
-  col.types <- stri_join("cccddd", stri_dup("d", times = number.pop), sep = "") # ccciii are default, integer are added based on the number of populations
-  
+  # import and modify the assignment file form GenoDive-------------------------
   assignment <- read_delim(
     data,
     delim = "\t",
     skip = l.skip,
     n_max = number.individuals,
-    col_names = c("Individuals", "Current", "Inferred", "Lik_max", "Lik_home", "Lik_ratio",
-                  paste(pop.levels, sep = ",")),
+    col_names = TRUE,
     progress = interactive(),
-    col_types = col.types) %>%
-    mutate(
-      Populations = str_sub(Individuals, pop.id.start, pop.id.end),
-      Populations = factor(stri_replace_all_fixed(Populations, sites.levels, pop.labels, vectorize_all = F), levels = pop.levels, ordered =T)
-    ) %>%
-    filter_(interp(~ Populations == as.name(POPA) | Populations == as.name(POPB)))
+    col_types = stri_join("cccddd", stri_dup("d", times = number.pop), sep = "")) %>% 
+    select(-c(Current, Inferred, Lik_max, Lik_home, Lik_ratio))
+  
+  if (is.null(strata)){
+    header <- names(assignment)
+    header.sites <- header[2:(1+number.pop)]
+    header.sites.clean <- stri_sub(header.sites, pop.id.start, pop.id.end)
+    header.pop <- stri_replace_all_fixed(header.sites.clean, pop.levels, pop.labels, vectorize_all = FALSE)
+    new.header <- c("INDIVIDUALS", header.pop)
+    colnames(assignment) <- new.header
+    
+    assignment <- assignment %>%
+      mutate(
+        POP_ID = stri_sub(INDIVIDUALS, pop.id.start, pop.id.end),
+        POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered = TRUE),
+        POP_ID = droplevels(POP_ID),
+        INDIVIDUALS =  as.character(INDIVIDUALS)
+      )
+  } else { # strata provided
+    strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
+      rename(POP_ID = STRATA)
+    
+    header.pop <- as.character(unique(strata.df$POP_ID))
+    new.header <- c("INDIVIDUALS", header.pop)
+    colnames(assignment) <- new.header
+    
+    assignment <- assignment %>%
+      mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
+      left_join(strata.df, by = "INDIVIDUALS") %>% 
+      mutate(POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered =TRUE))
+  }
+  
+  assignment <- assignment %>%
+    filter_(interp(~ POP_ID == as.name(POPA) | POP_ID == as.name(POPB)))
   
   x_title <- stri_join("Log (genotype likelihood) population: ", POPA, sep = "") 
   y_title <- stri_join("Log (genotype likelihood) population: ", POPB, sep = "") 
   
   assignment.plot  <- ggplot(assignment, aes_string(x = POPA, y = POPB)) + 
-    geom_point(aes(fill = Populations, shape = Populations), na.rm = T, alpha = 0.8, size = 4) +
+    geom_point(aes(fill = POP_ID, shape = POP_ID), na.rm = T, alpha = 0.8, size = 4) +
     geom_abline(slope = 1) +
     #   scale_x_continuous(name = x_title, limits = c(-2700, -2000))+
     #   scale_y_continuous(name = y_title, limits = c(-2700, -2000))+
@@ -429,15 +483,15 @@ plot_assignment_dlr <- function(data,
   res <- list()
   res$assignment <- assignment
   res$assignment.plot <- assignment.plot
-
-invisible(cat(sprintf(
-  "%s\n
+  
+  invisible(cat(sprintf(
+    "%s\n
 Working directory:
 %s",
-  saving, getwd()
-)))
-
-return (res)
-
+    saving, getwd()
+  )))
+  
+  return (res)
+  
 }
 

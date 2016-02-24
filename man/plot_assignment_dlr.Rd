@@ -3,32 +3,39 @@
 \name{plot_assignment_dlr}
 \alias{plot_assignment_dlr}
 \title{Assignment plot of genotype likelihood.}
-\usage{
-plot_assignment_dlr(data, l.skip, sites.levels, pop.labels, pop.levels,
-  pop.id.start, pop.id.end, number.individuals, number.pop, POPA, POPB, dlr,
-  x.dlr, y.dlr, fst, x.fst, y.fst, filename, plot.width, plot.height, plot.dpi)
-}
 \arguments{
-\item{data}{The assignment results from GENODIVE, home likelihood or likelihood ratio.}
+\item{data}{The output assignment file (home likelihood or
+likelihood ratio statistics) from GENODIVE.}
 
-\item{l.skip}{The number of lines to skip before the individuals info.}
+\item{l.skip}{(integer) The number of lines to skip before the individuals info
+in GenoDive assignment results (see Vignette).}
 
-\item{sites.levels}{An optional character string with your sites names in 
-the same order as the pop levels.}
+\item{number.individuals}{(integer) The number of individuals analysed.}
 
-\item{pop.labels}{The pop label to identify your sampling sites.}
+\item{number.pop}{(integer) The number of populations analysed.}
 
-\item{pop.levels}{An optional character string with your populations ordered.}
+\item{pop.id.start}{(Optional) The start of your population id
+in the name of your individual sample. Your individuals are identified 
+in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
+then, \code{pop.id.start} = 5. If you didn't name your individuals
+with the pop id in it, use the \code{strata} argument.}
 
-\item{pop.id.start}{The start of your population id 
-in the name of your individual sample.}
+\item{pop.id.end}{(Optional) The end of your population id
+in the name of your individual sample. Your individuals are identified 
+in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
+then, \code{pop.id.end} = 7. If you didn't name your individuals
+with the pop id in it, use the \code{strata} argument.}
 
-\item{pop.id.end}{The end of your population id 
-in the name of your individual sample.}
+\item{strata}{(optional) A tab delimited file with 2 columns with header:
+\code{INDIVIDUALS} and \code{STRATA}. Default: \code{strata = NULL}.
+The \code{STRATA} column is used here as the populations id of your sample.}
 
-\item{number.individuals}{The number of individuals analysed.}
+\item{pop.levels}{A character string with your sampling sites or populations 
+in the order you prefer (for tables and figure).}
 
-\item{number.pop}{The number of populations analysed.}
+\item{pop.labels}{(optional) A character string for your populations labels.
+If you need to rename sampling sites in \code{pop.levels} or combined sites/pop
+into a different names, here is the place.}
 
 \item{POPA}{First population to compare.}
 

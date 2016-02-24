@@ -12,7 +12,7 @@ This is the development page of the **assigner** package for the R software.
 
 * **Conduct assignment analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
 by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010)
-* The input file is in the VCF file format (Danecek et al. 2011) (*batch_x.vcf*) or haplotype (*batch_1.haplotypes.tsv*) file, produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013)
+* The input file are: i) in the VCF file format (Danecek et al. 2011) (*batch_x.vcf*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013); ii) very large files (> 50 000 markers) can be imported in PLINK tped/tfam format (Purcell et al. 2007) and iii) a data frame of genotypes.
 * Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
 whitelist** and other arguments
 * **Map-independent imputation** of missing genotype using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
@@ -157,6 +157,20 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 ## New
 
+**v.0.1.6**
+* Input file argument is now `data` and covers the three type of file the 
+function can use: VCF file, PLINK tped/tfam or data frame of genotypes file.
+* Huge number of markers (> 50 000 markers) can now be imported in PLINK 
+tped/tfam format. The first 2 columns of the `tfam` file will be used for the 
+`strata` argument, unless a new one is provided. Columns 1, 3 and 4 of the 
+`tped` are discarded. The remaining columns correspond to the genotype in the 
+format `01/04` where `A = 01, C = 02, G = 03 and T = 04`. For `A/T` format, use 
+PLINK or bash to convert. Use [VCFTOOLS] (http://vcftools.sourceforge.net/) with 
+`--plink-tped` to convert very large VCF file. For `.ped` file conversion to 
+`.tped` use [PLINK] (http://pngu.mgh.harvard.edu/~purcell/plink/) with
+`--recode transpose`.
+
+
 **v.0.1.5**
 * bug fix in `method = "random"` and `imputation`
 
@@ -245,6 +259,10 @@ Meirmans PG, Van Tienderen PH (2004) genotype and genodive: two programs for the
 Paetkau D, Slade R, Burden M, Estoup A (2004) Genetic assignment methods for the direct, real-time estimation of migration rate: a simulation-based exploration of accuracy and power. Molecular Ecology, 13, 55-65.
 
 Paetkau D, Waits LP, Clarkson PL, Craighead L, Strobeck C (1997) An empirical evaluation of genetic distance statistics using microsatellite data from bear (Ursidae) populations. Genetics, 147, 1943-1957.
+
+Purcell S, Neale B, Todd-Brown K, Thomas L, Ferreira MAR, Bender D, et al. 
+PLINK: a tool set for whole-genome association and population-based linkage analyses. 
+American Journal of Human Genetics. 2007; 81: 559–575. doi:10.1086/519795
 
 Rosenberg NA, Li LM, Ward R, Pritchard JK (2003) Informativeness of genetic markers for inference of ancestry. American Journal of Human Genetics, 73, 1402–1422.
 
