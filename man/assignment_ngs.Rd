@@ -4,16 +4,28 @@
 \alias{assignment_ngs}
 \title{Assignment analysis in gsi_sim with GBS data produced by STACKS workflow}
 \arguments{
-\item{vcf.file}{The default VCF file created by STACKS.}
-
-\item{df.file}{Default: \code{df.file = NULL} A data frame with tab separated
-columns. The 1st column is the \code{POP_ID}, 2nd colum 
+\item{data}{Options include the VCF file created by STACKS 
+(\code{data = "batch_1.vcf"}) or a data frame with tab separating the 
+genotypes in columns (\code{data = "data.assignment.tsv"}). 
+The 1st column is the \code{POP_ID}, 2nd colum 
 the \code{INDIVIDUALS} and the remaining columns are the markers IDs
 containing genotypes in the format: 3 digits per allele
 and no space between alleles (e.g. 235240 : allele1 = 235 and allele2 = 240).
-Missing genotypes are coded \code{000000}. Note that \code{POP_ID} column can
-be any hierarchical grouping. See the argument \code{strata} for other means
-of controlling grouping used in the assignment.}
+Missing genotypes are coded \code{0} or \code{000000}. 
+Note that the \code{POP_ID} column can be any hierarchical grouping. 
+See the argument \code{strata} for other means of controlling grouping used 
+in the assignment. The last option for data is a PLINK file in 
+\code{tped/tfam} format (e.g. \code{data =  "data.assignment.tped"}). 
+The first 2 columns of the \code{tfam} file will be used for the 
+\code{strata} argument below, unless a new one is provided. 
+Columns 1, 3 and 4 of the \code{tped} are discarded. The remaining columns 
+correspond to the genotype in the format \code{01/04} 
+where \code{A = 01, C = 02, G = 03 and T = 04}. For \code{A/T} format, use 
+PLINK or bash to convert.
+Use VCFTOOLS \url{http://vcftools.sourceforge.net/} with \code{--plink-tped} 
+to convert very large VCF file. For \code{.ped} file conversion to 
+\code{.tped} use PLINK \url{http://pngu.mgh.harvard.edu/~purcell/plink/} 
+with \code{--recode transpose}.}
 
 \item{whitelist.markers}{(optional) A whitelist containing CHROM (character
 or integer) and/or LOCUS (integer) and/or
@@ -22,6 +34,10 @@ The whitelist is in the working directory (e.g. "whitelist.txt").
 de novo CHROM column with 'un' need to be changed to 1. 
 Default \code{NULL} for no whitelist of markers. In the VCF, the column ID is
 the LOCUS identification.}
+
+\item{monomorphic.out}{(optional) For PLINK file, should the monomorphic 
+markers present in the dataset be filtered out ? 
+Default: \code{monomorphic.out = TRUE}.}
 
 \item{blacklist.genotype}{(optional) Useful to erase genotype with below 
 average quality, e.g. genotype with more than 2 alleles in diploid likely 
@@ -36,31 +52,43 @@ directory (e.g. "blacklist.genotype.txt"). For de novo VCF, CHROM column
 with 'un' need to be changed to 1. Default \code{NULL} for no blacklist of 
 genotypes to erase.}
 
-\item{snp.ld}{(optional) Minimize linkage disequilibrium (LD) by choosing
-among these 3 options: \code{"random"} selection, \code{"first"} or
-\code{"last"} SNP on the same read/haplotype. Default = \code{NULL}.}
+\item{snp.ld}{(optional) For VCF file only. With anonymous markers from
+RADseq/GBS de novo discovery, you can minimize linkage disequilibrium (LD) by
+choosing among these 3 options: \code{"random"} selection, \code{"first"} or
+\code{"last"} SNP on the same short read/haplotype. 
+Default: \code{snp.ld = NULL}.
+Note that for other file type, use PLINK with the linkage disequilibrium 
+based SNP pruning option.}
 
 \item{common.markers}{(optional) Logical. Default = \code{FALSE}.
 With \code{TRUE}, will keep markers genotyped in all the populations.}
 
-\item{maf.local.threshold}{(double) (optional) Filter local/populations maf with a
-threshold before conduncting the assignment analysis. Default = \code{NULL}.}
+\item{maf.thresholds}{(string, double, optional) String with 
+local/populations and global/overall maf thresholds, respectively.
+Default: \code{maf.thresholds = NULL}. 
+e.g. \code{maf.thresholds = c(0.05, 0.1)} for a local maf threshold of 0.05 and a global threshold of 0.1.}
 
-\item{maf.global.threshold}{(double) (optional) Filter global/overall maf with a
-threshold before conduncting the assignment analysis. Default = \code{NULL}.}
-
-\item{maf.pop.num.threshold}{(integer) When maf threshold is used,
+\item{maf.pop.num.threshold}{(integer, optional) When maf thresholds are used,
 this argument is for the number of pop required to pass the maf thresholds
-to keep the locus. Default is \code{maf.pop.num.threshold = 1}}
+to keep the locus. Default: \code{maf.pop.num.threshold = 1}}
 
-\item{maf.approach}{Character. By \code{maf.approach = "SNP"} or by \code{maf.approach = "haplotype"}.
-The function will consider the SNP or ID/LOCUS/haplotype/read MAF statistics to filter the marker.
-Default is \code{maf.approach = "SNP"}.}
+\item{maf.approach}{(character, optional). By \code{maf.approach = "SNP"} or 
+by \code{maf.approach = "haplotype"}.
+The function will consider the SNP or ID/LOCUS/haplotype/read MAF statistics 
+to filter the markers.
+Default is \code{maf.approach = "SNP"}. The \code{haplotype} approach is 
+restricted to VCF file.}
 
-\item{maf.operator}{\code{maf.operator = "AND"} or default \code{maf.operator = "OR"}.
+\item{maf.operator}{(character, optional) \code{maf.operator = "AND"} or default \code{maf.operator = "OR"}.
 When filtering over LOCUS or SNP, do you want the local \code{"AND"}
 global MAF to pass the thresholds, or ... you want the local \code{"OR"}
 global MAF to pass the thresholds, to keep the marker?}
+
+\item{max.marker}{An optional integer useful to subsample marker number in 
+large PLINK file. Default: \code{max.marker = NULL}. e.g. if the data set 
+contains 200 000 markers and \code{max.marker = 10000} 10000 markers are
+subsampled randomly from the 200000 markers. Use \code{whitelist.markers} to
+keep specific markers.}
 
 \item{marker.number}{(Integer or string of number or "all") Calculations with
 fixed or subsample of your markers. Default= \code{"all"}.
@@ -130,9 +158,10 @@ with the pop id in it, use the \code{strata} argument.}
 
 \item{strata}{(optional) A tab delimited file with 2 columns with header:
 \code{INDIVIDUALS} and \code{STRATA}. Default: \code{strata = NULL}. With a 
-\code{df.file} the strata is the INDIVIDUALS and POP_ID columns, 
-unless a strata file is used. In the later case, the strata file will have
-priority. The \code{STRATA} column can be any hierarchical grouping.}
+data frame of genotypes the strata is the INDIVIDUALS and POP_ID columns, with
+PLINK files, the \code{tfam} first 2 columns are used. 
+If a \code{strata} file is specified, the strata file will have
+precedence. The \code{STRATA} column can be any hierarchical grouping.}
 
 \item{pop.select}{(string) Conduct the assignment analysis on a
 selected list of populations. Default = \code{NULL} for no selection and keep
@@ -222,7 +251,7 @@ instruction here: \url{https://github.com/eriqande/gsi_sim}.
 \examples{
 \dontrun{
 assignment.treefrog <- assignment_ngs(
-vcf.file = "batch_1.vcf",
+data = "batch_1.vcf",
 whitelist.markers = "whitelist.vcf.txt",
 snp.ld = NULL,
 common.markers = TRUE,
@@ -286,5 +315,15 @@ for R. R News 7(2), 25-31.
 
 Ishwaran H., Kogalur U.B., Blackstone E.H. and Lauer M.S. (2008).
 Random survival forests. Ann. Appl. Statist. 2(3), 841--860.
+
+Danecek P, Auton A, Abecasis G et al. (2011)
+The variant call format and VCFtools.
+Bioinformatics, 27, 2156-2158.
+
+Purcell S, Neale B, Todd-Brown K, Thomas L, Ferreira MAR, 
+Bender D, et al. 
+PLINK: a tool set for whole-genome association and population-based linkage 
+analyses. 
+American Journal of Human Genetics. 2007; 81: 559–575. doi:10.1086/519795
 }
 

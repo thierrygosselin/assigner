@@ -59,7 +59,7 @@ dlr <- function (assignment, l.skip, number.individuals, number.pop,
   
   # create a new vector to assign the class of the column during the import
   # ccciii are default, integer are added based on the number of populations
-  col.types <- stri_join("ccciii", stri_dup("i", times = number.pop), sep = "") 
+  col.types <- stri_join("cccddd", stri_dup("d", times = number.pop), sep = "") 
   
   # import and modify the assignment file form GenoDive-------------------------
   assignment <- read_delim(
@@ -78,8 +78,8 @@ dlr <- function (assignment, l.skip, number.individuals, number.pop,
         stri_replace_all_fixed(
           Populations, sites.levels, 
           pop.labels, 
-          vectorize_all = F),
-        levels = pop.levels, ordered =T),
+          vectorize_all = FALSE),
+        levels = unique(pop.levels), ordered = TRUE),
       Populations = droplevels(Populations)
     ) %>%
     select(-c(Current, Inferred, Lik_max, Lik_home, Lik_ratio))
