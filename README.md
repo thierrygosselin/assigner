@@ -228,6 +228,11 @@ New to pull request on github ? The process is very easy:
 ## Example 
 Under construction
 
+Here an example on how to read the GenoDive assignment output file in order to 
+use the arguments in the `dlr` and the `plot_assignment_dlr` functions correctly.
+
+![](vignettes/dlr.example.pdf)
+
 
 Vignettes are in development, check periodically for updates.
 
