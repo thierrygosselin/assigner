@@ -57,8 +57,9 @@ RADseq/GBS de novo discovery, you can minimize linkage disequilibrium (LD) by
 choosing among these 3 options: \code{"random"} selection, \code{"first"} or
 \code{"last"} SNP on the same short read/haplotype. 
 Default: \code{snp.ld = NULL}.
-Note that for other file type, use PLINK with the linkage disequilibrium 
-based SNP pruning option.}
+Note that for other file type, use stackr package for haplotype file and 
+create a whitelist, for plink and data frames, use PLINK linkage 
+disequilibrium based SNP pruning option.}
 
 \item{common.markers}{(optional) Logical. Default = \code{FALSE}.
 With \code{TRUE}, will keep markers genotyped in all the populations.}
@@ -66,7 +67,9 @@ With \code{TRUE}, will keep markers genotyped in all the populations.}
 \item{maf.thresholds}{(string, double, optional) String with 
 local/populations and global/overall maf thresholds, respectively.
 Default: \code{maf.thresholds = NULL}. 
-e.g. \code{maf.thresholds = c(0.05, 0.1)} for a local maf threshold of 0.05 and a global threshold of 0.1.}
+e.g. \code{maf.thresholds = c(0.05, 0.1)} for a local maf threshold 
+of 0.05 and a global threshold of 0.1. Available for VCF, PLINK and data frame 
+files. Use stackr for haplotypes files.}
 
 \item{maf.pop.num.threshold}{(integer, optional) When maf thresholds are used,
 this argument is for the number of pop required to pass the maf thresholds
@@ -131,7 +134,7 @@ individuals and this process is reapeated the number of times chosen by the
 \item{folder}{(optional) The name of the folder created in the working directory to save the files/results.}
 
 \item{gsi_sim.filename}{(optional) The name of the file written to the directory.
-Use the extension ".txt" at the end. Default \code{gsi_sim_data.txt}.
+Use the extension ".txt" at the end. Default \code{assignment_data.txt}.
 The number of markers used will be appended to the name of the file.}
 
 \item{keep.gsi.files}{(Boolean) Default \code{FALSE} The input and output gsi_sim files
@@ -180,10 +183,14 @@ subsampling, default: \code{iteration.subsample = 1}.
 With \code{subsample = 20} and \code{iteration.subsample = 10},
 20 individuals/populations will be randomly chosen 10 times.}
 
-\item{imputations}{Should a map-independent imputations of markers be
+\item{imputation.method}{Should a map-independent imputations of markers be
 computed. Available choices are: (1) \code{FALSE} for no imputation.
 (2) \code{"max"} to use the most frequent category for imputations.
- (3) \code{"rf"} using Random Forest algorithm. Default = \code{FALSE}.}
+(3) \code{"rf"} using Random Forest algorithm. 
+Default: \code{imputation.method = FALSE}.}
+
+\item{impute}{(character) Imputation on missing genotype 
+\code{impute = "genotype"} or alleles \code{impute = "allele"}.}
 
 \item{imputations.group}{\code{"global"} or \code{"populations"}.
 Should the imputations be computed globally or by populations. If you choose

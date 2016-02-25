@@ -12,15 +12,16 @@ This is the development page of the **assigner** package for the R software.
 
 * **Conduct assignment analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
 by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010)
-* The input file are: i) in the VCF file format (Danecek et al. 2011) (*batch_x.vcf*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013); ii) very large files (> 50 000 markers) can be imported in PLINK tped/tfam format (Purcell et al. 2007) and iii) a data frame of genotypes.
+* The input file are: i) a VCF file format (Danecek et al. 2011) (*batch_x.vcf*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013); ii) an haplotypes data frame file (*batch_x.haplotypes.tsv*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013); iii)very large files (> 50 000 markers) can be imported in PLINK tped/tfam format (Purcell et al. 2007) and iv) a data frame of genotypes.
 * Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
 whitelist** and other arguments
-* **Map-independent imputation** of missing genotype using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
+* **Map-independent imputation** of missing genotype or alleles using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
 * Genotypes of poor quality (e.g. in coverage, genotype likelihood or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument.
 * Markers can be randomly selected for a **classic LOO (Leave-One-Out) assignment** or 
 chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis** (reviewed in Anderson 2010)
 * Use `iteration.method` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
 * The impact of the minor allele frequency, MAF, (local and global) can also be easily explored with custom thresholds
+* The impact of filters used in other software can be explored by using the `whitelist.markers` argument.
 * Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
 * `ggplot2`-based plotting to view assignment results and create publication-ready figures
@@ -32,7 +33,7 @@ You can try out the dev version of **assigner**. Follow the 4 steps below:
 
 Step 1 You will need the package **devtools**
 ```r
-install.packages("devtools") # to install
+if (!require("devtools")) install.packages("devtools") # to install
 library(devtools) # to load
 ```
 
@@ -129,7 +130,19 @@ sudo rm -R /Library/Frameworks/R.framework/Resources/library/package_name
 
 Here the list of packages that **assigner** is depending on:
 ```r
-dplyr, reshape2, ggplot2, readr, stringi, tidyr, purrr, lazyeval, adegenet, randomForestSRC, foreach, parallel, doParallel
+if (!require("reshape2")) install.packages("reshape2")
+if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("stringr")) install.packages("stringr")
+if (!require("stringi")) install.packages("stringi")
+if (!require("plyr")) install.packages("plyr")
+if (!require("dplyr")) install.packages("dplyr")
+if (!require("tidyr")) install.packages("tidyr")
+if (!require("readr")) install.packages("readr")
+if (!require("purrr")) install.packages("purrr")
+if (!require("data.table")) install.packages("data.table")
+if (!require("lazyeval")) install.packages("lazyeval")
+if (!require("adegenet")) install.packages("adegenet")
+if (!require("parallel")) install.packages("parallel")
 ```
 If you don't have them, no worries, it's intalled automatically during **assigner** installation. If you have them, it's your job to update them, because i'm usually using the latest versions...
 
@@ -156,6 +169,11 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 
 ## New
+
+**v.0.1.7**
+* New input file: Re-introduced the haplotype data frame file from stacks.
+* Argument name change: `imputations` is now `impute.method`.
+* New argument: `impute` with 2 options: `impute = "genotype"` or `impute = "allele"`.
 
 **v.0.1.6**
 * Input file argument is now `data` and covers the three types of files the 
