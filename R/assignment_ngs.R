@@ -399,7 +399,7 @@ assignment_ngs <- function(data,
   if (missing(keep.gsi.files)) keep.gsi.files <- FALSE
   if (missing(imputation.method)) imputation.method <- FALSE
   if (missing(imputations.group)) imputations.group <- "populations"
-  if (missing(impute)) impute <- "genotypes"
+  if (imputation.method != FALSE & missing(impute)) stop("impute argument is necessary")
   if (missing(num.tree)) num.tree <- 100
   if (missing(iteration.rf)) iteration.rf <- 10
   if (missing(split.number)) split.number <- 100
