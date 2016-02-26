@@ -15,8 +15,9 @@
 #' assignment or chosen based on ranked Fst for a thl
 #' (Training, Holdout, Leave-one-out) assignment analysis.
 
-#' @param data Options include the VCF file created by STACKS 
-#' (\code{data = "batch_1.vcf"}) or a data frame with tab separating the 
+#' @param data Options include the VCF (1) or an haplotype files (2) created in STACKS 
+#' (\code{data = "batch_1.vcf"} and \code{data = "batch_1.haplotypes.tsv"}, 
+#' respectively) or a data frame (3) with tab separating the 
 #' genotypes in columns (\code{data = "data.assignment.tsv"}). 
 #' The 1st column is the \code{POP_ID}, 2nd colum 
 #' the \code{INDIVIDUALS} and the remaining columns are the markers IDs
@@ -25,7 +26,7 @@
 #' Missing genotypes are coded \code{0} or \code{000000}. 
 #' Note that the \code{POP_ID} column can be any hierarchical grouping. 
 #' See the argument \code{strata} for other means of controlling grouping used 
-#' in the assignment. The last option for data is a PLINK file in 
+#' in the assignment. The last option for data input is a PLINK file in 
 #' \code{tped/tfam} format (e.g. \code{data =  "data.assignment.tped"}). 
 #' The first 2 columns of the \code{tfam} file will be used for the 
 #' \code{strata} argument below, unless a new one is provided. 
@@ -2721,7 +2722,7 @@ Progress can be monitored with activity in the folder...")
     plot.assignment <- ggplot(res, aes(x = factor(MARKER_NUMBER), y = MEAN))+
       geom_point(aes(colour = MISSING_DATA), size = 2, alpha = 0.8) +
       geom_errorbar(aes(ymin = SE_MIN, ymax = SE_MAX), width = 0.3) +
-      scale_colour_manual(name = "Missing data", values = c("darkorange", "dodgerblue"))+
+      scale_colour_manual(name = "Missing data", values = c("gray33", "dodgerblue"))+
       scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100))+
       labs(x = "Marker number")+
       labs(y = "Assignment success (%)")+

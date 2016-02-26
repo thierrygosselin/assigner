@@ -4,8 +4,9 @@
 \alias{assignment_ngs}
 \title{Assignment analysis in gsi_sim with GBS data produced by STACKS workflow}
 \arguments{
-\item{data}{Options include the VCF file created by STACKS 
-(\code{data = "batch_1.vcf"}) or a data frame with tab separating the 
+\item{data}{Options include the VCF (1) or an haplotype files (2) created in STACKS 
+(\code{data = "batch_1.vcf"} and \code{data = "batch_1.haplotypes.tsv"}, 
+respectively) or a data frame (3) with tab separating the 
 genotypes in columns (\code{data = "data.assignment.tsv"}). 
 The 1st column is the \code{POP_ID}, 2nd colum 
 the \code{INDIVIDUALS} and the remaining columns are the markers IDs
@@ -14,7 +15,7 @@ and no space between alleles (e.g. 235240 : allele1 = 235 and allele2 = 240).
 Missing genotypes are coded \code{0} or \code{000000}. 
 Note that the \code{POP_ID} column can be any hierarchical grouping. 
 See the argument \code{strata} for other means of controlling grouping used 
-in the assignment. The last option for data is a PLINK file in 
+in the assignment. The last option for data input is a PLINK file in 
 \code{tped/tfam} format (e.g. \code{data =  "data.assignment.tped"}). 
 The first 2 columns of the \code{tfam} file will be used for the 
 \code{strata} argument below, unless a new one is provided. 
