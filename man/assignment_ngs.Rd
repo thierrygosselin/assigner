@@ -28,6 +28,10 @@ to convert very large VCF file. For \code{.ped} file conversion to
 \code{.tped} use PLINK \url{http://pngu.mgh.harvard.edu/~purcell/plink/} 
 with \code{--recode transpose}.}
 
+\item{assignment.analysis}{Assignment analysis conducted with 
+\code{assignment.analysis = "gsi_sim"} or 
+\code{assignment.analysis = "adegenet"}.}
+
 \item{whitelist.markers}{(optional) A whitelist containing CHROM (character
 or integer) and/or LOCUS (integer) and/or
 POS (integer) columns header. To filter by chromosome and/or locus and/or by snp.
@@ -273,7 +277,7 @@ gsi_sim.filename = "treefrog.txt",
 keep.gsi.files = FALSE,
 pop.levels = c("PAN", "COS")
 pop.id.start = 5, pop.id.end = 7,
-imputations = FALSE,
+imputation.method = FALSE,
 parallel.core = 12
 )
 

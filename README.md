@@ -170,6 +170,9 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 ## New
 
+**v.0.1.8**
+* You can now opt between [gsi_sim] (https://github.com/eriqande/gsi_sim) or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis
+
 **v.0.1.7**
 * New input file: Re-introduced the haplotype data frame file from stacks.
 * Argument name change: `imputations` is now `impute.method`.
@@ -219,7 +222,6 @@ with the following Terminal command: `sudo rm /usr/local/bin/gsisim`
 
 ## Roadmap of future developments:
 
-* Update the `assignment_ngs` to opt between GSI_SIM or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis
 * The ability to provide the ranking of markers based on something else than Fst (Weir and Cockerham, 1984) currently used in the function. e.g. Informativeness for Assignment Measure (In, Rosenberg et al. 2003), the Absolute Allele Frequency Differences (delta, δ, Shriver et al., 1997).
 * Provide ranking from other software: e.g. Toolbox for Ranking and Evaluation of SNPs [TRES](http://mlkd.csd.auth.gr/bio/tres/), [BayeScan](http://cmpg.unibe.ch/software/BayeScan/) and [OutFLANK](https://github.com/whitlock/OutFLANK).
 * Would be very cool to use genotype likelihood information to get more accurate assignment.
