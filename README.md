@@ -11,7 +11,7 @@ This is the development page of the **assigner** package for the R software.
 **Use assigner to:**
 
 * **Conduct assignment analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
-by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010)
+by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis.
 * The input file are: i) a VCF file format (Danecek et al. 2011) (*batch_x.vcf*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013); ii) an haplotypes data frame file (*batch_x.haplotypes.tsv*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013); iii)very large files (> 50 000 markers) can be imported in PLINK tped/tfam format (Purcell et al. 2007) and iv) a data frame of genotypes.
 * Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
 whitelist** and other arguments
