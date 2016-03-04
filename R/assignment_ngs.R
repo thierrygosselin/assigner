@@ -2012,7 +2012,7 @@ package and update your whitelist")
         input.gsi <- stri_join(directory.subsample, input.gsi)
         output.gsi <- stri_replace_all_fixed(input.gsi, pattern = "txt", replacement = "output.txt")
         setwd(directory.subsample)
-        system(paste("gsi_sim -b", input.gsi, "--self-assign > ", output.gsi))
+        system(paste(gsi_sim_binary(), "-b", input.gsi, "--self-assign > ", output.gsi))
         
         # Option remove the input file from directory to save space
         if (keep.gsi.files == FALSE) file.remove(input.gsi)
