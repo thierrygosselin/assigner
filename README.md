@@ -33,7 +33,7 @@ chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, H
 
 
 ## Installation
-You can try out the dev version of **assigner**. Follow the 4 steps below:
+You can try out the dev version of **assigner**. Follow the 3 steps below:
 
 Step 1 You will need the package **devtools**
 ```r
@@ -41,10 +41,11 @@ if (!require("devtools")) install.packages("devtools") # to install
 library(devtools) # to load
 ```
 
-Step 2 Install **assigner**:
+Step 2 Install **assigner** and install [gsi_sim] (https://github.com/eriqande/gsi_sim) from source:
 ```r
 install_github("thierrygosselin/assigner") # to install
 library(assigner) # to load
+install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 ```
 
 Step 3 For faster imputations, you need to install an OpenMP enabled **randomForestSRC package** [website](http://www.ccs.miami.edu/~hishwaran/rfsrc.html).
@@ -73,39 +74,6 @@ install_url(url = "http://www.ccs.miami.edu/~hishwaran/rfsrc/randomForestSRC_2.0
 # Windows
 library("devtools")
 install_url(url = "http://www.ccs.miami.edu/~hishwaran/rfsrc/randomForestSRC_2.0.7.zip")
-```
-
-Step 4 Install [gsi_sim] (https://github.com/eriqande/gsi_sim):
-
-**assigner** assumes that the command line version of [gsi_sim] (https://github.com/eriqande/gsi_sim) 
-is properly installed and available on the command line, so it is executable from 
-any directory. If you have no idea what i'm saying here, you might want to first 
-read this short section of my tutorial on [GBS in the cloud] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time).
-
-The fastest way is to put [gsi_sim] (https://github.com/eriqande/gsi_sim)
-binary, the `gsi_sim` executable, in the folder `/usr/local/bin`. 
-
-```r
-# Mac OSX
-# git the repo and submodules
-cd ~/Downloads/ # or any directory
-sudo git clone https://github.com/eriqande/gsi_sim.git
-cd gsi_sim/
-sudo git submodule init
-sudo git submodule update
-cd ..
-sudo cp ~/Downloads/gsi_sim/gsi_sim-Darwin /usr/local/bin/gsi_sim
-sudo rm -R ~/Downloads/gsi_sim
-
-# Linux
-cd ~/Downloads/ # or any directory
-sudo git clone https://github.com/eriqande/gsi_sim.git
-cd gsi_sim/
-sudo git submodule init
-sudo git submodule update
-cd ..
-sudo cp ~/Downloads/gsi_sim/gsi_sim-Linux /usr/local/bin/gsi_sim
-sudo rm -R ~/Downloads/gsi_sim
 ```
 
 **Problems during installation:**

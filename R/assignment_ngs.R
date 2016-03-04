@@ -419,7 +419,7 @@ assignment_ngs <- function(data,
   if (missing(verbose)) verbose <- FALSE
   if (missing(parallel.core) | is.null(parallel.core)) parallel.core <- detectCores()-1
   if (missing(folder)) folder <- NULL
-
+  
   # File type detection ********************************************************
   data.type <- readChar(con = data, nchars = 16L, useBytes = TRUE)
   
@@ -1295,7 +1295,7 @@ package and update your whitelist")
           mutate(
             A2 = stri_replace_na(str = A2, replacement = "000"),
             A2 = ifelse(A2 == "000", A1, A2)
-            ) %>%
+          ) %>%
           tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>%
           ungroup()
       )
@@ -1318,7 +1318,7 @@ package and update your whitelist")
           mutate(
             GT = stri_replace_na(str = GT, replacement = "000"),
             GT = stri_pad_left(str = GT, width = 3, pad = "0")
-            ) %>% 
+          ) %>% 
           tidyr::spread(data = ., key = ALLELES, value = GT) %>% 
           tidyr::unite(data = ., GT, A1, A2, sep = "", remove = TRUE)
       )
@@ -1674,7 +1674,7 @@ package and update your whitelist")
           )
         }
       }
-
+      
       # adegenet
       if (data.type == "vcf.file" & assignment.analysis == "adegenet" ) {
         genind.prep.imp <- input.imp %>% 
@@ -1761,7 +1761,7 @@ package and update your whitelist")
       distinct(MARKERS) %>% 
       arrange(MARKERS)
     
-
+    
     marker.number <- stri_replace_all_fixed(str = marker.number, pattern = "all", 
                                             replacement = nrow(unique.markers), 
                                             vectorize_all = TRUE)
@@ -1794,7 +1794,7 @@ package and update your whitelist")
             filter(GT != "0_0")
         } else { # for df and haplotype files
           data.genotyped <- data %>%
-          filter(GT != "000000") # Check for df and plink...
+            filter(GT != "000000") # Check for df and plink...
         }
       } else { # with holdout set
         if (data.type == "vcf.file") { # for VCF input
@@ -1994,6 +1994,9 @@ package and update your whitelist")
     
     # Assignment with gsi_sim
     if (assignment.analysis == "gsi_sim") {
+      if(!gsi_sim_exists()) stop("Can't find the gsi_sim executable where it was expected at ", gsi_sim_binary_path(), ".  
+                                 If you have internet access, you can install it
+                                 from within R by invoking the function \"install_gsi_sim(fromSource = TRUE)\"")
       assignment_analysis <- function(data, select.markers, markers.names, missing.data, i, m, holdout, filename, ...) {
         # data <- gsim.prep #test
         # data <- genind.prep #test
@@ -2152,7 +2155,7 @@ package and update your whitelist")
         }
         
         if (sampling.method == "ranked") {
-
+          
           # Alpha-Score DAPC training data
           training.data <- data.select[!indNames(data.select) %in% holdout$INDIVIDUALS] # training dataset
           pop.training <- training.data@pop
@@ -2170,7 +2173,7 @@ package and update your whitelist")
           pop.holdout <- droplevels(pop.holdout)
           assignment.levels <- levels(pop.holdout) # for figure
           rev.assignment.levels <- rev(assignment.levels)  # for figure 
-        
+          
           dapc.predict.holdout <- predict.dapc(dapc.training, newdata = holdout.data)
           message(stri_paste("Assigning holdout data for iteration:", i, sep = " "))
         }
@@ -2194,14 +2197,14 @@ package and update your whitelist")
             mutate(ASSIGNMENT_PERC = round(ASSIGNMENT_PERC, 2)) %>% 
             select(POP_ID, ASSIGNMENT_PERC)
         }        
-      
+        
         if (sampling.method == "ranked") {
           assignment <- data.frame(INDIVIDUALS = indNames(holdout.data), POP_ID = pop.holdout, ASSIGN = dapc.predict.holdout$assign, dapc.predict.holdout$posterior) %>% 
             rename(CURRENT = POP_ID, INFERRED = ASSIGN) %>%
-              mutate(
-                CURRENT = factor(CURRENT, levels = rev.assignment.levels, ordered = TRUE),
-                INFERRED = factor(INFERRED, levels = assignment.levels, ordered = TRUE)
-              )
+            mutate(
+              CURRENT = factor(CURRENT, levels = rev.assignment.levels, ordered = TRUE),
+              INFERRED = factor(INFERRED, levels = assignment.levels, ordered = TRUE)
+            )
           
           # assignment <- data.frame(INDIVIDUALS = indNames(holdout.data), POP_ID = pop.holdout, ASSIGN = dapc.predict.holdout$assign, dapc.predict.holdout$posterior) %>% 
           #   select(CURRENT = POP_ID, INFERRED = ASSIGN) %>%
@@ -2216,7 +2219,7 @@ package and update your whitelist")
           #   ungroup() %>% 
           #   mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>% 
           #   filter(CURRENT == INFERRED)
-      }
+        }
         
         assignment <- assignment %>% 
           mutate(
@@ -2689,15 +2692,15 @@ Progress can be monitored with activity in the folder...")
                                              )
           )
           if (assignment.analysis == "gsi_sim") {
-          assignment.no.imp <- assignment_analysis(data = gsim.prep,
-                                                   select.markers = select.markers,
-                                                   markers.names = markers.names,
-                                                   missing.data = "no.imputation", 
-                                                   i = i, 
-                                                   m = m,
-                                                   holdout = holdout,
-                                                   filename = filename
-          )
+            assignment.no.imp <- assignment_analysis(data = gsim.prep,
+                                                     select.markers = select.markers,
+                                                     markers.names = markers.names,
+                                                     missing.data = "no.imputation", 
+                                                     i = i, 
+                                                     m = m,
+                                                     holdout = holdout,
+                                                     filename = filename
+            )
           }
           
           if (assignment.analysis == "adegenet") {
@@ -2901,8 +2904,8 @@ Progress can be monitored with activity in the folder...")
             mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>% 
             filter(CURRENT == INFERRED) %>% 
             select(-n, -TOTAL)
-          }
-
+        }
+        
         assignment.stats.pop <- assignment.res.summary %>%
           mutate(
             CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),

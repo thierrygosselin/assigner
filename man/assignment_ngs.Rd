@@ -2,7 +2,7 @@
 % Please edit documentation in R/assignment_ngs.R
 \name{assignment_ngs}
 \alias{assignment_ngs}
-\title{Assignment analysis in gsi_sim with GBS data produced by STACKS workflow}
+\title{Assignment analysis in gsi_sim with GBS/RADseq data produced by STACKS workflow}
 \arguments{
 \item{data}{Options include the VCF (1) or an haplotype files (2) created in STACKS 
 (\code{data = "batch_1.vcf"} and \code{data = "batch_1.haplotypes.tsv"}, 
@@ -229,9 +229,9 @@ See example below.
 \code{gsi_sim} is a tool for doing and simulating genetic stock
 identification and developed by Eric C. Anderson.
 The arguments in the \code{assignment_ngs} function were tailored for the
-reality of GBS data for assignment analysis while
+reality of GBS/RADseq data for assignment analysis while
 maintaining a reproducible workflow.
-The input data is a VCF file produced by STACKS or a data frame. Individuals, populations and
+Various input files is offered. Individuals, populations and
 markers can be filtered and/or selected in several ways using blacklist,
 whitelist and other arguments. Map-independent imputation of missing genotype
 using Random Forest or the most frequent category is also available.
@@ -253,11 +253,14 @@ The Fst is based on Weir and Cockerham 1984 equations.
 }
 \note{
 \code{assignment_ngs} assumes that the command line version of gsi_sim 
-is properly installed and available on the command line, so it is executable from 
-any directory (more info on how to do this, here 
-\url{http://gbs-cloud-tutorial.readthedocs.org/en/latest/03_computer_setup.html?highlight=bash_profile#save-time}.
-The easiest way is to put the binary, the \code{gsi_sim} executable,
-in the folder \code{/usr/local/bin}. To compile gsi_sim, follow the 
+is properly installed into \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
+Things are set up so that it will try running gsi_sim, and if it does not find it, the 
+program will throw an error and ask the user to run \code{\link{install_gsi_sim}}
+which will do its best to put a usable copy of gsi_sim where it is needed.  To do 
+so, you must be connected to the internet.  If that doesn't work, you will
+need to compile the program yourself, or get it yourself, and the manually copy
+it to \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
+To compile gsi_sim, follow the 
 instruction here: \url{https://github.com/eriqande/gsi_sim}.
 }
 \examples{
