@@ -3,6 +3,8 @@
 export(assignment_genodive)
 export(assignment_ngs)
 export(dlr)
+export(gsi_sim_binary)
+export(install_gsi_sim)
 export(plot_assignment)
 export(plot_assignment_dlr)
 export(plot_assignment_stacked_bar)
