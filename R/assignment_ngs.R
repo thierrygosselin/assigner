@@ -1,13 +1,13 @@
 # Write a gsi_sim file from STACKS VCF file
 
 #' @name assignment_ngs
-#' @title Assignment analysis in gsi_sim with GBS data produced by STACKS workflow
+#' @title Assignment analysis in gsi_sim with GBS/RADseq data produced by STACKS workflow
 #' @description \code{gsi_sim} is a tool for doing and simulating genetic stock
 #' identification and developed by Eric C. Anderson.
 #' The arguments in the \code{assignment_ngs} function were tailored for the
-#' reality of GBS data for assignment analysis while
+#' reality of GBS/RADseq data for assignment analysis while
 #' maintaining a reproducible workflow.
-#' The input data is a VCF file produced by STACKS or a data frame. Individuals, populations and
+#' Various input files is offered. Individuals, populations and
 #' markers can be filtered and/or selected in several ways using blacklist,
 #' whitelist and other arguments. Map-independent imputation of missing genotype
 #' using Random Forest or the most frequent category is also available.
