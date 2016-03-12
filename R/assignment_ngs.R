@@ -484,6 +484,12 @@ assignment_ngs <- function(data,
     if ("CHROM" %in% columns.names.whitelist) {
       whitelist.markers$CHROM <- as.character(whitelist.markers$CHROM)
     }
+    if ("LOCUS" %in% columns.names.whitelist) {
+      whitelist.markers$LOCUS <- as.character(whitelist.markers$LOCUS)
+    }
+    if ("POS" %in% columns.names.whitelist) {
+      whitelist.markers$POS <- as.character(whitelist.markers$POS)
+    }
   }
   
   if (data.type == "haplo.file") {
@@ -2643,7 +2649,7 @@ Progress can be monitored with activity in the folder...")
           holdout <- data.frame(holdout.individuals.list[i])
           fst.ranked <- fst_WC84(data = input, holdout.samples = holdout$INDIVIDUALS)
           if (imputation.method != FALSE) {
-            fst.ranked.imp <- fst_WC84(data = input.imp, holdout.samples = holdout$INDIVIDUALS)
+            fst.ranked.imp <- fst_WC84(data = gsi.prep.imp, holdout.samples = holdout$INDIVIDUALS)
           }
         }
         
