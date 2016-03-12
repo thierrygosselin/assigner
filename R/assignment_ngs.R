@@ -528,7 +528,9 @@ assignment_ngs <- function(data,
       as_data_frame() %>% 
       rename(LOCUS = ID, CHROM = `#CHROM`) %>%
       mutate(
-        CHROM = stri_replace_all_fixed(CHROM, pattern = "un", replacement = "1")
+        CHROM = stri_replace_all_fixed(CHROM, pattern = "un", replacement = "1"),
+        POS = as.character(POS),
+        LOCUS = as.character(LOCUS)
       )
     
     # Filter with whitelist of markers
@@ -636,7 +638,9 @@ assignment_ngs <- function(data,
       select = tped.header.integer,
       col.names = tped.header.names,
       showProgress = TRUE,
-      data.table = FALSE)
+      data.table = FALSE) %>% 
+      as_data_frame() %>% 
+      mutate(LOCUS = as.character(LOCUS))
     
     # Filter with whitelist of markers
     if (!is.null(whitelist.markers)) {
@@ -784,7 +788,8 @@ assignment_ngs <- function(data,
       as_data_frame() %>% 
       select(-Cnt) %>% 
       rename(LOCUS = `Catalog ID`) %>%
-      tidyr::gather(INDIVIDUALS, GT, -LOCUS)
+      tidyr::gather(INDIVIDUALS, GT, -LOCUS) %>% 
+      mutate(LOCUS = as.character(LOCUS))
     
     # Filter with whitelist of markers
     if (!is.null(whitelist.markers)) {
