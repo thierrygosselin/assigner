@@ -62,7 +62,7 @@ autoconf
 # Back in R:
 install.packages(pkgs = "~/Downloads/randomForestSRC", repos = NULL, type = "source")
 ```
-Option 2: Use a pre-compiled binary (Mac OSX & Windows) [instructions here] (http://www.ccs.miami.edu/~hishwaran/rfsrc.html) or quick copy/paste solution below:
+Option 2: Use a pre-compiled binary (Mac OSX) [instructions here] (http://www.ccs.miami.edu/~hishwaran/rfsrc.html) or quick copy/paste solution below:
 
 ```r
 # Mac OSX
@@ -70,11 +70,9 @@ library("devtools")
 install_url(url = "http://www.ccs.miami.edu/~hishwaran/rfsrc/randomForestSRC_2.0.7.tgz")
 ```
 
-```r
-# Windows
-library("devtools")
-install_url(url = "http://www.ccs.miami.edu/~hishwaran/rfsrc/randomForestSRC_2.0.7.zip")
-```
+**Note for Windows users**
+**assigner** is currently not tested with PC, sorry. 
+I currently don't have the time to do PC bioinformatics troubleshooting.
 
 **Problems during installation:**
 

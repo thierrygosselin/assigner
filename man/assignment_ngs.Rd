@@ -126,7 +126,8 @@ For the other thl values, you can create different holdout individuals lists
 with the \code{iteration.method} argument below.}
 
 \item{iteration.method}{With random marker selection the iterations argument =
-the number of iterations to repeat marker resampling, default is \code{10}
+the number of iterations to repeat marker resampling. 
+Default: \code{iteration.method = 10}.
 With \code{marker.number = c(500, 1000)} and default iterations setting,
 500 markers will be randomly chosen 10 times and 1000 markers will be randomly
 chosen 10 times. For the ranked method, using \code{thl = 1}, the analysis
@@ -267,6 +268,7 @@ instruction here: \url{https://github.com/eriqande/gsi_sim}.
 \dontrun{
 assignment.treefrog <- assignment_ngs(
 data = "batch_1.vcf",
+assignment.analysis = "gsi_sim",
 whitelist.markers = "whitelist.vcf.txt",
 snp.ld = NULL,
 common.markers = TRUE,

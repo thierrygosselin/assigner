@@ -130,7 +130,8 @@
 #' For the other thl values, you can create different holdout individuals lists
 #' with the \code{iteration.method} argument below.
 #' @param iteration.method With random marker selection the iterations argument =
-#' the number of iterations to repeat marker resampling, default is \code{10}
+#' the number of iterations to repeat marker resampling. 
+#' Default: \code{iteration.method = 10}.
 #' With \code{marker.number = c(500, 1000)} and default iterations setting,
 #' 500 markers will be randomly chosen 10 times and 1000 markers will be randomly
 #' chosen 10 times. For the ranked method, using \code{thl = 1}, the analysis
@@ -251,6 +252,7 @@
 #' \dontrun{
 #' assignment.treefrog <- assignment_ngs(
 #' data = "batch_1.vcf",
+#' assignment.analysis = "gsi_sim",
 #' whitelist.markers = "whitelist.vcf.txt",
 #' snp.ld = NULL,
 #' common.markers = TRUE,
@@ -377,11 +379,12 @@ assignment_ngs <- function(data,
                            parallel.core = NULL,
                            ...) {
   
-  message("Assignment analysis using stackr and gsi_sim")
   
   # Checking for missing and/or default arguments ******************************
   if (missing(data)) stop("Input file missing")
   if (missing(assignment.analysis)) stop("assignment.analysis argument missing")
+  if (assignment.analysis == "gsi_sim") message("Assignment analysis with gsi_sim")
+  if (assignment.analysis == "adegenet") message("Assignment analysis with adegenet")
   if (missing(whitelist.markers)) whitelist.markers <- NULL # no Whitelist
   if (missing(monomorphic.out)) monomorphic.out <- TRUE # remove monomorphic
   if (missing(blacklist.genotype)) blacklist.genotype <- NULL # no genotype to erase
@@ -467,7 +470,7 @@ assignment_ngs <- function(data,
       dir.create(file.path(directory))
     }
     message(stri_join("Folder: ", directory))
-    file.data <- NULL #unused object
+    file.date <- NULL #unused object
   } else {
     directory <- stri_join(getwd(), "/", folder, "/", sep = "")
     dir.create(file.path(directory))
@@ -1345,7 +1348,6 @@ package and update your whitelist")
         tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) 
     }
     if (data.type == "plink.file") { # for PLINK
-      message("Recoding genotypes for gsi_sim")
       gsim.prep <- input %>% 
         tidyr::separate(col = INDIVIDUALS_ALLELES, into = c("INDIVIDUALS_2", "ALLELES"), sep = "_", remove = TRUE) %>% 
         select(-INDIVIDUALS_2)
