@@ -140,6 +140,12 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 ## New
 
+**v.0.2.0**
+* new function: `assignment_mixture` for mixture analysis.
+
+**v.0.1.9**
+* Simplified gsi_sim install
+
 **v.0.1.8**
 * You can now opt between [gsi_sim] (https://github.com/eriqande/gsi_sim) or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis
 

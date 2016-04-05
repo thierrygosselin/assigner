@@ -1,8 +1,8 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with GBS/RADseq Data using R
-Version: 0.1.9
-Date: 2015-03-04
+Version: 0.2.0
+Date: 2015-04-06
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")))
