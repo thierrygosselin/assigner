@@ -30,7 +30,7 @@ to convert very large VCF file. For \code{.ped} file conversion to
 with \code{--recode transpose}.}
 
 \item{mixture}{A text file mixture individual ID. The column header is 
-'INDIVIDUALS'and the file is in the working directory (e.g. "mixture.txt").}
+\code{INDIVIDUALS} and the file is in the working directory (e.g. "mixture.txt").}
 
 \item{assignment.analysis}{Assignment analysis conducted with 
 \code{assignment.analysis = "gsi_sim"} or 
@@ -118,29 +118,12 @@ chosen based on ranked Fst \code{"ranked"} using the baseline samples
 for the training and the mixture samples as holdout. 
 Classic Leave-one-out is then used to assign individual mixture samples.}
 
-\item{thl}{(character, integer, proportion) For \code{sampling.method = "ranked"} only.
-Default \code{1}, 1 individual sample is used as holdout. This individual is not
-participating in the markers ranking. For each marker number,
-the analysis will be repeated with all the indiviuals in the data set
-(e.g. 500 individuals, 500 times 500, 1000, 2000 markers).
-If a proportion is used e.g. \code{0.15},= 15% of individuals in each
-populations are chosen randomly as holdout individuals.
-With \code{thl = "all"} all individuals are used for ranking (not good) and
-\code{iteration.method} argument below is set to \code{1} by default.
-For the other thl values, you can create different holdout individuals lists
-with the \code{iteration.method} argument below.}
-
 \item{iteration.method}{With random marker selection the iterations argument =
 the number of iterations to repeat marker resampling. 
 Default: \code{iteration.method = 10}.
 With \code{marker.number = c(500, 1000)} and default iterations setting,
 500 markers will be randomly chosen 10 times and 1000 markers will be randomly
-chosen 10 times. For the ranked method, using \code{thl = 1}, the analysis
-will be repeated for each individuals in the data set for every
-\code{marker.number} selected. With a proportion argument \code{thl = 0.15},
-15% of individuals in each populations are chosen randomly as holdout
-individuals and this process is reapeated the number of times chosen by the
-\code{iteration.method} value.}
+chosen 10 times.}
 
 \item{folder}{(optional) The name of the folder created in the working directory to save the files/results.}
 
@@ -172,8 +155,8 @@ with the pop id in it, use the \code{strata} argument.}
 
 \item{strata}{(optional) A tab delimited file with 2 columns with header:
 \code{INDIVIDUALS} and \code{STRATA}. Default: \code{strata = NULL}. With a 
-data frame of genotypes the strata is the INDIVIDUALS and POP_ID columns, with
-PLINK files, the \code{tfam} first 2 columns are used. 
+data frame of genotypes the strata is the INDIVIDUALS and POP_ID column. With
+a PLINK file, the first 2 columns of the \code{tfam} are used. 
 If a \code{strata} file is specified, the strata file will have
 precedence. The \code{STRATA} column can be any hierarchical grouping.}
 
@@ -278,17 +261,19 @@ instruction here: \url{https://github.com/eriqande/gsi_sim}.
 }
 \examples{
 \dontrun{
+# with adegenet DAPC for the assignment and sampling.method = "random":
 assignment.treefrog <- assignment_mixture(
 data = "batch_1.vcf",
+mixture = "mixture.treefrog.tsv",
+assignment.analysis = "adegenet",
 whitelist.markers = "whitelist.vcf.txt",
 snp.ld = NULL,
 common.markers = TRUE,
 marker.number = c(500, 5000, "all"),
-sampling.method = "ranked",
-thl = 0.3,
-blacklist.id = "blacklist.id.lobster.tsv",
+sampling.method = "random",
+blacklist.id = "blacklist.id.tsv",
 subsample = 25,
-iteration.subsample = 10
+iteration.subsample = 5
 filename = "treefrog.txt",
 keep.gsi.files = FALSE,
 pop.levels = c("PAN", "COS")
@@ -296,12 +281,36 @@ pop.id.start = 5, pop.id.end = 7,
 imputation.method = FALSE,
 parallel.core = 12
 )
+# with gsi_sim for the mixture assignment and sampling.method = "ranked"
+# Here I also want to impute the genotypes of the data (baseline and mixture) 
+# using random forest:
+assignment.tuna <- assignment_mixture(
+data = "data.frame.genotypes.tuna.tsv",
+mixture = "cohort.tuna.tsv"
+assignment.analysis = "gsi_sim",
+common.markers = TRUE,
+marker.number = c(100, 200, 300),
+sampling.method = "ranked",
+subsample = 25,
+iteration.subsample = 5
+filename = "tuna.txt",
+keep.gsi.files = FALSE,
+pop.levels = c("BAJ", "IND"),
+imputation.method = "rf", 
+impute.mixture = TRUE, 
+impute = "genotype", 
+imputations.group = "populations", 
+num.tree = 100, 
+iteration.rf = 10, 
+split.number = 100, 
+verbose = FALSE,
+parallel.core = 12
+)
 
 Since the 'folder' argument is missing, it will be created automatically
 inside your working directory.
 
-To create a dataframe with the assignment results: 
-assignment <- assignment.treefrog$assignment.
+use $ to access the data frames in the list created.
 }
 }
 \author{

@@ -10,7 +10,7 @@ This is the development page of the **assigner** package for the R software.
 
 **Use assigner to:**
 
-* **Conduct assignment analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
+* **Conduct assignment analysis** and **mixture analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
 by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis.
 * The input file are:
     1. a VCF file format (Danecek et al. 2011) (*batch_x.vcf*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013),
@@ -139,6 +139,10 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 
 ## New
+
+**v.0.2.1**
+* updated the function `assignment_mixture` with `sampling.method = "ranked"` and 
+`assignment.analysis = "adegenet"`.
 
 **v.0.2.0**
 * new function: `assignment_mixture` for mixture analysis.

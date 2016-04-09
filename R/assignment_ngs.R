@@ -260,7 +260,7 @@
 #' marker.number = c(500, 5000, "all"),
 #' sampling.method = "ranked",
 #' thl = 0.3,
-#' blacklist.id = "blacklist.id.lobster.tsv",
+#' blacklist.id = "blacklist.id.treefrog.tsv",
 #' subsample = 25,
 #' iteration.subsample = 10
 #' gsi_sim.filename = "treefrog.txt",
@@ -442,7 +442,7 @@ assignment_ngs <- function(data,
   
   if (stri_detect_fixed(str = data.type, pattern = "POP_ID") | stri_detect_fixed(str = data.type, pattern = "INDIVIDUALS")) {
     data.type <- "df.file"
-    message("File type: data frame of genotype")
+    message("File type: data frame of genotypes")
   }
   
   if (stri_detect_fixed(str = data.type, pattern = "Catalog")) {
@@ -1279,7 +1279,7 @@ package and update your whitelist")
         arrange(MARKERS, POP_ID) %>%
         select(-c(REF, ALT))
       
-      gsim.prep <- input %>%
+      gsi.prep <- input %>%
         tidyr::separate(col = GT, into = c("A1", "A2"), sep = "_") %>%  # separate the genotypes into alleles
         tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID))
     }
@@ -1299,7 +1299,7 @@ package and update your whitelist")
     }
     
     if (data.type == "haplo.file") { # for haplotypes
-      gsim.prep <- suppressWarnings(
+      gsi.prep <- suppressWarnings(
         input %>%
           mutate(GT = stri_replace_all_fixed(GT, "-", "000/000", vectorize_all=F)) %>% 
           arrange(MARKERS) %>% 
@@ -1317,7 +1317,7 @@ package and update your whitelist")
     }
     if (data.type == "haplo.file" & assignment.analysis == "gsi_sim") {
       input <- suppressWarnings(
-        gsim.prep %>%
+        gsi.prep %>%
           filter(GT != "000") %>% 
           tidyr::spread(data = ., key = MARKERS, value = GT) %>% # this reintroduce the missing, but with NA
           ungroup() %>% 
@@ -1338,25 +1338,25 @@ package and update your whitelist")
           tidyr::unite(data = ., GT, A1, A2, sep = "", remove = TRUE)
       )
       
-      # for haplo.file we need to change back again the gsim.prep file
-      gsim.prep <- input %>% 
+      # for haplo.file we need to change back again the gsi.prep file
+      gsi.prep <- input %>% 
         tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
         tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) 
     }
     if (data.type == "df.file") { # For data frame of genotypes
-      gsim.prep <- input %>% 
+      gsi.prep <- input %>% 
         tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
         tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) 
     }
     if (data.type == "plink.file") { # for PLINK
-      gsim.prep <- input %>% 
+      gsi.prep <- input %>% 
         tidyr::separate(col = INDIVIDUALS_ALLELES, into = c("INDIVIDUALS_2", "ALLELES"), sep = "_", remove = TRUE) %>% 
         select(-INDIVIDUALS_2)
     }
     if (data.type == "df.file" | data.type == "plink.file" | data.type == "haplo.file") {
       if (assignment.analysis == "adegenet" ) {
         genind.prep <- suppressWarnings(
-          gsim.prep %>%
+          gsi.prep %>%
             filter(GT != "000") %>% 
             tidyr::spread(data = ., key = MARKERS, value = GT) %>% # this reintroduce the missing, but with NA
             ungroup() %>% 
@@ -1397,6 +1397,9 @@ package and update your whitelist")
       }
     }
     
+    gsi.prep <- gsi.prep %>% 
+      arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES)
+
     # only adegenet
     if (assignment.analysis == "adegenet") {
       # genind arguments common to all data.type
@@ -1461,7 +1464,7 @@ package and update your whitelist")
       if (data.type == "plink.file") {
         
         if (impute == "genotype"){
-          input.prep <- gsim.prep %>% 
+          input.prep <- gsi.prep %>% 
             group_by(MARKERS, INDIVIDUALS, POP_ID) %>% 
             tidyr::spread(data = ., key = ALLELES, value = GT) %>% 
             tidyr::unite(col = GT, A1, A2, sep = "", remove = TRUE) %>% 
@@ -1476,7 +1479,7 @@ package and update your whitelist")
         }
         
         if (impute == "allele"){
-          input.prep <- gsim.prep %>%
+          input.prep <- gsi.prep %>%
             mutate(
               GT = stri_replace_all_fixed(GT, pattern = "000", replacement = "NA", vectorize_all = FALSE),
               GT = replace(GT, which(GT == "NA"), NA)
@@ -1503,7 +1506,7 @@ package and update your whitelist")
             arrange(POP_ID, INDIVIDUALS)
         }
         if (impute == "allele") {
-          input.prep <- gsim.prep %>%
+          input.prep <- gsi.prep %>%
             mutate(
               GT = stri_replace_all_fixed(GT, pattern = "000", replacement = "NA", vectorize_all = FALSE),
               GT = replace(GT, which(GT == "NA"), NA)
@@ -1663,7 +1666,7 @@ package and update your whitelist")
       } # End imputations max
       
       # prepare the imputed dataset for gsi_sim or adegenet
-      message("Preparing imputed data set for gsi_sim...")
+      message("Preparing imputed data set...")
       if (assignment.analysis == "gsi_sim") {
         if (impute == "genotype") {
           if (data.type == "vcf.file") { # for VCF input
@@ -1690,22 +1693,22 @@ package and update your whitelist")
       }
       
       # adegenet
-      if (data.type == "vcf.file" & assignment.analysis == "adegenet" ) {
-        genind.prep.imp <- input.imp %>% 
-          tidyr::gather(key = MARKERS, value = GT, -c(POP_ID, INDIVIDUALS, ALLELES)) %>% # make tidy
-          tidyr::spread(data = ., key = ALLELES, value = GT) %>%
-          tidyr::unite(GT, A1, A2, sep = ":", remove = TRUE) %>%
-          mutate(GT = stri_replace_all_fixed(str = GT, pattern = c("0:0", "1:1", "0:1", "1:0"), replacement = c("2_0", "0_2", "1_1", "1_1"), vectorize_all = FALSE)) %>%
-          arrange(MARKERS, POP_ID) %>%
-          tidyr::separate(col = GT, into = c("A1", "A2"), sep = "_", extra = "drop", remove = TRUE) %>%
-          tidyr::gather(key = ALLELES, value = COUNT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>% # make tidy
-          tidyr::unite(MARKERS_ALLELES, MARKERS, ALLELES, sep = ".", remove = TRUE) %>%
-          group_by(POP_ID, INDIVIDUALS) %>%
-          tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>%
-          arrange(POP_ID, INDIVIDUALS)
-      }
-      if (data.type == "df.file" | data.type == "plink.file" | data.type == "haplo.file") {
-        if (assignment.analysis == "adegenet" ) {
+      if (assignment.analysis == "adegenet") {
+        if (data.type == "vcf.file") {
+          genind.prep.imp <- input.imp %>% 
+            tidyr::gather(key = MARKERS, value = GT, -c(POP_ID, INDIVIDUALS, ALLELES)) %>% # make tidy
+            tidyr::spread(data = ., key = ALLELES, value = GT) %>%
+            tidyr::unite(GT, A1, A2, sep = ":", remove = TRUE) %>%
+            mutate(GT = stri_replace_all_fixed(str = GT, pattern = c("0:0", "1:1", "0:1", "1:0"), replacement = c("2_0", "0_2", "1_1", "1_1"), vectorize_all = FALSE)) %>%
+            arrange(MARKERS, POP_ID) %>%
+            tidyr::separate(col = GT, into = c("A1", "A2"), sep = "_", extra = "drop", remove = TRUE) %>%
+            tidyr::gather(key = ALLELES, value = COUNT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>% # make tidy
+            tidyr::unite(MARKERS_ALLELES, MARKERS, ALLELES, sep = ".", remove = TRUE) %>%
+            group_by(POP_ID, INDIVIDUALS) %>%
+            tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>%
+            arrange(POP_ID, INDIVIDUALS)
+        }
+        if (data.type == "df.file" | data.type == "plink.file" | data.type == "haplo.file") {
           genind.prep.imp <- suppressWarnings(
             input.imp %>%
               ungroup() %>% 
@@ -1737,10 +1740,6 @@ package and update your whitelist")
               arrange(POP_ID, INDIVIDUALS)
           )
         }
-      }
-      
-      # only adegenet
-      if (assignment.analysis == "adegenet") {
         # genind arguments common to all data.type
         ind <- as.character(genind.prep.imp$INDIVIDUALS)
         pop <- genind.prep.imp$POP_ID
@@ -1762,8 +1761,8 @@ package and update your whitelist")
         genind.df <- NULL
         # genind.prep <- NULL
         # genind.prep.imp <- NULL
-      }
-      
+        
+      } # end adegenet
       input.imp <- NULL # remove unused object
     } # End imputations
     
@@ -2012,7 +2011,7 @@ package and update your whitelist")
                                  If you have internet access, you can install it
                                  from within R by invoking the function \"install_gsi_sim(fromSource = TRUE)\"")
       assignment_analysis <- function(data, select.markers, markers.names, missing.data, i, m, holdout, filename, ...) {
-        # data <- gsim.prep #test
+        # data <- gsi.prep #test
         # data <- genind.prep #test
         # missing.data <- "no.imputation" #test
         data.select <- suppressWarnings(
@@ -2338,7 +2337,7 @@ Progress can be monitored with activity in the folder...")
                                            )
         )
         if (assignment.analysis == "gsi_sim") {
-          assignment.no.imp <- assignment_analysis(data = gsim.prep,
+          assignment.no.imp <- assignment_analysis(data = gsi.prep,
                                                    select.markers = select.markers,
                                                    markers.names = markers.names,
                                                    missing.data = "no.imputation", 
@@ -2548,7 +2547,7 @@ Progress can be monitored with activity in the folder...")
       message("Conducting Assignment analysis with ranked markers")
       
       # if (data.type == "haplo.file") {
-      #   input <- gsim.prep %>%
+      #   input <- gsi.prep %>%
       #     mutate(GT = stri_pad_left(str = GT, width = 3, pad = "0")) %>% 
       #     group_by(POP_ID, INDIVIDUALS, MARKERS) %>% 
       #     tidyr::spread(data = ., key = ALLELES, value = GT) %>% 
@@ -2706,7 +2705,7 @@ Progress can be monitored with activity in the folder...")
                                              )
           )
           if (assignment.analysis == "gsi_sim") {
-            assignment.no.imp <- assignment_analysis(data = gsim.prep,
+            assignment.no.imp <- assignment_analysis(data = gsi.prep,
                                                      select.markers = select.markers,
                                                      markers.names = markers.names,
                                                      missing.data = "no.imputation", 
@@ -2814,7 +2813,7 @@ Progress can be monitored with activity in the folder...")
           i = i,
           holdout = holdout,
           input = input,
-          gsim.prep = gsim.prep,
+          gsi.prep = gsi.prep,
           input.imp = input.imp,
           # vcf = vcf.imp, # was an error before, double check...
           gsi.prep.imp = gsi.prep.imp,
