@@ -83,13 +83,13 @@
 #' Note that for other file type, use stackr package for haplotype file and 
 #' create a whitelist, for plink and data frames, use PLINK linkage 
 #' disequilibrium based SNP pruning option.
-#' @param common.markers (optional) Logical. Default = \code{FALSE}.
-#' With \code{TRUE}, will keep markers genotyped in all the populations.
+#' @param common.markers (optional) Logical. Default: \code{common.markers = TRUE}, 
+#' will only keep markers in common (genotyped) between all the baseline samples (populations).
 
 
 #' @param maf.thresholds (string, double, optional) String with 
-#' local/populations and global/overall maf thresholds, respectively.
-#' Default: \code{maf.thresholds = NULL}. 
+#' local/populations and global/overall Minor Allele Frequency (maf) thresholds, respectively.
+#' Default: \code{maf.thresholds = NULL}. The maf is calculated on the baseline samples only.
 #' e.g. \code{maf.thresholds = c(0.05, 0.1)} for a local maf threshold 
 #' of 0.05 and a global threshold of 0.1. Available for VCF, PLINK and data frame 
 #' files. Use stackr for haplotypes files.
@@ -402,7 +402,7 @@ assignment_mixture <- function(data,
   if (missing(monomorphic.out)) monomorphic.out <- TRUE # remove monomorphic
   if (missing(blacklist.genotype)) blacklist.genotype <- NULL # no genotype to erase
   if (missing(snp.ld)) snp.ld <- NULL
-  if (missing(common.markers)) common.markers <- FALSE
+  if (missing(common.markers)) common.markers <- TRUE
   if (missing(maf.thresholds)) maf.thresholds <- NULL
   if (missing(maf.pop.num.threshold)) maf.pop.num.threshold <- 1
   if (missing(maf.approach)) maf.approach <- "SNP"
@@ -1082,7 +1082,8 @@ haplotype file and create a whitelist, for other file type, use
     # This need to be moved while doing the assignment
     if (common.markers == TRUE) { # keep only markers present in all pop
       message("Using markers common in all populations:")
-      pop.number <- input %>% 
+      pop.number <- input %>%
+        filter(!INDIVIDUALS %in% mixture.df$INDIVIDUALS) %>% 
         select(POP_ID) %>% 
         filter(POP_ID != "mixture")
       
@@ -1563,7 +1564,7 @@ package and update your whitelist")
         filter(!INDIVIDUALS %in% mixture.df$INDIVIDUALS) %>% 
         mutate(POP_ID = droplevels(POP_ID))
       
-      strata.df.subsample <- input.prep %>% 
+      strata.df.impute <- input.prep %>% 
         select(INDIVIDUALS, POP_ID) %>% 
         distinct(INDIVIDUALS, POP_ID)
       
@@ -1638,7 +1639,7 @@ package and update your whitelist")
             input.imp <- impute_genotype_rf(input.imp) # impute globally
             input.imp <- plyr::colwise(as.character, exclude = NA)(input.imp)
             input.imp <- suppressWarnings(
-              left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+              left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                 arrange(POP_ID, INDIVIDUALS) %>% 
                 ungroup()
             )
@@ -1646,7 +1647,7 @@ package and update your whitelist")
           
           if (impute.mixture == FALSE) {
             input.imp <- suppressWarnings(
-              left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+              left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                 arrange(POP_ID, INDIVIDUALS) %>% 
                 ungroup()
             )
@@ -1671,7 +1672,6 @@ package and update your whitelist")
           input.imp <- plyr::colwise(as.character, exclude = NA)(input.imp)
           input.prep <- NULL # remove unused object
           
-          
           # combine the mixture (no imputation) + the imputed baseline
           input.imp <- suppressWarnings(
             bind_rows(input.imp, 
@@ -1687,7 +1687,7 @@ package and update your whitelist")
             input.imp <- impute_genotype_rf(input.imp) # impute globally
             input.imp <- plyr::colwise(as.character, exclude = NA)(input.imp)
             input.imp <- suppressWarnings(
-              left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+              left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                 arrange(POP_ID, INDIVIDUALS) %>% 
                 ungroup()
             )
@@ -1695,7 +1695,7 @@ package and update your whitelist")
           
           if (impute.mixture == FALSE) {
             input.imp <- suppressWarnings(
-              left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+              left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                 arrange(POP_ID, INDIVIDUALS) %>% 
                 ungroup()
             )
@@ -1774,7 +1774,7 @@ package and update your whitelist")
               )
                   
               input.imp <- suppressWarnings(
-                left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+                left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                   arrange(POP_ID, INDIVIDUALS, MARKERS) %>% 
                   ungroup()
               )
@@ -1782,7 +1782,7 @@ package and update your whitelist")
             
             if (impute.mixture == FALSE) {
               input.imp <- suppressWarnings(
-                left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+                left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                   arrange(POP_ID, INDIVIDUALS, MARKERS) %>% 
                   mutate(
                     GT = stri_replace_na(GT, replacement = "000000")
@@ -1829,7 +1829,7 @@ package and update your whitelist")
               )
 
               input.imp <- suppressWarnings(
-                left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+                left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                   arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES) %>% 
                   ungroup()
               )
@@ -1837,7 +1837,7 @@ package and update your whitelist")
 
             if (impute.mixture == FALSE) {
               input.imp <- suppressWarnings(
-                left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+                left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                   arrange(POP_ID, INDIVIDUALS, MARKERS) %>% 
                   mutate(
                     GT = stri_replace_na(GT, replacement = "000")
@@ -1887,7 +1887,7 @@ package and update your whitelist")
               )
               
               input.imp <- suppressWarnings(
-                left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+                left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                   arrange(POP_ID, INDIVIDUALS, MARKERS) %>% 
                   ungroup()
               )
@@ -1895,7 +1895,7 @@ package and update your whitelist")
 
             if (impute.mixture == FALSE) {
               input.imp <- suppressWarnings(
-                left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+                left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                   arrange(POP_ID, INDIVIDUALS, MARKERS) %>% 
                   mutate(
                     GT = stri_replace_na(GT, replacement = "000000")
@@ -1934,14 +1934,14 @@ package and update your whitelist")
               )
               
               input.imp <- suppressWarnings(
-                left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+                left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                   arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES) %>% 
                   ungroup()
               )
             }
             if (impute.mixture == FALSE) {
               input.imp <- suppressWarnings(
-                left_join(strata.df.subsample, input.imp, by = "INDIVIDUALS") %>% 
+                left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                   arrange(POP_ID, INDIVIDUALS, MARKERS) %>% 
                   mutate(
                     GT = stri_replace_na(GT, replacement = "000")

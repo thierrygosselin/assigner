@@ -70,12 +70,12 @@ Note that for other file type, use stackr package for haplotype file and
 create a whitelist, for plink and data frames, use PLINK linkage 
 disequilibrium based SNP pruning option.}
 
-\item{common.markers}{(optional) Logical. Default = \code{FALSE}.
-With \code{TRUE}, will keep markers genotyped in all the populations.}
+\item{common.markers}{(optional) Logical. Default: \code{common.markers = TRUE}, 
+will only keep markers in common (genotyped) between all the baseline samples (populations).}
 
 \item{maf.thresholds}{(string, double, optional) String with 
-local/populations and global/overall maf thresholds, respectively.
-Default: \code{maf.thresholds = NULL}. 
+local/populations and global/overall Minor Allele Frequency (maf) thresholds, respectively.
+Default: \code{maf.thresholds = NULL}. The maf is calculated on the baseline samples only.
 e.g. \code{maf.thresholds = c(0.05, 0.1)} for a local maf threshold 
 of 0.05 and a global threshold of 0.1. Available for VCF, PLINK and data frame 
 files. Use stackr for haplotypes files.}

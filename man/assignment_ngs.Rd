@@ -67,8 +67,8 @@ Note that for other file type, use stackr package for haplotype file and
 create a whitelist, for plink and data frames, use PLINK linkage 
 disequilibrium based SNP pruning option.}
 
-\item{common.markers}{(optional) Logical. Default = \code{FALSE}.
-With \code{TRUE}, will keep markers genotyped in all the populations.}
+\item{common.markers}{(optional) Logical. Default: \code{common.markers = TRUE}, 
+will only keep markers in common (genotyped) between all the populations.}
 
 \item{maf.thresholds}{(string, double, optional) String with 
 local/populations and global/overall maf thresholds, respectively.
@@ -119,12 +119,12 @@ Default \code{1}, 1 individual sample is used as holdout. This individual is not
 participating in the markers ranking. For each marker number,
 the analysis will be repeated with all the indiviuals in the data set
 (e.g. 500 individuals, 500 times 500, 1000, 2000 markers).
-If a proportion is used e.g. \code{0.15},= 15% of individuals in each
+If a proportion is used e.g. \code{thl = 0.15}, 15 percent of individuals in each
 populations are chosen randomly as holdout individuals.
 With \code{thl = "all"} all individuals are used for ranking (not good) and
 \code{iteration.method} argument below is set to \code{1} by default.
 For the other thl values, you can create different holdout individuals lists
-with the \code{iteration.method} argument below.}
+with the \code{iteration.method} argument below (bootstrap).}
 
 \item{iteration.method}{With random marker selection the iterations argument =
 the number of iterations to repeat marker resampling. 
@@ -134,7 +134,7 @@ With \code{marker.number = c(500, 1000)} and default iterations setting,
 chosen 10 times. For the ranked method, using \code{thl = 1}, the analysis
 will be repeated for each individuals in the data set for every
 \code{marker.number} selected. With a proportion argument \code{thl = 0.15},
-15% of individuals in each populations are chosen randomly as holdout
+15 percent of individuals in each populations are chosen randomly as holdout
 individuals and this process is reapeated the number of times chosen by the
 \code{iteration.method} value.}
 
