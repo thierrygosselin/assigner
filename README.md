@@ -140,6 +140,9 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 ## New
 
+**v.0.2.3**
+* bug fixed in the compilation results section when no pop.id.start and end are used.
+
 **v.0.2.1**
 * updated the function `assignment_mixture` with `sampling.method = "ranked"` and 
 `assignment.analysis = "adegenet"`.

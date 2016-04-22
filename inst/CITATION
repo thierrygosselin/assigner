@@ -7,5 +7,5 @@ year = "2016",
 author = personList(as.person("Thierry Gosselin")),
 url = "https://github.com/thierrygosselin/stackr",
 doi = "http://dx.doi.org/10.5281/zenodo.46723",
-textVersion = paste("Gosselin T (2016). assigner: Assignment Analysis with GBS/RAD Data using R. R package version 0.1.9. https://github.com/thierrygosselin/assigner. doi : 10.5281/zenodo.46723")
+textVersion = paste("Gosselin T (2016). assigner: Assignment Analysis with GBS/RAD Data using R. R package version 0.2.3. https://github.com/thierrygosselin/assigner. doi : 10.5281/zenodo.47452")
 )

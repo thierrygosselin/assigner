@@ -2211,7 +2211,7 @@ package and update your whitelist")
                 METHOD = rep(sampling.method, n()),
                 MISSING_DATA = rep(missing.data, n())
               ) %>%
-              select(INDIVIDUALS, ANALYSIS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA) %>%
+              select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA) %>%
               arrange(CURRENT)
           )
         }
