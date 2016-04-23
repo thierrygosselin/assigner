@@ -2949,8 +2949,8 @@ Progress can be monitored with activity in the folder...")
       assignment.res <- parallel::mclapply(
         X = iterations.list, 
         FUN = assignment_ranking, 
-        mc.preschedule = FALSE, 
-        mc.silent = FALSE, 
+        mc.preschedule = TRUE, 
+        mc.silent = TRUE, 
         mc.cores = parallel.core,
         marker.number = marker.number
       )
@@ -2960,6 +2960,7 @@ Progress can be monitored with activity in the folder...")
       assignment.res.summary <- suppressWarnings(
         bind_rows(assignment.res)
       )
+      
       # assignment results
       if (is.null(subsample)) {
         if (imputation.method == FALSE) {
