@@ -29,16 +29,28 @@ import_subsamples <- function(dir.path, imputations){
   if (missing (dir.path)) stop("dir.path argument missing")
   if (missing (imputations)) imputations <- FALSE
   
+  sampling.method <- stri_detect_fixed(str = dir.path, pattern = "ranked") # looks for ranked
+  
   subsample.folders <- list.files(path = dir.path, pattern = "subsample_", full.names = FALSE)
   data <- list()
   for (i in subsample.folders) {
     sub.name <- stri_replace_all_fixed(str = i, pattern = "_", replacement = ".", vectorize_all = FALSE)
-    if (imputations == TRUE){
-      filename <- stri_paste(i, "/","assignment.random.imputed.results.individuals.iterations.", sub.name, ".tsv")
+    if (sampling.method == FALSE){
+      if (imputations == TRUE){
+        filename <- stri_paste(i, "/","assignment.random.imputed.results.individuals.iterations.", sub.name, ".tsv")
+      } else {
+        filename <- stri_paste(i, "/","assignment.random.no.imputation.results.individuals.iterations.", sub.name, ".tsv")
+      }
     } else {
-      filename <- stri_paste(i, "/","assignment.random.no.imputation.results.individuals.iterations.", sub.name, ".tsv")
+      if (imputations == TRUE){
+        filename <- stri_paste(i, "/","assignment.ranked.imputed.results.individuals.iterations.", sub.name, ".tsv")
+      } else {
+        filename <- stri_paste(i, "/","assignment.ranked.no.imputation.results.individuals.iterations.", sub.name, ".tsv")
+      }
     }
-    subsample.data <- read_tsv(file = filename, col_names = TRUE) #%>% filter (MISSING_DATA == 'no.imputation')
+    subsample.data <- read_tsv(file = filename, col_names = TRUE) 
+    # mutate(SUBSAMPLE = rep(i, n()))
+      # filter (MISSING_DATA == 'no.imputation')
     data[[i]] <- subsample.data
   }
   data <- as_data_frame(bind_rows(data))

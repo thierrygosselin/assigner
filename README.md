@@ -17,6 +17,7 @@ by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet] (
     2. an haplotypes data frame file (*batch_x.haplotypes.tsv*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013),
     3. very large files (> 50 000 markers) can be imported in PLINK tped/tfam format (Purcell et al. 2007), and
     4. a data frame of genotypes.
+    5. For genepop file, use [genepopedit](https://github.com/rystanley/genepopedit) to prepare the file for assigner.
 * Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
 whitelist** and other arguments
 * **Map-independent imputation** of missing genotype or alleles using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
@@ -139,6 +140,11 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 
 ## New
+
+**v.0.2.4**
+* bug fixed using adegenet that was introduced in v.0.2.3
+* introducing a new function `import_subsamples_fst` to import the fst ranking 
+results from all the subsample runs inside an assignment folder.
 
 **v.0.2.3**
 * bug fixed in the compilation results section when no pop.id.start and end are used.
