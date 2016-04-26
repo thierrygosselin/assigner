@@ -384,6 +384,11 @@ assignment_ngs <- function(data,
   # Checking for missing and/or default arguments ******************************
   if (missing(data)) stop("Input file missing")
   if (missing(assignment.analysis)) stop("assignment.analysis argument missing")
+  if (assignment.analysis == "gsi_sim" & !gsi_sim_exists()){
+    stop("Can't find the gsi_sim executable where it was expected at ", gsi_sim_binary_path(), ".  
+         If you have internet access, you can install it
+         from within R by invoking the function \"install_gsi_sim(fromSource = TRUE)\"")
+  }
   if (assignment.analysis == "gsi_sim") message("Assignment analysis with gsi_sim")
   if (assignment.analysis == "adegenet") message("Assignment analysis with adegenet")
   if (missing(whitelist.markers)) whitelist.markers <- NULL # no Whitelist
@@ -744,11 +749,8 @@ assignment_ngs <- function(data,
       data.table = FALSE
     ) %>% 
       as_data_frame() %>% 
-      tidyr::gather(key = LOCUS, value = GT, -c(INDIVIDUALS, POP_ID)) %>% 
-      mutate(
-        POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered =T),
-        GT = stri_pad_left(str = GT, width = 6, pad = "0")
-      )
+      tidyr::gather(key = LOCUS, value = GT, -c(INDIVIDUALS, POP_ID))
+    
     
     # Filter with whitelist of markers
     if (!is.null(whitelist.markers)) {
@@ -764,11 +766,24 @@ assignment_ngs <- function(data,
     
     # Using the argument strata if provided to replace the current one
     if (is.null(strata)) {
-      strata.df <- input %>% select(INDIVIDUALS, POP_ID) %>% distinct(INDIVIDUALS)
+      input <- input %>%
+        mutate( # Make population ready
+          POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered = TRUE),
+          INDIVIDUALS =  as.character(INDIVIDUALS)
+        )
+      
+      strata.df <- input %>% 
+        select(INDIVIDUALS, POP_ID) %>% 
+        distinct(INDIVIDUALS)
     } else {
       strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
         rename(POP_ID = STRATA)
-      input <- left_join(input, strata.df, by = "INDIVIDUALS")
+      
+      input <- input %>%
+        mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
+        select(-POP_ID) %>% 
+        left_join(strata.df, by = "INDIVIDUALS") %>% 
+        mutate(POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered =TRUE))
     }
     
     # Pop select
@@ -807,6 +822,7 @@ assignment_ngs <- function(data,
       input <- suppressWarnings(anti_join(input, blacklist.id, by = "INDIVIDUALS"))
     }
     
+    # Using the argument strata if provided to replace the current one
     if (is.null(strata)){
       input <- input %>%
         mutate( # Make population ready
@@ -1401,8 +1417,8 @@ package and update your whitelist")
       }
     }
     
-    gsi.prep <- gsi.prep %>% 
-      arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES)
+    # gsi.prep <- gsi.prep %>% 
+    #   arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES)
     
     # only adegenet
     if (assignment.analysis == "adegenet") {
@@ -2117,9 +2133,6 @@ package and update your whitelist")
     
     # Assignment with gsi_sim
     if (assignment.analysis == "gsi_sim") {
-      if(!gsi_sim_exists()) stop("Can't find the gsi_sim executable where it was expected at ", gsi_sim_binary_path(), ".  
-                                 If you have internet access, you can install it
-                                 from within R by invoking the function \"install_gsi_sim(fromSource = TRUE)\"")
       assignment_analysis <- function(data, select.markers, markers.names, missing.data, i, m, holdout, filename, ...) {
         # data <- gsi.prep #test
         # data <- gsi.prep.imp #test
@@ -2244,24 +2257,7 @@ package and update your whitelist")
                 CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
                 CURRENT = droplevels(CURRENT),
                 ITERATIONS = rep(i, n())
-              ) 
-            
-            # testing summary later in the function to keep individuals assignment
-            # assignment <- assignment %>%
-            #   mutate(
-            #     CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
-            #     CURRENT = droplevels(CURRENT),
-            #     ITERATIONS = rep(i, n())
-            #   ) %>% 
-            #   group_by(CURRENT, MARKER_NUMBER, METHOD, MISSING_DATA, ITERATIONS) %>%
-            #   summarise(
-            #     n = length(CURRENT[as.character(CURRENT) == as.character(INFERRED)]),
-            #     TOTAL = length(CURRENT)
-            #   ) %>%
-            #   ungroup() %>% 
-            #   mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>% 
-            #   select(-n, -TOTAL)
-            
+              )
           }
         }
         return(assignment)
@@ -2343,24 +2339,11 @@ package and update your whitelist")
               CURRENT = factor(CURRENT, levels = rev.assignment.levels, ordered = TRUE),
               INFERRED = factor(INFERRED, levels = assignment.levels, ordered = TRUE)
             )
-          
-          # assignment <- data.frame(INDIVIDUALS = indNames(holdout.data), POP_ID = pop.holdout, ASSIGN = dapc.predict.holdout$assign, dapc.predict.holdout$posterior) %>% 
-          #   select(CURRENT = POP_ID, INFERRED = ASSIGN) %>%
-          #   mutate(
-          #     CURRENT = factor(CURRENT, levels = rev.assignment.levels, ordered = TRUE),
-          #     INFERRED = factor(INFERRED, levels = assignment.levels, ordered = TRUE)
-          #   ) %>% 
-          #   group_by(CURRENT, INFERRED) %>% 
-          #   tally %>% 
-          #   group_by(CURRENT) %>% 
-          #   mutate(TOTAL = sum(n)) %>% 
-          #   ungroup() %>% 
-          #   mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>% 
-          #   filter(CURRENT == INFERRED)
         }
         
         assignment <- assignment %>% 
           mutate(
+            METHOD = rep(sampling.method, n()),
             ITERATIONS = rep(i, n()),
             MARKER_NUMBER = as.numeric(rep(n.locus, n())),
             MISSING_DATA = rep(missing.data, n())
@@ -2430,12 +2413,13 @@ Progress can be monitored with activity in the folder...")
         
         # Assignment analysis without imputations
         filename <- stri_replace_all_fixed(gsi_sim.filename,
-                                           pattern = ".txt",
+                                           pattern = "txt",
                                            replacement = stri_join(
                                              i, m, 
-                                             "no_imputation.txt", sep = "_"
+                                             "no.imputation", "txt", sep = "."
                                            )
         )
+        
         if (assignment.analysis == "gsi_sim") {
           assignment.no.imp <- assignment_analysis(data = gsi.prep,
                                                    select.markers = select.markers,
@@ -2481,7 +2465,7 @@ Progress can be monitored with activity in the folder...")
                                              pattern = "txt",
                                              replacement = stri_join(
                                                i, m, 
-                                               "imputed.txt", sep = "_"
+                                               "imputed", "txt", sep = "."
                                              )
           )
           if (assignment.analysis == "gsi_sim") {
@@ -2534,28 +2518,58 @@ Progress can be monitored with activity in the folder...")
       
       # Compiling the results
       message("Compiling results")
-      assignment.res <- suppressWarnings(
-        bind_rows(assignment.res) %>% 
-          mutate(SUBSAMPLE = rep(subsample.id, n())) %>% 
-          arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
-      )
+      if(assignment.analysis == "adegenet") {
+        assignment.res <- suppressWarnings(
+          bind_rows(assignment.res) %>% 
+            rename(CURRENT = POP_ID) %>% 
+            mutate(
+              SUBSAMPLE = rep(subsample.id, n()),
+              CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
+              CURRENT = droplevels(CURRENT)
+            ) %>% 
+            arrange(CURRENT, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
+        )
+      } else {
+        assignment.res <- suppressWarnings(
+          bind_rows(assignment.res) %>% 
+            mutate(SUBSAMPLE = rep(subsample.id, n())) %>% 
+            arrange(POP_ID, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
+        )        
+      }
       
       # Write the tables to directory
       # assignment results
-      if (is.null(subsample)) {
-        if (imputation.method == FALSE) {
-          filename.assignment.res <- stri_join("assignment", sampling.method, "no.imputation", "results", "individuals", "iterations", "tsv", sep = ".")
-        } else { # with imputations
-          filename.assignment.res <- stri_join("assignment", sampling.method, "imputed", "results", "individuals", "iterations", "tsv", sep = ".")
+      if(assignment.analysis == "gsi_sim") {
+        if (is.null(subsample)) {
+          if (imputation.method == FALSE) {
+            filename.assignment.res <- stri_join("assignment", sampling.method, "no.imputation", "results", "individuals", "iterations", "tsv", sep = ".")
+          } else { # with imputations
+            filename.assignment.res <- stri_join("assignment", sampling.method, "imputed", "results", "individuals", "iterations", "tsv", sep = ".")
+          }
+        } else {# with subsampling
+          if (imputation.method == FALSE) {
+            filename.assignment.res <- stri_join("assignment", sampling.method, "no.imputation", "results", "individuals","iterations", "subsample", subsample.id, "tsv", sep = ".")
+          } else { # with imputations
+            filename.assignment.res <- stri_join("assignment", sampling.method, "imputed", "results", "individuals", "iterations", "subsample", subsample.id, "tsv", sep = ".")
+          }
         }
-      } else {# with subsampling
-        if (imputation.method == FALSE) {
-          filename.assignment.res <- stri_join("assignment", sampling.method, "no.imputation", "results", "individuals","iterations", "subsample", subsample.id, "tsv", sep = ".")
-        } else { # with imputations
-          filename.assignment.res <- stri_join("assignment", sampling.method, "imputed", "results", "individuals", "iterations", "subsample", subsample.id, "tsv", sep = ".")
+        write_tsv(x = assignment.res, path = paste0(directory.subsample,filename.assignment.res), col_names = TRUE, append = FALSE)
+      } else {
+        if (is.null(subsample)) {
+          if (imputation.method == FALSE) {
+            filename.assignment.res <- stri_join("assignment", sampling.method, "no.imputation", "results", "iterations", "tsv", sep = ".")
+          } else { # with imputations
+            filename.assignment.res <- stri_join("assignment", sampling.method, "imputed", "results", "iterations", "tsv", sep = ".")
+          }
+        } else {# with subsampling
+          if (imputation.method == FALSE) {
+            filename.assignment.res <- stri_join("assignment", sampling.method, "no.imputation", "results", "iterations", "subsample", subsample.id, "tsv", sep = ".")
+          } else { # with imputations
+            filename.assignment.res <- stri_join("assignment", sampling.method, "imputed", "results", "iterations", "subsample", subsample.id, "tsv", sep = ".")
+          }
         }
+        write_tsv(x = assignment.res, path = paste0(directory.subsample,filename.assignment.res), col_names = TRUE, append = FALSE)
       }
-      write_tsv(x = assignment.res, path = paste0(directory.subsample,filename.assignment.res), col_names = TRUE, append = FALSE)
       
       if (assignment.analysis == "gsi_sim") {
         assignment.stats.pop <- suppressWarnings(
@@ -2589,7 +2603,6 @@ Progress can be monitored with activity in the folder...")
       if (assignment.analysis == "adegenet") {
         assignment.stats.pop <- suppressWarnings(
           assignment.res %>%
-            rename(CURRENT = POP_ID) %>% 
             group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
             summarise(
               MEAN = round(mean(ASSIGNMENT_PERC), 2),
@@ -2958,7 +2971,9 @@ Progress can be monitored with activity in the folder...")
       # Compiling the results
       message("Compiling results")
       assignment.res.summary <- suppressWarnings(
-        bind_rows(assignment.res)
+        bind_rows(assignment.res)%>% 
+          mutate(SUBSAMPLE = rep(subsample.id, n())) %>% 
+          arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
       )
       
       # assignment results
@@ -3167,7 +3182,7 @@ Progress can be monitored with activity in the folder...")
     filename.res <- stri_join("assignment", sampling.method, "imputed.results,summary.stats.subsample", "tsv", sep = ".")
   }
   write_tsv(x = res, path = paste0(directory,filename.res), col_names = TRUE, append = FALSE)
-
+  
   # Summary of the subsampling iterations
   if (iteration.subsample > 1) {
     res.pop <- res %>%
