@@ -398,6 +398,11 @@ assignment_mixture <- function(data,
   if (missing(data)) stop("Input file missing")
   if (missing(mixture)) stop("mixture file missing")
   if (missing(assignment.analysis)) stop("assignment.analysis argument missing")
+  if (assignment.analysis == "gsi_sim" & !gsi_sim_exists()){
+    stop("Can't find the gsi_sim executable where it was expected at ", gsi_sim_binary_path(), ".  
+          If you have internet access, you can install it
+          from within R by invoking the function \"install_gsi_sim(fromSource = TRUE)\"")
+  }
   if (missing(whitelist.markers)) whitelist.markers <- NULL # no Whitelist
   if (missing(monomorphic.out)) monomorphic.out <- TRUE # remove monomorphic
   if (missing(blacklist.genotype)) blacklist.genotype <- NULL # no genotype to erase
@@ -433,7 +438,6 @@ assignment_mixture <- function(data,
   if (missing(verbose)) verbose <- FALSE
   if (missing(parallel.core) | is.null(parallel.core)) parallel.core <- detectCores()-1
   if (missing(folder)) folder <- NULL
-  
   # File type detection ********************************************************
   data.type <- readChar(con = data, nchars = 16L, useBytes = TRUE)
   
@@ -1456,8 +1460,8 @@ package and update your whitelist")
     
     # only gsi_sim
     if (assignment.analysis == "gsi_sim"){
-    gsi.prep <- gsi.prep %>% 
-      arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES)
+      gsi.prep <- gsi.prep %>% 
+        arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES)
     }
     
     # Imputations **************************************************************
@@ -1677,9 +1681,9 @@ package and update your whitelist")
             bind_rows(input.imp, 
                       input.prep.mixture %>% 
                         select(-POP_ID)# remove the column POP_ID
-                      )
+            )
           )
-
+          
           if (impute.mixture == TRUE) {
             # impute globally the mixture samples
             message("Imputations computed globally for mixture samples")
@@ -1772,7 +1776,7 @@ package and update your whitelist")
                   mutate(GT = stri_replace_na(GT, replacement = max(GT, na.rm = TRUE))) %>% 
                   ungroup()
               )
-                  
+              
               input.imp <- suppressWarnings(
                 left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                   arrange(POP_ID, INDIVIDUALS, MARKERS) %>% 
@@ -1827,14 +1831,14 @@ package and update your whitelist")
                   mutate(GT = stri_replace_na(GT, replacement = max(GT, na.rm = TRUE))) %>%
                   ungroup()
               )
-
+              
               input.imp <- suppressWarnings(
                 left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
                   arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES) %>% 
                   ungroup()
               )
             }
-
+            
             if (impute.mixture == FALSE) {
               input.imp <- suppressWarnings(
                 left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
@@ -1891,8 +1895,8 @@ package and update your whitelist")
                   arrange(POP_ID, INDIVIDUALS, MARKERS) %>% 
                   ungroup()
               )
-              }
-
+            }
+            
             if (impute.mixture == FALSE) {
               input.imp <- suppressWarnings(
                 left_join(strata.df.impute, input.imp, by = "INDIVIDUALS") %>% 
@@ -2826,7 +2830,7 @@ Progress can be monitored with activity in the folder...")
       # Ranking Fst with training dataset (keep holdout individuals out)
       message("Ranking markers based on Fst with training samples")
       fst.ranked <- fst_WC84(data = input, holdout.samples = holdout.individuals$INDIVIDUALS)
-
+      
       write_tsv(
         x = fst.ranked, 
         path = paste0(directory.subsample, "fst_ranked.tsv"), 
