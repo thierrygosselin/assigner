@@ -2533,7 +2533,8 @@ Progress can be monitored with activity in the folder...")
         assignment.res <- suppressWarnings(
           bind_rows(assignment.res) %>% 
             mutate(SUBSAMPLE = rep(subsample.id, n())) %>% 
-            arrange(POP_ID, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
+            # arrange(POP_ID, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
+            arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
         )        
       }
       
@@ -2973,7 +2974,8 @@ Progress can be monitored with activity in the folder...")
       assignment.res.summary <- suppressWarnings(
         bind_rows(assignment.res)%>% 
           mutate(SUBSAMPLE = rep(subsample.id, n())) %>% 
-          arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
+          # arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
+          arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA)
       )
       
       # assignment results
