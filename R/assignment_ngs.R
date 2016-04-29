@@ -749,7 +749,11 @@ assignment_ngs <- function(data,
       data.table = FALSE
     ) %>% 
       as_data_frame() %>% 
-      tidyr::gather(key = LOCUS, value = GT, -c(INDIVIDUALS, POP_ID))
+      tidyr::gather(key = LOCUS, value = GT, -c(INDIVIDUALS, POP_ID)) %>% 
+      mutate(
+        GT = as.character(GT),
+        GT = stri_pad_left(str= GT, pad = "0", width = 6)
+        )
     
     
     # Filter with whitelist of markers
@@ -2132,7 +2136,6 @@ package and update your whitelist")
     } # End write_gsi function
     
     # Assignment with gsi_sim
-    if (assignment.analysis == "gsi_sim") {
       assignment_analysis <- function(data, select.markers, markers.names, missing.data, i, m, holdout, filename, ...) {
         # data <- gsi.prep #test
         # data <- gsi.prep.imp #test
@@ -2203,7 +2206,7 @@ package and update your whitelist")
               select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA) %>%
               arrange(CURRENT)
           )
-        } else {
+        } else {# with strata.df info
           
           assignment <- suppressWarnings(
             assignment %>%
@@ -2211,9 +2214,6 @@ package and update your whitelist")
               left_join(strata.df, by = "INDIVIDUALS") %>%
               rename(CURRENT = POP_ID) %>% 
               mutate(
-                CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered =TRUE),
-                # CURRENT = factor(CURRENT, levels = pop.levels, labels = pop.labels, ordered = TRUE),
-                CURRENT = droplevels(CURRENT),
                 INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = TRUE),
                 INFERRED = droplevels(INFERRED),
                 SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = TRUE),
@@ -2262,10 +2262,8 @@ package and update your whitelist")
         }
         return(assignment)
       } # End assignment_analysis function
-    }
     
     # Assignment with adegenet
-    if (assignment.analysis == "adegenet") {
       assignment_analysis_adegenet <- function(data, select.markers, markers.names, missing.data, i, m, holdout, ...) {
         # data <- genind.object #test
         # missing.data <- "no.imputation" #test
@@ -2351,8 +2349,7 @@ package and update your whitelist")
         
         return(assignment)
       } # End assignment_analysis_adegenet function
-    } # End assignment_function
-    
+
     # Random method ************************************************************
     if (sampling.method == "random") {
       message("Conducting Assignment analysis with markers selected randomly")
@@ -2535,7 +2532,7 @@ Progress can be monitored with activity in the folder...")
             mutate(SUBSAMPLE = rep(subsample.id, n())) %>% 
             # arrange(POP_ID, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
             arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
-        )        
+        )
       }
       
       # Write the tables to directory
