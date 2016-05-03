@@ -459,6 +459,7 @@ assignment_ngs <- function(data,
     }
   }
   
+  
   # Create a folder based on filename to save the output files *****************
   if (is.null(folder)) {
     # Get date and time to have unique filenaming
@@ -613,7 +614,7 @@ assignment_ngs <- function(data,
       data.table = FALSE)
     
     # remove "_" in individual name and replace with "-"
-    strata.df$INDIVIDUALS <- stri_replace_all_fixed(str = strata.df$INDIVIDUALS, pattern = "_", replacement = "-", vectorize_all = TRUE)
+    strata.df$INDIVIDUALS <- stri_replace_all_fixed(str = strata.df$INDIVIDUALS, pattern = c("_", ":"), replacement = c("-", "-"), vectorize_all = TRUE)
     
     tped.header.prep <- strata.df %>% 
       select(INDIVIDUALS) %>%
@@ -676,7 +677,12 @@ assignment_ngs <- function(data,
     # Using the argument strata if provided to replace the current one
     if (!is.null(strata)) {
       strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-        rename(POP_ID = STRATA)
+        rename(POP_ID = STRATA) %>% 
+        mutate(INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
+                                                    pattern = c("_", ":"), 
+                                                    replacement = c("-", "-"),
+                                                    vectorize_all = TRUE)
+        )
     }
     
     # Make tidy
@@ -686,7 +692,7 @@ assignment_ngs <- function(data,
       mutate(INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS_ALLELES, pattern = c("_A1", "_A2"), replacement = "", vectorize_all = FALSE)) %>% 
       left_join(strata.df, by = "INDIVIDUALS") %>% 
       mutate(
-        POP_ID = factor(POP_ID, levels = pop.levels, ordered =TRUE),
+        POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered = TRUE),
         GT = stri_pad_left(str = GT, width = 3, pad = "0")
       )
     
@@ -752,7 +758,11 @@ assignment_ngs <- function(data,
       tidyr::gather(key = LOCUS, value = GT, -c(INDIVIDUALS, POP_ID)) %>% 
       mutate(
         GT = as.character(GT),
-        GT = stri_pad_left(str= GT, pad = "0", width = 6)
+        GT = stri_pad_left(str= GT, pad = "0", width = 6),
+        INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
+                                                    pattern = c("_", ":"), 
+                                                    replacement = c("-", "-"),
+                                                    vectorize_all = TRUE)
         )
     
     
@@ -781,7 +791,13 @@ assignment_ngs <- function(data,
         distinct(INDIVIDUALS)
     } else {
       strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-        rename(POP_ID = STRATA)
+        rename(POP_ID = STRATA) %>% 
+        mutate(
+          INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
+                                               pattern = c("_", ":"), 
+                                               replacement = c("-", "-"),
+                                               vectorize_all = TRUE)
+        )
       
       input <- input %>%
         mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
@@ -812,7 +828,13 @@ assignment_ngs <- function(data,
       select(-Cnt) %>% 
       rename(LOCUS = `Catalog ID`) %>%
       tidyr::gather(INDIVIDUALS, GT, -LOCUS) %>% 
-      mutate(LOCUS = as.character(LOCUS))
+      mutate(
+        LOCUS = as.character(LOCUS),
+        INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
+                                             pattern = c("_", ":"), 
+                                             replacement = c("-", "-"),
+                                             vectorize_all = TRUE)
+      )
     
     # Filter with whitelist of markers
     if (!is.null(whitelist.markers)) {
@@ -836,7 +858,13 @@ assignment_ngs <- function(data,
         )
     } else { # Make population ready with the strata provided
       strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-        rename(POP_ID = STRATA)
+        rename(POP_ID = STRATA) %>% 
+        mutate(
+          INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
+                                               pattern = c("_", ":"), 
+                                               replacement = c("-", "-"),
+                                               vectorize_all = TRUE)
+        )
       
       input <- input %>%
         mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
@@ -2552,7 +2580,7 @@ Progress can be monitored with activity in the folder...")
           }
         }
         write_tsv(x = assignment.res, path = paste0(directory.subsample,filename.assignment.res), col_names = TRUE, append = FALSE)
-      } else {
+      } else { # with adegenet
         if (is.null(subsample)) {
           if (imputation.method == FALSE) {
             filename.assignment.res <- stri_join("assignment", sampling.method, "no.imputation", "results", "iterations", "tsv", sep = ".")
@@ -3038,7 +3066,8 @@ Progress can be monitored with activity in the folder...")
         # thl != 1 or "all"
         # summary stats
         if (assignment.analysis == "adegenet") {
-          assignment.res.summary <- assignment.res.summary %>% 
+          assignment.res.summary.prep <- assignment.res.summary %>% 
+            # assignment.res.summary <- assignment.res.summary %>% 
             group_by(CURRENT, INFERRED, ITERATIONS, MARKER_NUMBER, MISSING_DATA, METHOD) %>% 
             tally %>% 
             group_by(CURRENT) %>% 
@@ -3049,7 +3078,8 @@ Progress can be monitored with activity in the folder...")
             select(-n, -TOTAL)
         }
         
-        assignment.res.summary.prep <- assignment.res.summary %>% 
+        if (assignment.analysis == "gsi_sim") {
+          assignment.res.summary.prep <- assignment.res.summary %>% 
           group_by(CURRENT, MARKER_NUMBER, METHOD, MISSING_DATA, ITERATIONS) %>%
           summarise(
             n = length(CURRENT[as.character(CURRENT) == as.character(INFERRED)]),
@@ -3058,6 +3088,7 @@ Progress can be monitored with activity in the folder...")
           ungroup() %>% 
           mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>% 
           select(-n, -TOTAL)
+        }
         
         if (is.null(subsample)) {
           if (imputation.method == FALSE) {
@@ -3294,4 +3325,3 @@ Progress can be monitored with activity in the folder...")
   res.list <- list(assignment = res, plot.assignment = plot.assignment)
   return(res.list)
 } # End assignment_ngs
-
