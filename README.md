@@ -141,6 +141,11 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 ## New
 
+**v.0.2.5**
+* cleaner code for strata section
+* bug fix restricted to `assignment_ngs` + `assignment.analysis = "adegenet"` + `sampling.method = "ranked"`.
+A line at the beginning of a gsi_sim code section was deleted makig the assignment with adegenet go through that chunk of code and causing 100% assignment! if (assignment.analysis = "gsi_sim") {code} prevent this problem...
+
 **v.0.2.4**
 * bug fixed using adegenet that was introduced in v.0.2.3
 * introducing a new function `import_subsamples_fst` to import the fst ranking 
