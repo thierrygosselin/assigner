@@ -614,7 +614,7 @@ assignment_ngs <- function(data,
       data.table = FALSE)
     
     # remove "_" in individual name and replace with "-"
-    strata.df$INDIVIDUALS <- stri_replace_all_fixed(str = strata.df$INDIVIDUALS, pattern = c("_", ":"), replacement = c("-", "-"), vectorize_all = TRUE)
+    strata.df$INDIVIDUALS <- stri_replace_all_fixed(str = strata.df$INDIVIDUALS, pattern = c("_", ":"), replacement = c("-", "-"), vectorize_all = FALSE)
     
     tped.header.prep <- strata.df %>% 
       select(INDIVIDUALS) %>%
@@ -681,7 +681,7 @@ assignment_ngs <- function(data,
         mutate(INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
                                                     pattern = c("_", ":"), 
                                                     replacement = c("-", "-"),
-                                                    vectorize_all = TRUE)
+                                                    vectorize_all = FALSE)
         )
     }
     
@@ -762,7 +762,7 @@ assignment_ngs <- function(data,
         INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
                                                     pattern = c("_", ":"), 
                                                     replacement = c("-", "-"),
-                                                    vectorize_all = TRUE)
+                                                    vectorize_all = FALSE)
         )
     
     
@@ -796,7 +796,7 @@ assignment_ngs <- function(data,
           INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
                                                pattern = c("_", ":"), 
                                                replacement = c("-", "-"),
-                                               vectorize_all = TRUE)
+                                               vectorize_all = FALSE)
         )
       
       input <- input %>%
@@ -833,7 +833,7 @@ assignment_ngs <- function(data,
         INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
                                              pattern = c("_", ":"), 
                                              replacement = c("-", "-"),
-                                             vectorize_all = TRUE)
+                                             vectorize_all = FALSE)
       )
     
     # Filter with whitelist of markers
@@ -863,7 +863,7 @@ assignment_ngs <- function(data,
           INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
                                                pattern = c("_", ":"), 
                                                replacement = c("-", "-"),
-                                               vectorize_all = TRUE)
+                                               vectorize_all = FALSE)
         )
       
       input <- input %>%
