@@ -71,7 +71,8 @@ library("devtools")
 install_url(url = "http://www.ccs.miami.edu/~hishwaran/rfsrc/randomForestSRC_2.0.7.tgz")
 ```
 
-**Note for Windows users**
+**Note for Windows users**:
+
 **assigner** is currently not tested with PC, sorry. 
 I currently don't have the time to do PC bioinformatics troubleshooting.
 
