@@ -342,6 +342,15 @@ Purcell S, Neale B, Todd-Brown K, Thomas L, Ferreira MAR,
 Bender D, et al. 
 PLINK: a tool set for whole-genome association and population-based linkage 
 analyses. 
-American Journal of Human Genetics. 2007; 81: 559–575. doi:10.1086/519795
+American Journal of Human Genetics. 2007: 81: 559–575. doi:10.1086/519795
+
+Jombart T, Devillard S, Balloux F. 
+Discriminant analysis of principal components: a new method for the analysis 
+of genetically structured populations. 
+BMC Genet. 2010:11: 94. doi:10.1186/1471-2156-11-94
+
+Jombart T, Ahmed I. adegenet 1.3-1: new tools for the analysis 
+of genome-wide SNP data. 
+Bioinformatics. 2011:27: 3070–3071. doi:10.1093/bioinformatics/btr521
 }
 

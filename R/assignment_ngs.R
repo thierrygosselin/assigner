@@ -314,7 +314,14 @@
 #' Bender D, et al. 
 #' PLINK: a tool set for whole-genome association and population-based linkage 
 #' analyses. 
-#' American Journal of Human Genetics. 2007; 81: 559–575. doi:10.1086/519795
+#' American Journal of Human Genetics. 2007: 81: 559–575. doi:10.1086/519795
+#' @references Jombart T, Devillard S, Balloux F. 
+#' Discriminant analysis of principal components: a new method for the analysis 
+#' of genetically structured populations. 
+#' BMC Genet. 2010:11: 94. doi:10.1186/1471-2156-11-94
+#' @references Jombart T, Ahmed I. adegenet 1.3-1: new tools for the analysis 
+#' of genome-wide SNP data. 
+#' Bioinformatics. 2011:27: 3070–3071. doi:10.1093/bioinformatics/btr521
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
 # required to pass the R CMD check and have 'no visible binding for global variable'
@@ -760,10 +767,10 @@ assignment_ngs <- function(data,
         GT = as.character(GT),
         GT = stri_pad_left(str= GT, pad = "0", width = 6),
         INDIVIDUALS = stri_replace_all_fixed(str = INDIVIDUALS, 
-                                                    pattern = c("_", ":"), 
-                                                    replacement = c("-", "-"),
-                                                    vectorize_all = FALSE)
-        )
+                                             pattern = c("_", ":"), 
+                                             replacement = c("-", "-"),
+                                             vectorize_all = FALSE)
+      )
     
     
     # Filter with whitelist of markers
@@ -1347,6 +1354,12 @@ package and update your whitelist")
         mutate(COUNT = replace(COUNT, which(COUNT == "NA"), NA)) %>% 
         group_by(POP_ID, INDIVIDUALS) %>%
         tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>%
+        ungroup () %>% 
+        mutate(
+          INDIVIDUALS = as.character(INDIVIDUALS),
+          POP_ID = as.character(POP_ID), # required to be able to do xvalDapc with adegenet.
+          POP_ID = factor(POP_ID) # xvalDapc does accept pop as ordered factor
+        ) %>% 
         arrange(POP_ID, INDIVIDUALS)
     }
     
@@ -1443,7 +1456,12 @@ package and update your whitelist")
             mutate(COUNT = replace(COUNT, which(COUNT == "erase"), NA)) %>% 
             arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES) %>% 
             tidyr::unite(MARKERS_ALLELES, MARKERS, ALLELES, sep = ".", remove = TRUE) %>%
-            tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>% 
+            tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>%
+            mutate(
+              INDIVIDUALS = as.character(INDIVIDUALS),
+              POP_ID = as.character(POP_ID), # required to be able to do xvalDapc with adegenet.
+              POP_ID = factor(POP_ID) # xvalDapc does accept pop as ordered factor
+            ) %>% 
             arrange(POP_ID, INDIVIDUALS)
         )
       }
@@ -1455,7 +1473,7 @@ package and update your whitelist")
     # only adegenet
     if (assignment.analysis == "adegenet") {
       # genind arguments common to all data.type
-      ind <- as.character(genind.prep$INDIVIDUALS)
+      ind <- genind.prep$INDIVIDUALS
       pop <- genind.prep$POP_ID
       genind.df <- genind.prep %>% ungroup() %>% 
         select(-c(INDIVIDUALS, POP_ID))
@@ -1793,6 +1811,12 @@ package and update your whitelist")
               tidyr::unite(MARKERS_ALLELES, MARKERS, ALLELES, sep = ".", remove = TRUE) %>%
               group_by(POP_ID, INDIVIDUALS) %>%
               tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>%
+              ungroup () %>% 
+              mutate(
+                INDIVIDUALS = as.character(INDIVIDUALS),
+                POP_ID = as.character(POP_ID), # required to be able to do xvalDapc with adegenet.
+                POP_ID = factor(POP_ID) # xvalDapc does accept pop as ordered factor
+              ) %>% 
               arrange(POP_ID, INDIVIDUALS)
           }
           if (data.type == "df.file" | data.type == "plink.file" | data.type == "haplo.file") {
@@ -1829,7 +1853,13 @@ package and update your whitelist")
                 ungroup() %>%
                 arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES) %>% 
                 tidyr::unite(MARKERS_ALLELES, MARKERS, ALLELES, sep = ".", remove = TRUE) %>%
-                tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>% 
+                tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>%
+                ungroup () %>% 
+                mutate(
+                  INDIVIDUALS = as.character(INDIVIDUALS),
+                  POP_ID = as.character(POP_ID), # required to be able to do xvalDapc with adegenet.
+                  POP_ID = factor(POP_ID) # xvalDapc does accept pop as ordered factor
+                ) %>% 
                 arrange(POP_ID, INDIVIDUALS)
             )
           }
@@ -1847,6 +1877,12 @@ package and update your whitelist")
               tidyr::unite(MARKERS_ALLELES, MARKERS, ALLELES, sep = ".", remove = TRUE) %>%
               group_by(POP_ID, INDIVIDUALS) %>%
               tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>%
+              ungroup () %>% 
+              mutate(
+                INDIVIDUALS = as.character(INDIVIDUALS),
+                POP_ID = as.character(POP_ID), # required to be able to do xvalDapc with adegenet.
+                POP_ID = factor(POP_ID) # xvalDapc does accept pop as ordered factor
+              ) %>% 
               arrange(POP_ID, INDIVIDUALS)
           }
           if (data.type == "df.file" | data.type == "plink.file" | data.type == "haplo.file") {
@@ -1879,6 +1915,11 @@ package and update your whitelist")
                 arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES) %>% 
                 tidyr::unite(MARKERS_ALLELES, MARKERS, ALLELES, sep = ".", remove = TRUE) %>%
                 tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>% 
+                mutate(
+                  INDIVIDUALS = as.character(INDIVIDUALS),
+                  POP_ID = as.character(POP_ID), # required to be able to do xvalDapc with adegenet.
+                  POP_ID = factor(POP_ID) # xvalDapc does accept pop as ordered factor
+                ) %>% 
                 arrange(POP_ID, INDIVIDUALS)
             )
           }
@@ -1886,7 +1927,7 @@ package and update your whitelist")
         
         # genind arguments common to all data.type
         genind.prep.imp <- genind.prep.imp %>% arrange(POP_ID, INDIVIDUALS)
-        ind <- as.character(genind.prep.imp$INDIVIDUALS)
+        ind <- genind.prep.imp$INDIVIDUALS
         pop <- genind.prep.imp$POP_ID
         genind.df <- genind.prep.imp %>%
           ungroup() %>% 
@@ -2164,220 +2205,220 @@ package and update your whitelist")
     } # End write_gsi function
     
     # Assignment with gsi_sim
-      assignment_analysis <- function(data, select.markers, markers.names, missing.data, i, m, holdout, filename, ...) {
-        # data <- gsi.prep #test
-        # data <- gsi.prep.imp #test
-        # data <- genind.prep #test
-        # missing.data <- "no.imputation" #test
-        data.select <- suppressWarnings(
-          data %>%
-            semi_join(select.markers, by = "MARKERS") %>%
-            arrange(MARKERS) %>%  # make tidy
-            tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
-            arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES) %>%
-            tidyr::spread(data = ., key = MARKERS_ALLELES, value = GT) %>%
-            arrange(POP_ID, INDIVIDUALS)
-        )
-        
-        # Write gsi_sim input file to directory
-        input.gsi <- write_gsi(data = data.select, markers.names = markers.names, filename = filename, i = i, m = m)
-        
-        # Run gsi_sim ------------------------------------------------------------
-        input.gsi <- stri_join(directory.subsample, input.gsi)
-        output.gsi <- stri_replace_all_fixed(input.gsi, pattern = "txt", replacement = "output.txt")
-        setwd(directory.subsample)
-        system(paste(gsi_sim_binary(), "-b", input.gsi, "--self-assign > ", output.gsi))
-        
-        # Option remove the input file from directory to save space
-        if (keep.gsi.files == FALSE) file.remove(input.gsi)
-        
-        # Get Assignment results -------------------------------------------------
-        # Keep track of the holdout individual
-        if (sampling.method == "ranked") {
-          if (thl == "all") {
-            holdout.id <- NULL
-          } else {
-            holdout.id <- holdout$INDIVIDUALS
-          }
+    assignment_analysis <- function(data, select.markers, markers.names, missing.data, i, m, holdout, filename, ...) {
+      # data <- gsi.prep #test
+      # data <- gsi.prep.imp #test
+      # data <- genind.prep #test
+      # missing.data <- "no.imputation" #test
+      data.select <- suppressWarnings(
+        data %>%
+          semi_join(select.markers, by = "MARKERS") %>%
+          arrange(MARKERS) %>%  # make tidy
+          tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
+          arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES) %>%
+          tidyr::spread(data = ., key = MARKERS_ALLELES, value = GT) %>%
+          arrange(POP_ID, INDIVIDUALS)
+      )
+      
+      # Write gsi_sim input file to directory
+      input.gsi <- write_gsi(data = data.select, markers.names = markers.names, filename = filename, i = i, m = m)
+      
+      # Run gsi_sim ------------------------------------------------------------
+      input.gsi <- stri_join(directory.subsample, input.gsi)
+      output.gsi <- stri_replace_all_fixed(input.gsi, pattern = "txt", replacement = "output.txt")
+      setwd(directory.subsample)
+      system(paste(gsi_sim_binary(), "-b", input.gsi, "--self-assign > ", output.gsi))
+      
+      # Option remove the input file from directory to save space
+      if (keep.gsi.files == FALSE) file.remove(input.gsi)
+      
+      # Get Assignment results -------------------------------------------------
+      # Keep track of the holdout individual
+      if (sampling.method == "ranked") {
+        if (thl == "all") {
+          holdout.id <- NULL
+        } else {
+          holdout.id <- holdout$INDIVIDUALS
         }
-        
-        # Number of markers
-        n.locus <- m
+      }
+      
+      # Number of markers
+      n.locus <- m
+      
+      assignment <- suppressWarnings(
+        read_delim(output.gsi, col_names = "ID", delim = "\t") %>%
+          tidyr::separate(ID, c("KEEPER", "ASSIGN"), sep = ":/", extra = "warn") %>%
+          filter(KEEPER == "SELF_ASSIGN_A_LA_GC_CSV") %>%
+          tidyr::separate(ASSIGN, c("INDIVIDUALS", "ASSIGN"), sep = ";", extra = "merge") %>%
+          tidyr::separate(ASSIGN, c("INFERRED", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
+          tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
+          tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
+          tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss")
+      )
+      
+      if (!is.null(pop.id.start)){
+        assignment <- suppressWarnings(
+          assignment %>%
+            mutate(
+              CURRENT = factor(stri_sub(INDIVIDUALS, pop.id.start, pop.id.end), levels = pop.levels, labels = pop.labels, ordered = T),
+              CURRENT = droplevels(CURRENT),
+              INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = T),
+              INFERRED = droplevels(INFERRED),
+              SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = T),
+              SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
+              SCORE = round(SCORE, 2),
+              SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
+              MARKER_NUMBER = as.numeric(rep(n.locus, n())),
+              METHOD = rep(sampling.method, n()),
+              MISSING_DATA = rep(missing.data, n())
+            ) %>%
+            select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA) %>%
+            arrange(CURRENT)
+        )
+      } else {# with strata.df info
         
         assignment <- suppressWarnings(
-          read_delim(output.gsi, col_names = "ID", delim = "\t") %>%
-            tidyr::separate(ID, c("KEEPER", "ASSIGN"), sep = ":/", extra = "warn") %>%
-            filter(KEEPER == "SELF_ASSIGN_A_LA_GC_CSV") %>%
-            tidyr::separate(ASSIGN, c("INDIVIDUALS", "ASSIGN"), sep = ";", extra = "merge") %>%
-            tidyr::separate(ASSIGN, c("INFERRED", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
-            tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
-            tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
-            tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss")
-        )
-        
-        if (!is.null(pop.id.start)){
-          assignment <- suppressWarnings(
-            assignment %>%
-              mutate(
-                CURRENT = factor(stri_sub(INDIVIDUALS, pop.id.start, pop.id.end), levels = pop.levels, labels = pop.labels, ordered = T),
-                CURRENT = droplevels(CURRENT),
-                INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = T),
-                INFERRED = droplevels(INFERRED),
-                SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = T),
-                SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
-                SCORE = round(SCORE, 2),
-                SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
-                MARKER_NUMBER = as.numeric(rep(n.locus, n())),
-                METHOD = rep(sampling.method, n()),
-                MISSING_DATA = rep(missing.data, n())
-              ) %>%
-              select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA) %>%
-              arrange(CURRENT)
-          )
-        } else {# with strata.df info
-          
-          assignment <- suppressWarnings(
-            assignment %>%
-              mutate(INDIVIDUALS = as.character(INDIVIDUALS)) %>% 
-              left_join(strata.df, by = "INDIVIDUALS") %>%
-              rename(CURRENT = POP_ID) %>% 
-              mutate(
-                INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = TRUE),
-                INFERRED = droplevels(INFERRED),
-                SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = TRUE),
-                SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
-                SCORE = round(SCORE, 2),
-                SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
-                MARKER_NUMBER = as.numeric(rep(n.locus, n())),
-                METHOD = rep(sampling.method, n()),
-                MISSING_DATA = rep(missing.data, n())
-              ) %>%
-              select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA) %>%
-              arrange(CURRENT)
-          )
-        }
-        if (sampling.method == "random") {
-          assignment <- assignment %>% 
-            mutate(ITERATIONS = rep(i, n())) %>% 
-            select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA, ITERATIONS) %>%
-            arrange(CURRENT)
-        }
-        if (sampling.method == "ranked") {
-          if (thl == "all") {
-            assignment <- assignment
-          } else {
-            assignment <- filter(.data = assignment, INDIVIDUALS %in% holdout.id)
-          }
-        }
-        
-        # Option remove the output file from directory to save space
-        if (keep.gsi.files == FALSE) file.remove(output.gsi)
-        
-        # saving preliminary results
-        if (sampling.method == "ranked") {
-          
-          assignment <- assignment %>%
-            mutate(METHOD = rep(stri_join("ranked_thl_", thl) , n()))
-          
-          if (thl != 1 & thl != "all") {
-            assignment <- assignment %>%
-              mutate(
-                CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
-                CURRENT = droplevels(CURRENT),
-                ITERATIONS = rep(i, n())
-              )
-          }
-        }
-        return(assignment)
-      } # End assignment_analysis function
-    
-    # Assignment with adegenet
-      assignment_analysis_adegenet <- function(data, select.markers, markers.names, missing.data, i, m, holdout, ...) {
-        # data <- genind.object #test
-        # missing.data <- "no.imputation" #test
-        data.select <- data[loc = select.markers$MARKERS]
-        
-        # Run adegenet *********************************************************
-        pop.data <- data.select@pop
-        pop.data <- droplevels(pop.data)
-        
-        
-        if (sampling.method == "random") {
-          # Alpha-Score DAPC
-          # When all the individuals are accounted for in the model construction
-          dapc.best.optim.a.score <- optim.a.score(dapc(data.select, n.da = length(levels(pop.data)), n.pca = round((length(indNames(data.select))/3)-1, 0)), pop = pop.data, plot = FALSE)$best
-          message(stri_paste("a-score optimisation for iteration:", i, sep = " ")) # message not working in parallel...
-          
-          # DAPC with all the data
-          dapc.all <- dapc(data.select, n.da = length(levels(pop.data)), n.pca = dapc.best.optim.a.score, pop = pop.data)
-          message(stri_paste("DAPC iteration:", i, sep = " "))
-          message(stri_paste("DAPC marker group:", m, sep = " "))
-        }
-        
-        if (sampling.method == "ranked") {
-          
-          # Alpha-Score DAPC training data
-          training.data <- data.select[!indNames(data.select) %in% holdout$INDIVIDUALS] # training dataset
-          pop.training <- training.data@pop
-          pop.training <- droplevels(pop.training)
-          
-          dapc.best.optim.a.score <- optim.a.score(dapc(training.data, n.da = length(levels(pop.training)), n.pca = round(((length(indNames(training.data))/3)-1), 0)), pop = pop.training, plot = FALSE)$best
-          message(stri_paste("a-score optimisation for iteration:", i, sep = " "))
-          
-          dapc.training <- dapc(training.data, n.da = length(levels(pop.training)), n.pca = dapc.best.optim.a.score, pop = pop.training)
-          message(stri_paste("DAPC of training data set for iteration:", i, sep = " "))
-          
-          # DAPC holdout individuals
-          holdout.data <- data.select[indNames(data.select) %in% holdout$INDIVIDUALS] # holdout dataset
-          pop.holdout <- holdout.data@pop
-          pop.holdout <- droplevels(pop.holdout)
-          assignment.levels <- levels(pop.holdout) # for figure
-          rev.assignment.levels <- rev(assignment.levels)  # for figure 
-          
-          dapc.predict.holdout <- predict.dapc(dapc.training, newdata = holdout.data)
-          message(stri_paste("Assigning holdout data for iteration:", i, sep = " "))
-        }
-        
-        
-        # Get Assignment results -------------------------------------------------
-        # Keep track of the holdout individual
-        if (sampling.method == "ranked") {
-          if (thl == "all") {
-            holdout.id <- NULL
-          } else {
-            holdout.id <- holdout$INDIVIDUALS
-          }
-        }
-        
-        # Number of markers
-        n.locus <- m
-        
-        if (sampling.method == "random") {
-          assignment <- data_frame(ASSIGNMENT_PERC = summary(dapc.all)$assign.per.pop*100) %>% 
-            bind_cols(data_frame(POP_ID = levels(pop.data))) %>%
-            mutate(ASSIGNMENT_PERC = round(ASSIGNMENT_PERC, 2)) %>% 
-            select(POP_ID, ASSIGNMENT_PERC)
-        }        
-        if (sampling.method == "ranked") {
-          assignment <- data.frame(INDIVIDUALS = indNames(holdout.data), POP_ID = pop.holdout, ASSIGN = dapc.predict.holdout$assign, dapc.predict.holdout$posterior) %>% 
-            rename(CURRENT = POP_ID, INFERRED = ASSIGN) %>%
+          assignment %>%
+            mutate(INDIVIDUALS = as.character(INDIVIDUALS)) %>% 
+            left_join(strata.df, by = "INDIVIDUALS") %>%
+            rename(CURRENT = POP_ID) %>% 
             mutate(
-              CURRENT = factor(CURRENT, levels = rev.assignment.levels, ordered = TRUE),
-              INFERRED = factor(INFERRED, levels = assignment.levels, ordered = TRUE)
+              INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = TRUE),
+              INFERRED = droplevels(INFERRED),
+              SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = TRUE),
+              SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
+              SCORE = round(SCORE, 2),
+              SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
+              MARKER_NUMBER = as.numeric(rep(n.locus, n())),
+              METHOD = rep(sampling.method, n()),
+              MISSING_DATA = rep(missing.data, n())
+            ) %>%
+            select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA) %>%
+            arrange(CURRENT)
+        )
+      }
+      if (sampling.method == "random") {
+        assignment <- assignment %>% 
+          mutate(ITERATIONS = rep(i, n())) %>% 
+          select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA, ITERATIONS) %>%
+          arrange(CURRENT)
+      }
+      if (sampling.method == "ranked") {
+        if (thl == "all") {
+          assignment <- assignment
+        } else {
+          assignment <- filter(.data = assignment, INDIVIDUALS %in% holdout.id)
+        }
+      }
+      
+      # Option remove the output file from directory to save space
+      if (keep.gsi.files == FALSE) file.remove(output.gsi)
+      
+      # saving preliminary results
+      if (sampling.method == "ranked") {
+        
+        assignment <- assignment %>%
+          mutate(METHOD = rep(stri_join("ranked_thl_", thl) , n()))
+        
+        if (thl != 1 & thl != "all") {
+          assignment <- assignment %>%
+            mutate(
+              CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
+              CURRENT = droplevels(CURRENT),
+              ITERATIONS = rep(i, n())
             )
         }
+      }
+      return(assignment)
+    } # End assignment_analysis function
+    
+    # Assignment with adegenet
+    assignment_analysis_adegenet <- function(data, select.markers, markers.names, missing.data, i, m, holdout, ...) {
+      # data <- genind.object #test
+      # missing.data <- "no.imputation" #test
+      data.select <- data[loc = select.markers$MARKERS]
+      
+      # Run adegenet *********************************************************
+      pop.data <- data.select@pop
+      pop.data <- droplevels(pop.data)
+      
+      
+      if (sampling.method == "random") {
+        # Alpha-Score DAPC
+        # When all the individuals are accounted for in the model construction
+        dapc.best.optim.a.score <- optim.a.score(dapc(data.select, n.da = length(levels(pop.data)), n.pca = round((length(indNames(data.select))/3)-1, 0)), pop = pop.data, plot = FALSE)$best
+        message(stri_paste("a-score optimisation for iteration:", i, sep = " ")) # message not working in parallel...
         
-        assignment <- assignment %>% 
+        # DAPC with all the data
+        dapc.all <- dapc(data.select, n.da = length(levels(pop.data)), n.pca = dapc.best.optim.a.score, pop = pop.data)
+        message(stri_paste("DAPC iteration:", i, sep = " "))
+        message(stri_paste("DAPC marker group:", m, sep = " "))
+      }
+      
+      if (sampling.method == "ranked") {
+        
+        # Alpha-Score DAPC training data
+        training.data <- data.select[!indNames(data.select) %in% holdout$INDIVIDUALS] # training dataset
+        pop.training <- training.data@pop
+        pop.training <- droplevels(pop.training)
+        
+        dapc.best.optim.a.score <- optim.a.score(dapc(training.data, n.da = length(levels(pop.training)), n.pca = round(((length(indNames(training.data))/3)-1), 0)), pop = pop.training, plot = FALSE)$best
+        message(stri_paste("a-score optimisation for iteration:", i, sep = " "))
+        
+        dapc.training <- dapc(training.data, n.da = length(levels(pop.training)), n.pca = dapc.best.optim.a.score, pop = pop.training)
+        message(stri_paste("DAPC of training data set for iteration:", i, sep = " "))
+        
+        # DAPC holdout individuals
+        holdout.data <- data.select[indNames(data.select) %in% holdout$INDIVIDUALS] # holdout dataset
+        pop.holdout <- holdout.data@pop
+        pop.holdout <- droplevels(pop.holdout)
+        assignment.levels <- levels(pop.holdout) # for figure
+        rev.assignment.levels <- rev(assignment.levels)  # for figure 
+        
+        dapc.predict.holdout <- predict.dapc(dapc.training, newdata = holdout.data)
+        message(stri_paste("Assigning holdout data for iteration:", i, sep = " "))
+      }
+      
+      
+      # Get Assignment results -------------------------------------------------
+      # Keep track of the holdout individual
+      if (sampling.method == "ranked") {
+        if (thl == "all") {
+          holdout.id <- NULL
+        } else {
+          holdout.id <- holdout$INDIVIDUALS
+        }
+      }
+      
+      # Number of markers
+      n.locus <- m
+      
+      if (sampling.method == "random") {
+        assignment <- data_frame(ASSIGNMENT_PERC = summary(dapc.all)$assign.per.pop*100) %>% 
+          bind_cols(data_frame(POP_ID = levels(pop.data))) %>%
+          mutate(ASSIGNMENT_PERC = round(ASSIGNMENT_PERC, 2)) %>% 
+          select(POP_ID, ASSIGNMENT_PERC)
+      }        
+      if (sampling.method == "ranked") {
+        assignment <- data.frame(INDIVIDUALS = indNames(holdout.data), POP_ID = pop.holdout, ASSIGN = dapc.predict.holdout$assign, dapc.predict.holdout$posterior) %>% 
+          rename(CURRENT = POP_ID, INFERRED = ASSIGN) %>%
           mutate(
-            METHOD = rep(sampling.method, n()),
-            ITERATIONS = rep(i, n()),
-            MARKER_NUMBER = as.numeric(rep(n.locus, n())),
-            MISSING_DATA = rep(missing.data, n())
+            CURRENT = factor(CURRENT, levels = rev.assignment.levels, ordered = TRUE),
+            INFERRED = factor(INFERRED, levels = assignment.levels, ordered = TRUE)
           )
-        
-        return(assignment)
-      } # End assignment_analysis_adegenet function
-
+      }
+      
+      assignment <- assignment %>% 
+        mutate(
+          METHOD = rep(sampling.method, n()),
+          ITERATIONS = rep(i, n()),
+          MARKER_NUMBER = as.numeric(rep(n.locus, n())),
+          MISSING_DATA = rep(missing.data, n())
+        )
+      
+      return(assignment)
+    } # End assignment_analysis_adegenet function
+    
     # Random method ************************************************************
     if (sampling.method == "random") {
       message("Conducting Assignment analysis with markers selected randomly")
@@ -3080,14 +3121,14 @@ Progress can be monitored with activity in the folder...")
         
         if (assignment.analysis == "gsi_sim") {
           assignment.res.summary.prep <- assignment.res.summary %>% 
-          group_by(CURRENT, MARKER_NUMBER, METHOD, MISSING_DATA, ITERATIONS) %>%
-          summarise(
-            n = length(CURRENT[as.character(CURRENT) == as.character(INFERRED)]),
-            TOTAL = length(CURRENT)
-          ) %>%
-          ungroup() %>% 
-          mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>% 
-          select(-n, -TOTAL)
+            group_by(CURRENT, MARKER_NUMBER, METHOD, MISSING_DATA, ITERATIONS) %>%
+            summarise(
+              n = length(CURRENT[as.character(CURRENT) == as.character(INFERRED)]),
+              TOTAL = length(CURRENT)
+            ) %>%
+            ungroup() %>% 
+            mutate(ASSIGNMENT_PERC = round(n/TOTAL*100, 0)) %>% 
+            select(-n, -TOTAL)
         }
         
         if (is.null(subsample)) {
