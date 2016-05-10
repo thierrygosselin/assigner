@@ -6,6 +6,8 @@ restriction-site-associated DNA sequencing (RADseq)) produce huge numbers of mar
 
 **assigner** was tailored to make it easy to conduct assignment analysis using GBS/RAD data within R. Additionally, combining the use of tools like [RStudio] (https://www.rstudio.com) and [GitHub] (https://github.com) will make effortless documenting your workflows and pipelines.
 
+The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*. It's first use in french dates back to XIIIe.
+
 This is the development page of the **assigner** package for the R software.
 
 **Use assigner to:**
@@ -290,4 +292,10 @@ Shriver MD, Smith MW, Jin L et al. (1997) Ethnic-affiliation estimation by use o
 Weir BS, Cockerham CC (1984) Estimating F-Statistics for the Analysis of Population Structure. Evolution, 38, 1358–1370.
 
 Whitlock MC, Lotterhos KE (2015) Reliable Detection of Loci Responsible for Local Adaptation: Inference of a Null Model through Trimming the Distribution of FST*. The American Naturalist, S000–S000.
+
+## Citation:
+To get the citation for **assigner**, inside R:
+```r
+citation("assigner")
+```
 
