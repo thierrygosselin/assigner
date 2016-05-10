@@ -6,9 +6,7 @@ restriction-site-associated DNA sequencing (RADseq)) produce huge numbers of mar
 
 **assigner** was tailored to make it easy to conduct assignment analysis using GBS/RAD data within R. Additionally, combining the use of tools like [RStudio] (https://www.rstudio.com) and [GitHub] (https://github.com) will make effortless documenting your workflows and pipelines.
 
-The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*. It's first use in french dates back to XIIIe.
-
-This is the development page of the **assigner** package for the R software.
+This is the development page of the **assigner** package for the R software. The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*. It's first use in french dates back to XIIIe.
 
 **Use assigner to:**
 
