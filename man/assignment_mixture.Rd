@@ -2,8 +2,8 @@
 % Please edit documentation in R/assignment_mixture.R
 \name{assignment_mixture}
 \alias{assignment_mixture}
-\title{Mixture/Baseline assignment analysis of next-generation sequencing data (GBS/RADseq, 
-SNP chip, etc) using gsi_sim and adegenet.}
+\title{Mixture/Baseline assignment analysis of massive parallel sequencing data (GBS/RADseq, 
+SNP chip, etc) using \code{gsi_sim} and \code{\link[adegenet]{adegenet}}}
 \arguments{
 \item{data}{Options include the VCF (1) or an haplotype files (2) created in STACKS 
 (\code{data = "batch_1.vcf"} and \code{data = "batch_1.haplotypes.tsv"}, 
@@ -354,5 +354,8 @@ Bender D, et al.
 PLINK: a tool set for whole-genome association and population-based linkage 
 analyses. 
 American Journal of Human Genetics. 2007; 81: 559–575. doi:10.1086/519795
+}
+\seealso{
+\code{gsi_sim} development page is available here: \url{https://github.com/eriqande/gsi_sim}
 }
 
