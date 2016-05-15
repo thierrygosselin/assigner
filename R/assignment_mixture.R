@@ -2161,7 +2161,7 @@ package and update your whitelist")
                                                     replacement = "_baseline.txt")
         
         # save input fileto directory
-        baseline.input <- write_gsi_sim(data = baseline.data, markers.names = markers.names, directory.subsample = directory.subsample, filename = baseline.filename, i = i, m = m)
+        baseline.input <- assigner::write_gsi_sim(data = baseline.data, markers.names = markers.names, directory.subsample = directory.subsample, filename = baseline.filename, i = i, m = m)
         
         # Mixture
         mixture.data <- suppressWarnings(
@@ -2176,7 +2176,7 @@ package and update your whitelist")
                                                    replacement = "_mixture.txt")
         
         # save input fileto directory
-        mixture.input <- write_gsi_sim(data = mixture.data, markers.names = markers.names, directory.subsample = directory.subsample, filename = mixture.filename, i = i, m = m)
+        mixture.input <- assigner::write_gsi_sim(data = mixture.data, markers.names = markers.names, directory.subsample = directory.subsample, filename = mixture.filename, i = i, m = m)
         
         # Run gsi_sim ------------------------------------------------------------
         baseline.input.gsi <- stri_join(directory.subsample, baseline.input)
