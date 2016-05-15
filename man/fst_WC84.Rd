@@ -53,7 +53,7 @@ Default: \code{messages = NULL}.}
 }
 \value{
 With pairwise comparison computed, the function returns a list with 
-9 objects: 
+10 objects: 
 \code{$sigma.loc}: the variance components 
 per locus (\code{lsiga}: among populations
 \code{lsigb}: among individuals within populations
@@ -64,7 +64,8 @@ per locus (\code{lsiga}: among populations
 \code{$fis.markers}: the fis by markers,
 \code{$fis.overall}: the mean fis overall markers,
 \code{$pairwise.fst}: the pairwise fst in long format in a data frame,
-\code{$pairwise.fst.matrix}: the pairwise fst in a upper triangle matrix.
+\code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix.
+\code{$pairwise.fst.full.matrix}: the full pairwise fst matrix (duplicated upper and lower triangle).
 \code{$pairwise.fst.ci.matrix}: the pairwise fst in the upper triangle 
 matrix and the ci in the lower triangle matrix.
 }

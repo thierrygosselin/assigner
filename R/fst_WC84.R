@@ -58,7 +58,7 @@
 #' @param ... other parameters passed to the function.
 
 #' @return With pairwise comparison computed, the function returns a list with 
-#' 9 objects: 
+#' 10 objects: 
 #' \code{$sigma.loc}: the variance components 
 #' per locus (\code{lsiga}: among populations
 #' \code{lsigb}: among individuals within populations
@@ -69,7 +69,8 @@
 #' \code{$fis.markers}: the fis by markers,
 #' \code{$fis.overall}: the mean fis overall markers,
 #' \code{$pairwise.fst}: the pairwise fst in long format in a data frame,
-#' \code{$pairwise.fst.matrix}: the pairwise fst in a upper triangle matrix.
+#' \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix.
+#' \code{$pairwise.fst.full.matrix}: the full pairwise fst matrix (duplicated upper and lower triangle).
 #' \code{$pairwise.fst.ci.matrix}: the pairwise fst in the upper triangle 
 #' matrix and the ci in the lower triangle matrix.
 #' @details Details for the sep argument:
@@ -524,7 +525,7 @@ fst_WC84 <- function(data,
         df.select <- data_frame(POP1 = pop.select[1], 
                                 POP2 = pop.select[2], 
                                 FST = fst.select$fst.overall
-                                )
+        )
       }
       fst.select <- NULL
       return(df.select)
@@ -573,7 +574,17 @@ fst_WC84 <- function(data,
       # merge upper and lower matrix
       upper.mat[lower.tri(upper.mat)] <- lower.mat[lower.tri(lower.mat)] 
       # rename, data frame, put rownames in column
-      pairwise.fst.ci.matrix <- data.frame(upper.mat) %>% add_rownames("POP")  
+      pairwise.fst.ci.matrix <- data.frame(upper.mat) %>% add_rownames("POP")
+      
+      
+      # get the full matrix with identical lower and upper diagonal 
+      # the diagonal is filled with 0
+      
+      full.mat <- upper.mat
+      lower.mat <- t(full.mat) # transpose
+      # merge upper and lower matrix
+      full.mat[lower.tri(full.mat)] <- lower.mat[lower.tri(lower.mat)] 
+      diag(full.mat) <- "0"
     }
     
     
@@ -581,7 +592,7 @@ fst_WC84 <- function(data,
     pairwise.fst <- "pairwise fst not selected"
     pairwise.fst.matrix <- "pairwise fst not selected"
     upper.mat.fst <- "pairwise fst not selected"
-    
+    full.mat <- "pairwise fst not selected"
   }
   
   # messages -------------------------------------------------------------------
@@ -592,7 +603,8 @@ fst_WC84 <- function(data,
   }
   # Results pairwise -----------------------------------------------------------
   res$pairwise.fst <- pairwise.fst
-  res$pairwise.fst.matrix <- upper.mat.fst
+  res$pairwise.fst.upper.matrix <- upper.mat.fst
   res$pairwise.fst.ci.matrix <- pairwise.fst.matrix
+  res$pairwise.fst.full.matrix <- full.mat
   return(res)
 }
