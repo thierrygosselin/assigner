@@ -37,6 +37,7 @@
 #' @import readr
 #' @import lazyeval
 #' @import stringi
+#' @importFrom  stats as.dist dist
 #' @export 
 #' @rdname dlr
 #' @references Paetkau D, Slade R, Burden M, Estoup A (2004) 
@@ -162,12 +163,12 @@ dlr.table <- data_frame(PAIRWISE_POP = names.pairwise, DLR = dlr.all.pop) %>%
 
 
 # Dist and Matrix-------------------------------------------------------------
-dlr.dist <- dist(1:length(unique(pop.labels)))
+dlr.dist <- stats::dist(1:length(unique(pop.labels)))
 dlr.dist.matrix <- dlr.all.pop
 attributes(dlr.dist.matrix) <- attributes(dlr.dist)
 dlr.dist.matrix <- as.matrix(dlr.dist.matrix)
 colnames(dlr.dist.matrix) <- rownames(dlr.dist.matrix) <- unique(pop.labels)
-dlr.dist.matrix <- as.dist(dlr.dist.matrix)
+dlr.dist.matrix <- stats::as.dist(dlr.dist.matrix)
 
 dlr.matrix <- as.data.frame(as.matrix(dlr.dist.matrix)) %>%
   add_rownames(var = "POP")
