@@ -142,6 +142,9 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 ## New
 
+**v.0.2.6**
+* fst_WC84 is now a separate and very fast function that can compute: the overall and pairwise Weir and Cockerham 1984 Theta/Fst. Bootstrap resampling of markers is avalaible to build Confidence Intervals (For Louis Bernatchez and his students;). The estimates are available as a data frame and a matrix with upper diagonal filled with Fst values and lower diagonal filled with the confidence intervals.
+
 **v.0.2.5**
 * cleaner code for strata section
 * bug fix restricted to `assignment_ngs` + `assignment.analysis = "adegenet"` + `sampling.method = "ranked"`.
