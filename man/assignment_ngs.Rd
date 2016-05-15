@@ -2,8 +2,8 @@
 % Please edit documentation in R/assignment_ngs.R
 \name{assignment_ngs}
 \alias{assignment_ngs}
-\title{Assignment analysis of next-generation sequencing data (GBS/RADseq, 
-SNP chip, etc) using gsi_sim and adegenet.}
+\title{Assignment analysis of massive parallel sequencing data (GBS/RADseq, 
+SNP chip, etc) using \code{gsi_sim} and \code{\link[adegenet]{adegenet}}.}
 \arguments{
 \item{data}{Options include the VCF (1) or an haplotype files (2) created in STACKS 
 (\code{data = "batch_1.vcf"} and \code{data = "batch_1.haplotypes.tsv"}, 
@@ -352,5 +352,8 @@ BMC Genet. 2010:11: 94. doi:10.1186/1471-2156-11-94
 Jombart T, Ahmed I. adegenet 1.3-1: new tools for the analysis 
 of genome-wide SNP data. 
 Bioinformatics. 2011:27: 3070–3071. doi:10.1093/bioinformatics/btr521
+}
+\seealso{
+\code{gsi_sim} development page is available here: \url{https://github.com/eriqande/gsi_sim}
 }
 
