@@ -109,7 +109,7 @@
 #' @param marker.number (Integer or string of number or "all") Calculations with
 #' fixed or subsample of your markers. Default= \code{"all"}.
 #' e.g. To test 500, 1000, 2000 and all  the markers:
-#' \code{marker.number = c(500, 1000, 2000, "all"}.
+#' \code{marker.number = c(500, 1000, 2000, "all")}.
 #' To use only 500 makers \code{marker.number = 500}.
 #' @param blacklist.id (optional) A blacklist with individual ID and
 #' a column header 'INDIVIDUALS'. The blacklist is in the working directory
