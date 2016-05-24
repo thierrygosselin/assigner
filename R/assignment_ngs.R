@@ -177,7 +177,7 @@
 #' e.g. \code{pop.select = "QUE"} to select QUE population samples.
 #' \code{pop.select = c("QUE", "ONT")} to select QUE and ONT population samples.
 
-#' @param subsample (Integer or Proportion) Default is no sumsampling, \code{subsample = NULL}.
+#' @param subsample (Integer or Proportion) Default is no subsampling, \code{subsample = NULL}.
 #' With a proportion argument \code{subsample = 0.15}, 15 percent of individuals
 #' in each populations are chosen randomly to represent the dataset.
 #' With \code{subsample = 36}, 36 individuals in each populations are chosen
