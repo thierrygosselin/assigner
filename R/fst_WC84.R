@@ -30,7 +30,7 @@
 #' 
 #' \emph{How to get a tidy data frame ?}
 #' \href{https://github.com/thierrygosselin/stackr}{stackr} 
-#' \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+#' \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
 #' in a tidy data frame.
 
 #' @param pop.levels (optional, string) This refers to the levels in a factor. In this 
@@ -127,7 +127,7 @@
 #' 
 #' \strong{Long/Tidy format:}
 #' The long format is considered to be a tidy data frame and can store metadata info. 
-#' (e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
+#' (e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). A minimum of 4 columns
 #' are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
 #' \code{MARKERS} and \code{GENOTYPE or GT}. The rest are considered metata info.
 #' 
@@ -137,7 +137,7 @@
 #' The separator can be any of these: \code{"/", ":", "_", "-", "."}.
 #' 
 #' \emph{How to get a tidy data frame ?}
-#' \pkg{stackr} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+#' \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
 #' in a tidy data frame.
 
 
@@ -248,19 +248,9 @@ fst_WC84 <- function(data,
   
   # Checking for missing and/or default arguments ------------------------------
   if (missing(data)) stop("Input file necessary to write the genepop file is missing")
-  # if (missing(holdout.samples)) holdout.samples <- NULL
-  # if (missing(pop.levels)) pop.levels <- NULL
-  # if (missing(pop.labels)) pop.labels <- NULL
   if (!is.null(pop.levels) & is.null(pop.labels)) pop.labels <- pop.levels
-  # if (missing(strata)) strata <- NULL
-  # if (missing(pairwise)) pairwise <- NULL
-  # if (missing(ci)) ci <- NULL
-  # if (missing(iteration.ci)) iteration.ci <- 100
-  # if (missing(quantiles.ci)) quantiles.ci <- c(0.025,0.975)
-  # if (missing(digits)) digits <- 9
-  # if (missing(verbose)) verbose <- FALSE
-  # if (missing(parallel.core) | is.null(parallel.core)) parallel.core <- detectCores()-1
-  
+  if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
+
   # Import data ---------------------------------------------------------------
   if(verbose) message("Importing data")
   input <- stackr::read_long_tidy_wide(data = data)
@@ -277,34 +267,43 @@ fst_WC84 <- function(data,
       input <- input %>%
         mutate( # Make population ready
           POP_ID = factor(
-            stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, 
-                                   vectorize_all = FALSE), 
+            stri_replace_all_regex(
+              POP_ID, 
+              stri_paste("^", pop.levels, "$", sep = ""), 
+              pop.labels,
+              vectorize_all = FALSE), 
             levels = unique(pop.labels), 
             ordered = TRUE
           )
         )
     }
   } else { # Make population ready with the strata provided
-    strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-      rename(POP_ID = STRATA)
-    
+    if (is.vector(strata)) {
+      strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
+        rename(POP_ID = STRATA)
+    } else {
+      strata.df <- strata
+    }
     if(is.null(pop.levels)) { # no pop.levels
       input <- input %>%
-        select(-POP_ID) %>%
+        select(-POP_ID) %>% 
         mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
         left_join(strata.df, by = "INDIVIDUALS") %>% 
         mutate(POP_ID = factor(POP_ID))
     } else { # with pop.levels
       input <- input %>%
-        select(-POP_ID) %>%
+        select(-POP_ID) %>% 
         mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-        left_join(strata.df, by = "INDIVIDUALS") %>% 
+        left_join(strata.df, by = "INDIVIDUALS") %>%
         mutate(
           POP_ID = factor(
-            stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, 
-                                   vectorize_all = FALSE), 
-            levels = unique(pop.labels), 
-            ordered = TRUE
+            stri_replace_all_regex(
+              POP_ID, 
+              stri_paste("^", pop.levels, "$", sep = ""), 
+              pop.labels, 
+              vectorize_all = FALSE
+            ),
+            levels = unique(pop.labels), ordered = TRUE
           )
         )
     }
