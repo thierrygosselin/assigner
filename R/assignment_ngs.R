@@ -303,7 +303,7 @@
 #' Data frame long/tidy format:
 #' This format requires column numbers to be within the range: 4 min - 20 max.
 #' The long format is considered to be a tidy data frame and can store metadata info. 
-#' (e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). The 4 columns
+#' (e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). The 4 columns
 #' required in the long format are: \code{INDIVIDUALS}, \code{POP_ID}, 
 #' \code{MARKERS} and \code{GENOTYPE or GT}.
 #' 
@@ -403,6 +403,10 @@
 #' (with subsample by current pop):
 #' assignment.treefrog$plot.assignment + facet_grid(SUBSAMPLE~CURRENT).
 #' 
+#' To view the full range of y values = Assignment success(%): 
+#' assignment.treefrog$plot.assignment + 
+#' facet_grid(SUBSAMPLE~CURRENT) + 
+#' scale_y_continuous(limits = c(0,100)) 
 #' To save the plot:
 #' ggsave("assignment.treefrog.THL.subsample.pdf", height = 35, 
 #' width = 60,dpi = 600, units = "cm", useDingbats = F)
@@ -527,45 +531,7 @@ assignment_ngs <- function(
   if (assignment.analysis == "adegenet") message("Assignment analysis with adegenet")
   if (!is.null(pop.levels) & is.null(pop.labels)) pop.labels <- pop.levels
   if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
-  # if (imputation.method == FALSE & !is.null(imputation.method)) {
-  #   stop("Using imputation.method = FALSE should be changed to imputation.method = NULL, or leave the argument missing")
-  # }
-  # if (missing(whitelist.markers)) whitelist.markers <- NULL # no Whitelist
-  # if (missing(monomorphic.out)) monomorphic.out <- TRUE # remove monomorphic
-  # if (missing(blacklist.genotype)) blacklist.genotype <- NULL # no genotype to erase
-  # if (missing(snp.ld)) snp.ld <- NULL
-  # if (missing(common.markers)) common.markers <- TRUE
-  # if (missing(maf.thresholds)) maf.thresholds <- NULL
-  # if (missing(maf.pop.num.threshold)) maf.pop.num.threshold <- 1
-  # if (missing(maf.approach)) maf.approach <- "SNP"
-  # if (missing(maf.operator)) maf.operator <- "OR"
-  # if (missing(max.marker)) max.marker <- NULL
-  # if (missing(marker.number)) marker.number <- "all"
-  # if (missing(blacklist.id)) blacklist.id <- NULL # No blacklist of ID
-  # if (missing(pop.levels)) stop("pop.levels required")
-  # if (missing(pop.labels)) pop.labels <- pop.levels # pop.labels
-  # if (missing(strata)) strata <- NULL
-  # if (missing(pop.select)) pop.select <- NULL
-  # if (missing(subsample)) subsample <- NULL
-  # if (missing(iteration.subsample)) iteration.subsample <- 1
-  # if (missing(sampling.method)) stop("Sampling method required")
-  # if (sampling.method == "ranked" & missing(thl)) thl <- 1 # thl
-  # if (missing(iteration.method)) iteration.method <- 10
-  # if (sampling.method  == "ranked" & thl == "all") iteration.method <- 1
-  # if (sampling.method == "ranked" & thl == 1) iteration.method <- 1
-  # if (missing(filename)) filename <- "assignment_data.txt"
-  # if (missing(keep.gsi.files)) keep.gsi.files <- FALSE
-  # if (missing(imputation.method)) imputation.method <- FALSE
-  # if (missing(imputations.group)) imputations.group <- "populations"
-  # if (!is.null(imputation.method) & missing(impute)) stop("impute argument is necessary")
-  # if (imputation.method == FALSE & missing(impute)) impute <- NULL
-  # if (missing(num.tree)) num.tree <- 100
-  # if (missing(iteration.rf)) iteration.rf <- 10
-  # if (missing(split.number)) split.number <- 100
-  # if (missing(verbose)) verbose <- FALSE
-  # if (missing(parallel.core) | is.null(parallel.core)) parallel.core <- detectCores()-1
-  # if (missing(folder)) folder <- NULL
-  
+
   # Create a folder based on filename to save the output files *****************
   if (is.null(folder)) {
     # Get date and time to have unique filenaming
@@ -657,6 +623,9 @@ assignment_ngs <- function(
   strata.df <- input %>% 
     select(INDIVIDUALS, POP_ID) %>% 
     distinct(INDIVIDUALS)
+  strata <- strata.df
+  pop.levels <- levels(input$POP_ID)
+  pop.labels <- pop.levels
   
   # subsampling data ***********************************************************
   # Function:
@@ -1259,9 +1228,9 @@ haplotype file and create a whitelist, for other file type, use
           left_join(strata.df, by = "INDIVIDUALS") %>%
           rename(CURRENT = POP_ID) %>% 
           mutate(
-            INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = TRUE),
+            INFERRED = factor(INFERRED, levels = pop.levels, ordered = TRUE),
             INFERRED = droplevels(INFERRED),
-            SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = TRUE),
+            SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = pop.levels, ordered = TRUE),
             SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
             SCORE = round(SCORE, 2),
             SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
@@ -1299,7 +1268,7 @@ haplotype file and create a whitelist, for other file type, use
         if (thl != 1 & thl != "all") {
           assignment <- assignment %>%
             mutate(
-              CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
+              CURRENT = factor(CURRENT, levels = pop.levels, ordered = TRUE),
               CURRENT = droplevels(CURRENT),
               ITERATIONS = rep(i, n())
             )
@@ -1620,7 +1589,7 @@ Progress can be monitored with activity in the folder...")
             rename(CURRENT = POP_ID) %>% 
             mutate(
               SUBSAMPLE = rep(subsample.id, n()),
-              CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
+              CURRENT = factor(CURRENT, levels = pop.levels, ordered = TRUE),
               CURRENT = droplevels(CURRENT)
             ) %>% 
             arrange(CURRENT, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
@@ -1711,7 +1680,7 @@ Progress can be monitored with activity in the folder...")
             filter(as.character(CURRENT) == as.character(INFERRED)) %>%
             select(CURRENT, MEAN_i, MARKER_NUMBER, MISSING_DATA, ITERATIONS, METHOD) %>%
             mutate(
-              CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = T),
+              CURRENT = factor(CURRENT, levels = pop.levels, ordered = T),
               CURRENT = droplevels(CURRENT)
             ) %>%
             group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
@@ -1743,7 +1712,7 @@ Progress can be monitored with activity in the folder...")
             ) %>%
             ungroup %>% 
             mutate(
-              CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
+              CURRENT = factor(CURRENT, levels = pop.levels, ordered = TRUE),
               CURRENT = droplevels(CURRENT)
             ) %>%
             arrange(CURRENT, MARKER_NUMBER)
@@ -2165,7 +2134,7 @@ Progress can be monitored with activity in the folder...")
       if (thl == 1 | thl == "all") {
         assignment.stats.pop <- assignment.res.summary %>%
           mutate(
-            CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
+            CURRENT = factor(CURRENT, levels = pop.levels, ordered = TRUE),
             CURRENT = droplevels(CURRENT)
           ) %>% 
           group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
@@ -2250,7 +2219,7 @@ Progress can be monitored with activity in the folder...")
         assignment.stats.pop <- assignment.res.summary.prep %>%
           # assignment.stats.pop <- assignment.res.summary %>%
           mutate(
-            CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
+            CURRENT = factor(CURRENT, levels = pop.levels, ordered = TRUE),
             CURRENT = droplevels(CURRENT)
           ) %>%
           group_by(CURRENT, MARKER_NUMBER, METHOD, MISSING_DATA) %>%

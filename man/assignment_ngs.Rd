@@ -306,7 +306,7 @@ This format requires column numbers to be larger than 20.
 Data frame long/tidy format:
 This format requires column numbers to be within the range: 4 min - 20 max.
 The long format is considered to be a tidy data frame and can store metadata info. 
-(e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). The 4 columns
+(e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). The 4 columns
 required in the long format are: \code{INDIVIDUALS}, \code{POP_ID}, 
 \code{MARKERS} and \code{GENOTYPE or GT}.
 
@@ -385,6 +385,10 @@ To plot the assignment using ggplot2 and facet
 (with subsample by current pop):
 assignment.treefrog$plot.assignment + facet_grid(SUBSAMPLE~CURRENT).
 
+To view the full range of y values = Assignment success(\%): 
+assignment.treefrog$plot.assignment + 
+facet_grid(SUBSAMPLE~CURRENT) + 
+scale_y_continuous(limits = c(0,100)) 
 To save the plot:
 ggsave("assignment.treefrog.THL.subsample.pdf", height = 35, 
 width = 60,dpi = 600, units = "cm", useDingbats = F)
