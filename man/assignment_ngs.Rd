@@ -3,119 +3,57 @@
 \name{assignment_ngs}
 \alias{assignment_ngs}
 \title{Assignment analysis of massive parallel sequencing data (GBS/RADseq, 
-SNP chip, etc) using \code{gsi_sim} and \code{\link[adegenet]{adegenet}}.}
+SNP chip, etc) using \href{https://github.com/eriqande/gsi_sim}{gsi_sim} and \code{\link[adegenet]{adegenet}}.}
 \arguments{
-\item{data}{Options include the VCF (1) or an haplotype files (2) created in STACKS 
-(\code{data = "batch_1.vcf"} and \code{data = "batch_1.haplotypes.tsv"}, 
-respectively) or a data frame (3) with tab separating the 
-genotypes in columns (\code{data = "data.assignment.tsv"}). 
-The 1st column is the \code{POP_ID}, 2nd colum 
-the \code{INDIVIDUALS} and the remaining columns are the markers IDs
-containing genotypes in the format: 3 digits per allele
-and no space between alleles (e.g. 235240 : allele1 = 235 and allele2 = 240).
-Missing genotypes are coded \code{0} or \code{000000}. 
-Note that the \code{POP_ID} column can be any hierarchical grouping. 
-See the argument \code{strata} for other means of controlling grouping used 
-in the assignment. The last option for data input is a PLINK file in 
-\code{tped/tfam} format (e.g. \code{data =  "data.assignment.tped"}). 
-The first 2 columns of the \code{tfam} file will be used for the 
-\code{strata} argument below, unless a new one is provided. 
-Columns 1, 3 and 4 of the \code{tped} are discarded. The remaining columns 
-correspond to the genotype in the format \code{01/04} 
-where \code{A = 01, C = 02, G = 03 and T = 04}. For \code{A/T} format, use 
-PLINK or bash to convert.
-Use VCFTOOLS \url{http://vcftools.sourceforge.net/} with \code{--plink-tped} 
-to convert very large VCF file. For \code{.ped} file conversion to 
-\code{.tped} use PLINK \url{http://pngu.mgh.harvard.edu/~purcell/plink/} 
-with \code{--recode transpose}.}
+\item{data}{7 options: vcf, plink, stacks haplotype file, genind, genepop, 
+and a data frame in wide or long/tidy format. \emph{See details}.
+The function uses 
+\href{https://github.com/thierrygosselin/stackr}{stackr} 
+\code{\link[stackr]{read_long_tidy_wide}} and 
+\code{\link[stackr]{tidy_genomic_data}}.}
 
 \item{assignment.analysis}{Assignment analysis conducted with 
 \code{assignment.analysis = "gsi_sim"} or 
 \code{assignment.analysis = "adegenet"}.}
 
-\item{whitelist.markers}{(optional) A whitelist containing CHROM (character
-or integer) and/or LOCUS (integer) and/or
-POS (integer) columns header. To filter by chromosome and/or locus and/or by snp.
-The whitelist is in the working directory (e.g. "whitelist.txt").
-de novo CHROM column with 'un' need to be changed to 1. 
-Default \code{NULL} for no whitelist of markers. In the VCF, the column ID is
-the LOCUS identification.}
-
-\item{monomorphic.out}{(optional) For PLINK file, should the monomorphic 
-markers present in the dataset be filtered out ? 
-Default: \code{monomorphic.out = TRUE}.}
-
-\item{blacklist.genotype}{(optional) Useful to erase genotype with below 
-average quality, e.g. genotype with more than 2 alleles in diploid likely 
-sequencing errors or genotypes with poor genotype likelihood or coverage. 
-The blacklist as a minimum of 2 column headers (markers and individuals). 
-Markers can be 1 column (CHROM or LOCUS or POS), 
-a combination of 2 (e.g. CHROM and POS or CHROM and LOCUS or LOCUS and POS) or 
-all 3 (CHROM, LOCUS, POS) The markers columns must be designated: CHROM (character
-or integer) and/or LOCUS (integer) and/or POS (integer). The id column designated
-INDIVIDUALS (character) columns header. The blacklist must be in the working 
-directory (e.g. "blacklist.genotype.txt"). For de novo VCF, CHROM column 
-with 'un' need to be changed to 1. Default \code{NULL} for no blacklist of 
-genotypes to erase.}
-
-\item{snp.ld}{(optional) For VCF file only. With anonymous markers from
-RADseq/GBS de novo discovery, you can minimize linkage disequilibrium (LD) by
-choosing among these 3 options: \code{"random"} selection, \code{"first"} or
-\code{"last"} SNP on the same short read/haplotype. 
-Default: \code{snp.ld = NULL}.
-Note that for other file type, use stackr package for haplotype file and 
-create a whitelist, for plink and data frames, use PLINK linkage 
-disequilibrium based SNP pruning option.}
-
-\item{common.markers}{(optional) Logical. Default: \code{common.markers = TRUE}, 
-will only keep markers in common (genotyped) between all the populations.}
-
-\item{maf.thresholds}{(string, double, optional) String with 
-local/populations and global/overall maf thresholds, respectively.
-Default: \code{maf.thresholds = NULL}. 
-e.g. \code{maf.thresholds = c(0.05, 0.1)} for a local maf threshold 
-of 0.05 and a global threshold of 0.1. Available for VCF, PLINK and data frame 
-files. Use stackr for haplotypes files.}
-
-\item{maf.pop.num.threshold}{(integer, optional) When maf thresholds are used,
-this argument is for the number of pop required to pass the maf thresholds
-to keep the locus. Default: \code{maf.pop.num.threshold = 1}}
-
-\item{maf.approach}{(character, optional). By \code{maf.approach = "SNP"} or 
-by \code{maf.approach = "haplotype"}.
-The function will consider the SNP or ID/LOCUS/haplotype/read MAF statistics 
-to filter the markers.
-Default is \code{maf.approach = "SNP"}. The \code{haplotype} approach is 
-restricted to VCF file.}
-
-\item{maf.operator}{(character, optional) \code{maf.operator = "AND"} or default \code{maf.operator = "OR"}.
-When filtering over LOCUS or SNP, do you want the local \code{"AND"}
-global MAF to pass the thresholds, or ... you want the local \code{"OR"}
-global MAF to pass the thresholds, to keep the marker?}
-
-\item{max.marker}{An optional integer useful to subsample marker number in 
-large PLINK file. Default: \code{max.marker = NULL}. e.g. if the data set 
-contains 200 000 markers and \code{max.marker = 10000} 10000 markers are
-subsampled randomly from the 200000 markers. Use \code{whitelist.markers} to
-keep specific markers.}
-
-\item{marker.number}{(Integer or string of number or "all") Calculations with
-fixed or subsample of your markers. Default= \code{"all"}.
-e.g. To test 500, 1000, 2000 and all  the markers:
-\code{marker.number = c(500, 1000, 2000, "all"}.
-To use only 500 makers \code{marker.number = 500}.}
-
-\item{blacklist.id}{(optional) A blacklist with individual ID and
-a column header 'INDIVIDUALS'. The blacklist is in the working directory
-(e.g. "blacklist.txt").}
-
 \item{sampling.method}{(character) Should the markers be randomly selected
-\code{"random"} for a classic Leave-One-Out (LOO) assignment or
-chosen based on ranked Fst \code{"ranked"}, used in a
+\code{sampling.method == "random"} for a classic Leave-One-Out (LOO) assignment or
+chosen based on ranked Fst \code{sampling.method == "ranked"}, used in a
 Training-Holdout-Leave One Out (thl) assignment ?}
 
+\item{adegenet.dapc.opt}{(optional, character) \strong{Argument available only when 
+using:
+\code{assignment.analysis = "adegenet"} with
+\code{sampling.method == "random"}}.
+
+The assignment using dapc can use the optimized alpha score 
+\code{adegenet.dapc.opt == "optim.a.score"} or 
+cross-validation \code{adegenet.dapc.opt == "xval"}
+for stability of group membership probabilities. 
+For fine tuning the trade-off between power of discrimination and over-fitting.
+See \pkg{adegenet} documentation for more details. 
+
+\code{adegenet.dapc.opt == "xval"} doesn't work with missing data, so it's 
+only available with \strong{imputed data} (i.e. imputation.method == "rf" or "max").
+With non imputed data or the default: \code{adegenet.dapc.opt == "optim.a.score"}.}
+
+\item{adegenet.n.rep}{(optional, integer) 
+When \code{adegenet.dapc.opt == "xval"}, the number of replicates to be 
+carried out at each level of PC retention. 
+Default: \code{adegenet.n.rep = 30}.
+See \pkg{adegenet} documentation for more details.}
+
+\item{adegenet.training}{(optional, numeric) 
+When \code{adegenet.dapc.opt == "xval"}, the proportion of data (individuals) 
+to be used for the training set.
+Default: \code{adegenet.training = 0.9}, if all groups have >= 10 members. 
+Otherwise, training.set scales automatically to the largest proportion 
+that still ensures all groups will be present in both training 
+and validation sets.
+See \pkg{adegenet} documentation for more details.}
+
 \item{thl}{(character, integer, proportion) For \code{sampling.method = "ranked"} only.
-Default \code{1}, 1 individual sample is used as holdout. This individual is not
+Default \code{thl = 1}, 1 individual sample is used as holdout. This individual is not
 participating in the markers ranking. For each marker number,
 the analysis will be repeated with all the indiviuals in the data set
 (e.g. 500 individuals, 500 times 500, 1000, 2000 markers).
@@ -138,48 +76,7 @@ will be repeated for each individuals in the data set for every
 individuals and this process is reapeated the number of times chosen by the
 \code{iteration.method} value.}
 
-\item{folder}{(optional) The name of the folder created in the working directory to save the files/results.}
-
-\item{gsi_sim.filename}{(optional) The name of the file written to the directory.
-Use the extension ".txt" at the end. Default \code{assignment_data.txt}.
-The number of markers used will be appended to the name of the file.}
-
-\item{keep.gsi.files}{(Boolean) Default \code{FALSE} The input and output gsi_sim files
-will be deleted from the directory when finished processing.
-With \code{TRUE}, remember to allocate a large chunk of the disk space for the analysis.}
-
-\item{pop.levels}{(required) A character string with your populations ordered.}
-
-\item{pop.labels}{(optional) A character string for your populations labels.
-If you need to rename sampling sites in \code{pop.levels} or combined sites/pop
-into a different names, here is the place.}
-
-\item{pop.id.start}{The start of your population id
-in the name of your individual sample. Your individuals are identified 
-in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
-then, \code{pop.id.start} = 5. If you didn't name your individuals
-with the pop id in it, use the \code{strata} argument.}
-
-\item{pop.id.end}{The end of your population id
-in the name of your individual sample. Your individuals are identified 
-in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
-then, \code{pop.id.end} = 7. If you didn't name your individuals
-with the pop id in it, use the \code{strata} argument.}
-
-\item{strata}{(optional) A tab delimited file with 2 columns with header:
-\code{INDIVIDUALS} and \code{STRATA}. Default: \code{strata = NULL}. With a 
-data frame of genotypes the strata is the INDIVIDUALS and POP_ID columns, with
-PLINK files, the \code{tfam} first 2 columns are used. 
-If a \code{strata} file is specified, the strata file will have
-precedence. The \code{STRATA} column can be any hierarchical grouping.}
-
-\item{pop.select}{(string) Conduct the assignment analysis on a
-selected list of populations. Default = \code{NULL} for no selection and keep
-all population.
-e.g. \code{pop.select = "QUE"} to select QUE population samples.
-\code{pop.select = c("QUE", "ONT")} to select QUE and ONT population samples.}
-
-\item{subsample}{(Integer or Proportion) Default is no sumsampling, \code{subsample = NULL}.
+\item{subsample}{(Integer or Proportion) Default is no subsampling, \code{subsample = NULL}.
 With a proportion argument \code{subsample = 0.15}, 15 percent of individuals
 in each populations are chosen randomly to represent the dataset.
 With \code{subsample = 36}, 36 individuals in each populations are chosen
@@ -190,30 +87,165 @@ subsampling, default: \code{iteration.subsample = 1}.
 With \code{subsample = 20} and \code{iteration.subsample = 10},
 20 individuals/populations will be randomly chosen 10 times.}
 
-\item{imputation.method}{Should a map-independent imputations of markers be
-computed. Available choices are: (1) \code{FALSE} for no imputation.
-(2) \code{"max"} to use the most frequent category for imputations.
-(3) \code{"rf"} using Random Forest algorithm. 
-Default: \code{imputation.method = FALSE}.}
+\item{marker.number}{(Integer or string of number or "all") Calculations with
+fixed or subsample of your markers. Default= \code{"all"}.
+e.g. To test 500, 1000, 2000 and all  the markers:
+\code{marker.number = c(500, 1000, 2000, "all")}.
+To use only 500 makers \code{marker.number = 500}.}
 
-\item{impute}{(character) Imputation on missing genotype 
-\code{impute = "genotype"} or alleles \code{impute = "allele"}.}
+\item{blacklist.id}{(optional) A blacklist with individual ID and
+a column header 'INDIVIDUALS'. The blacklist is in the working directory
+(e.g. "blacklist.txt").
+Default: \code{blacklist.id = NULL}.}
 
-\item{imputations.group}{\code{"global"} or \code{"populations"}.
+\item{blacklist.genotype}{(optional) Useful to erase genotype with below 
+average quality, e.g. genotype with more than 2 alleles in diploid likely 
+sequencing errors or genotypes with poor genotype likelihood or coverage. 
+The blacklist as a minimum of 2 column headers (markers and individuals). 
+Markers can be 1 column (CHROM or LOCUS or POS), 
+a combination of 2 (e.g. CHROM and POS or CHROM and LOCUS or LOCUS and POS) or 
+all 3 (CHROM, LOCUS, POS) The markers columns must be designated: CHROM (character
+or integer) and/or LOCUS (integer) and/or POS (integer). The id column designated
+INDIVIDUALS (character) columns header. The blacklist must be in the working 
+directory (e.g. "blacklist.genotype.txt"). For de novo VCF, CHROM column 
+with 'un' need to be changed to 1. 
+Default: \code{blacklist.genotype = NULL} for no blacklist of 
+genotypes to erase.}
+
+\item{whitelist.markers}{(optional) A whitelist containing CHROM (character
+or integer) and/or LOCUS (integer) and/or
+POS (integer) columns header. To filter by chromosome and/or locus and/or by snp.
+The whitelist is in the working directory (e.g. "whitelist.txt").
+de novo CHROM column with 'un' need to be changed to 1. 
+In the VCF, the column ID is the LOCUS identification.
+Default \code{whitelist.markers = NULL} for no whitelist of markers.}
+
+\item{monomorphic.out}{(optional) For PLINK file, should the monomorphic 
+markers present in the dataset be filtered out ? 
+Default: \code{monomorphic.out = TRUE}.}
+
+\item{snp.ld}{(optional) \strong{For VCF file only}. 
+SNP short distance linkage disequilibrium pruning. With anonymous markers from
+RADseq/GBS de novo discovery, you can minimize linkage disequilibrium (LD) by
+choosing among these 3 options: \code{"random"} selection, \code{"first"} or
+\code{"last"} SNP on the same short read/haplotype. For long distance linkage
+disequilibrium pruning, see details below.
+Default: \code{snp.ld = NULL}.}
+
+\item{common.markers}{(optional) Logical. Default: \code{common.markers = TRUE}, 
+will only keep markers in common (genotyped) between all the populations.}
+
+\item{maf.thresholds}{(string, double, optional) String with 
+local/populations and global/overall maf thresholds, respectively.
+e.g. \code{maf.thresholds = c(0.05, 0.1)} for a local maf threshold 
+of 0.05 and a global threshold of 0.1. Available for VCF, PLINK and data frame 
+files. Use stackr for haplotypes files and use the whitelist of markers.
+Default: \code{maf.thresholds = NULL}.}
+
+\item{maf.pop.num.threshold}{(integer, optional) When maf thresholds are used,
+this argument is for the number of pop required to pass the maf thresholds
+to keep the locus. Default: \code{maf.pop.num.threshold = 1}}
+
+\item{maf.approach}{(character, optional). By \code{maf.approach = "SNP"} or 
+by \code{maf.approach = "haplotype"}.
+The function will consider the SNP or ID/LOCUS/haplotype/read MAF statistics 
+to filter the markers.
+Default is \code{maf.approach = "SNP"}. The \code{haplotype} approach is 
+restricted to VCF file.}
+
+\item{maf.operator}{(character, optional) \code{maf.operator = "AND"} or 
+default \code{maf.operator = "OR"}.
+When filtering over LOCUS or SNP, do you want the local \code{"AND"}
+global MAF to pass the thresholds, or ... you want the local \code{"OR"}
+global MAF to pass the thresholds, to keep the marker?}
+
+\item{max.marker}{An optional integer useful to subsample marker number in 
+large PLINK file. e.g. if the data set 
+contains 200 000 markers and \code{max.marker = 10000} 10000 markers are
+subsampled randomly from the 200000 markers. Use \code{whitelist.markers} to
+keep specific markers.
+Default: \code{max.marker = NULL}.}
+
+\item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
+case, the id of the pop.
+Use this argument to have the pop ordered your way instead of the default 
+alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
+instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
+Default: \code{pop.levels = NULL}.}
+
+\item{pop.labels}{(optional, string) Use this argument to rename/relabel
+your pop or combine your pop. e.g. To combine \code{"QUE"} and \code{"ONT"} 
+into a new pop called \code{"NEW"}:
+(1) First, define the levels for your pop with \code{pop.levels} argument: 
+\code{pop.levels = c("QUE", "ONT", "ALB")}. 
+(2) then, use \code{pop.labels} argument: 
+\code{pop.levels = c("NEW", "NEW", "ALB")}.#' 
+To rename \code{"QUE"} to \code{"TAS"}:
+\code{pop.labels = c("TAS", "ONT", "ALB")}.
+Default: \code{pop.labels = NULL}. When pop.levels is not null and pop.labels
+is not specified. pop.labels = pop.levels.
+If you find this too complicated, there is also the
+\code{strata} argument that can do the same thing, see below.}
+
+\item{strata}{(optional for data frame and PLINK files, 
+required for VCF and haplotypes files) A tab delimited file with 2 columns with header:
+\code{INDIVIDUALS} and \code{STRATA}. With a 
+data frame of genotypes the strata is the INDIVIDUALS and POP_ID columns, with
+PLINK files, the \code{tfam} first 2 columns are used. 
+If a \code{strata} file is specified, the strata file will have
+precedence. The \code{STRATA} column can be any hierarchical grouping. 
+To create a strata file see \code{\link[stackr]{individuals2strata}}.
+Default: \code{strata = NULL}.}
+
+\item{pop.select}{(string, optional) Selected list of populations for 
+the analysis. e.g. \code{pop.select = c("QUE", "ONT")} to select \code{QUE}
+and \code{ONT} population samples (out of 20 pops).}
+
+\item{folder}{(optional) The name of the folder created in the working 
+directory to save the files/results. Default: \code{folder = NULL} will create
+the folder for you with data and time.}
+
+\item{filename}{(optional) The name of the file written to the directory.
+Use the extension ".txt" at the end. 
+Several info will be appended to the name of the file.
+Default \code{assignment_data.txt}.}
+
+\item{keep.gsi.files}{(logical, optional) With the default, 
+the intermediate input and output gsi_sim files will be deleted from the 
+directory when finished processing. I you decide to keep the files, with 
+\code{keep.gsi.files =TRUE}, remember to allocate a large chunk of the disk 
+space for the analysis.
+Default: \code{keep.gsi.files = FALSE}}
+
+\item{imputation.method}{(character, optional) 
+Methods available for map-independent imputations of missing genotype: 
+(1) \code{"max"} to use the most frequent category for imputations.
+(2) \code{"rf"} using Random Forest algorithm. 
+Default: no imputation \code{imputation.method = NULL}.}
+
+\item{impute}{(character, optional) Imputation on missing genotype 
+\code{impute = "genotype"} or alleles \code{impute = "allele"}.
+Default: \code{"genotype"}.}
+
+\item{imputations.group}{(character, optional) \code{"global"} or \code{"populations"}.
 Should the imputations be computed globally or by populations. If you choose
 global, turn the verbose to \code{TRUE}, to see progress.
 Default = \code{"populations"}.}
 
-\item{num.tree}{The number of trees to grow in Random Forest. Default is 100.}
+\item{num.tree}{(integer, optional) The number of trees to grow in Random Forest. 
+Default: \code{num.tree = 100}.}
 
-\item{iteration.rf}{The number of iterations of missing data algorithm
-in Random Forest. Default is 10.}
+\item{iteration.rf}{(integer, optional) The number of iterations of missing data algorithm
+in Random Forest. 
+Default: \code{iteration.rf = 10}.}
 
-\item{split.number}{Non-negative integer value used to specify
-random splitting in Random Forest. Default is 100.}
+\item{split.number}{(integer, optional) Non-negative integer value used to specify
+random splitting in Random Forest. 
+Default: \code{split.number = 100}.}
 
-\item{verbose}{Logical. Should trace output be enabled on each iteration
-in Random Forest ? Default is \code{FALSE}.}
+\item{verbose}{(logical, optional) Should trace output be enabled on each iteration
+in Random Forest ? 
+Default: \code{verbose = FALSE}.}
 
 \item{parallel.core}{(optional) The number of core for OpenMP shared-memory parallel
 programming of Random Forest imputations. For more info on how to install the
@@ -228,11 +260,14 @@ The output in your global environment is a list. To view the assignment results
 See example below.
 }
 \description{
-\code{gsi_sim} is a tool for doing and simulating genetic stock
-identification and developed by Eric C. Anderson.
 The arguments in the \code{assignment_ngs} function were tailored for the
 reality of GBS/RADseq data for assignment analysis while
-maintaining a reproducible workflow.
+maintaining a reproducible workflow. The assignment analysis can be conducted
+using \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, a tool 
+for doing and simulating genetic stock identification and 
+developed by Eric C. Anderson, or 
+\href{https://github.com/thibautjombart/adegenet}{adegenet}, 
+a R package developed by Thibaul Jombart.
 Various input files is offered. Individuals, populations and
 markers can be filtered and/or selected in several ways using blacklist,
 whitelist and other arguments. Map-independent imputation of missing genotype
@@ -242,9 +277,61 @@ assignment or chosen based on ranked Fst for a thl
 (Training, Holdout, Leave-one-out) assignment analysis.
 }
 \details{
-You need to have either the \code{pop.id.start} and \code{pop.id.end}
-or the \code{strata} argument, to identify your populations.
+\strong{Input files:}
+\enumerate{
+\item VCF file (e.g. \code{data = "batch_1.vcf"}). 
+To make the VCF population ready, you need the \code{strata} argument.
 
+\item haplotype file created in STACKS (e.g. \code{data = "batch_1.haplotypes.tsv"}).
+To make the haplotype file population ready, you need the \code{strata} argument.
+
+\item Data frame
+Tab delimitted.
+\strong{2 genotypes formats are available, both use 3 character per allele:}
+6 characters no allele separator: e.g. \code{001002 of 111333} (for heterozygote individual).
+6 characters WITH an allele separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
+The separator can be any of these: \code{"/", ":", "_", "-", "."}.
+Missing alleles are coded \code{000}.
+To discriminate the long from the wide format, 
+the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
+for columns number, > 20 for wide 
+(i.e. don't use less than 10 markers in wide format, the function was not designed for that).
+
+Data Frame wide format:
+The wide format cannot store metadata info.
+The wide format contains starts with these 2 id columns: 
+\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
+the remaining columns are the markers in separate columns storing genotypes.
+This format requires column numbers to be larger than 20.
+Data frame long/tidy format:
+This format requires column numbers to be within the range: 4 min - 20 max.
+The long format is considered to be a tidy data frame and can store metadata info. 
+(e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). The 4 columns
+required in the long format are: \code{INDIVIDUALS}, \code{POP_ID}, 
+\code{MARKERS} and \code{GENOTYPE or GT}.
+
+Note that the \code{POP_ID} column can be any hierarchical grouping. 
+See the argument \code{strata} for other means of controlling grouping used 
+in the assignment.
+
+\item PLINK file in 
+\code{tped/tfam} format (e.g. \code{data =  "data.assignment.tped"}). 
+The first 2 columns of the \code{tfam} file will be used for the 
+\code{strata} argument below, unless a new one is provided. 
+Columns 1, 3 and 4 of the \code{tped} are discarded. The remaining columns 
+correspond to the genotype in the format \code{01/04} 
+where \code{A = 01, C = 02, G = 03 and T = 04}. For \code{A/T} format, use 
+PLINK or bash to convert.
+Use \href{http://vcftools.sourceforge.net/}{VCFTOOLS} with \code{--plink-tped} 
+to convert very large VCF file. For \code{.ped} file conversion to 
+\code{.tped} use \href{http://pngu.mgh.harvard.edu/~purcell/plink/}{PLINK} 
+with \code{--recode transpose},
+
+\item \code{\link[adegenet]{genind}} object from \code{\link[adegenet]{adegenet}}.
+
+\item genepop data file (e.g. \code{data = kiwi_data.gen}). Here, the function can only use
+alleles encoded with 3 digits.
+}
 The imputations using Random Forest requires more time to compute
 and can take several
 minutes and hours depending on the size of the dataset and polymorphism of
@@ -254,7 +341,8 @@ will require 15 min.
 The Fst is based on Weir and Cockerham 1984 equations.
 }
 \note{
-\code{assignment_ngs} assumes that the command line version of gsi_sim 
+\code{assignment_ngs} assumes that the command line version of 
+\href{https://github.com/eriqande/gsi_sim}{gsi_sim} 
 is properly installed into \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
 Things are set up so that it will try running gsi_sim, and if it does not find it, the 
 program will throw an error and ask the user to run \code{\link{install_gsi_sim}}
@@ -262,7 +350,7 @@ which will do its best to put a usable copy of gsi_sim where it is needed.  To d
 so, you must be connected to the internet. If that doesn't work, you will
 need to compile the program yourself, or get it yourself, and the manually copy
 it to \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
-To compile gsi_sim, follow the 
+To compile \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, follow the 
 instruction here: \url{https://github.com/eriqande/gsi_sim}.
 }
 \examples{
@@ -279,11 +367,11 @@ thl = 0.3,
 blacklist.id = "blacklist.id.treefrog.tsv",
 subsample = 25,
 iteration.subsample = 10
-gsi_sim.filename = "treefrog.txt",
-keep.gsi.files = FALSE,
+filename = "treefrog.txt",
+keep.gsi.files = FALSE, 
+strata = "strata.treefrog.tsv",
 pop.levels = c("PAN", "COS")
-pop.id.start = 5, pop.id.end = 7,
-imputation.method = FALSE,
+imputation.method = NULL,
 parallel.core = 12
 )
 
