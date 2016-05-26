@@ -1,5 +1,4 @@
-# Write a gsi_sim file from STACKS VCF file
-
+# Assignment analysis of massive parallel sequencing data
 #' @name assignment_ngs
 
 #' @title Assignment analysis of massive parallel sequencing data (GBS/RADseq, 

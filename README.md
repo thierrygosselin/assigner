@@ -146,7 +146,9 @@ Version, new feature and bug history now lives in the [NEWS.md file] (https://gi
 **v.0.2.7**
 * you need to update [stackr] (https://github.com/thierrygosselin/stackr) to v.0.2.7
 to appreciate this new version of assigner.
-* updated `assignment_ngs` with the separate stackr module to simplify the function.
+* updated `assignment_ngs` with the separate stackr modules to simplify the function.
+* new data file available for `assignment_ngs`: `genepop` and `genind` object.
+* `assignment_ngs` now accept any vcf input file! i.e. it’s no longer limited to stacks vcf. 
 * new arguments in `assignment_ngs`. The assignment using dapc can now use 
 the optimized alpha score `adegenet.dapc.opt == "optim.a.score"` or 
 the cross-validation `adegenet.dapc.opt == "xval"`. This is useful for fine tuning 
