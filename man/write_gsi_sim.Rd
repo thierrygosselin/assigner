@@ -15,7 +15,7 @@ in wide or long (tidy) formats. To import, the function uses
 
 \emph{How to get a tidy data frame ?}
 \href{https://github.com/thierrygosselin/stackr}{stackr} 
-\code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+\code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
 in a tidy data frame.}
 
 \item{pop.levels}{(option, string) This refers to the levels in a factor. In this 
@@ -72,7 +72,7 @@ the remaining columns are the markers in separate columns storing genotypes.
 \strong{Long/Tidy format:}
 This format requires column numbers to be within the range: 4 min -30 max.
 The long format is considered to be a tidy data frame and can store metadata info. 
-(e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). The 4 columns
+(e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). The 4 columns
 required in the long format are: \code{INDIVIDUALS}, \code{POP_ID}, 
 \code{MARKERS} and \code{GENOTYPE or GT}.
 
@@ -82,7 +82,7 @@ required in the long format are: \code{INDIVIDUALS}, \code{POP_ID},
 The separator can be any of these: \code{"/", ":", "_", "-", "."}.
 
 \emph{How to get a tidy data frame ?}
-\pkg{stackr} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+\pkg{stackr} \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
 in a tidy data frame.
 }
 \author{

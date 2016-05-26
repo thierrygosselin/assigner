@@ -15,7 +15,7 @@
 #' 
 #' \emph{How to get a tidy data frame ?}
 #' \href{https://github.com/thierrygosselin/stackr}{stackr} 
-#' \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+#' \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
 #' in a tidy data frame.
 
 #' @param pop.levels (option, string) This refers to the levels in a factor. In this 
@@ -73,7 +73,7 @@
 #' \strong{Long/Tidy format:}
 #' This format requires column numbers to be within the range: 4 min -30 max.
 #' The long format is considered to be a tidy data frame and can store metadata info. 
-#' (e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). The 4 columns
+#' (e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). The 4 columns
 #' required in the long format are: \code{INDIVIDUALS}, \code{POP_ID}, 
 #' \code{MARKERS} and \code{GENOTYPE or GT}.
 #' 
@@ -83,7 +83,7 @@
 #' The separator can be any of these: \code{"/", ":", "_", "-", "."}.
 #' 
 #' \emph{How to get a tidy data frame ?}
-#' \pkg{stackr} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+#' \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
 #' in a tidy data frame.
 
 
@@ -141,17 +141,23 @@ write_gsi_sim <- function (
       input <- input %>%
         mutate( # Make population ready
           POP_ID = factor(
-            stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, 
-                                   vectorize_all = FALSE), 
+            stri_replace_all_regex(
+              POP_ID, 
+              stri_paste("^", pop.levels, "$", sep = ""), 
+              pop.labels,
+              vectorize_all = FALSE), 
             levels = unique(pop.labels), 
             ordered = TRUE
           )
         )
     }
   } else { # Make population ready with the strata provided
-    strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-      rename(POP_ID = STRATA)
-    
+    if (is.vector(strata)) {
+      strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
+        rename(POP_ID = STRATA)
+    } else {
+      strata.df <- strata
+    }
     if(is.null(pop.levels)) { # no pop.levels
       input <- input %>%
         select(-POP_ID) %>% 
@@ -162,8 +168,18 @@ write_gsi_sim <- function (
       input <- input %>%
         select(-POP_ID) %>% 
         mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-        left_join(strata.df, by = "INDIVIDUALS") %>% 
-        mutate(POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered = TRUE))
+        left_join(strata.df, by = "INDIVIDUALS") %>%
+        mutate(
+          POP_ID = factor(
+            stri_replace_all_regex(
+              POP_ID, 
+              stri_paste("^", pop.levels, "$", sep = ""), 
+              pop.labels, 
+              vectorize_all = FALSE
+            ),
+            levels = unique(pop.labels), ordered = TRUE
+          )
+        )
     }
   }
   
