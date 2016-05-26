@@ -33,7 +33,7 @@
 #' Molecular Ecology Notes, 4, 792-794.
 #' @import dplyr
 #' @import readr
-#' @importFrom stringr str_sub
+#' @importFrom stringi stri_sub
 #' @export 
 #' @rdname assignment_genodive
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
@@ -104,8 +104,8 @@ assignment_genodive <- function(assignment.lmax, assignment.lhome,
     progress = interactive(),
     col_types = col.types) %>%
     mutate(
-      Current = str_sub(Current, pop.id.start, pop.id.end),
-      Inferred = str_sub(Inferred, pop.id.start, pop.id.end),
+      Current = stri_sub(Current, pop.id.start, pop.id.end),
+      Inferred = stri_sub(Inferred, pop.id.start, pop.id.end),
       Current = factor(stri_replace_all_fixed(Current, sites.levels, pop.labels, vectorize_all = F), levels = pop.levels, ordered =T),
       Inferred = factor(stri_replace_all_fixed(Inferred, sites.levels, pop.labels, vectorize_all = F), levels = pop.levels, ordered =T)
     )%>%
@@ -150,8 +150,8 @@ assignment_genodive <- function(assignment.lmax, assignment.lhome,
     progress = interactive(),
     col_types = col.types) %>%
     mutate(
-      Current = str_sub(Current, pop.id.start, pop.id.end),
-      Inferred = str_sub(Inferred, pop.id.start, pop.id.end),
+      Current = stri_sub(Current, pop.id.start, pop.id.end),
+      Inferred = stri_sub(Inferred, pop.id.start, pop.id.end),
       Current = factor(stri_replace_all_fixed(Current, sites.levels, pop.labels, vectorize_all = F), levels = pop.levels.lhome, ordered =T),
       Inferred = factor(stri_replace_all_fixed(Inferred, sites.levels, pop.labels, vectorize_all = F), levels = pop.levels.lhome, ordered =T)) %>% 
     mutate(
