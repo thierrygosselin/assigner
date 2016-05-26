@@ -2,36 +2,99 @@
 % Please edit documentation in R/write_gsi_sim.R
 \name{write_gsi_sim}
 \alias{write_gsi_sim}
-\title{Used internally in assigner to write a gsi_sim file}
+\title{Write a gsi_sim file from a data frame (wide or long/tidy).}
 \usage{
-write_gsi_sim(data, markers.names = NULL, directory.subsample = NULL,
-  filename = "gsi_sim.unname.txt", i = NULL, m = NULL, ...)
+write_gsi_sim(data, pop.levels = NULL, pop.labels = NULL, strata = NULL,
+  filename = "gsi_sim.unname.txt", ...)
 }
 \arguments{
-\item{data}{A file or object in the global environment containing at least 
-these 2 id columns: 
-\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals.), 
-the remaining columns are the markers.}
+\item{data}{A file in the working directory or object in the global environment 
+in wide or long (tidy) formats. To import, the function uses 
+\href{https://github.com/thierrygosselin/stackr}{stackr} 
+\code{\link[stackr]{read_long_tidy_wide}}. See details for more info.
 
-\item{markers.names}{(character) Name of the markers.}
+\emph{How to get a tidy data frame ?}
+\href{https://github.com/thierrygosselin/stackr}{stackr} 
+\code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+in a tidy data frame.}
 
-\item{directory.subsample}{The name of the subsample directory.}
+\item{pop.levels}{(option, string) This refers to the levels in a factor. In this 
+case, the id of the pop.
+Use this argument to have the pop ordered your way instead of the default 
+alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
+instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
+Default: \code{pop.levels = NULL}. If you find this too complicated, there is also the
+\code{strata} argument that can do the same thing, see below.}
+
+\item{pop.labels}{(optional, string) Use this argument to rename/relabel
+your pop or combine your pop. e.g. To combine \code{"QUE"} and \code{"ONT"} 
+into a new pop called \code{"NEW"}:
+(1) First, define the levels for your pop with \code{pop.levels} argument: 
+\code{pop.levels = c("QUE", "ONT", "ALB")}. 
+(2) then, use \code{pop.labels} argument: 
+\code{pop.levels = c("NEW", "NEW", "ALB")}.#' 
+To rename \code{"QUE"} to \code{"TAS"}:
+\code{pop.labels = c("TAS", "ONT", "ALB")}.
+Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
+\code{strata} argument that can do the same thing, see below.}
+
+\item{strata}{(optional) A tab delimited file with 2 columns with header:
+\code{INDIVIDUALS} and \code{STRATA}. 
+Default: \code{strata = NULL}. Use this argument to rename or change 
+the populations id with the new \code{STRATA} column.
+The \code{STRATA} column can be any hierarchical grouping.}
 
 \item{filename}{The name of the file written to the working directory.}
-
-\item{i}{Iterations.}
-
-\item{m}{Markers number used.}
 
 \item{...}{other parameters passed to the function.}
 }
 \value{
-A gsi_sim file is saved to the working directory.
+A gsi_sim input file is saved to the working directory.
 }
 \description{
-Write a gsi_sim file
+Write a gsi_sim file from a data frame (wide or long/tidy). 
+Used internally in \href{https://github.com/thierrygosselin/assigner}{assigner}
+and might be of interest for users.
+}
+\details{
+\strong{Input data:}
+ 
+To discriminate the long from the wide format, 
+the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
+for columns number, > 30 for wide. 
+
+\strong{Wide format:}
+The wide format cannot store metadata info.
+The wide format contains starts with these 2 id columns: 
+\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
+the remaining columns are the markers in separate columns storing genotypes.
+
+\strong{Long/Tidy format:}
+This format requires column numbers to be within the range: 4 min -30 max.
+The long format is considered to be a tidy data frame and can store metadata info. 
+(e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). The 4 columns
+required in the long format are: \code{INDIVIDUALS}, \code{POP_ID}, 
+\code{MARKERS} and \code{GENOTYPE or GT}.
+
+\strong{2 genotypes formats are available:}
+6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
+6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
+The separator can be any of these: \code{"/", ":", "_", "-", "."}.
+
+\emph{How to get a tidy data frame ?}
+\pkg{stackr} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+in a tidy data frame.
 }
 \author{
 Thierry Gosselin \email{thierrygosselin@icloud.com}
+}
+\references{
+Anderson, Eric C., Robin S. Waples, and Steven T. Kalinowski. (2008)
+An improved method for predicting the accuracy of genetic stock identification.
+Canadian Journal of Fisheries and Aquatic Sciences 65, 7:1475-1486.
+
+Anderson, E. C. (2010) Assessing the power of informative subsets of
+loci for population assignment: standard methods are upwardly biased.
+Molecular ecology resources 10, 4:701-710.
 }
 
