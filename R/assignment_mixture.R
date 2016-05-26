@@ -1349,6 +1349,12 @@ package and update your whitelist")
         mutate(COUNT = replace(COUNT, which(COUNT == "NA"), NA)) %>% 
         group_by(POP_ID, INDIVIDUALS) %>%
         tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>%
+        ungroup () %>%
+        mutate(
+          INDIVIDUALS = as.character(INDIVIDUALS),
+          POP_ID = as.character(POP_ID), # required to be able to do xvalDapc with adegenet.
+          POP_ID = factor(POP_ID) # xvalDapc does accept pop as ordered factor
+        ) %>% 
         arrange(POP_ID, INDIVIDUALS)
     }
     
@@ -1447,6 +1453,12 @@ package and update your whitelist")
             arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES) %>% 
             tidyr::unite(MARKERS_ALLELES, MARKERS, ALLELES, sep = ".", remove = TRUE) %>%
             tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>% 
+            ungroup () %>%
+            mutate(
+              INDIVIDUALS = as.character(INDIVIDUALS),
+              POP_ID = as.character(POP_ID), # required to be able to do xvalDapc with adegenet.
+              POP_ID = factor(POP_ID) # xvalDapc does accept pop as ordered factor
+            ) %>% 
             arrange(POP_ID, INDIVIDUALS)
         )
       }
@@ -1456,7 +1468,7 @@ package and update your whitelist")
     if (assignment.analysis == "adegenet") {
       # genind arguments common to all data.type
       genind.prep <- genind.prep %>% arrange(POP_ID, INDIVIDUALS)
-      ind <- as.character(genind.prep$INDIVIDUALS)
+      ind <- genind.prep$INDIVIDUALS
       pop <- genind.prep$POP_ID
       genind.df <- genind.prep %>% ungroup() %>% 
         select(-c(INDIVIDUALS, POP_ID))
@@ -1988,7 +2000,7 @@ package and update your whitelist")
       # test <- input.imp %>% ungroup %>% filter(is.na(GT))
       
       # prepare the imputed dataset for gsi_sim or adegenet
-      message("Preparing imputed data set")
+      message("Preparing imputed data set for assignement analysis")
       if (assignment.analysis == "gsi_sim") {
         if (impute == "genotype") {
             gsi.prep.imp <- input.imp %>%
@@ -2038,6 +2050,12 @@ package and update your whitelist")
                 arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES) %>% 
                 tidyr::unite(MARKERS_ALLELES, MARKERS, ALLELES, sep = ".", remove = TRUE) %>%
                 tidyr::spread(data = ., key = MARKERS_ALLELES, value = COUNT) %>% 
+                ungroup () %>%
+                mutate(
+                  INDIVIDUALS = as.character(INDIVIDUALS),
+                  POP_ID = as.character(POP_ID), # required to be able to do xvalDapc with adegenet.
+                  POP_ID = factor(POP_ID) # xvalDapc does accept pop as ordered factor
+                ) %>% 
                 arrange(POP_ID, INDIVIDUALS)
             )
         } # end impute genotype adegenet
