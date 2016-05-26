@@ -5,19 +5,41 @@
 \title{A fast implementation of Weir and Cockerham (1984) Fst/Theta 
 (overall and paiwise estimates)}
 \arguments{
-\item{data}{A file or object in the global environment containing at least 
-these 4 columns: 
-\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping 
-of individuals.), 
-\code{MARKERS} and \code{GENOTYPES or GT} in a tidy format. During import, 
-only those columns names will be kept.}
+\item{data}{A file in the working directory or object in the global environment 
+in wide or long (tidy) formats. To import, the function uses internally
+\href{https://github.com/thierrygosselin/stackr}{stackr} 
+\code{\link[stackr]{read_long_tidy_wide}}. See details for more info.
 
-\item{sep}{(optional) A character string separating alleles. 
-Default: \code{sep = NULL}.}
+\emph{How to get a tidy data frame ?}
+\href{https://github.com/thierrygosselin/stackr}{stackr} 
+\code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+in a tidy data frame.}
 
-\item{pop.levels}{(optional, string) A character string with your populations 
-ordered.
+\item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
+case, the id of the pop.
+Use this argument to have the pop ordered your way instead of the default 
+alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
+instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
 Default: \code{pop.levels = NULL}.}
+
+\item{pop.labels}{(optional, string) Use this argument to rename/relabel
+your pop or combine your pop. e.g. To combine \code{"QUE"} and \code{"ONT"} 
+into a new pop called \code{"NEW"}:
+(1) First, define the levels for your pop with \code{pop.levels} argument: 
+\code{pop.levels = c("QUE", "ONT", "ALB")}. 
+(2) then, use \code{pop.labels} argument: 
+\code{pop.levels = c("NEW", "NEW", "ALB")}.#' 
+To rename \code{"QUE"} to \code{"TAS"}:
+\code{pop.labels = c("TAS", "ONT", "ALB")}.
+Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
+\code{strata} argument that can do the same thing, see below.}
+
+\item{strata}{(optional) A tab delimited file with 2 columns with header:
+\code{INDIVIDUALS} and \code{STRATA}.
+If a \code{strata} file is specified, the strata file will have
+precedence over any grouping found input file (\code{data}). 
+The \code{STRATA} column can be any hierarchical grouping.
+Default: \code{strata = NULL}.}
 
 \item{holdout.samples}{(optional) Samples that don't participate in the Fst 
 computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
@@ -25,84 +47,101 @@ Default: \code{holdout.samples = NULL}.}
 
 \item{pairwise}{(logical, optional) With \code{pairwise = TRUE}, the 
 pairwise WC84 Fst is calculated between populations. 
-Default: \code{pairwise = NULL}.}
+Default: \code{pairwise = FALSE}.}
 
 \item{ci}{(logical, optional) Compute bootstrapped confidence intervals. 
-Default: \code{ci = NULL}.}
+Default: \code{ci = FALSE}.}
 
 \item{iteration.ci}{(integer, optional) The number of iterations for 
 the boostraps (resampling with replacement of markers). 
 Default: \code{iteration.ci = 100}.}
 
-\item{quantiles.ci}{(character, optional) 
+\item{quantiles.ci}{(double, optional) 
 The quantiles for the bootstrapped confidence intervals. 
 Default: \code{quantiles.ci = c(0.025,0.975)}.}
 
 \item{digits}{(optional, integer) The number of decimal places to be used in 
 results.
-Default: \code{digits = 4}.}
+Default: \code{digits = 9}.}
 
 \item{parallel.core}{(optional) The number of core for parallel computation 
 of pairwise Fst. 
 If not selected \code{detectCores()-1} is used as default.}
 
-\item{messages}{(logical, optional) Show messages during computations. 
-Default: \code{messages = NULL}.}
+\item{verbose}{(logical, optional) \code{verbose = TRUE} to be chatty 
+during execution. 
+Default: \code{verbose = FALSE}.}
 
 \item{...}{other parameters passed to the function.}
 }
 \value{
 With pairwise comparison computed, the function returns a list with 
-10 objects: 
-\code{$sigma.loc}: the variance components 
-per locus (\code{lsiga}: among populations
-\code{lsigb}: among individuals within populations
-\code{lsigw}: within individuals),
-\code{$fst.markers}: the fst by markers,
-\code{$fst.ranked}: the fst ranked,
-\code{$fst.overall}: the mean fst overall markers,
-\code{$fis.markers}: the fis by markers,
-\code{$fis.overall}: the mean fis overall markers,
-\code{$pairwise.fst}: the pairwise fst in long format in a data frame,
-\code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix.
-\code{$pairwise.fst.full.matrix}: the full pairwise fst matrix (duplicated upper and lower triangle).
-\code{$pairwise.fst.ci.matrix}: the pairwise fst in the upper triangle 
+11 objects:
+\itemize{
+  \item \code{$sigma.loc}: the variance components per locus 
+      (\code{lsiga}: among populations, 
+      \code{lsigb}: among individuals within populations,
+      \code{lsigw}: within individuals)
+ \item \code{$fst.markers}: the fst by markers,
+ \item \code{$fst.ranked}: the fst ranked,
+ \item \code{$fst.overall}: the mean fst overall markers,
+ \item \code{$fis.markers}: the fis by markers,
+ \item \code{$fis.overall}: the mean fis overall markers,
+ \item \code{$pairwise.fst}: the pairwise fst in long format in a data frame,
+ \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix.
+ \item \code{$pairwise.fst.full.matrix}: the full pairwise fst matrix (duplicated upper and lower triangle).
+ \item \code{$pairwise.fst.ci.matrix}: the pairwise fst in the upper triangle.
+ \item \code{$fst.plot}: the histogram of the overall Fst per markers.
 matrix and the ci in the lower triangle matrix.
+}
 }
 \description{
 The function computes Weir and Cockerham (1984) 
-Fst for diploid genomes.
-Both overall and pairwise Fst can be estimated with confidence intervals 
-based on 
-bootstrap of markers (resampling with replacement). The function gives 
-identical results (at the 9th decimal) to \code{\link[hierfstat]{genet.dist}} 
-in \code{\link[hierfstat]{hierfstat}}, the Analysis of Molecular
-Variance (AMOVA, Excoffier et al., 1992; Michalakis and Excoffier, 1996) and 
+Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
+confidence intervals based on bootstrap of markers (resampling with replacement). 
+The function gives identical results \emph{at the 9th decimal} when tested 
+against \code{\link[hierfstat]{genet.dist}} in \pkg{hierfstat} and with 
 the Fst computed in \code{Calculate Distances} or \code{Paiwise Differentiation} 
-options in 
-\code{GenoDive} (Meirmans and Van Tienderen, 2004). \code{GenoDive} is still 
-the fastest option, but for an R implementation, \code{\link[assigner]{fst_WC84}} 
-is very fast and the computations takes advantage of \code{\link[dplyr]{dplyr}}, 
-\code{tidyr}, \code{purrr} and 
-\code{\link[parallel]{mclapply}} for parallel computing. 
-
-This function is dedicated to Louis Bernatchez, 
-in the hope that your students found the function fast and usefull.
+options in \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
+that uses the Analysis of Molecular Variance 
+(AMOVA, Excoffier et al., 1992; Michalakis and Excoffier, 1996). 
+The fastest computation is still 
+\href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
+but for an R implementation, \code{\link{fst_WC84}} is very fast. 
+The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
+\pkg{data.table} and \pkg{parallel}.
 }
 \details{
-Details for the sep argument:
-This character is directly used in regular expressions using strigi. 
-Some characters need to be preceeded by double backslashes \code{\\}. 
-For instance, "/" works but "|" must be coded as "\\|".
+\strong{Input data:}
+ 
+To discriminate the long from the wide format, 
+the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
+for "MARKERS" in column names (TRUE = long format).
+The data frame is tab delimitted.
+\strong{Wide format:}
+The wide format cannot store metadata info.
+The wide format starts with these 2 id columns: 
+\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
+the remaining columns are the markers in separate columns storing genotypes.
 
-From \code{GenoDive} manual:
-'In general, rather than to test differentiation between all pairs of 
-populations,
-it is adviseable to perform an overall test of population differentiation, 
-possibly using a hierarchical population structure, (see AMOVA)'
+\strong{Long/Tidy format:}
+The long format is considered to be a tidy data frame and can store metadata info. 
+(e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
+are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
+\code{MARKERS} and \code{GENOTYPE or GT}. The rest are considered metata info.
 
-To compute an AMOVA, use \code{GenoDive} or \code{\link[mmod]{Phi_st_Meirmans}} 
-in \code{\link[mmod]{mmod}}.
+\strong{2 genotypes formats are available:}
+6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
+6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
+The separator can be any of these: \code{"/", ":", "_", "-", "."}.
+
+\emph{How to get a tidy data frame ?}
+\pkg{stackr} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+in a tidy data frame.
+}
+\note{
+\strong{This function is dedicated to Louis Bernatchez!
+In the hope that your students find this function fast and usefull.}
 }
 \examples{
 \dontrun{
@@ -116,10 +155,12 @@ ci = TRUE,
 iteration.ci = 10000, 
 quantiles.ci = c(0.025,0.975),
 parallel.core = 8,
-messages = TRUE
+verbose = TRUE
 )
 To get the overall Fst estimate:
 wombat.fst.pairwise$fst.overall
+To get the Fst plot:
+wombat.fst.pairwise$fst.plots
 To get the pairwise Fst values with confidence intervals in a data frame:
 wombat.fst.pairwise$pairwise.fst
 }
@@ -148,14 +189,26 @@ Analysis of Population Structure.
 Evolution, 38, 1358-1370.
 }
 \seealso{
+From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive} manual:
+\emph{'In general, rather than to test differentiation between all pairs of 
+populations,
+it is adviseable to perform an overall test of population differentiation, 
+possibly using a hierarchical population structure, (see AMOVA)'}
+
+To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
+or \code{\link[mmod]{Phi_st_Meirmans}} 
+in \code{\link[mmod]{mmod}}.
+
 \code{hierfstat} is available on 
 CRAN \url{http://cran.r-project.org/web/packages/hierfstat/} and 
 github \url{https://github.com/jgx65/hierfstat/}
 
-\code{GenoDive} is available 
-\url{http://www.bentleydrummer.nl/software/software/GenoDive.html}.
+Link for \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 
 For Fisher's exact test and p-values per markers 
 see \code{mmod} \code{\link[mmod]{diff_test}}.
+
+\code{\link[stackr]{tidy_genomic_data}} to transform numerous genomic data 
+format in tidy data frames.
 }
 

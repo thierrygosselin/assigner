@@ -1,96 +1,154 @@
 # Compute Weir and Cockerham (1984) Fst
 
 #' @name fst_WC84
+
 #' @title A fast implementation of Weir and Cockerham (1984) Fst/Theta 
 #' (overall and paiwise estimates)
+
 #' @description The function computes Weir and Cockerham (1984) 
-#' Fst for diploid genomes.
-#' Both overall and pairwise Fst can be estimated with confidence intervals 
-#' based on 
-#' bootstrap of markers (resampling with replacement). The function gives 
-#' identical results (at the 9th decimal) to \code{\link[hierfstat]{genet.dist}} 
-#' in \code{\link[hierfstat]{hierfstat}}, the Analysis of Molecular
-#' Variance (AMOVA, Excoffier et al., 1992; Michalakis and Excoffier, 1996) and 
+#' Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
+#' confidence intervals based on bootstrap of markers (resampling with replacement). 
+#' The function gives identical results \emph{at the 9th decimal} when tested 
+#' against \code{\link[hierfstat]{genet.dist}} in \pkg{hierfstat} and with 
 #' the Fst computed in \code{Calculate Distances} or \code{Paiwise Differentiation} 
-#' options in 
-#' \code{GenoDive} (Meirmans and Van Tienderen, 2004). \code{GenoDive} is still 
-#' the fastest option, but for an R implementation, \code{\link[assigner]{fst_WC84}} 
-#' is very fast and the computations takes advantage of \code{\link[dplyr]{dplyr}}, 
-#' \code{tidyr}, \code{purrr} and 
-#' \code{\link[parallel]{mclapply}} for parallel computing. 
+#' options in \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
+#' that uses the Analysis of Molecular Variance 
+#' (AMOVA, Excoffier et al., 1992; Michalakis and Excoffier, 1996). 
+#' The fastest computation is still 
+#' \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
+#' but for an R implementation, \code{\link{fst_WC84}} is very fast. 
+#' The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
+#' \pkg{data.table} and \pkg{parallel}. 
 #' 
-#' This function is dedicated to Louis Bernatchez, 
-#' in the hope that your students found the function fast and usefull.
+#' @note \strong{This function is dedicated to Louis Bernatchez!
+#' In the hope that your students find this function fast and usefull.}
+
+#' @param data A file in the working directory or object in the global environment 
+#' in wide or long (tidy) formats. To import, the function uses internally
+#' \href{https://github.com/thierrygosselin/stackr}{stackr} 
+#' \code{\link[stackr]{read_long_tidy_wide}}. See details for more info.
 #' 
-#' @param data A file or object in the global environment containing at least 
-#' these 4 columns: 
-#' \code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping 
-#' of individuals.), 
-#' \code{MARKERS} and \code{GENOTYPES or GT} in a tidy format. During import, 
-#' only those columns names will be kept. 
-#' @param sep (optional) A character string separating alleles. 
-#' Default: \code{sep = NULL}.
-#' @param pop.levels (optional, string) A character string with your populations 
-#' ordered.
+#' \emph{How to get a tidy data frame ?}
+#' \href{https://github.com/thierrygosselin/stackr}{stackr} 
+#' \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+#' in a tidy data frame.
+
+#' @param pop.levels (optional, string) This refers to the levels in a factor. In this 
+#' case, the id of the pop.
+#' Use this argument to have the pop ordered your way instead of the default 
+#' alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
+#' instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
 #' Default: \code{pop.levels = NULL}.
+
+#' @param pop.labels (optional, string) Use this argument to rename/relabel
+#' your pop or combine your pop. e.g. To combine \code{"QUE"} and \code{"ONT"} 
+#' into a new pop called \code{"NEW"}:
+#' (1) First, define the levels for your pop with \code{pop.levels} argument: 
+#' \code{pop.levels = c("QUE", "ONT", "ALB")}. 
+#' (2) then, use \code{pop.labels} argument: 
+#' \code{pop.levels = c("NEW", "NEW", "ALB")}.#' 
+#' To rename \code{"QUE"} to \code{"TAS"}:
+#' \code{pop.labels = c("TAS", "ONT", "ALB")}.
+#' Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
+#' \code{strata} argument that can do the same thing, see below.
+
+#' @param strata (optional) A tab delimited file with 2 columns with header:
+#' \code{INDIVIDUALS} and \code{STRATA}.
+#' If a \code{strata} file is specified, the strata file will have
+#' precedence over any grouping found input file (\code{data}). 
+#' The \code{STRATA} column can be any hierarchical grouping.
+#' Default: \code{strata = NULL}.
+
 #' @param holdout.samples (optional) Samples that don't participate in the Fst 
 #' computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
 #' Default: \code{holdout.samples = NULL}.
+
 #' @param pairwise (logical, optional) With \code{pairwise = TRUE}, the 
 #' pairwise WC84 Fst is calculated between populations. 
-#' Default: \code{pairwise = NULL}.
+#' Default: \code{pairwise = FALSE}.
+
 #' @param ci (logical, optional) Compute bootstrapped confidence intervals. 
-#' Default: \code{ci = NULL}.
+#' Default: \code{ci = FALSE}.
+
 #' @param iteration.ci (integer, optional) The number of iterations for 
 #' the boostraps (resampling with replacement of markers). 
 #' Default: \code{iteration.ci = 100}.
-#' @param quantiles.ci (character, optional) 
+
+#' @param quantiles.ci (double, optional) 
 #' The quantiles for the bootstrapped confidence intervals. 
 #' Default: \code{quantiles.ci = c(0.025,0.975)}.
+
 #' @param digits (optional, integer) The number of decimal places to be used in 
 #' results.
-#' Default: \code{digits = 4}.
+#' Default: \code{digits = 9}.
+
 #' @param parallel.core (optional) The number of core for parallel computation 
 #' of pairwise Fst. 
 #' If not selected \code{detectCores()-1} is used as default.
-#' @param messages (logical, optional) Show messages during computations. 
-#' Default: \code{messages = NULL}.
+
+#' @param verbose (logical, optional) \code{verbose = TRUE} to be chatty 
+#' during execution. 
+#' Default: \code{verbose = FALSE}.
+
 #' @param ... other parameters passed to the function.
 
 #' @return With pairwise comparison computed, the function returns a list with 
-#' 10 objects: 
-#' \code{$sigma.loc}: the variance components 
-#' per locus (\code{lsiga}: among populations
-#' \code{lsigb}: among individuals within populations
-#' \code{lsigw}: within individuals),
-#' \code{$fst.markers}: the fst by markers,
-#' \code{$fst.ranked}: the fst ranked,
-#' \code{$fst.overall}: the mean fst overall markers,
-#' \code{$fis.markers}: the fis by markers,
-#' \code{$fis.overall}: the mean fis overall markers,
-#' \code{$pairwise.fst}: the pairwise fst in long format in a data frame,
-#' \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix.
-#' \code{$pairwise.fst.full.matrix}: the full pairwise fst matrix (duplicated upper and lower triangle).
-#' \code{$pairwise.fst.ci.matrix}: the pairwise fst in the upper triangle 
+#' 11 objects:
+#' \itemize{
+#'   \item \code{$sigma.loc}: the variance components per locus 
+#'       (\code{lsiga}: among populations, 
+#'       \code{lsigb}: among individuals within populations,
+#'       \code{lsigw}: within individuals)
+#'  \item \code{$fst.markers}: the fst by markers,
+#'  \item \code{$fst.ranked}: the fst ranked,
+#'  \item \code{$fst.overall}: the mean fst overall markers,
+#'  \item \code{$fis.markers}: the fis by markers,
+#'  \item \code{$fis.overall}: the mean fis overall markers,
+#'  \item \code{$pairwise.fst}: the pairwise fst in long format in a data frame,
+#'  \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix.
+#'  \item \code{$pairwise.fst.full.matrix}: the full pairwise fst matrix (duplicated upper and lower triangle).
+#'  \item \code{$pairwise.fst.ci.matrix}: the pairwise fst in the upper triangle.
+#'  \item \code{$fst.plot}: the histogram of the overall Fst per markers.
 #' matrix and the ci in the lower triangle matrix.
-#' @details Details for the sep argument:
-#' This character is directly used in regular expressions using strigi. 
-#' Some characters need to be preceeded by double backslashes \code{\\}. 
-#' For instance, "/" works but "|" must be coded as "\\|".
+#' }
+
+#' @details \strong{Input data:}
+#'  
+#' To discriminate the long from the wide format, 
+#' the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
+#' for "MARKERS" in column names (TRUE = long format).
+#' The data frame is tab delimitted.
+
+#' \strong{Wide format:}
+#' The wide format cannot store metadata info.
+#' The wide format starts with these 2 id columns: 
+#' \code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
+#' the remaining columns are the markers in separate columns storing genotypes.
 #' 
-#' From \code{GenoDive} manual:
-#' 'In general, rather than to test differentiation between all pairs of 
-#' populations,
-#' it is adviseable to perform an overall test of population differentiation, 
-#' possibly using a hierarchical population structure, (see AMOVA)'
+#' \strong{Long/Tidy format:}
+#' The long format is considered to be a tidy data frame and can store metadata info. 
+#' (e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
+#' are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
+#' \code{MARKERS} and \code{GENOTYPE or GT}. The rest are considered metata info.
 #' 
-#' To compute an AMOVA, use \code{GenoDive} or \code{\link[mmod]{Phi_st_Meirmans}} 
-#' in \code{\link[mmod]{mmod}}.
+#' \strong{2 genotypes formats are available:}
+#' 6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
+#' 6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
+#' The separator can be any of these: \code{"/", ":", "_", "-", "."}.
+#' 
+#' \emph{How to get a tidy data frame ?}
+#' \pkg{stackr} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+#' in a tidy data frame.
+
+
+
+
 #' @export
 #' @rdname fst_WC84
 #' @import stringi
 #' @import dplyr
 #' @import utils
+#' @import stackr
 #' @importFrom purrr map
 #' @importFrom data.table fread
 
@@ -106,10 +164,12 @@
 #' iteration.ci = 10000, 
 #' quantiles.ci = c(0.025,0.975),
 #' parallel.core = 8,
-#' messages = TRUE
+#' verbose = TRUE
 #' )
 #' To get the overall Fst estimate:
 #' wombat.fst.pairwise$fst.overall
+#' To get the Fst plot:
+#' wombat.fst.pairwise$fst.plots
 #' To get the pairwise Fst values with confidence intervals in a data frame:
 #' wombat.fst.pairwise$pairwise.fst
 #' }
@@ -130,16 +190,28 @@
 #' Analysis of Population Structure. 
 #' Evolution, 38, 1358-1370.
 
-#' @seealso 
+#' @seealso
+#' From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive} manual:
+#' \emph{'In general, rather than to test differentiation between all pairs of 
+#' populations,
+#' it is adviseable to perform an overall test of population differentiation, 
+#' possibly using a hierarchical population structure, (see AMOVA)'}
+#' 
+#' To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
+#' or \code{\link[mmod]{Phi_st_Meirmans}} 
+#' in \code{\link[mmod]{mmod}}.
+#' 
 #' \code{hierfstat} is available on 
 #' CRAN \url{http://cran.r-project.org/web/packages/hierfstat/} and 
 #' github \url{https://github.com/jgx65/hierfstat/}
 #' 
-#' \code{GenoDive} is available 
-#' \url{http://www.bentleydrummer.nl/software/software/GenoDive.html}.
+#' Link for \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 #' 
 #' For Fisher's exact test and p-values per markers 
 #' see \code{mmod} \code{\link[mmod]{diff_test}}.
+#' 
+#' \code{\link[stackr]{tidy_genomic_data}} to transform numerous genomic data 
+#' format in tidy data frames.
 
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
@@ -154,21 +226,20 @@ if (getRversion() >= "2.15.1"){
 
 # Fst function: Weir & Cockerham 1984
 fst_WC84 <- function(data,
-                     sep = NULL,
-                     pop.levels = NULL,
+                     pop.levels = NULL, 
+                     pop.labels = NULL, 
+                     strata = NULL,
                      holdout.samples = NULL,
-                     pairwise = NULL,
-                     ci = NULL,
+                     pairwise = FALSE,
+                     ci = FALSE,
                      iteration.ci = 100,
                      quantiles.ci = c(0.025,0.975),
-                     digits = 4,
+                     digits = 9,
                      parallel.core = detectCores()-1,
-                     messages = NULL,
+                     verbose = FALSE,
                      ...) {
-  # data <- input # test
-  # holdout.samples <- holdout$INDIVIDUALS # test
   
-  if(!is.null(messages)){
+  if(verbose){
     cat("#######################################################################\n")
     cat("######################### assigner::fst_WC84 ##########################\n")
     cat("#######################################################################\n")
@@ -177,63 +248,66 @@ fst_WC84 <- function(data,
   
   # Checking for missing and/or default arguments ------------------------------
   if (missing(data)) stop("Input file necessary to write the genepop file is missing")
-  if (missing(holdout.samples)) holdout.samples <- NULL
-  if (missing(sep)) sep <- NULL
-  if (missing(pop.levels)) pop.levels <- NULL
-  if (missing(pairwise)) pairwise <- NULL
-  if (missing(ci)) ci <- NULL
-  if (missing(iteration.ci)) iteration.ci <- 100
-  if (missing(quantiles.ci)) quantiles.ci <- c(0.025,0.975)
-  if (missing(digits)) digits <- 4
-  if (missing(messages)) messages <- NULL
-  if (missing(parallel.core) | is.null(parallel.core)) parallel.core <- detectCores()-1
+  # if (missing(holdout.samples)) holdout.samples <- NULL
+  # if (missing(pop.levels)) pop.levels <- NULL
+  # if (missing(pop.labels)) pop.labels <- NULL
+  if (!is.null(pop.levels) & is.null(pop.labels)) pop.labels <- pop.levels
+  # if (missing(strata)) strata <- NULL
+  # if (missing(pairwise)) pairwise <- NULL
+  # if (missing(ci)) ci <- NULL
+  # if (missing(iteration.ci)) iteration.ci <- 100
+  # if (missing(quantiles.ci)) quantiles.ci <- c(0.025,0.975)
+  # if (missing(digits)) digits <- 9
+  # if (missing(verbose)) verbose <- FALSE
+  # if (missing(parallel.core) | is.null(parallel.core)) parallel.core <- detectCores()-1
   
   # Import data ---------------------------------------------------------------
-  if(!is.null(messages)) message("Importing data")
-  if (is.vector(data) == TRUE) {
-    input <- data.table::fread(
-      input = data,
-      sep = "\t",
-      stringsAsFactors = FALSE, 
-      header = TRUE,
-      select = c("POP_ID", "INDIVIDUALS", "MARKERS", "GENOTYPE"),
-      showProgress = TRUE,
-      verbose = FALSE
-    ) %>% 
-      as_data_frame()
-  } else {
-    input <- data
-  }
+  if(verbose) message("Importing data")
+  input <- stackr::read_long_tidy_wide(data = data)
   
-  # GT or GENOTYPE in colnames
-  new.colnames <- stri_replace_all_fixed(str = colnames(input), 
-                                         pattern = "GENOTYPE", 
-                                         replacement = "GT", 
-                                         vectorize_all = FALSE)
-  colnames(input) <- new.colnames
-  
-  # keeping important columns
-  input <- input %>% 
-    select(POP_ID, INDIVIDUALS, MARKERS, GT)
-  
-  if (!is.null(sep)) {
-    input <- input %>% 
-      mutate(GT = stri_replace_all_fixed(str = GT, 
-                                         pattern = sep, 
-                                         replacement = "", 
-                                         vectorize_all = FALSE)
-      )
-  }
-  
-  # pop.levels -----------------------------------------------------------------
-  if (!is.null(pop.levels)) {
-    input <- input %>%
-      mutate(POP_ID = factor(POP_ID, levels = pop.levels, ordered =TRUE)) %>% 
-      arrange(POP_ID, INDIVIDUALS, MARKERS)
-  } else {
-    input <- input %>%
-      mutate(POP_ID = factor(POP_ID)) %>% 
-      arrange(POP_ID, INDIVIDUALS, MARKERS)
+  # population levels and strata  ----------------------------------------------
+  if (is.null(strata)){ # no strata
+    if(is.null(pop.levels)) { # no pop.levels
+      if (is.factor(input$POP_ID)) {
+        input$POP_ID <- droplevels(x = input$POP_ID)
+      } else {
+        input$POP_ID <- factor(input$POP_ID)
+      }
+    } else { # with pop.levels
+      input <- input %>%
+        mutate( # Make population ready
+          POP_ID = factor(
+            stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, 
+                                   vectorize_all = FALSE), 
+            levels = unique(pop.labels), 
+            ordered = TRUE
+          )
+        )
+    }
+  } else { # Make population ready with the strata provided
+    strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
+      rename(POP_ID = STRATA)
+    
+    if(is.null(pop.levels)) { # no pop.levels
+      input <- input %>%
+        select(-POP_ID) %>%
+        mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
+        left_join(strata.df, by = "INDIVIDUALS") %>% 
+        mutate(POP_ID = factor(POP_ID))
+    } else { # with pop.levels
+      input <- input %>%
+        select(-POP_ID) %>%
+        mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
+        left_join(strata.df, by = "INDIVIDUALS") %>% 
+        mutate(
+          POP_ID = factor(
+            stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, 
+                                   vectorize_all = FALSE), 
+            levels = unique(pop.labels), 
+            ordered = TRUE
+          )
+        )
+    }
   }
   
   # Get the number of pop  -----------------------------------------------------
@@ -489,6 +563,19 @@ fst_WC84 <- function(data,
     # Fis overall   ------------------------------------------------------------
     fis.overall <- fst.fis.overall %>% select(FIS)
     
+    # Plot -----------------------------------------------------------------------
+    fst.plot <- ggplot(fst.markers, aes(x = FST, na.rm = T))+
+      geom_histogram(binwidth = 0.01)+
+      labs(x = "Fst overall")+
+      expand_limits(x = 0)+
+      theme(
+        legend.position = "none",
+        axis.title.x = element_text(size = 10, family = "Helvetica", face = "bold"),
+        axis.title.y = element_text(size = 10, family = "Helvetica", face = "bold"),
+        legend.title = element_text(size = 10, family = "Helvetica", face = "bold"),
+        legend.text = element_text(size = 10, family = "Helvetica", face = "bold"),
+        strip.text.x = element_text(size = 10, family = "Helvetica", face = "bold"))
+    
     # Results ------------------------------------------------------------------
     res <- list()
     res$sigma.loc <- sigma.loc
@@ -497,16 +584,18 @@ fst_WC84 <- function(data,
     res$fst.overall <- fst.overall
     res$fis.markers <- fis.markers
     res$fis.overall <- fis.overall
+    res$fst.plot <- fst.plot
+    
     return(res)
   } # End compute_fst function
   
   # Compute global Fst ---------------------------------------------------------
-  if(!is.null(messages)) message("Computing global fst")
+  if(verbose) message("Computing global fst")
   res <- compute_fst(x = data.genotyped)
   
   # Compute pairwise Fst -------------------------------------------------------
-  if (!is.null(pairwise)) {
-    if(!is.null(messages)) message("Computing paiwise fst")
+  if (pairwise) {
+    if (verbose) message("Computing paiwise fst")
     pop.list <- levels(input$POP_ID) # pop list
     # all combination of populations
     pop.pairwise <- combn(unique(pop.list), 2, simplify = FALSE) 
@@ -595,10 +684,15 @@ fst_WC84 <- function(data,
     full.mat <- "pairwise fst not selected"
   }
   
+  
   # messages -------------------------------------------------------------------
-  if(!is.null(messages)){
+  if(verbose){
     cat("############################### RESULTS ###############################\n")
-    message(stri_paste("Fst: ", res$fst.overall$FST, " [", res$fst.overall$CI_LOW, " - ", res$fst.overall$CI_HIGH, "]"))
+    if (pairwise) {
+      message(stri_paste("Fst: ", res$fst.overall$FST, " [", res$fst.overall$CI_LOW, " - ", res$fst.overall$CI_HIGH, "]"))
+    } else{
+      message(stri_paste("Fst: ", res$fst.overall$FST))
+    }
     cat("#######################################################################\n")
   }
   # Results pairwise -----------------------------------------------------------
