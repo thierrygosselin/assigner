@@ -143,6 +143,10 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Version, new feature and bug history now lives in the [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
+**v.0.2.8**
+* While changing some lines with `tidyr::spread` and `tidyr::gather` for `data.table::dcast.data.table` and `data.table::melt.data.table` to make the code faster, I forgot to split genotype into alleles for `gsi_sim`.
+* please update both **stackr** and **assigner**
+
 **v.0.2.7**
 * you need to update [stackr] (https://github.com/thierrygosselin/stackr) to v.0.2.7
 to appreciate this new version of assigner.
