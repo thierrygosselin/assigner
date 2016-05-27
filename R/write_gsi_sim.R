@@ -126,7 +126,18 @@ write_gsi_sim <- function (
   list.markers <- unique(input$MARKERS)           # list of markers
   
   # Spread/dcast in wide format ------------------------------------------------------
-  input <- data.table::dcast.data.table(as.data.table(input), formula = POP_ID + INDIVIDUALS ~ MARKERS, value.var = "GT") %>% 
+  input <- input %>%
+    tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
+    tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>% 
+    arrange(MARKERS) %>%
+    tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
+    arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES)
+  
+  input <- data.table::dcast.data.table(
+    as.data.table(input), 
+    formula = POP_ID + INDIVIDUALS ~ MARKERS_ALLELES, 
+    value.var = "GT"
+  ) %>% 
     as_data_frame()
   
   # population levels ----------------------------------------------------------
