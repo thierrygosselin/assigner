@@ -31,7 +31,8 @@
 #' \emph{How to get a tidy data frame ?}
 #' \href{https://github.com/thierrygosselin/stackr}{stackr} 
 #' \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
-#' in a tidy data frame.
+#' in a tidy data frame. You can also use this function to filter your dataset using
+#' whitelist of markers, blacklist of individuals and genotypes.
 
 #' @param pop.levels (optional, string) This refers to the levels in a factor. In this 
 #' case, the id of the pop.
@@ -350,6 +351,20 @@ fst_WC84 <- function(data,
       tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3) %>%
       # separate the genotypes into alleles
       tidyr::gather(key = ALLELES_GROUP, ALLELES, -c(INDIVIDUALS, POP_ID, MARKERS))
+
+      # freq.al.locus2 <- tidyr::separate(data = x, col = GT, into = c("A1", "A2"), sep = 3)
+      # system.time(
+      #   freq.al.locus2 <- data.table::melt.data.table(
+      #     data = as.data.table(freq.al.locus2), 
+      #     id.vars = c("INDIVIDUALS", "POP_ID", "MARKERS"), 
+      #     variable.name = "ALLELES_GROUP",
+      #     variable.factor = FALSE,
+      #     value.name = "ALLELES"
+      #   ) %>% 
+      #     as_data_frame()
+      # )
+    
+    # identical(freq.al.locus, freq.al.locus2)
     
     #pop
     freq.al.locus.pop <- suppressWarnings(
