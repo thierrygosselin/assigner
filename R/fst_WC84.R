@@ -254,7 +254,7 @@ fst_WC84 <- function(data,
   # Import data ---------------------------------------------------------------
   if(verbose) message("Importing data")
   input <- stackr::read_long_tidy_wide(data = data)
-  
+
   # population levels and strata  ----------------------------------------------
   if (is.null(strata)){ # no strata
     if(is.null(pop.levels)) { # no pop.levels
