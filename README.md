@@ -146,6 +146,8 @@ Version, new feature and bug history now lives in the [NEWS.md file] (https://gi
 **v.0.2.8**
 * While changing some lines with `tidyr::spread` and `tidyr::gather` for `data.table::dcast.data.table` and `data.table::melt.data.table` to make the code faster, I forgot to split genotype into alleles for `gsi_sim`.
 * please update both **stackr** and **assigner**
+* the build error from Travis will be fixed soon. 
+It should not affect the package "experience"" in any way.
 
 **v.0.2.7**
 * you need to update [stackr] (https://github.com/thierrygosselin/stackr) to v.0.2.7
