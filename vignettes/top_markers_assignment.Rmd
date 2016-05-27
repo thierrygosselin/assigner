@@ -1,0 +1,134 @@
+---
+title: "Top markers for assignment"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Top markers for assignment}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>")
+options(tibble.print_min = 4L, tibble.print_max = 4L)
+```
+
+# Introduction
+One of the many reasons to conduct genome scans is to have a subset of markers to
+conduct assignment analysis. With **assigner** it's easy to test those markers
+by using the list of markers under directional selection with the argument 
+`whitelist.markers`. 
+
+Another approach to prune the markers and keep only the top markers, 
+those giving the best assignment results, is to use the `sampling.method = "ranked`
+to conduct the assignment. This section describes some useful tools for 
+understanding this alternative approach to keep relevant markers for population assignment.
+
+# Details of the approach
+Using `sampling.method = "ranked` will rank the markers based on 
+Weir and Cockerham (1984) Fst. 
+To reduce the bias introduced by ranking based on Fst (reviewed in Anderson 2010),
+use the `thl` and `iteration.method` arguments.
+More iterations will provide better estimate and reduce the bias introduced by 
+the mixture of samples used inside the training and holdhout set. This is more
+important with admixed populations or populations characterized by lower Fst.
+
+To reduce assignment bias introduced by uneven sample size between your groups, 
+**assigner** provides 2 addtional arguments: `subsample` and `iteration.subsample`.
+Using more iterations will make sure that all potential combinations of individuals
+are used and will provide better null distribution for the statistics.
+
+Run an assignment analysis with these arguments. Try without imputations first.
+
+
+1. Clean your desk and remove the clutter in the global environment
+```r
+rm(list=ls())
+```
+
+1. Load the required libraries
+```r
+if (!require("devtools")) install.packages("devtools")
+if (!require("reshape2")) install.packages("reshape2")
+if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("stringr")) install.packages("stringr")
+if (!require("stringi")) install.packages("stringi")
+if (!require("plyr")) install.packages("plyr")
+if (!require("dplyr")) install.packages("dplyr")
+if (!require("tidyr")) install.packages("tidyr")
+if (!require("readr")) install.packages("readr")
+if (!require("purrr")) install.packages("purrr")
+if (!require("data.table")) install.packages("data.table")
+if (!require("adegenet")) install.packages("adegenet")
+if (!require("stackr")) install_github("thierrygosselin/stackr")
+if (!require("assigner")) install_github("thierrygosselin/assigner")
+#install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run
+```
+
+
+1. The first tool we'll use is `assigner::import_subsamples_fst`. 
+This function imports all the fst files used during the iteration process of `thl`,
+for all the subsamples:
+```r
+# Get the folder containing the data:
+https://www.dropbox.com/sh/t1eqd5rp1gqfipv/AABcLpH-0RCWlMp3aFP2_FF0a?dl=0
+# change the path below to reflect the directory
+top.fst <- import_subsamples_fst(dir.path = "~/Downloads/top_markers_assignment")
+```
+
+1. We will use `dplyr` verbs to filer the huge data frame. Here, we will keep
+only the top 500 ranked in every iterations and subsamples. 
+I chose this number, because based on the plot, not much gain in power is obtained
+by using more markers with this dataset:
+```r
+top.fst.select <- top.fst %>% 
+filter(RANKING <= 500)
+```
+
+1. Here, we want to keep only the markers that are systematically found in 
+the top 500, independantly of the subsample and the iterations... 
+i.e. independant of individual composition/mixture at the subsample level and 
+at the thl level.
+```r
+top.fst.select.count <- top.fst.select %>% 
+group_by(MARKERS) %>% 
+tally %>% 
+arrange(desc(n)) %>% 
+mutate(RANKING = seq(from = 1, to = n())) %>% 
+filter(RANKING <= 500)
+```
+
+4. From this we can build a whitelist of markers:
+```r
+whitelist.top.500.markers <- top.fst.select.count %>% 
+select(MARKERS) %>% 
+separate(col = MARKERS, into = c("CHROM", "LOCUS", "POS"), sep = "_")
+whitelist.top.500.markers <- plyr::colwise(as.integer)(whitelist.top.500.markers)
+# To write to the working directory:
+write_tsv(x = whitelist.top.500.markers, path = "whitelist.top.500.markers.tsv", col_names = TRUE)
+```
+
+# Conclusion
+In short, you now have a whitelist of markers that will give you the best overall
+assignment results.
+
+Optimal assignment are more likely for these reasons:
+
+* the markers were crafted using the Training, Holdout, Leave-one-out approach
+
+* individuals were bootstrap with resampling using the iteration argument inside 
+the training/holdout sets
+
+* reduce bias is expected if populations have unequal sample size because the 
+subsample argument and bootstrap with resampling was used to level the number 
+of individuals per populations
+
+* using supplementary individuals will certainly highlight that you have done your homework
+
+**References**
+
+Anderson, E. C. (2010) Assessing the power of informative subsets of loci for population assignment: standard methods are upwardly biased. Molecular ecology resources 10, 4:701-710.
+
+Weir BS, Cockerham CC (1984) Estimating F-Statistics for the 
+Analysis of Population Structure. Evolution, 38, 1358–1370.
+

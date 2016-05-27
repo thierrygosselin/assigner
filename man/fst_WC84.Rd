@@ -13,7 +13,8 @@ in wide or long (tidy) formats. To import, the function uses internally
 \emph{How to get a tidy data frame ?}
 \href{https://github.com/thierrygosselin/stackr}{stackr} 
 \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
-in a tidy data frame.}
+in a tidy data frame. You can also use this function to filter your dataset using
+whitelist of markers, blacklist of individuals and genotypes.}
 
 \item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
 case, the id of the pop.

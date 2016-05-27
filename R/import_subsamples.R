@@ -29,7 +29,8 @@ import_subsamples <- function(dir.path, imputations){
   if (missing (dir.path)) stop("dir.path argument missing")
   if (missing (imputations)) imputations <- FALSE
   
-  sampling.method <- stri_detect_fixed(str = dir.path, pattern = "ranked") # looks for ranked
+  sampling.method.files <- list.files(path = dir.path, pattern = "assignment", full.names = FALSE)[1]
+  sampling.method <- stri_detect_fixed(str = sampling.method.files, pattern = "ranked") # looks for ranked
   
   subsample.folders <- list.files(path = dir.path, pattern = "subsample_", full.names = FALSE)
   data <- list()
@@ -37,15 +38,15 @@ import_subsamples <- function(dir.path, imputations){
     sub.name <- stri_replace_all_fixed(str = i, pattern = "_", replacement = ".", vectorize_all = FALSE)
     if (sampling.method == FALSE){
       if (imputations == TRUE){
-        filename <- stri_paste(i, "/","assignment.random.imputed.results.individuals.iterations.", sub.name, ".tsv")
+        filename <- stri_paste(dir.path, "/", i, "/","assignment.random.imputed.results.individuals.iterations.", sub.name, ".tsv")
       } else {
-        filename <- stri_paste(i, "/","assignment.random.no.imputation.results.individuals.iterations.", sub.name, ".tsv")
+        filename <- stri_paste(dir.path, "/", i, "/","assignment.random.no.imputation.results.individuals.iterations.", sub.name, ".tsv")
       }
     } else {
       if (imputations == TRUE){
-        filename <- stri_paste(i, "/","assignment.ranked.imputed.results.individuals.iterations.", sub.name, ".tsv")
+        filename <- stri_paste(dir.path, "/", i, "/","assignment.ranked.imputed.results.individuals.iterations.", sub.name, ".tsv")
       } else {
-        filename <- stri_paste(i, "/","assignment.ranked.no.imputation.results.individuals.iterations.", sub.name, ".tsv")
+        filename <- stri_paste(dir.path, "/", i, "/","assignment.ranked.no.imputation.results.individuals.iterations.", sub.name, ".tsv")
       }
     }
     subsample.data <- read_tsv(file = filename, col_names = TRUE) 

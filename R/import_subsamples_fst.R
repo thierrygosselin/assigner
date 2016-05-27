@@ -26,9 +26,9 @@
 import_subsamples_fst <- function(dir.path){
   if (missing (dir.path)) stop("dir.path argument missing")
   
-  sampling.method <- stri_detect_fixed(str = dir.path, pattern = "ranked") # looks for ranked
+  # sampling.method <- stri_detect_fixed(str = dir.path, pattern = "ranked") # looks for ranked
+  # if (sampling.method == FALSE) stop("This function doesn't work for markers sampled randomly")
   
-  if (sampling.method == FALSE) stop("This function doesn't work for markers sampled randomly")
   subsample.folders <- list.files(path = dir.path, pattern = "subsample_", full.names = FALSE)
   
   data.subsample <- list()
