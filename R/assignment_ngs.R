@@ -932,17 +932,14 @@ haplotype file and create a whitelist, for other file type, use
       maf.data <- NULL
     } # End of MAF filters
     
-    # Change the genotype coding  **********************************************
-    message("Recoding genotypes")
-    # adegenet & gsi_sim
-    
-    gsi.prep <- input %>%
-      tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
-      tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) 
-    
+    # Adegenet  ****************************************************************
+
     if (assignment.analysis == "adegenet" ) {
+      message("Preparing adegenet object")
       genind.prep <- suppressWarnings(
-        gsi.prep %>%
+        input %>%
+          tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
+          tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID))  %>%
           filter(GT != "000") %>% 
           tidyr::spread(data = ., key = MARKERS, value = GT) %>% # this reintroduce the missing, but with NA
           ungroup() %>% 
@@ -1029,15 +1026,6 @@ haplotype file and create a whitelist, for other file type, use
       
       # prepare the imputed dataset for gsi_sim or adegenet
       message("Preparing imputed data set for assignement analysis")
-      
-      # gsi_sim
-      if (assignment.analysis == "gsi_sim") {
-        gsi.prep.imp <- input.imp %>%
-          tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3) %>%  # separate the genotypes into alleles
-          tidyr::gather(key = ALLELES, GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>% 
-          select(POP_ID, INDIVIDUALS, MARKERS, ALLELES, GT) %>% 
-          arrange(POP_ID, INDIVIDUALS, MARKERS, ALLELES)
-      } # end gsi_sim
       
       # adegenet
       if (assignment.analysis == "adegenet") {
@@ -1166,18 +1154,15 @@ haplotype file and create a whitelist, for other file type, use
       filename, 
       ...
     ) {
-      # data <- gsi.prep #test
-      # data <- gsi.prep.imp #test
+      # data <- input #test
       # data <- genind.prep #test
+      # data <- genind.object.imp # test
       # missing.data <- "no.imputation" #test
+      
       data.select <- suppressWarnings(
         data %>%
           semi_join(select.markers, by = "MARKERS") %>%
-          arrange(MARKERS) %>%  # make tidy
-          tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
-          arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES) %>%
-          tidyr::spread(data = ., key = MARKERS_ALLELES, value = GT) %>%
-          arrange(POP_ID, INDIVIDUALS)
+          arrange(POP_ID, INDIVIDUALS, MARKERS)
       )
       
       # Write gsi_sim input file to directory
@@ -1476,7 +1461,7 @@ Progress can be monitored with activity in the folder...")
         
         if (assignment.analysis == "gsi_sim") {
           assignment.no.imp <- assignment_analysis(
-            data = gsi.prep,
+            data = input,
             select.markers = select.markers,
             markers.names = markers.names,
             missing.data = "no.imputation", 
@@ -1528,7 +1513,7 @@ Progress can be monitored with activity in the folder...")
           )
           if (assignment.analysis == "gsi_sim") {
             assignment.imp <- assignment_analysis(
-              data = gsi.prep.imp,
+              data = input.imp,
               select.markers = select.markers,
               markers.names = markers.names,
               missing.data = missing.data, 
@@ -1562,7 +1547,6 @@ Progress can be monitored with activity in the folder...")
         # Compile assignment results each marker number for the iteration
         if (is.null(imputation.method)) {
           assignment <- assignment.no.imp
-          gsi.prep.imp <- NULL
           input.imp <- NULL
         } else {
           assignment <- bind_rows(assignment.no.imp, assignment.imp)
@@ -1955,7 +1939,7 @@ Progress can be monitored with activity in the folder...")
           )
           if (assignment.analysis == "gsi_sim") {
             assignment.no.imp <- assignment_analysis(
-              data = gsi.prep,
+              data = input,
               select.markers = select.markers,
               markers.names = markers.names,
               missing.data = "no.imputation", 
@@ -2015,7 +1999,7 @@ Progress can be monitored with activity in the folder...")
             )
             if (assignment.analysis == "gsi_sim") {
               assignment.imp <- assignment_analysis(
-                data = gsi.prep.imp,
+                data = input.imp,
                 select.markers = select.markers,
                 markers.names = markers.names,
                 missing.data = missing.data, 
@@ -2027,7 +2011,7 @@ Progress can be monitored with activity in the folder...")
             }
             if (assignment.analysis == "adegenet") {
               assignment.imp <- assignment_analysis_adegenet(
-                data = gsi.prep.imp,
+                data = genind.object.imp,
                 select.markers = select.markers,
                 markers.names = markers.names,
                 missing.data = missing.data, 
@@ -2047,7 +2031,6 @@ Progress can be monitored with activity in the folder...")
           if (is.null(imputation.method)) {# with imputations
             assignment <- assignment.no.imp
             fst.ranked.imp <- NULL
-            gsi.prep.imp <- NULL
             input.imp <- NULL
           } else {
             assignment <- bind_rows(assignment.no.imp, assignment.imp)
@@ -2065,10 +2048,8 @@ Progress can be monitored with activity in the folder...")
           i = i,
           holdout = holdout,
           input = input,
-          gsi.prep = gsi.prep,
           input.imp = input.imp,
           # vcf = vcf.imp, # was an error before, double check...
-          gsi.prep.imp = gsi.prep.imp,
           pop.levels = pop.levels,
           pop.labels = pop.labels,
           sampling.method = sampling.method,
