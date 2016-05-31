@@ -120,7 +120,7 @@ de novo CHROM column with 'un' need to be changed to 1.
 In the VCF, the column ID is the LOCUS identification.
 Default \code{whitelist.markers = NULL} for no whitelist of markers.}
 
-\item{monomorphic.out}{(optional) For PLINK file, should the monomorphic 
+\item{monomorphic.out}{(optional) Should the monomorphic 
 markers present in the dataset be filtered out ? 
 Default: \code{monomorphic.out = TRUE}.}
 
