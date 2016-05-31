@@ -80,7 +80,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="details-of-the-approach" class="section level1">
 <h1>Details of the approach</h1>
 <p>Using <code>sampling.method = &quot;ranked</code> will rank the markers based on Weir and Cockerham (1984) Fst. To reduce the bias introduced by ranking based on Fst (reviewed in Anderson 2010), use the <code>thl</code> and <code>iteration.method</code> arguments. More iterations will provide better estimate and reduce the bias introduced by the mixture of samples used inside the training and holdhout set. This is more important with admixed populations or populations characterized by lower Fst.</p>
-<p>To reduce assignment bias introduced by uneven sample size between your groups, <strong>assigner</strong> provides 2 addtional arguments: <code>subsample</code> and <code>iteration.subsample</code>. Using more iterations will make sure that all potential combinations of individuals are used and will provide better null distribution for the statistics.</p>
+<p>To reduce assignment bias introduced by uneven sample size between your groups, <strong>assigner</strong> provides 2 additional arguments: <code>subsample</code> and <code>iteration.subsample</code>. Using more iterations will make sure that all potential combinations of individuals are used and will provide better null distribution for the statistics.</p>
 <p>Run an assignment analysis with these arguments. Try without imputations first.</p>
 <ol style="list-style-type: decimal">
 <li><p>Clean your desk and remove the clutter in the global environment</p>
@@ -106,7 +106,7 @@ if (!<span class="kw">require</span>(<span class="st">&quot;assigner&quot;</span
 https:<span class="er">//</span>github.com/thierrygosselin/package_data/raw/master/top_markers_assignment.tar.gz
 <span class="co"># change the path below to reflect the directory</span>
 top.fst &lt;-<span class="st"> </span><span class="kw">import_subsamples_fst</span>(<span class="dt">dir.path =</span> <span class="st">&quot;~/Downloads/top_markers_assignment&quot;</span>)</code></pre></div></li>
-<li><p>We will use <code>dplyr</code> verbs to filer the huge data frame. Here, we will keep only the top 500 ranked in every iterations and subsamples. I chose this number, because based on the plot, not much gain in power is obtained by using more markers with this dataset:</p>
+<li><p>We will use <code>dplyr</code> verbs to filter the huge data frame. Here, we will keep only the top 500 ranked in every iteration and subsample. I chose this number, because based on the plot, not much gain in power is obtained by using more markers with this dataset:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">top.fst.select &lt;-<span class="st"> </span>top.fst %&gt;%<span class="st"> </span>
 <span class="kw">filter</span>(RANKING &lt;=<span class="st"> </span><span class="dv">500</span>)</code></pre></div></li>
 <li><p>Here, we want to keep only the markers that are systematically found in the top 500, independantly of the subsample and the iterations… i.e. independant of individual composition/mixture at the subsample level and at the thl level.</p>
