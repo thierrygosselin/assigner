@@ -805,10 +805,10 @@ haplotype file and create a whitelist, for other file type, use
         message("Calculating global and local MAF, this may take some time on large data set")
         
         # We split the alleles here to prep for MAF
-        maf.data <- input %>% 
+        maf.data <- input %>%
+          select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
           tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
           tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>%
-          select(MARKERS, GT, POP_ID) %>% 
           filter(GT != "000")
         
         maf.data <- maf.data %>%
