@@ -105,12 +105,12 @@
 #'  \item \code{$fst.overall}: the mean fst overall markers,
 #'  \item \code{$fis.markers}: the fis by markers,
 #'  \item \code{$fis.overall}: the mean fis overall markers,
-#'  \item \code{$pairwise.fst}: the pairwise fst in long format in a data frame,
-#'  \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix.
-#'  \item \code{$pairwise.fst.full.matrix}: the full pairwise fst matrix (duplicated upper and lower triangle).
-#'  \item \code{$pairwise.fst.ci.matrix}: the pairwise fst in the upper triangle.
-#'  \item \code{$fst.plot}: the histogram of the overall Fst per markers.
-#' matrix and the ci in the lower triangle matrix.
+#'  \item \code{$fst.plot}: the histogram of the overall Fst per markers,
+#'  \item \code{$pairwise.fst}: the pairwise fst in long/tidy data frame,
+#'  \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix,
+#'  \item \code{$pairwise.fst.full.matrix}: the pairwise fst matrix (duplicated upper and lower triangle),
+#'  \item \code{$pairwise.fst.ci.matrix}: matrix with pairwise fst in the upper triangle
+#'  and the confidence intervals in the lower triangle.
 #' }
 
 #' @details \strong{Input data:}
@@ -173,6 +173,9 @@
 #' wombat.fst.pairwise$fst.plots
 #' To get the pairwise Fst values with confidence intervals in a data frame:
 #' wombat.fst.pairwise$pairwise.fst
+#' To get the pairwise fst and ci matrix in a data frame:
+#' # rename, data frame, put rownames in column
+#' pairwise.fst.ci.df <- data.frame(pairwise.fst.ci.matrix) %>% add_rownames("POP")
 #' }
 
 #' @references Excoffier L, Smouse PE, Quattro JM. 
@@ -220,7 +223,7 @@
 if (getRversion() >= "2.15.1"){
   utils::globalVariables(
     c("GENOTYPE", "FIS", "POP1", "POP2", "tsiga", "tsigb", "tsigw", "CI", 
-      "CI_LOW", "CI_HIGH")
+      "CI_LOW", "CI_HIGH", "sigma.loc.alleles")
   )
 }
 
@@ -251,11 +254,11 @@ fst_WC84 <- function(data,
   if (missing(data)) stop("Input file necessary to write the genepop file is missing")
   if (!is.null(pop.levels) & is.null(pop.labels)) pop.labels <- pop.levels
   if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
-
+  
   # Import data ---------------------------------------------------------------
   if(verbose) message("Importing data")
   input <- stackr::read_long_tidy_wide(data = data)
-
+  
   # population levels and strata  ----------------------------------------------
   if (is.null(strata)){ # no strata
     if(is.null(pop.levels)) { # no pop.levels
@@ -313,7 +316,7 @@ fst_WC84 <- function(data,
   # Get the number of pop  -----------------------------------------------------
   pop.number <- n_distinct(input$POP_ID)
   
-  # holdout sample  -------------------------------------------------------------
+  # genotyped data and holdout sample  -----------------------------------------
   if (is.null(holdout.samples)) { # use all the individuals
     data.genotyped <- input %>%
       filter(GT != "000000") # Check for df and plink...
@@ -325,7 +328,38 @@ fst_WC84 <- function(data,
   }
   
   # Function to compute WC84 Fst ----------------------------------------------
-  compute_fst <- function(x) {
+  
+  # Confidence interval function
+  boot_ci <- function(x, sigma.loc.alleles){
+    
+    markers.list <- sigma.loc.alleles %>% 
+      ungroup() %>% 
+      select(MARKERS) %>% 
+      distinct(MARKERS) %>% 
+      arrange(MARKERS)
+    
+    subsample.markers <- markers.list %>% 
+      sample_n(tbl = ., size = nrow(markers.list), replace = TRUE) %>% 
+      arrange(MARKERS)
+    
+    fst.fis.overall.iterations <- sigma.loc.alleles %>% 
+      right_join(subsample.markers, by = "MARKERS") %>% 
+      ungroup %>%
+      summarise(
+        tsiga = sum(siga, na.rm = TRUE),
+        tsigb = sum(sigb, na.rm = TRUE),
+        tsigw = sum(sigw, na.rm = TRUE)
+      ) %>% 
+      summarise(
+        FST = round(tsiga/(tsiga + tsigb + tsigw), digits),
+        FIS = round(tsigb/(tsigb + tsigw), digits)
+      ) %>% 
+      mutate(ITERATIONS = rep(x, n()))
+    return(fst.fis.overall.iterations)
+  } # End boot_ci function
+  
+  # fst function
+  compute_fst <- function(x, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
     # x = data.genotyped # test
     n.pop.locus <- x %>%
       select(MARKERS, POP_ID) %>%
@@ -351,18 +385,18 @@ fst_WC84 <- function(data,
       tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3) %>%
       # separate the genotypes into alleles
       tidyr::gather(key = ALLELES_GROUP, ALLELES, -c(INDIVIDUALS, POP_ID, MARKERS))
-
-      # freq.al.locus2 <- tidyr::separate(data = x, col = GT, into = c("A1", "A2"), sep = 3)
-      # system.time(
-      #   freq.al.locus2 <- data.table::melt.data.table(
-      #     data = as.data.table(freq.al.locus2), 
-      #     id.vars = c("INDIVIDUALS", "POP_ID", "MARKERS"), 
-      #     variable.name = "ALLELES_GROUP",
-      #     variable.factor = FALSE,
-      #     value.name = "ALLELES"
-      #   ) %>% 
-      #     as_data_frame()
-      # )
+    
+    # freq.al.locus2 <- tidyr::separate(data = x, col = GT, into = c("A1", "A2"), sep = 3)
+    # system.time(
+    #   freq.al.locus2 <- data.table::melt.data.table(
+    #     data = as.data.table(freq.al.locus2), 
+    #     id.vars = c("INDIVIDUALS", "POP_ID", "MARKERS"), 
+    #     variable.name = "ALLELES_GROUP",
+    #     variable.factor = FALSE,
+    #     value.name = "ALLELES"
+    #   ) %>% 
+    #     as_data_frame()
+    # )
     
     # identical(freq.al.locus, freq.al.locus2)
     
@@ -502,36 +536,9 @@ fst_WC84 <- function(data,
     
     # Confidence Intervals -----------------------------------------------------
     # over loci for the overall Fst estimate
-    if (!is.null(ci)){
+    if (ci){
       # the function:
-      boot.ci <- function(x, ...){
-        
-        markers.list <- sigma.loc.alleles %>% 
-          ungroup() %>% 
-          select(MARKERS) %>% 
-          distinct(MARKERS) %>% 
-          arrange(MARKERS)
-        
-        subsample.markers <- markers.list %>% 
-          sample_n(tbl = ., size = nrow(markers.list), replace = TRUE) %>% 
-          arrange(MARKERS)
-        
-        fst.fis.overall.iterations <- sigma.loc.alleles %>% 
-          right_join(subsample.markers, by = "MARKERS") %>% 
-          ungroup %>%
-          summarise(
-            tsiga = sum(siga, na.rm = TRUE),
-            tsigb = sum(sigb, na.rm = TRUE),
-            tsigw = sum(sigw, na.rm = TRUE)
-          ) %>% 
-          summarise(
-            FST = round(tsiga/(tsiga + tsigb + tsigw), digits),
-            FIS = round(tsigb/(tsigb + tsigw), digits)
-          ) %>% 
-          mutate(ITERATIONS = rep(x, n()))
-        return(fst.fis.overall.iterations)
-      }
-      boot.fst.list <- purrr::map(.x = 1:iteration.ci, .f = boot.ci)
+      boot.fst.list <- purrr::map(.x = 1:iteration.ci, .f = boot_ci, sigma.loc.alleles = sigma.loc.alleles)
       boot.fst <- bind_rows(boot.fst.list)
       boot.fst.summary <- boot.fst %>% 
         summarise(
@@ -561,7 +568,7 @@ fst_WC84 <- function(data,
       )
     
     # Fst overall  -------------------------------------------------------------
-    if (!is.null(ci)){
+    if (ci){
       fst.overall <- fst.fis.overall %>% 
         select(FST) %>% 
         bind_cols(boot.fst.summary)
@@ -580,7 +587,7 @@ fst_WC84 <- function(data,
     # Plot -----------------------------------------------------------------------
     fst.plot <- ggplot(fst.markers, aes(x = FST, na.rm = T))+
       geom_histogram(binwidth = 0.01)+
-      labs(x = "Fst overall")+
+      labs(x = "Fst (overall)")+
       expand_limits(x = 0)+
       theme(
         legend.position = "none",
@@ -603,9 +610,31 @@ fst_WC84 <- function(data,
     return(res)
   } # End compute_fst function
   
+  # Pairwise Fst function
+  pairwise_fst <- function(list.pair, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
+    pop.select <- stri_paste(flatten(pop.pairwise[list.pair]))
+    data.select <- data.genotyped %>% 
+      filter(POP_ID %in% pop.select) %>% 
+      mutate(POP_ID = droplevels(x = POP_ID))
+    fst.select <- compute_fst(x = data.select, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci)
+    # if (ci){
+    df.select <- data_frame(POP1 = pop.select[1], POP2 = pop.select[2])
+    df.select <- bind_cols(df.select, fst.select$fst.overall) 
+    # %>% rename(FST = fst.overall)
+    # } else {
+    # df.select <- data_frame(POP1 = pop.select[1], 
+    # POP2 = pop.select[2], 
+    # FST = fst.select$fst.overall
+    # )
+    # }
+    fst.select <- NULL
+    return(df.select)
+  } # End pairwise_fst
+  
+  
   # Compute global Fst ---------------------------------------------------------
   if(verbose) message("Computing global fst")
-  res <- compute_fst(x = data.genotyped)
+  res <- compute_fst(x = data.genotyped, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci)
   
   # Compute pairwise Fst -------------------------------------------------------
   if (pairwise) {
@@ -614,33 +643,15 @@ fst_WC84 <- function(data,
     # all combination of populations
     pop.pairwise <- combn(unique(pop.list), 2, simplify = FALSE) 
     # Fst for all pairwise populations
-    pairwise_fst <- function(list.pair, ...) {
-      pop.select <- stri_paste(flatten(pop.pairwise[list.pair]))
-      data.select <- data.genotyped %>% 
-        filter(POP_ID %in% pop.select) %>% 
-        mutate(POP_ID = droplevels(x = POP_ID))
-      fst.select <- compute_fst(x = data.select)$fst.overall
-      if (!is.null(ci)){
-        df.select <- data_frame(POP1 = pop.select[1], POP2 = pop.select[2])
-        df.select <- bind_cols(df.select, fst.select) 
-        # %>% rename(FST = fst.overall)
-      } else {
-        df.select <- data_frame(POP1 = pop.select[1], 
-                                POP2 = pop.select[2], 
-                                FST = fst.select$fst.overall
-        )
-      }
-      fst.select <- NULL
-      return(df.select)
-    }
     list.pair <- 1:length(pop.pairwise)
-    # list.pair <- 5
+    # list.pair <- 5 #  test
     fst.all.pop <- parallel::mclapply(
       X = list.pair, 
       FUN = pairwise_fst, 
       mc.preschedule = FALSE, 
       mc.silent = FALSE, 
-      mc.cores = parallel.core
+      mc.cores = parallel.core, 
+      ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci
     )
     
     # Table with Fst------------------------------------------------------------
@@ -650,69 +661,66 @@ fst_WC84 <- function(data,
         POP2 = factor(POP2, levels = pop.list, ordered = TRUE)
       )
     # Matrix--------------------------------------------------------------------
-    pairwise.fst.matrix <- pairwise.fst %>% 
+    upper.mat.fst <- pairwise.fst %>% 
       select (POP1, POP2, FST) %>% 
       tidyr::spread(data = ., POP2, FST, fill = "", drop = FALSE) %>% 
       rename(POP = POP1)
+    rn <- upper.mat.fst$POP # rownames
+    upper.mat.fst <- as.matrix(upper.mat.fst[,-1])# make matrix without first column
+    rownames(upper.mat.fst) <- rn
     
-    if (!is.null(ci)){
+    # get the full matrix with identical lower and upper diagonal 
+    # the diagonal is filled with 0
+    
+    full.mat.fst <- upper.mat.fst # bk of upper.mat.fst
+    lower.mat.fst <- t(full.mat.fst) # transpose
+    # merge upper and lower matrix
+    full.mat.fst[lower.tri(full.mat.fst)] <- lower.mat.fst[lower.tri(lower.mat.fst)] 
+    diag(full.mat.fst) <- "0"
+    
+    if (ci){
       # bind upper and lower diagonal of matrix
-      lower.mat <- pairwise.fst %>% 
+      lower.mat.ci <- pairwise.fst %>% 
         select (POP1, POP2, CI_LOW, CI_HIGH) %>% 
         tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>% 
         tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>% 
         rename(POP = POP1)
       
-      rn <- lower.mat$POP # bk of rownames
-      cn <- colnames(lower.mat) # bk of colnames
+      cn <- colnames(lower.mat.ci) # bk of colnames
+      lower.mat.ci <- t(lower.mat.ci[,-1]) # transpose
+      colnames(lower.mat.ci) <- cn[-1] # colnames - POP
+      lower.mat.ci = as.matrix(lower.mat.ci) # matrix
       
-      lower.mat <- t(lower.mat[,-1]) # transpose
-      colnames(lower.mat) <- cn[-1] # colnames - POP
-      lower.mat = as.matrix(lower.mat) # matrix
-      
-      upper.mat <- as.matrix(pairwise.fst.matrix)
-      rownames(upper.mat) <- rn # rownames
-      upper.mat <- upper.mat[,-1] # remove first column
-      upper.mat.fst <- upper.mat
       # merge upper and lower matrix
-      upper.mat[lower.tri(upper.mat)] <- lower.mat[lower.tri(lower.mat)] 
-      # rename, data frame, put rownames in column
-      pairwise.fst.ci.matrix <- data.frame(upper.mat) %>% add_rownames("POP")
-      
-      
-      # get the full matrix with identical lower and upper diagonal 
-      # the diagonal is filled with 0
-      
-      full.mat <- upper.mat
-      lower.mat <- t(full.mat) # transpose
-      # merge upper and lower matrix
-      full.mat[lower.tri(full.mat)] <- lower.mat[lower.tri(lower.mat)] 
-      diag(full.mat) <- "0"
+      pairwise.fst.ci.matrix <- upper.mat.fst # bk upper.mat.fst
+      pairwise.fst.ci.matrix[lower.tri(pairwise.fst.ci.matrix)] <- lower.mat.ci[lower.tri(lower.mat.ci)]
+    } else {
+      pairwise.fst.ci.matrix <- "pairwise fst not selected"
     }
     
     
   } else {
     pairwise.fst <- "pairwise fst not selected"
-    pairwise.fst.matrix <- "pairwise fst not selected"
     upper.mat.fst <- "pairwise fst not selected"
-    full.mat <- "pairwise fst not selected"
+    full.mat.fst <- "pairwise fst not selected"
+    pairwise.fst.ci.matrix <- "pairwise fst not selected"
   }
   
   
   # messages -------------------------------------------------------------------
   if(verbose){
     cat("############################### RESULTS ###############################\n")
-    if (pairwise) {
-      message(stri_paste("Fst: ", res$fst.overall$FST, " [", res$fst.overall$CI_LOW, " - ", res$fst.overall$CI_HIGH, "]"))
+    if (ci) {
+      message(stri_paste("Fst (overall): ", res$fst.overall$FST, " [", res$fst.overall$CI_LOW, " - ", res$fst.overall$CI_HIGH, "]"))
     } else{
-      message(stri_paste("Fst: ", res$fst.overall$FST))
+      message(stri_paste("Fst (overall): ", res$fst.overall$FST))
     }
     cat("#######################################################################\n")
   }
   # Results pairwise -----------------------------------------------------------
   res$pairwise.fst <- pairwise.fst
   res$pairwise.fst.upper.matrix <- upper.mat.fst
-  res$pairwise.fst.ci.matrix <- pairwise.fst.matrix
-  res$pairwise.fst.full.matrix <- full.mat
+  res$pairwise.fst.full.matrix <- full.mat.fst
+  res$pairwise.fst.ci.matrix <- pairwise.fst.ci.matrix
   return(res)
 }

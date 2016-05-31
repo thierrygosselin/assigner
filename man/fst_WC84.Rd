@@ -88,12 +88,12 @@ With pairwise comparison computed, the function returns a list with
  \item \code{$fst.overall}: the mean fst overall markers,
  \item \code{$fis.markers}: the fis by markers,
  \item \code{$fis.overall}: the mean fis overall markers,
- \item \code{$pairwise.fst}: the pairwise fst in long format in a data frame,
- \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix.
- \item \code{$pairwise.fst.full.matrix}: the full pairwise fst matrix (duplicated upper and lower triangle).
- \item \code{$pairwise.fst.ci.matrix}: the pairwise fst in the upper triangle.
- \item \code{$fst.plot}: the histogram of the overall Fst per markers.
-matrix and the ci in the lower triangle matrix.
+ \item \code{$fst.plot}: the histogram of the overall Fst per markers,
+ \item \code{$pairwise.fst}: the pairwise fst in long/tidy data frame,
+ \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix,
+ \item \code{$pairwise.fst.full.matrix}: the pairwise fst matrix (duplicated upper and lower triangle),
+ \item \code{$pairwise.fst.ci.matrix}: matrix with pairwise fst in the upper triangle
+ and the confidence intervals in the lower triangle.
 }
 }
 \description{
@@ -164,6 +164,9 @@ To get the Fst plot:
 wombat.fst.pairwise$fst.plots
 To get the pairwise Fst values with confidence intervals in a data frame:
 wombat.fst.pairwise$pairwise.fst
+To get the pairwise fst and ci matrix in a data frame:
+# rename, data frame, put rownames in column
+pairwise.fst.ci.df <- data.frame(pairwise.fst.ci.matrix) \%>\% add_rownames("POP")
 }
 }
 \author{
