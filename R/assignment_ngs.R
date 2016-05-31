@@ -137,7 +137,7 @@
 #' In the VCF, the column ID is the LOCUS identification.
 #' Default \code{whitelist.markers = NULL} for no whitelist of markers.
 
-#' @param monomorphic.out (optional) For PLINK file, should the monomorphic 
+#' @param monomorphic.out (optional) Should the monomorphic 
 #' markers present in the dataset be filtered out ? 
 #' Default: \code{monomorphic.out = TRUE}.
 
