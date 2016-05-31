@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2016-05-27" />
+<meta name="date" content="2016-05-28" />
 
 <title>Visualize individual’s assignment results</title>
 
@@ -68,18 +68,21 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Visualize individual’s assignment results</h1>
-<h4 class="date"><em>2016-05-27</em></h4>
+<h4 class="date"><em>2016-05-28</em></h4>
 
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>One of the many reasons to conduct genome scans is to have a subset of markers to conduct assignment analysis. With <strong>assigner</strong> it’s easy to test those markers by using the list of markers under directional selection with the argument <code>whitelist.markers</code>.</p>
-<p>Another approach to prune the markers and keep only the top markers, those giving the best assignment results, is to use the <code>sampling.method = &quot;ranked</code> to conduct the assignment. This section describes some useful tools for understanding this alternative approach to keep relevant markers for population assignment.</p>
+<ul>
+<li>visualize the noise in the assignment</li>
+<li>impact of: marker number, imputation, thl set &amp; subsample set (i.e. the individual composition)</li>
+</ul>
+<p>Under dev.</p>
 </div>
 <div id="details-of-the-approach" class="section level1">
 <h1>Details of the approach</h1>
-<p>Using <code>sampling.method = &quot;ranked</code> will rank the markers based on Weir and Cockerham (1984) Fst. To reduce the bias introduced by ranking based on Fst (reviewed in Anderson 2010), use the <code>thl</code> and <code>iteration.method</code> arguments. More iterations will provide better estimate and reduce the bias introduced by the mixture of samples used inside the training and holdhout set. This is more important with admixed populations or populations characterized by lower Fst.</p>
+<p>More iterations will provide better estimate and reduce the bias introduced by the mixture of samples used inside the training and holdhout set. This is more important with admixed populations or populations characterized by lower Fst.</p>
 <p>To reduce assignment bias introduced by uneven sample size between your groups, <strong>assigner</strong> provides 2 addtional arguments: <code>subsample</code> and <code>iteration.subsample</code>. Using more iterations will make sure that all potential combinations of individuals are used and will provide better null distribution for the statistics.</p>
 <p>Run an assignment analysis with these arguments. Try without imputations first.</p>
 <ol style="list-style-type: decimal">
@@ -101,31 +104,62 @@ if (!<span class="kw">require</span>(<span class="st">&quot;adegenet&quot;</span
 if (!<span class="kw">require</span>(<span class="st">&quot;stackr&quot;</span>)) <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/stackr&quot;</span>)
 if (!<span class="kw">require</span>(<span class="st">&quot;assigner&quot;</span>)) <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/assigner&quot;</span>)
 <span class="co">#install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run</span></code></pre></div></li>
-<li><p>The first tool we’ll use is <code>assigner::import_subsamples</code>. This function imports the assignment results for each individuals in each of the subsample folder found in the directory you provide in the function: <code>r # Get the folder containing the data: https://www.dropbox.com/sh/t1eqd5rp1gqfipv/AABcLpH-0RCWlMp3aFP2_FF0a?dl=0 # change the path below to reflect the directory assignment.data.subsample &lt;- import_subsamples(dir.path = &quot;~/Downloads/top_markers_assignment&quot;, imputations = FALSE)</code></p></li>
-<li><p>We will use <code>dplyr</code> verbs to filer the huge data frame. Here, we will keep only the top 500 ranked in every iterations and subsamples. I chose this number, because based on the plot, not much gain in power is obtained by using more markers with this dataset: <code>r top.fst.select &lt;- top.fst %&gt;%    filter(RANKING &lt;= 500)</code></p></li>
-<li><p>Here, we want to keep only the markers that are systematically found in the top 500, independantly of the subsample and the iterations… i.e. independant of individual composition/mixture at the subsample level and at the thl level.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">top.fst.select.count &lt;-<span class="st"> </span>top.fst.select %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">group_by</span>(MARKERS) %&gt;%<span class="st"> </span>
-<span class="st">  </span>tally %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(n)) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">RANKING =</span> <span class="kw">seq</span>(<span class="dt">from =</span> <span class="dv">1</span>, <span class="dt">to =</span> <span class="kw">n</span>())) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(RANKING &lt;=<span class="st"> </span><span class="dv">500</span>)</code></pre></div></li>
-<li><p>From this we can build a whitelist of markers: <code>r whitelist.top.500.markers &lt;- top.fst.select.count %&gt;%    select(MARKERS) %&gt;%    separate(col = MARKERS, into = c(&quot;CHROM&quot;, &quot;LOCUS&quot;, &quot;POS&quot;), sep = &quot;_&quot;) whitelist.top.500.markers &lt;- plyr::colwise(as.integer)(whitelist.top.500.markers) # To write to the working directory: write_tsv(x = whitelist.top.500.markers, path = &quot;whitelist.top.500.markers.tsv&quot;, col_names = TRUE)</code></p></li>
+<li><p>The first tool we’ll use is <code>assigner::import_subsamples</code>. This function imports the assignment results for each individuals in each of the subsample folder found in the directory you provide in the function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get the folder containing the data:</span>
+https:<span class="er">//</span>www.dropbox.com/sh/t1eqd5rp1gqfipv/AABcLpH-0RCWlMp3aFP2_FF0a?dl=<span class="dv">0</span>
+<span class="co"># change the path below to reflect the directory</span>
+assignment.data.subsample &lt;-<span class="st"> </span><span class="kw">import_subsamples</span>(<span class="dt">dir.path =</span> <span class="st">&quot;~/Downloads/top_markers_assignment&quot;</span>, <span class="dt">imputations =</span> <span class="ot">FALSE</span>)</code></pre></div></li>
+<li><p>use this pop.levels to order the data</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pop.levels &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;north&quot;</span>, <span class="st">&quot;south&quot;</span>)</code></pre></div></li>
+<li><p>work on the data frame</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ind.levels &lt;-<span class="st"> </span>assignment.data.subsample %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(INDIVIDUALS, CURRENT) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">distinct</span>(INDIVIDUALS, CURRENT) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">CURRENT =</span> <span class="kw">factor</span>(CURRENT, <span class="dt">levels =</span> pop.levels, <span class="dt">ordered =</span> <span class="ot">TRUE</span>)) %&gt;%
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(CURRENT), INDIVIDUALS) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(INDIVIDUALS)</code></pre></div></li>
+<li><p>last step</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data.prep &lt;-<span class="st"> </span>assignment.data.subsample %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(INDIVIDUALS, CURRENT, INFERRED, MARKER_NUMBER, MISSING_DATA, ITERATIONS, SUBSAMPLE) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(INDIVIDUALS, CURRENT, MISSING_DATA, ITERATIONS, SUBSAMPLE) %&gt;%
+<span class="st">  </span>tidyr::<span class="kw">spread</span>(<span class="dt">data =</span> ., <span class="dt">key =</span> MARKER_NUMBER, <span class="dt">value =</span> INFERRED) %&gt;%<span class="st"> </span>
+<span class="st">  </span>tidyr::<span class="kw">gather</span>(<span class="dt">data =</span> ., <span class="dt">key =</span> GROUPING, <span class="dt">value =</span> ASSIGNMENT, -<span class="kw">c</span>(INDIVIDUALS, CURRENT, MISSING_DATA,ITERATIONS, SUBSAMPLE)) %&gt;%
+<span class="st">  </span><span class="kw">ungroup</span>() %&gt;%
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">SUBSAMPLE =</span> <span class="kw">stri_pad_left</span>(<span class="dt">str =</span> SUBSAMPLE, <span class="dt">pad =</span> <span class="st">&quot;0&quot;</span>, <span class="dt">width =</span> <span class="dv">3</span>)) %&gt;%<span class="st"> </span>
+<span class="st">  </span>tidyr::<span class="kw">unite</span>(<span class="dt">data =</span> ., <span class="dt">col =</span> INDIVIDUALS_SUB, INDIVIDUALS, SUBSAMPLE, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(
+<span class="dt">GROUPING =</span> <span class="kw">factor</span>(GROUPING, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">200</span>,<span class="dv">300</span>, <span class="dv">400</span>, <span class="dv">500</span>, <span class="dv">1000</span>, <span class="dv">15454</span>)),
+<span class="dt">GROUPING =</span> <span class="kw">droplevels</span>(GROUPING),
+<span class="dt">ASSIGNMENT =</span> <span class="kw">factor</span>(ASSIGNMENT),
+<span class="dt">CURRENT =</span> <span class="kw">factor</span>(CURRENT),
+<span class="dt">ITERATIONS =</span> <span class="kw">factor</span>(ITERATIONS)
+) %&gt;%<span class="st"> </span>
+<span class="kw">arrange</span>(CURRENT, GROUPING, INDIVIDUALS, ITERATIONS)</code></pre></div></li>
+<li><p>Heatmap figure</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">heatmap.fig &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data.prep,(<span class="kw">aes</span>(<span class="dt">x =</span> ITERATIONS, <span class="dt">y =</span> <span class="kw">as.character</span>(INDIVIDUALS)))) +
+<span class="st">  </span><span class="kw">geom_tile</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> ASSIGNMENT)) +
+<span class="st">  </span><span class="co">#scale_x_discrete(breaks = axis.breaks)+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Marker resampling (iterations)&quot;</span>)+
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">y =</span> <span class="st">&quot;Individuals&quot;</span>)+
+<span class="st">  </span><span class="kw">theme_bw</span>()+
+<span class="st">  </span><span class="kw">theme</span>(
+<span class="dt">panel.grid.minor.x =</span> <span class="kw">element_blank</span>(), 
+<span class="dt">panel.grid.major.y =</span> <span class="kw">element_blank</span>(), 
+<span class="dt">axis.title.x =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">10</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>, <span class="dt">face =</span> <span class="st">&quot;bold&quot;</span>), 
+<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">6</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>, <span class="dt">angle =</span> <span class="dv">90</span>, <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>), 
+<span class="dt">axis.title.y =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">10</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>, <span class="dt">face =</span> <span class="st">&quot;bold&quot;</span>), 
+<span class="dt">axis.text.y =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">1</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>)
+  ) +
+<span class="st">  </span><span class="kw">facet_grid</span>(CURRENT~GROUPING +<span class="st"> </span>MISSING_DATA, <span class="dt">scales =</span> <span class="st">&quot;free&quot;</span>, <span class="dt">drop =</span> <span class="ot">TRUE</span>)
+heatmap.fig
+<span class="co"># save, inspect and zoom...</span>
+<span class="kw">ggsave</span>(<span class="st">&quot;assignment.heatmap.pdf&quot;</span>, <span class="dt">height =</span> <span class="dv">30</span>, <span class="dt">width =</span> <span class="dv">20</span>, <span class="dt">dpi =</span> <span class="dv">600</span>, <span class="dt">units =</span> <span class="st">&quot;cm&quot;</span>, <span class="dt">useDingbats =</span> F)</code></pre></div></li>
 </ol>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
-<p>In short, you now have a whitelist of markers that will give you the best overall assignment results.</p>
-<p>Optimal assignment are more likely for these reasons:</p>
-<ul>
-<li><p>the markers were crafted using the Training, Holdout, Leave-one-out approach</p></li>
-<li><p>individuals were bootstrap with resampling using the iteration argument inside the training/holdout sets</p></li>
-<li><p>reduce bias is expected if populations have unequal sample size because the subsample argument and bootstrap with resampling was used to level the number of individuals per populations</p></li>
-<li><p>using supplementary individuals will certainly highlight that you have done your homework</p></li>
-</ul>
-<p><strong>References</strong></p>
-<p>Anderson, E. C. (2010) Assessing the power of informative subsets of loci for population assignment: standard methods are upwardly biased. Molecular ecology resources 10, 4:701-710.</p>
-<p>Weir BS, Cockerham CC (1984) Estimating F-Statistics for the Analysis of Population Structure. Evolution, 38, 1358–1370.</p>
+<p>bla bla bla</p>
+<p><strong>References</strong> bla bla bla</p>
 </div>
 
 

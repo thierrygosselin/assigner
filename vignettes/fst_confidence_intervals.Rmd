@@ -1,0 +1,244 @@
+---
+title: "Pairwise and overall Fst with confidence intervals + building phylogenetic tree"
+author: "Thierry Gosselin"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+# output: 
+# pdf_document:
+vignette: >
+  %\VignetteIndexEntry{Pairwise and overall Fst with confidence intervals + building phylogenetic tree}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[utf8]{inputenc}
+---
+    
+```{r, echo = FALSE, message = FALSE}
+    knitr::opts_chunk$set(collapse = T, comment = "#>")
+    options(tibble.print_min = 4L, tibble.print_max = 4L)
+```
+    
+# Objectives
+  * learn how to run the function `assigner::fst_WC84`
+  * compute pairwise and overall Weir and Cockerham (1984) Fst estimates
+  * build confidence intervals
+  * visualize the estimates with data frame and matrices
+  * learn how to integrate the function with other package, e.g. to build a phylogenetic tree
+  * make Louis Bernatchez happy !
+    
+# Workflow
+
+## Fst calculations
+
+1. Clean your desk and remove the clutter in the global environment
+```r
+rm(list=ls())
+```
+
+1. Load the required libraries
+```r
+if (!require("devtools")) install.packages("devtools")
+if (!require("reshape2")) install.packages("reshape2")
+if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("stringr")) install.packages("stringr")
+if (!require("stringi")) install.packages("stringi")
+if (!require("plyr")) install.packages("plyr")
+if (!require("dplyr")) install.packages("dplyr")
+if (!require("tidyr")) install.packages("tidyr")
+if (!require("readr")) install.packages("readr")
+if (!require("purrr")) install.packages("purrr")
+if (!require("data.table")) install.packages("data.table")
+if (!require("adegenet")) install.packages("adegenet")
+if (!require("ape")) install.packages("ape")
+if (!require("stackr")) install_github("thierrygosselin/stackr")
+if (!require("assigner")) install_github("thierrygosselin/assigner", build_vignettes = TRUE)
+#install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run
+```
+
+1. Get the data:
+```r
+data.fst <- read_tsv(file = "https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz")
+```
+
+1. `fst_WC84` first run:  overall and pairwise, but without boostrap (i.e. no confidence intervals)
+```r
+fst <- fst_WC84(data = data.fst, 
+pop.levels = c("pop1", "pop2", "pop3", "pop4", "pop5", "pop6", "pop7", "pop8", "pop9", "pop10", "pop11"),
+holdout.samples = NULL,
+pairwise = TRUE,
+ci = FALSE, 
+digits = 6,
+verbose = TRUE
+)
+```
+
+1. The results in the console:
+```r
+#######################################################################
+######################### assigner::fst_WC84 ##########################
+#######################################################################
+Importing data
+Computing global fst
+Computing paiwise fst
+############################### RESULTS ###############################
+Fst (overall): 0.052428
+#######################################################################
+```
+
+1. To view the content of `fst`:
+```r
+names(fst)
+```
+
+1. Get access to specific content with `$`:
+    * `$sigma.loc`: the variance components per locus: 
+   `lsiga`: among populations, 
+   `lsigb`: among individuals within populations, 
+   `lsigw`: within individuals.
+   
+    * `$fst.markers`: the fst by markers
+    * `$fst.ranked`: the fst ranked
+    * `$fst.overall`: the mean fst overall markers
+    * `$fis.markers`: the fis by markers
+    * `$fis.overall`: the mean fis overall markers
+    * `$fst.plot`: the histogram of the overall Fst per markers
+    * `$pairwise.fst`: the pairwise fst in long/tidy data frame
+    * `$pairwise.fst.upper.matrix`: the pairwise fst in a upper triangle matrix
+    * `$pairwise.fst.full.matrix`: the pairwise fst matrix (duplicated upper and lower triangle)
+    * `$pairwise.fst.ci.matrix`: matrix with pairwise fst in the upper triangle
+ and the confidence intervals in the lower triangle.
+
+
+1. The data frame with pairwise fst values:
+```r
+df <- data.frame(fst$pairwise.fst) %>% as_data_frame
+```
+
+1. The first 10 parwise comparisons in `df`:
+
+| POP1 | POP2  |  FST   |
+|:----:|:-----:|:------:|
+| pop1 | pop2  | 0.0442 |
+| pop1 | pop3  | 0.0507 |
+| pop1 | pop4  | 0.0341 |
+| pop1 | pop5  | 0.0300 |
+| pop1 | pop6  | 0.0434 |
+| pop1 | pop7  | 0.0367 |
+| pop1 | pop8  | 0.0256 |
+| pop1 | pop9  | 0.0475 |
+| pop1 | pop10 | 0.0522 |
+| pop1 | pop11 | 0.0473 |
+
+10. The matrix with fst values:
+```r
+fst.matrix <- fst$pairwise.fst.full.matrix
+# test
+fst.matrix2 <- data.frame(fst$pairwise.fst.full.matrix) %>% add_rownames("POP")
+```
+1. If you try to get the `pairwise.fst.ci.matrix`:
+```r
+fst$pairwise.fst.ci.matrix # you will get this:
+[1] "pairwise fst not selected"
+```
+
+1. So let's make another run with `fst_WC84`, but this time will ask for the confidence intervals:
+```r
+fst.ci <- fst_WC84(data = data.fst, 
+pop.levels = c("pop1", "pop2", "pop3", "pop4", "pop5", "pop6", "pop7", "pop8", "pop9", "pop10", "pop11"),
+holdout.samples = NULL,
+pairwise = TRUE,
+ci = TRUE, 
+iteration.ci = 100,
+quantiles.ci = c(0.025, 0.975),
+digits = 6,
+parallel.core = 8,
+verbose = TRUE
+)
+```
+
+1. Try again to get the matrix with fst and ci:
+```r
+fst.ci$pairwise.fst.ci.matrix
+```
+
+1. To have this in a handy table for publication, we will create a new object `pairwise.fst.ci.df`:
+```r
+pairwise.fst.ci.df <- data.frame(fst.ci$pairwise.fst.ci.matrix) %>% add_rownames("POP")
+# to save:
+write_tsv(x = pairwise.fst.ci.df, path = "pairwise.fst.ci.df.tsv")
+```
+
+## Phylogenetic tree
+For the next steps, we need the full distance matrix created in step 10.
+
+1. For a Neighbor joining tree:
+```r
+# build the tree:
+tree <- nj(X = fst.matrix)
+# for annotating bootstraps values on the tree:
+bootstrap.value <- boot.phylo(phy = tree, x = fst.matrix, FUN = function (x) nj(x), block = 1, B = 10000, trees = FALSE, rooted = FALSE)
+ # to get percentage values
+bootstrap.value <- round((bootstrap.value/10000)*100, 0)
+bootstrap.value
+# to include in the tree
+tree$node.label <- bootstrap.value 
+```
+
+1. For a UPGMA tree:
+```r
+tree <- as.phylo(hclust(dist(fst.matrix), method = "average"))
+bootstrap.value <- boot.phylo(phy = tree, x = fst.matrix, FUN = function (xx) as.phylo(hclust(dist(xx), method = "average")) , block = 1, B = 10000, trees = FALSE, rooted = TRUE) 
+bootstrap.value <- round((bootstrap.value/10000)*100, 0)
+bootstrap.value
+tree$node.label <- bootstrap.value
+```
+
+1. To build the tree we will need to install \pkg{ggtree}
+```r
+# get the latest development version of ggtree:
+if (!require("ggtree")) install_github("GuangchuangYu/ggtree")
+```
+
+1. if it doesn't work after this, you might need to install dependencies. And 
+you might have to use \href{https://bioconductor.org/packages/release/bioc/html/ggtree.html}{bioconductor}
+to install them.
+
+    * **Imports:** ape, Biostrings, grDevices, grid, jsonlite, magrittr, methods, stats4, tidyr, utils,
+    * **Suggests:** colorspace, EBImage, knitr, phylobase, phytools, phangorn, rmarkdown, scales, testthat
+
+1. To install **bioconductor** packages, you need to install this:
+```r
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite()
+```
+
+1. Build a very basic tree figure:
+```r
+library(ggtree)
+tree.figure <- ggplot(tree, aes(x, y), ladderize = TRUE) + 
+geom_tree() + 
+# geom_tiplab(size = 3, hjust = -0.05, vjust = 0.5)+ # for just the tip label
+geom_text(aes(label = label), size = 3, hjust = -0.05, vjust = 0.5) + # for both tips and nodes
+theme_tree() + 
+xlim(0, 0.16) # to allocate more space for tip labels (trial/error)
+tree.figure
+ggsave(filename = "assigner.fst.tree.example.pdf", width = 15, height = 15, dpi = 600, units = "cm", useDingbats = F)
+```
+
+1. Several vignettes are available to get to know ggtree: http://guangchuangyu.github.io/ggtree/
+
+
+# Conclusion
+Under construction
+
+Please send me suggestions and bug reports through github
+
+**References**
+
+Weir BS, Cockerham CC (1984) Estimating F-Statistics for the 
+Analysis of Population Structure. Evolution, 38, 1358–1370.
+
+G Yu, D Smith, H Zhu, Y Guan, TTY Lam,
+ggtree: an R package for visualization and annotation of phylogenetic tree with different types of meta-data.
+revised.
+
+
