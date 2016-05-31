@@ -26,8 +26,7 @@ Imports:
     stringr,
     tidyr,
     utils,
-    dplyr,
-    stackr (>= 0.2.7)
+    dplyr
 Suggests:
     devtools,
     hierfstat,
