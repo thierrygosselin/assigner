@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2016-05-27" />
+<meta name="date" content="2016-05-31" />
 
 <title>Top markers for assignment</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Top markers for assignment</h1>
-<h4 class="date"><em>2016-05-27</em></h4>
+<h4 class="date"><em>2016-05-31</em></h4>
 
 
 
@@ -103,7 +103,7 @@ if (!<span class="kw">require</span>(<span class="st">&quot;assigner&quot;</span
 <span class="co">#install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run</span></code></pre></div></li>
 <li><p>The first tool we’ll use is <code>assigner::import_subsamples_fst</code>. This function imports all the fst files used during the iteration process of <code>thl</code>, for all the subsamples:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get the folder containing the data:</span>
-https:<span class="er">//</span>www.dropbox.com/sh/t1eqd5rp1gqfipv/AABcLpH-0RCWlMp3aFP2_FF0a?dl=<span class="dv">0</span>
+https:<span class="er">//</span>github.com/thierrygosselin/package_data/raw/master/top_markers_assignment.tar.gz
 <span class="co"># change the path below to reflect the directory</span>
 top.fst &lt;-<span class="st"> </span><span class="kw">import_subsamples_fst</span>(<span class="dt">dir.path =</span> <span class="st">&quot;~/Downloads/top_markers_assignment&quot;</span>)</code></pre></div></li>
 <li><p>We will use <code>dplyr</code> verbs to filer the huge data frame. Here, we will keep only the top 500 ranked in every iterations and subsamples. I chose this number, because based on the plot, not much gain in power is obtained by using more markers with this dataset:</p>

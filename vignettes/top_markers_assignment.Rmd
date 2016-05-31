@@ -71,7 +71,7 @@ This function imports all the fst files used during the iteration process of `th
 for all the subsamples:
 ```r
 # Get the folder containing the data:
-https://www.dropbox.com/sh/t1eqd5rp1gqfipv/AABcLpH-0RCWlMp3aFP2_FF0a?dl=0
+https://github.com/thierrygosselin/package_data/raw/master/top_markers_assignment.tar.gz
 # change the path below to reflect the directory
 top.fst <- import_subsamples_fst(dir.path = "~/Downloads/top_markers_assignment")
 ```

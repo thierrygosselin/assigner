@@ -1,9 +1,9 @@
 ---
 title: "Visualize individual's assignment results"
 date: "`r Sys.Date()`"
-# output: rmarkdown::html_vignette
 output: 
-  pdf_document:
+  rmarkdown::html_vignette:
+  # pdf_document:
 vignette: >
   %\VignetteIndexEntry{Visualize individual's assignment results}
   %\VignetteEngine{knitr::rmarkdown}
