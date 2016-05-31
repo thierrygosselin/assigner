@@ -34,7 +34,7 @@ the mixture of samples used inside the training and holdhout set. This is more
 important with admixed populations or populations characterized by lower Fst.
 
 To reduce assignment bias introduced by uneven sample size between your groups, 
-**assigner** provides 2 addtional arguments: `subsample` and `iteration.subsample`.
+**assigner** provides 2 additional arguments: `subsample` and `iteration.subsample`.
 Using more iterations will make sure that all potential combinations of individuals
 are used and will provide better null distribution for the statistics.
 
@@ -76,8 +76,8 @@ https://github.com/thierrygosselin/package_data/raw/master/top_markers_assignmen
 top.fst <- import_subsamples_fst(dir.path = "~/Downloads/top_markers_assignment")
 ```
 
-1. We will use `dplyr` verbs to filer the huge data frame. Here, we will keep
-only the top 500 ranked in every iterations and subsamples. 
+1. We will use `dplyr` verbs to filter the huge data frame. Here, we will keep
+only the top 500 ranked in every iteration and subsample. 
 I chose this number, because based on the plot, not much gain in power is obtained
 by using more markers with this dataset:
 ```r
