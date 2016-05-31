@@ -44,7 +44,8 @@ library(devtools) # to load
 
 Step 2 Install **assigner** and install [gsi_sim] (https://github.com/eriqande/gsi_sim) from source:
 ```r
-install_github("thierrygosselin/assigner") # to install
+install_github("thierrygosselin/assigner") # to install without vignettes
+install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
 library(assigner) # to load
 install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 ```
