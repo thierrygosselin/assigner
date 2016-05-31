@@ -51,9 +51,9 @@
 #' @return A gsi_sim input file is saved to the working directory. 
 #' @export
 #' @rdname write_gsi_sim
+#' @import stackr
 #' @import dplyr
 #' @import stringi
-#' @import stackr
 #' @importFrom data.table fread
 #' @importFrom data.table dcast.data.table
 #' @importFrom data.table as.data.table
