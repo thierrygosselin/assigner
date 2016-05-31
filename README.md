@@ -160,15 +160,13 @@ For previous news:
 
 
 ## Examples and Vignettes
-
 To view vignettes:
-
 1. inside R
 ```r
 install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
 ```
 
-2. To view vignettes on github: [link](https://github.com/thierrygosselin/assigner/tree/master/vignettes)
+2. on github: [link](https://github.com/thierrygosselin/assigner/tree/master/vignettes)
 
 Vignettes are in development, check periodically for updates.
 
