@@ -15,9 +15,12 @@ by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet] (
 * The input file are:
     1. a VCF file format (Danecek et al. 2011) (*batch_x.vcf*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013),
     2. an haplotypes data frame file (*batch_x.haplotypes.tsv*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013),
-    3. very large files (> 50 000 markers) can be imported in PLINK tped/tfam format (Purcell et al. 2007), and
-    4. a data frame of genotypes.
-    5. For genepop file, use [genepopedit](https://github.com/rystanley/genepopedit) to prepare the file for assigner.
+    3. very large files (> 50 000 markers) can be imported in PLINK tped/tfam format (Purcell et al. 2007),
+    4. a data frame of genotypes in wide or long/tidy format
+    5. genind object
+    6. genepop file, directly or through the use [genepopedit](https://github.com/rystanley/genepopedit) to prepare the file for assigner.
+* assigner provides a fast implementation of Weir and Cockerham (1984) Fst/Theta. Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
+* Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
 whitelist** and other arguments
 * **Map-independent imputation** of missing genotype or alleles using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
@@ -27,7 +30,6 @@ chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, H
 * Use `iteration.method` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
 * The impact of the minor allele frequency, MAF, (local and global) can also be easily explored with custom thresholds
 * The impact of filters used in other software can be explored by using the `whitelist.markers` argument.
-* Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
 * `ggplot2`-based plotting to view assignment results and create publication-ready figures
 * Fast computations with optimized codes to run in parallel!
@@ -50,7 +52,7 @@ library(assigner) # to load
 install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 ```
 
-Step 3 For faster imputations, you need to install an OpenMP enabled **randomForestSRC package** [website](http://www.ccs.miami.edu/~hishwaran/rfsrc.html).
+Step 3 (optional) For faster imputations, you need to install an OpenMP enabled **randomForestSRC package** [website](http://www.ccs.miami.edu/~hishwaran/rfsrc.html).
 
 Option 1: From source (Linux & Mac OSX)
 
@@ -101,7 +103,11 @@ sudo rm -R /Library/Frameworks/R.framework/Resources/library/package_name
 
 **Dependencies**
 
-Here the list of packages that **assigner** is depending on:
+Here the list of packages that **assigner** needs:
+  * **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, dplyr, stackr (>= 0.2.9)
+  * **Suggests:** devtools, knitr, plyr, rmarkdown
+  * **Remotes:** github::thierrygosselin/stackr
+
 ```r
 if (!require("reshape2")) install.packages("reshape2")
 if (!require("ggplot2")) install.packages("ggplot2")
@@ -144,70 +150,36 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Version, new feature and bug history now lives in the [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
-**v.0.2.8**
-* While changing some lines with `tidyr::spread` and `tidyr::gather` for `data.table::dcast.data.table` and `data.table::melt.data.table` to make the code faster, I forgot to split genotype into alleles for `gsi_sim`.
-* please update both **stackr** and **assigner**
-* the build error from Travis will be fixed soon. 
-It should not affect the package "experience"" in any way.
-
-**v.0.2.7**
-* you need to update [stackr] (https://github.com/thierrygosselin/stackr) to v.0.2.7
-to appreciate this new version of assigner.
-
-* updated `assignment_ngs` with the separate stackr modules to simplify the function.
-
-* new data file available for `assignment_ngs`: `genepop` and `genind` object.
-
-* `assignment_ngs` now accept any vcf input file! i.e. it’s no longer limited to stacks vcf. 
-
-* new arguments in `assignment_ngs`. The assignment using dapc can now use 
-the optimized alpha score `adegenet.dapc.opt == "optim.a.score"` or 
-the cross-validation `adegenet.dapc.opt == "xval"`. This is useful for fine tuning 
-the trade-off between power of discrimination and over-fitting 
-(for stability of group membership probabilities).
-Cross validation with `adegenet.dapc.opt == "xval"` doesn't work with 
-missing data, so it's only available with *imputed data* 
-(i.e. `imputation.method == "rf" or "max"`). 
-With non imputed data or the default: the optimized alpha-score is used 
-(`adegenet.dapc.opt == "optim.a.score"`).
-When using `adegenet.dapc.opt == "xval"`, 2 new arguments are available: 
-(1) `adegenet.n.rep` and (2) `adegenet.training`. See documentation for details.
-
-* removed arguments in `assignment_ngs`. Removed the `pop.id.start` and `pop.id.end`
-arguments that were confusing people. For those used to these arguments, 
-they are now recycled in the new function `individuals2strata`
-in [stackr] (https://github.com/thierrygosselin/stackr). 
-The strata file created by this function can be used with the `strata` argument in
-`assignment_ngs`.
-
-* 2 modified arguments in `assignment_ngs`: (1) `gsi_sim.filename` is now `filename`; and 
-(2) if you didn't use the imputation argument, replace `imputation.method = FALSE`
-to `imputation.method = NULL` or leave the argument missing.
-
-* simplified sections of codes in `assignment_ngs` that dealt with `strata`, 
-`pop.levels` and `pop.labels`.
-
-* new function: `write_gsi_sim`. Write a gsi_sim file from a data frame (wide or long/tidy). 
-Used internally in [assigner] (https://github.com/thierrygosselin/assigner)
-and might be of interest for users.
-
-**v.0.2.6**
-* `fst_WC84` is now a separate and very fast function that can compute: the overall and pairwise Weir and Cockerham 1984 Theta/Fst. Bootstrap resampling of markers is avalaible to build Confidence Intervals (For Louis Bernatchez and his students;). The estimates are available as a data frame and a matrix with upper diagonal filled with Fst values and lower diagonal filled with the confidence intervals.
+**v.0.2.9**
+* updated vignettes
+* bug fix in `fst_WC84`
+* bug fix between assinger -> devtools -> github -> travis, [this page helped] (http://itsalocke.com/using-travis-make-sure-use-github-pat/)
 
 For previous news:
 [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
+
+## Examples and Vignettes
+
+To view vignettes:
+
+1. inside R
+```r
+install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
+```
+2. To view vignettes on github: [link](https://github.com/thierrygosselin/assigner/tree/master/vignettes)
+
+Vignettes are in development, check periodically for updates.
 
 ## Roadmap of future developments:
 
 * The ability to provide the ranking of markers based on something else than Fst (Weir and Cockerham, 1984) currently used in the function. e.g. Informativeness for Assignment Measure (In, Rosenberg et al. 2003), the Absolute Allele Frequency Differences (delta, δ, Shriver et al., 1997).
 * Provide ranking from other software: e.g. Toolbox for Ranking and Evaluation of SNPs [TRES](http://mlkd.csd.auth.gr/bio/tres/), [BayeScan](http://cmpg.unibe.ch/software/BayeScan/) and [OutFLANK](https://github.com/whitlock/OutFLANK).
 * Would be very cool to use genotype likelihood information to get more accurate assignment.
-* Documentation and vignettes
-* Workflow tutorial
 * Use Shiny and ggvis when subplots or facets are available
 * CRAN
 * ...suggestions ?
+
 
 ## Contributions:
 
@@ -222,18 +194,11 @@ New to pull request on github ? The process is very easy:
 * Submit a pull request and include a brief description of your changes. 
 * “Fixing typos” is perfectly adequate.
 
-
-## Example 
-Under construction
-
-Here an example on how to read the GenoDive assignment output file in order to 
-use the arguments in the `dlr` and the `plot_assignment_dlr` functions correctly.
-
-![](vignettes/dlr.example.png)
-
-
-Vignettes are in development, check periodically for updates.
-
+## Citation:
+To get the citation for **assigner**, inside R:
+```r
+citation("assigner")
+```
 
 ## References
 
@@ -274,10 +239,3 @@ Shriver MD, Smith MW, Jin L et al. (1997) Ethnic-affiliation estimation by use o
 Weir BS, Cockerham CC (1984) Estimating F-Statistics for the Analysis of Population Structure. Evolution, 38, 1358–1370.
 
 Whitlock MC, Lotterhos KE (2015) Reliable Detection of Loci Responsible for Local Adaptation: Inference of a Null Model through Trimming the Distribution of FST*. The American Naturalist, S000–S000.
-
-## Citation:
-To get the citation for **assigner**, inside R:
-```r
-citation("assigner")
-```
-

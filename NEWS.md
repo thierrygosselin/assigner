@@ -1,3 +1,52 @@
+# assigner v.0.2.8
+
+* While changing some lines with `tidyr::spread` and `tidyr::gather` for `data.table::dcast.data.table` and `data.table::melt.data.table` to make the code faster, I forgot to split genotype into alleles for `gsi_sim`.
+* please update both **stackr** and **assigner**
+* the build error from Travis will be fixed soon. 
+It should not affect the package "experience"" in any way.
+
+# assigner v.0.2.7
+
+* you need to update [stackr] (https://github.com/thierrygosselin/stackr) to v.0.2.7
+to appreciate this new version of assigner.
+
+* updated `assignment_ngs` with the separate stackr modules to simplify the function.
+
+* new data file available for `assignment_ngs`: `genepop` and `genind` object.
+
+* `assignment_ngs` now accept any vcf input file! i.e. it’s no longer limited to stacks vcf. 
+
+* new arguments in `assignment_ngs`. The assignment using dapc can now use 
+the optimized alpha score `adegenet.dapc.opt == "optim.a.score"` or 
+the cross-validation `adegenet.dapc.opt == "xval"`. This is useful for fine tuning 
+the trade-off between power of discrimination and over-fitting 
+(for stability of group membership probabilities).
+Cross validation with `adegenet.dapc.opt == "xval"` doesn't work with 
+missing data, so it's only available with *imputed data* 
+(i.e. `imputation.method == "rf" or "max"`). 
+With non imputed data or the default: the optimized alpha-score is used 
+(`adegenet.dapc.opt == "optim.a.score"`).
+When using `adegenet.dapc.opt == "xval"`, 2 new arguments are available: 
+(1) `adegenet.n.rep` and (2) `adegenet.training`. See documentation for details.
+
+* removed arguments in `assignment_ngs`. Removed the `pop.id.start` and `pop.id.end`
+arguments that were confusing people. For those used to these arguments, 
+they are now recycled in the new function `individuals2strata`
+in [stackr] (https://github.com/thierrygosselin/stackr). 
+The strata file created by this function can be used with the `strata` argument in
+`assignment_ngs`.
+
+* 2 modified arguments in `assignment_ngs`: (1) `gsi_sim.filename` is now `filename`; and 
+(2) if you didn't use the imputation argument, replace `imputation.method = FALSE`
+to `imputation.method = NULL` or leave the argument missing.
+
+* simplified sections of codes in `assignment_ngs` that dealt with `strata`, 
+`pop.levels` and `pop.labels`.
+
+* new function: `write_gsi_sim`. Write a gsi_sim file from a data frame (wide or long/tidy). 
+Used internally in [assigner] (https://github.com/thierrygosselin/assigner)
+and might be of interest for users.
+
 # assigner v.0.2.6
 
 * Added a `NEWS.md` file to track changes to the package.
