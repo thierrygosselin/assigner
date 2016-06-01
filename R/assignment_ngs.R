@@ -13,7 +13,7 @@
 #' developed by Eric C. Anderson, or 
 #' \href{https://github.com/thibautjombart/adegenet}{adegenet}, 
 #' a R package developed by Thibaul Jombart.
-#' Various input files is offered. Individuals, populations and
+#' Various input files are offered. Individuals, populations and
 #' markers can be filtered and/or selected in several ways using blacklist,
 #' whitelist and other arguments. Map-independent imputation of missing genotype
 #' using Random Forest or the most frequent category is also available.
