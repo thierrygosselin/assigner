@@ -286,33 +286,30 @@ To make the VCF population ready, you need the \code{strata} argument.
 To make the haplotype file population ready, you need the \code{strata} argument.
 
 \item Data frame
-Tab delimitted.
-\strong{2 genotypes formats are available, both use 3 character per allele:}
-6 characters no allele separator: e.g. \code{001002 of 111333} (for heterozygote individual).
-6 characters WITH an allele separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
-The separator can be any of these: \code{"/", ":", "_", "-", "."}.
-Missing alleles are coded \code{000}.
 To discriminate the long from the wide format, 
 the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
-for columns number, > 20 for wide 
-(i.e. don't use less than 10 markers in wide format, the function was not designed for that).
-
-Data Frame wide format:
+for "MARKERS" in column names (TRUE = long format).
+The data frame is tab delimitted.
+\strong{Wide format:}
 The wide format cannot store metadata info.
-The wide format contains starts with these 2 id columns: 
+The wide format starts with these 2 id columns: 
 \code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
 the remaining columns are the markers in separate columns storing genotypes.
-This format requires column numbers to be larger than 20.
-Data frame long/tidy format:
-This format requires column numbers to be within the range: 4 min - 20 max.
-The long format is considered to be a tidy data frame and can store metadata info. 
-(e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). The 4 columns
-required in the long format are: \code{INDIVIDUALS}, \code{POP_ID}, 
-\code{MARKERS} and \code{GENOTYPE or GT}.
 
-Note that the \code{POP_ID} column can be any hierarchical grouping. 
-See the argument \code{strata} for other means of controlling grouping used 
-in the assignment.
+\strong{Long/Tidy format:}
+The long format is considered to be a tidy data frame and can store metadata info. 
+(e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). A minimum of 4 columns
+are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
+\code{MARKERS} and \code{GENOTYPE or GT}. The rest are considered metata info.
+
+\strong{2 genotypes formats are available:}
+6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
+6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
+The separator can be any of these: \code{"/", ":", "_", "-", "."}.
+
+\emph{How to get a tidy data frame ?}
+\pkg{stackr} \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
+in a tidy data frame.
 
 \item PLINK file in 
 \code{tped/tfam} format (e.g. \code{data =  "data.assignment.tped"}). 

@@ -140,6 +140,14 @@ write_gsi_sim <- function (
   ) %>% 
     as_data_frame()
   
+  # change sep in individual name
+  input$INDIVIDUALS <- stri_replace_all_fixed(
+    str = input$INDIVIDUALS, 
+    pattern = c("_", ":"), 
+    replacement = c("-", "-"),
+    vectorize_all = FALSE
+  )
+  
   # population levels ----------------------------------------------------------
   if (is.null(strata)){ # no strata
     if(is.null(pop.levels)) { # no pop.levels
@@ -169,6 +177,14 @@ write_gsi_sim <- function (
     } else {
       strata.df <- strata
     }
+    # change sep in individual name
+    strata.df$INDIVIDUALS <- stri_replace_all_fixed(
+      str = strata.df$INDIVIDUALS, 
+      pattern = c("_", ":"), 
+      replacement = c("-", "-"),
+      vectorize_all = FALSE
+    )
+    
     if(is.null(pop.levels)) { # no pop.levels
       input <- input %>%
         select(-POP_ID) %>% 
