@@ -162,6 +162,8 @@ fst.ci$pairwise.fst.ci.matrix
 1. To have this in a handy table for publication, we will create a new object `pairwise.fst.ci.df`:
 ```r
 pairwise.fst.ci.df <- data.frame(fst.ci$pairwise.fst.ci.matrix) %>% add_rownames("POP")
+# if you have numeric pop_id identifier you might have to do this to get proper column names:
+colnames(pairwise.fst.ci.df) <- colnames(fst.ci$pairwise.fst.ci.matrix)
 # to save:
 write_tsv(x = pairwise.fst.ci.df, path = "pairwise.fst.ci.df.tsv")
 ```

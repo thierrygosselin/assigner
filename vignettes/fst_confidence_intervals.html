@@ -12,7 +12,7 @@
 
 <meta name="author" content="Thierry Gosselin" />
 
-<meta name="date" content="2016-05-31" />
+<meta name="date" content="2016-06-01" />
 
 <title>Pairwise and overall Fst with confidence intervals + building phylogenetic tree</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Pairwise and overall Fst with confidence intervals + building phylogenetic tree</h1>
 <h4 class="author"><em>Thierry Gosselin</em></h4>
-<h4 class="date"><em>2016-05-31</em></h4>
+<h4 class="date"><em>2016-06-01</em></h4>
 
 
 
@@ -235,6 +235,8 @@ fst.matrix2 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst.ci$pairwise.fst.ci.matrix</code></pre></div></li>
 <li><p>To have this in a handy table for publication, we will create a new object <code>pairwise.fst.ci.df</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pairwise.fst.ci.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst.ci$pairwise.fst.ci.matrix) %&gt;%<span class="st"> </span><span class="kw">add_rownames</span>(<span class="st">&quot;POP&quot;</span>)
+<span class="co"># if you have numeric pop_id identifier you might have to do this to get proper column names:</span>
+<span class="kw">colnames</span>(pairwise.fst.ci.df) &lt;-<span class="st"> </span><span class="kw">colnames</span>(fst.ci$pairwise.fst.ci.matrix)
 <span class="co"># to save:</span>
 <span class="kw">write_tsv</span>(<span class="dt">x =</span> pairwise.fst.ci.df, <span class="dt">path =</span> <span class="st">&quot;pairwise.fst.ci.df.tsv&quot;</span>)</code></pre></div></li>
 </ol>
