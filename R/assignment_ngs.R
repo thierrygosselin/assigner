@@ -13,7 +13,7 @@
 #' developed by Eric C. Anderson, or 
 #' \href{https://github.com/thibautjombart/adegenet}{adegenet}, 
 #' a R package developed by Thibaul Jombart.
-#' Various input files is offered. Individuals, populations and
+#' Various input files are offered. Individuals, populations and
 #' markers can be filtered and/or selected in several ways using blacklist,
 #' whitelist and other arguments. Map-independent imputation of missing genotype
 #' using Random Forest or the most frequent category is also available.
@@ -600,7 +600,7 @@ assignment_ngs <- function(
     blacklist.id = blacklist.id, 
     blacklist.genotype = blacklist.genotype, 
     whitelist.markers = whitelist.markers, 
-    monomorphic.out = TRUE, 
+    monomorphic.out = monomorphic.out, 
     max.marker = max.marker,
     snp.ld = NULL, 
     common.markers = FALSE, 
@@ -1141,16 +1141,8 @@ haplotype file and create a whitelist, for other file type, use
     # Functions ******************************************************************
     # Assignment with gsi_sim
     assignment_analysis <- function(
-      data,
-      select.markers, 
-      markers.names, 
-      missing.data, 
-      i, 
-      m, 
-      holdout, 
-      filename, 
-      ...
-    ) {
+      data, select.markers, 
+      markers.names, missing.data, i, m, holdout, filename, ...) {
       # data <- input #test
       # data <- genind.prep #test
       # data <- genind.object.imp # test
@@ -1167,7 +1159,7 @@ haplotype file and create a whitelist, for other file type, use
         data = data.select, 
         pop.levels = pop.levels, 
         pop.labels = pop.labels, 
-        strata = strata, 
+        strata = NULL, 
         filename = filename
       )
       
@@ -1260,19 +1252,9 @@ haplotype file and create a whitelist, for other file type, use
     
     # Assignment with adegenet
     assignment_analysis_adegenet <- function(
-      data, 
-      select.markers, 
-      adegenet.dapc.opt, 
-      adegenet.n.rep, 
-      adegenet.training, 
-      parallel.core, 
-      markers.names, 
-      missing.data, 
-      i,
-      m,
-      holdout, 
-      ...
-    ) {
+      data, select.markers, 
+      adegenet.dapc.opt, adegenet.n.rep, adegenet.training, 
+      parallel.core, markers.names, missing.data, i, m, holdout, ...) {
       # data <- genind.object #test
       # missing.data <- "no.imputation" #test
       data.select <- data[loc = select.markers$MARKERS]
@@ -1446,9 +1428,9 @@ Progress can be monitored with activity in the folder...")
         markers.names <- unique(select.markers$MARKERS)
         
         # Assignment analysis without imputations
-        filename <- stri_paste(directory.subsample, filename, sep = "")
-        filename <- stri_replace_all_fixed(
-          filename,
+        filename.no.imp <- stri_paste(directory.subsample, filename, sep = "")
+        filename.no.imp <- stri_replace_all_fixed(
+          filename.no.imp,
           pattern = "txt",
           replacement = stri_join(
             i, m, 
@@ -1465,7 +1447,7 @@ Progress can be monitored with activity in the folder...")
             i = i, 
             m = m,
             holdout = NULL,
-            filename = filename
+            filename = filename.no.imp
           )
         }
         if (assignment.analysis == "adegenet") {
@@ -1499,9 +1481,9 @@ Progress can be monitored with activity in the folder...")
             }
           }
           # Assignment analysis WITH imputations
-          filename <- stri_paste(directory.subsample, filename, sep = "")
-          filename <- stri_replace_all_fixed(
-            filename,
+          filename.imp <- stri_paste(directory.subsample, filename, sep = "")
+          filename.imp <- stri_replace_all_fixed(
+            filename.imp,
             pattern = "txt",
             replacement = stri_join(
               i, m, 
@@ -1517,7 +1499,7 @@ Progress can be monitored with activity in the folder...")
               i = i,
               m = m,
               holdout = holdout,
-              filename = filename
+              filename = filename.imp
             )
           }
           if (assignment.analysis == "adegenet") {
@@ -1850,13 +1832,13 @@ Progress can be monitored with activity in the folder...")
           holdout <- NULL
           fst.ranked <- assigner::fst_WC84(
             data = input, 
-            pop.levels = pop.levels, pop.labels = pop.labels, strata = strata, 
+            pop.levels = pop.levels, pop.labels = pop.labels, strata = NULL, 
             holdout.samples = NULL
           )$fst.ranked
           if (!is.null(imputation.method)) {
             fst.ranked.imp <- assigner::fst_WC84(
               data = input.imp, 
-              pop.levels = pop.levels, pop.labels = pop.labels, strata = strata, 
+              pop.levels = pop.levels, pop.labels = pop.labels, strata = NULL, 
               holdout.samples = NULL
             )$fst.ranked
           }
@@ -1864,13 +1846,13 @@ Progress can be monitored with activity in the folder...")
           holdout <- data.frame(INDIVIDUALS = i)
           fst.ranked <- assigner::fst_WC84(
             data = input, 
-            pop.levels = pop.levels, pop.labels = pop.labels, strata = strata, 
+            pop.levels = pop.levels, pop.labels = pop.labels, strata = NULL, 
             holdout.samples = holdout$INDIVIDUALS
           )$fst.ranked
           if (!is.null(imputation.method)) {
             fst.ranked.imp <- assigner::fst_WC84(
               data = input.imp, 
-              pop.levels = pop.levels, pop.labels = pop.labels, strata = strata, 
+              pop.levels = pop.levels, pop.labels = pop.labels, strata = NULL, 
               holdout.samples = holdout$INDIVIDUALS
             )$fst.ranked
           }
@@ -1878,13 +1860,13 @@ Progress can be monitored with activity in the folder...")
           holdout <- data.frame(holdout.individuals.list[i])
           fst.ranked <- assigner::fst_WC84(
             data = input, 
-            pop.levels = pop.levels, pop.labels = pop.labels, strata = strata, 
+            pop.levels = pop.levels, pop.labels = pop.labels, strata = NULL, 
             holdout.samples = holdout$INDIVIDUALS
           )$fst.ranked
           if (!is.null(imputation.method)) {
             fst.ranked.imp <- assigner::fst_WC84(
               data = input.imp, 
-              pop.levels = pop.levels, pop.labels = pop.labels, strata = strata, 
+              pop.levels = pop.levels, pop.labels = pop.labels, strata = NULL, 
               holdout.samples = holdout$INDIVIDUALS
             )$fst.ranked
           }
@@ -1927,9 +1909,9 @@ Progress can be monitored with activity in the folder...")
           markers.names <- unique(select.markers$MARKERS)
           
           # Assignment analysis without imputations
-          filename <- stri_paste(directory.subsample, filename, sep = "")
-          filename <- stri_replace_all_fixed(
-            filename, pattern = "txt",
+          filename.no.imp <- stri_paste(directory.subsample, filename, sep = "")
+          filename.no.imp <- stri_replace_all_fixed(
+            filename.no.imp, pattern = "txt",
             replacement = stri_join(
               i, m, "no.imputation", "txt", sep = "."
             )
@@ -1943,7 +1925,7 @@ Progress can be monitored with activity in the folder...")
               i = i, 
               m = m,
               holdout = holdout,
-              filename = filename
+              filename = filename.no.imp
             )
           }
           
@@ -1962,8 +1944,7 @@ Progress can be monitored with activity in the folder...")
           select.markers <- NULL
           markers.names <- NULL
           RANKING <- NULL
-          filename <- NULL
-          
+
           # With imputations
           if (!is.null(imputation.method)) {  # with imputations
             
@@ -1988,9 +1969,9 @@ Progress can be monitored with activity in the folder...")
             }
             
             # Assignment analysis WITH imputations
-            filename <- stri_paste(directory.subsample, filename, sep = "")
-            filename <- stri_replace_all_fixed(
-              filename, pattern = "txt", replacement = stri_join(
+            filename.imp <- stri_paste(directory.subsample, filename, sep = "")
+            filename.imp <- stri_replace_all_fixed(
+              filename.imp, pattern = "txt", replacement = stri_join(
                 i, m, "imputed", "txt", sep = "."
               )
             )
@@ -2003,7 +1984,7 @@ Progress can be monitored with activity in the folder...")
                 i = i,
                 m = m,
                 holdout = holdout,
-                filename = filename
+                filename = filename.imp
               )
             }
             if (assignment.analysis == "adegenet") {
