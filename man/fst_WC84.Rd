@@ -108,7 +108,7 @@ that uses the Analysis of Molecular Variance
 (AMOVA, Excoffier et al., 1992; Michalakis and Excoffier, 1996). 
 The fastest computation is still 
 \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-but for an R implementation, \code{\link{fst_WC84}} is very fast. 
+but it does compute confidence intervals. For an R implementation, \code{\link{fst_WC84}} is very fast. 
 The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
 \pkg{data.table} and \pkg{parallel}.
 }

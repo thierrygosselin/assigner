@@ -16,18 +16,18 @@ Depends:
 Imports:
     adegenet,
     data.table,
+    dplyr,
     ggplot2,
     lazyeval,
     parallel,
     purrr,
     randomForestSRC,
     readr,
+    stackr,
     stringi,
     stringr,
     tidyr,
-    utils,
-    dplyr,
-    stackr
+    utils
 Suggests:
     devtools,
     hierfstat,
