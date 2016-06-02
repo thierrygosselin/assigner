@@ -200,8 +200,7 @@ if (!require("ggtree")) install_github("GuangchuangYu/ggtree")
 ```
 
 1. if it doesn't work after this, you might need to install dependencies. And 
-you might have  \href{https://bioconductor.org/packages/release/bioc/html/ggtree.html}{bioconductor}
-to install them.
+you might have to install them (see [bioconductor](https://bioconductor.org/packages/release/bioc/html/ggtree.html)).
 
     * **Imports:** ape, Biostrings, grDevices, grid, jsonlite, magrittr, methods, stats4, tidyr, utils,
     * **Suggests:** colorspace, EBImage, knitr, phylobase, phytools, phangorn, rmarkdown, scales, testthat
@@ -226,7 +225,7 @@ tree.figure
 ggsave(filename = "assigner.fst.tree.example.pdf", width = 15, height = 15, dpi = 600, units = "cm", useDingbats = F)
 ```
 
-1. Several vignettes are available to get to know ggtree: http://guangchuangyu.github.io/ggtree/
+1. Several vignettes are available to get to know [ggtree](http://guangchuangyu.github.io/ggtree/)
 
 
 # Conclusion
