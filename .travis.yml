@@ -12,3 +12,7 @@ notifications:
   email:
     on_success: change
     on_failure: change
+
+install:
+    - ./travis-tool.sh install_github thierrygosselin/stackr
+
