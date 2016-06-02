@@ -1,8 +1,10 @@
-# Sample .travis.yml for R projects
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: r
+sudo: false
+cache: packages
+
 warnings_are_errors: true
-sudo: required
 
 env:
  global:
@@ -13,6 +15,5 @@ notifications:
     on_success: change
     on_failure: change
 
-install:
-    - ./travis-tool.sh install_github thierrygosselin/stackr
-
+r_github_packages:
+  - thierrygosselin/stackr
