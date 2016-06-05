@@ -113,6 +113,7 @@ The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr},
 \pkg{data.table} and \pkg{parallel}.
 
 \emph{Special concerns for genome-wide estimate and filtering bias}
+
 During computation, the function first starts by keeping only the polymorphic 
 markers in common between the populations. Keep this in mind when filtering 
 your markers to use this function characteristic strategically to get 
