@@ -85,11 +85,11 @@ With pairwise comparison computed, the function returns a list with
       \code{lsigw}: within individuals)
  \item \code{$fst.markers}: the fst by markers,
  \item \code{$fst.ranked}: the fst ranked,
- \item \code{$fst.overall}: the mean fst overall markers,
+ \item \code{$fst.overall}: the mean fst overall markers and the number of markers 
  \item \code{$fis.markers}: the fis by markers,
- \item \code{$fis.overall}: the mean fis overall markers,
+ \item \code{$fis.overall}: the mean fis overall markers and the number of markers,
  \item \code{$fst.plot}: the histogram of the overall Fst per markers,
- \item \code{$pairwise.fst}: the pairwise fst in long/tidy data frame,
+ \item \code{$pairwise.fst}: the pairwise fst in long/tidy data frame and the number of markers ,
  \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix,
  \item \code{$pairwise.fst.full.matrix}: the pairwise fst matrix (duplicated upper and lower triangle),
  \item \code{$pairwise.fst.ci.matrix}: matrix with pairwise fst in the upper triangle
@@ -111,10 +111,18 @@ The fastest computation is still
 but it does compute confidence intervals. For an R implementation, \code{\link{fst_WC84}} is very fast. 
 The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
 \pkg{data.table} and \pkg{parallel}.
+
+\emph{Special concerns for genome-wide estimate and filtering bias}
+During computation, the function first starts by keeping only the polymorphic 
+markers in common between the populations. Keep this in mind when filtering 
+your markers to use this function characteristic strategically to get 
+better genome-wide estimate. This is even more important when your project 
+involves more than 2 populations that evolved more by neutral processes 
+(e.g. genetic drift) than by natural selection (see the vignette for more details).
 }
 \details{
 \strong{Input data:}
- 
+
 To discriminate the long from the wide format, 
 the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
 for "MARKERS" in column names (TRUE = long format).

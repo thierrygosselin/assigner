@@ -18,7 +18,15 @@
 #' \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
 #' but it does compute confidence intervals. For an R implementation, \code{\link{fst_WC84}} is very fast. 
 #' The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
-#' \pkg{data.table} and \pkg{parallel}. 
+#' \pkg{data.table} and \pkg{parallel}.
+#' 
+#' \emph{Special concerns for genome-wide estimate and filtering bias}
+#' During computation, the function first starts by keeping only the polymorphic 
+#' markers in common between the populations. Keep this in mind when filtering 
+#' your markers to use this function characteristic strategically to get 
+#' better genome-wide estimate. This is even more important when your project 
+#' involves more than 2 populations that evolved more by neutral processes 
+#' (e.g. genetic drift) than by natural selection (see the vignette for more details).
 #' 
 #' @note \strong{This function is dedicated to Louis Bernatchez!
 #' In the hope that your students find this function fast and usefull.}
@@ -102,19 +110,20 @@
 #'       \code{lsigw}: within individuals)
 #'  \item \code{$fst.markers}: the fst by markers,
 #'  \item \code{$fst.ranked}: the fst ranked,
-#'  \item \code{$fst.overall}: the mean fst overall markers,
+#'  \item \code{$fst.overall}: the mean fst overall markers and the number of markers 
 #'  \item \code{$fis.markers}: the fis by markers,
-#'  \item \code{$fis.overall}: the mean fis overall markers,
+#'  \item \code{$fis.overall}: the mean fis overall markers and the number of markers,
 #'  \item \code{$fst.plot}: the histogram of the overall Fst per markers,
-#'  \item \code{$pairwise.fst}: the pairwise fst in long/tidy data frame,
+#'  \item \code{$pairwise.fst}: the pairwise fst in long/tidy data frame and the number of markers ,
 #'  \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix,
 #'  \item \code{$pairwise.fst.full.matrix}: the pairwise fst matrix (duplicated upper and lower triangle),
 #'  \item \code{$pairwise.fst.ci.matrix}: matrix with pairwise fst in the upper triangle
 #'  and the confidence intervals in the lower triangle.
 #' }
 
-#' @details \strong{Input data:}
-#'  
+#' @details 
+#' \strong{Input data:}
+#' 
 #' To discriminate the long from the wide format, 
 #' the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
 #' for "MARKERS" in column names (TRUE = long format).
@@ -223,7 +232,7 @@
 if (getRversion() >= "2.15.1"){
   utils::globalVariables(
     c("GENOTYPE", "FIS", "POP1", "POP2", "tsiga", "tsigb", "tsigw", "CI", 
-      "CI_LOW", "CI_HIGH", "sigma.loc.alleles")
+      "CI_LOW", "CI_HIGH", "N_MARKERS","sigma.loc.alleles")
   )
 }
 
@@ -314,7 +323,7 @@ fst_WC84 <- function(data,
   }
   
   # Get the number of pop  -----------------------------------------------------
-  pop.number <- n_distinct(input$POP_ID)
+  # pop.number <- n_distinct(input$POP_ID)
   
   # genotyped data and holdout sample  -----------------------------------------
   if (is.null(holdout.samples)) { # use all the individuals
@@ -361,6 +370,48 @@ fst_WC84 <- function(data,
   # fst function
   compute_fst <- function(x, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
     # x = data.genotyped # test
+    
+    # Markers in common between all populations ********************************
+    pop.number <- n_distinct(x$POP_ID)
+    
+    pop.filter <- x %>% 
+      group_by(MARKERS) %>%
+      filter(n_distinct(POP_ID) == pop.number) %>%
+      arrange(MARKERS) %>%
+      select(MARKERS) %>%
+      distinct(MARKERS)
+    
+    # number of marker used for computation 
+    n.markers <- n_distinct(pop.filter$MARKERS)
+    
+    #Filter
+    x <- suppressWarnings(x %>% semi_join(pop.filter, by = "MARKERS"))
+    
+    # ununsed objects
+    pop.filter <- NULL
+    pop.number <- NULL
+    
+    # Removing monomorphic markers------------------------------------------------
+    mono.markers <- x %>%
+      select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
+      tidyr::separate(col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
+      tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>%
+      filter(GT != "000") %>%
+      group_by(MARKERS, GT) %>% 
+      tally %>%
+      ungroup() %>% 
+      select(MARKERS) %>% 
+      group_by(MARKERS) %>% 
+      tally %>% 
+      filter(n == 1) %>% 
+      select(MARKERS)
+    
+    
+    # Remove the markers from the dataset
+    x <- anti_join(x, mono.markers, by = "MARKERS")
+
+
+    # The similar hierfstat steps ----------------------------------------------
     n.pop.locus <- x %>%
       select(MARKERS, POP_ID) %>%
       group_by(MARKERS) %>%
@@ -533,6 +584,8 @@ fst_WC84 <- function(data,
         FST = round(tsiga/(tsiga + tsigb + tsigw), digits),
         FIS = round(tsigb/(tsigb + tsigw), digits)
       )
+    # add new column with number of markers
+    fst.fis.overall$N_MARKERS <- n.markers
     
     # Confidence Intervals -----------------------------------------------------
     # over loci for the overall Fst estimate
@@ -570,10 +623,11 @@ fst_WC84 <- function(data,
     # Fst overall  -------------------------------------------------------------
     if (ci){
       fst.overall <- fst.fis.overall %>% 
-        select(FST) %>% 
+        select(FST, N_MARKERS) %>% 
         bind_cols(boot.fst.summary)
     } else {
-      fst.overall <- fst.fis.overall %>% select(FST)
+      fst.overall <- fst.fis.overall %>% 
+        select(FST, N_MARKERS)
     }
     
     # Fis markers  -------------------------------------------------------------
@@ -582,7 +636,7 @@ fst_WC84 <- function(data,
       arrange(MARKERS)
     
     # Fis overall   ------------------------------------------------------------
-    fis.overall <- fst.fis.overall %>% select(FIS)
+    fis.overall <- fst.fis.overall %>% select(FIS, N_MARKERS)
     
     # Plot -----------------------------------------------------------------------
     fst.plot <- ggplot(fst.markers, aes(x = FST, na.rm = T))+
