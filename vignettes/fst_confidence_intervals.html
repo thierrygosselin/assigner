@@ -12,7 +12,7 @@
 
 <meta name="author" content="Thierry Gosselin" />
 
-<meta name="date" content="2016-06-01" />
+<meta name="date" content="2016-06-05" />
 
 <title>Pairwise and overall Fst with confidence intervals + building phylogenetic tree</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Pairwise and overall Fst with confidence intervals + building phylogenetic tree</h1>
 <h4 class="author"><em>Thierry Gosselin</em></h4>
-<h4 class="date"><em>2016-06-01</em></h4>
+<h4 class="date"><em>2016-06-05</em></h4>
 
 
 
@@ -85,6 +85,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>make Louis Bernatchez happy !</li>
 </ul>
 </div>
+<div id="special-concerns-for-genome-wide-estimate-and-filtering-bias" class="section level1">
+<h1>Special concerns for genome-wide estimate and filtering bias</h1>
+<p>During computation, the function first starts by keeping only the polymorphic markers in common between the populations.</p>
+<p>When your project involves &gt; 2 populations that evolved more by neutral processes (e.g. genetic drift) than by natural selection, filtering to keep only the markers in common between your populations will drastically reduce the number of markers, and consequently your genome coverage for the estimate. Strategically, you should reduce the threshold of number of populations required to keep a marker (e.g. use a minimum of 2 populations genotyped for the markers to keep it). This is easily tested with <code>stackr::filter_population</code> or in stacks population module.</p>
+<p>The overall fst and fis estimates will have reduce genome-wide coverage, because the computation is conducted with shared markers accross all your populations. However, for the pairwise comparisons, the markers will be tallied automatically for the pair. This usually results in more legitimate markers (i.e. less filtering bias) being used during computation, providing better genome-wide estimates for that pair.</p>
+</div>
 <div id="workflow" class="section level1">
 <h1>Workflow</h1>
 <div id="fst-calculations" class="section level2">
@@ -92,23 +98,19 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ol style="list-style-type: decimal">
 <li><p>Clean your desk and remove the clutter in the global environment</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>())</code></pre></div></li>
-<li><p>Load the required libraries</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">if (!<span class="kw">require</span>(<span class="st">&quot;devtools&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;reshape2&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;reshape2&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;ggplot2&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;ggplot2&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;stringr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;stringr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;stringi&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;stringi&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;plyr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;plyr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;dplyr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;dplyr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;tidyr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;tidyr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;readr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;readr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;purrr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;purrr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;data.table&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;data.table&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;adegenet&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;adegenet&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;ape&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;ape&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;stackr&quot;</span>)) <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/stackr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;assigner&quot;</span>)) <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/assigner&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
-<span class="co">#install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run</span></code></pre></div></li>
+<li><p>Automatically install/load the required libraries</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">if (!<span class="kw">require</span>(<span class="st">&quot;pacman&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;pacman&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;pacman&quot;</span>)
+pacman::<span class="kw">p_load</span>(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, readr, purrr, data.table, ape)
+if (!<span class="kw">require</span>(<span class="st">&quot;stackr&quot;</span>)){
+  <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/stackr&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
+  <span class="kw">library</span>(<span class="st">&quot;stackr&quot;</span>)
+}
+if (!<span class="kw">require</span>(<span class="st">&quot;assigner&quot;</span>)) {
+  <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/assigner&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
+  <span class="co">#install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run</span>
+  <span class="kw">library</span>(<span class="st">&quot;assigner&quot;</span>)
+}</code></pre></div></li>
 <li><p>Get the data:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data.fst &lt;-<span class="st"> </span><span class="kw">read_tsv</span>(<span class="dt">file =</span> <span class="st">&quot;https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz&quot;</span>)</code></pre></div></li>
 <li><p><code>fst_WC84</code> first run: overall and pairwise, but without boostrap (i.e. no confidence intervals)</p>
@@ -137,17 +139,17 @@ Computing paiwise fst
 <li><p><code>$sigma.loc</code>: the variance components per locus: <code>lsiga</code>: among populations, <code>lsigb</code>: among individuals within populations, <code>lsigw</code>: within individuals.</p></li>
 <li><code>$fst.markers</code>: the fst by markers</li>
 <li><code>$fst.ranked</code>: the fst ranked</li>
-<li><code>$fst.overall</code>: the mean fst overall markers</li>
+<li><code>$fst.overall</code>: the mean fst overall markers and number of markers</li>
 <li><code>$fis.markers</code>: the fis by markers</li>
-<li><code>$fis.overall</code>: the mean fis overall markers</li>
+<li><code>$fis.overall</code>: the mean fis overall markers and number of markers</li>
 <li><code>$fst.plot</code>: the histogram of the overall Fst per markers</li>
-<li><code>$pairwise.fst</code>: the pairwise fst in long/tidy data frame</li>
+<li><code>$pairwise.fst</code>: the pairwise fst in long/tidy data frame and number of markers per pairwise comparison</li>
 <li><code>$pairwise.fst.upper.matrix</code>: the pairwise fst in a upper triangle matrix</li>
 <li><code>$pairwise.fst.full.matrix</code>: the pairwise fst matrix (duplicated upper and lower triangle)</li>
 <li><p><code>$pairwise.fst.ci.matrix</code>: matrix with pairwise fst in the upper triangle and the confidence intervals in the lower triangle.</p></li>
 </ul></li>
 <li><p>The data frame with pairwise fst values:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst$pairwise.fst) %&gt;%<span class="st"> </span>as_data_frame</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span>fst$pairwise.fst</code></pre></div></li>
 <li><p>The first 10 parwise comparisons in <code>df</code>:</p></li>
 </ol>
 <table>
@@ -214,8 +216,8 @@ Computing paiwise fst
 <ol start="10" style="list-style-type: decimal">
 <li><p>The matrix with fst values:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst.matrix &lt;-<span class="st"> </span>fst$pairwise.fst.full.matrix
-<span class="co"># test</span>
-fst.matrix2 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst$pairwise.fst.full.matrix) %&gt;%<span class="st"> </span><span class="kw">add_rownames</span>(<span class="st">&quot;POP&quot;</span>)</code></pre></div></li>
+<span class="co"># as a data frame</span>
+fst.matrix &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst$pairwise.fst.full.matrix) %&gt;%<span class="st"> </span><span class="kw">add_rownames</span>(<span class="st">&quot;POP&quot;</span>)</code></pre></div></li>
 <li><p>If you try to get the <code>pairwise.fst.ci.matrix</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst$pairwise.fst.ci.matrix <span class="co"># you will get this:</span>
 [<span class="dv">1</span>] <span class="st">&quot;pairwise fst not selected&quot;</span></code></pre></div></li>
@@ -264,7 +266,7 @@ tree$node.label &lt;-<span class="st"> </span>bootstrap.value</code></pre></div>
 <li><p>To build the tree we will need to install </p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get the latest development version of ggtree:</span>
 if (!<span class="kw">require</span>(<span class="st">&quot;ggtree&quot;</span>)) <span class="kw">install_github</span>(<span class="st">&quot;GuangchuangYu/ggtree&quot;</span>)</code></pre></div></li>
-<li><p>if it doesn’t work after this, you might need to install dependencies. And you might have  to install them.</p>
+<li><p>if it doesn’t work after this, you might need to install dependencies. And you might have to install them (see <a href="https://bioconductor.org/packages/release/bioc/html/ggtree.html">bioconductor</a>).</p>
 <ul>
 <li><strong>Imports:</strong> ape, Biostrings, grDevices, grid, jsonlite, magrittr, methods, stats4, tidyr, utils,</li>
 <li><strong>Suggests:</strong> colorspace, EBImage, knitr, phylobase, phytools, phangorn, rmarkdown, scales, testthat</li>
@@ -283,7 +285,7 @@ tree.figure &lt;-<span class="st"> </span><span class="kw">ggplot</span>(tree, <
 <span class="kw">xlim</span>(<span class="dv">0</span>, <span class="fl">0.16</span>) <span class="co"># to allocate more space for tip labels (trial/error)</span>
 tree.figure
 <span class="kw">ggsave</span>(<span class="dt">filename =</span> <span class="st">&quot;assigner.fst.tree.example.pdf&quot;</span>, <span class="dt">width =</span> <span class="dv">15</span>, <span class="dt">height =</span> <span class="dv">15</span>, <span class="dt">dpi =</span> <span class="dv">600</span>, <span class="dt">units =</span> <span class="st">&quot;cm&quot;</span>, <span class="dt">useDingbats =</span> F)</code></pre></div></li>
-<li><p>Several vignettes are available to get to know ggtree: <a href="http://guangchuangyu.github.io/ggtree/" class="uri">http://guangchuangyu.github.io/ggtree/</a></p></li>
+<li><p>Several vignettes are available to get to know <a href="http://guangchuangyu.github.io/ggtree/">ggtree</a></p></li>
 </ol>
 </div>
 </div>

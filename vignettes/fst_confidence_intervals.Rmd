@@ -23,7 +23,27 @@ vignette: >
   * visualize the estimates with data frame and matrices
   * learn how to integrate the function with other package, e.g. to build a phylogenetic tree
   * make Louis Bernatchez happy !
-    
+  
+# Special concerns for genome-wide estimate and filtering bias 
+During computation, the function first starts by keeping only the polymorphic
+markers in common between the populations. 
+
+When your project involves > 2 populations that evolved more by neutral processes
+(e.g. genetic drift) than by natural selection, filtering to keep only the markers 
+in common between your populations will drastically reduce the number of markers, 
+and consequently your genome coverage for the estimate. Strategically, you should
+reduce the threshold of number of populations required to keep a marker 
+(e.g. use a minimum of 2 populations genotyped for the markers to keep it). 
+This is easily tested with `stackr::filter_population` or in 
+stacks population module.
+
+The overall fst and fis estimates will have reduce genome-wide coverage, 
+because the computation is conducted with shared markers accross 
+all your populations. However, for the pairwise comparisons, the markers will be
+tallied automatically for the pair. This usually results in more legitimate markers 
+(i.e. less filtering bias) being used during computation, 
+providing better genome-wide estimates for that pair.
+
 # Workflow
 
 ## Fst calculations
@@ -33,24 +53,20 @@ vignette: >
 rm(list=ls())
 ```
 
-1. Load the required libraries
+1. Automatically install/load the required libraries
 ```r
-if (!require("devtools")) install.packages("devtools")
-if (!require("reshape2")) install.packages("reshape2")
-if (!require("ggplot2")) install.packages("ggplot2")
-if (!require("stringr")) install.packages("stringr")
-if (!require("stringi")) install.packages("stringi")
-if (!require("plyr")) install.packages("plyr")
-if (!require("dplyr")) install.packages("dplyr")
-if (!require("tidyr")) install.packages("tidyr")
-if (!require("readr")) install.packages("readr")
-if (!require("purrr")) install.packages("purrr")
-if (!require("data.table")) install.packages("data.table")
-if (!require("adegenet")) install.packages("adegenet")
-if (!require("ape")) install.packages("ape")
-if (!require("stackr")) install_github("thierrygosselin/stackr")
-if (!require("assigner")) install_github("thierrygosselin/assigner", build_vignettes = TRUE)
-#install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run
+if (!require("pacman")) install.packages("pacman")
+library("pacman")
+pacman::p_load(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, readr, purrr, data.table, ape)
+if (!require("stackr")){
+  install_github("thierrygosselin/stackr", build_vignettes = TRUE)
+  library("stackr")
+}
+if (!require("assigner")) {
+  install_github("thierrygosselin/assigner", build_vignettes = TRUE)
+  #install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run
+  library("assigner")
+}
 ```
 
 1. Get the data:
@@ -96,11 +112,11 @@ names(fst)
    
     * `$fst.markers`: the fst by markers
     * `$fst.ranked`: the fst ranked
-    * `$fst.overall`: the mean fst overall markers
-    * `$fis.markers`: the fis by markers
-    * `$fis.overall`: the mean fis overall markers
+    * `$fst.overall`: the mean fst overall markers and number of markers 
+    * `$fis.markers`: the fis by markers 
+    * `$fis.overall`: the mean fis overall markers and number of markers 
     * `$fst.plot`: the histogram of the overall Fst per markers
-    * `$pairwise.fst`: the pairwise fst in long/tidy data frame
+    * `$pairwise.fst`: the pairwise fst in long/tidy data frame and number of markers per pairwise comparison
     * `$pairwise.fst.upper.matrix`: the pairwise fst in a upper triangle matrix
     * `$pairwise.fst.full.matrix`: the pairwise fst matrix (duplicated upper and lower triangle)
     * `$pairwise.fst.ci.matrix`: matrix with pairwise fst in the upper triangle
@@ -109,29 +125,29 @@ names(fst)
 
 1. The data frame with pairwise fst values:
 ```r
-df <- data.frame(fst$pairwise.fst) %>% as_data_frame
+df <- fst$pairwise.fst
 ```
 
 1. The first 10 parwise comparisons in `df`:
 
-| POP1 | POP2  |  FST   |
-|:----:|:-----:|:------:|
-| pop1 | pop2  | 0.0442 |
-| pop1 | pop3  | 0.0507 |
-| pop1 | pop4  | 0.0341 |
-| pop1 | pop5  | 0.0300 |
-| pop1 | pop6  | 0.0434 |
-| pop1 | pop7  | 0.0367 |
-| pop1 | pop8  | 0.0256 |
-| pop1 | pop9  | 0.0475 |
-| pop1 | pop10 | 0.0522 |
-| pop1 | pop11 | 0.0473 |
+| POP1 | POP2  |  FST   | N_MARKERS |
+|:----:|:-----:|:------:|:---------:|
+| pop1 | pop2  | 0.0442 |   3457    |
+| pop1 | pop3  | 0.0507 |   3457    |
+| pop1 | pop4  | 0.0341 |   3457    |
+| pop1 | pop5  | 0.0300 |   3457    |
+| pop1 | pop6  | 0.0434 |   3457    |
+| pop1 | pop7  | 0.0367 |   3457    |
+| pop1 | pop8  | 0.0256 |   3457    |
+| pop1 | pop9  | 0.0475 |   3457    |
+| pop1 | pop10 | 0.0522 |   3457    |
+| pop1 | pop11 | 0.0473 |   3457    |
 
 10. The matrix with fst values:
 ```r
 fst.matrix <- fst$pairwise.fst.full.matrix
-# test
-fst.matrix2 <- data.frame(fst$pairwise.fst.full.matrix) %>% add_rownames("POP")
+# as a data frame
+fst.matrix <- data.frame(fst$pairwise.fst.full.matrix) %>% add_rownames("POP")
 ```
 1. If you try to get the `pairwise.fst.ci.matrix`:
 ```r
