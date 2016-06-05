@@ -108,26 +108,33 @@ sudo rm -R /Library/Frameworks/R.framework/Resources/library/package_name
 **Dependencies**
 
 Here the list of packages that **assigner** needs:
-  * **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, dplyr, stackr (>= 0.2.9)
-  * **Suggests:** devtools, knitr, plyr, rmarkdown
+
+  * **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, plyr, dplyr, stackr (>= 0.2.9)
+
+  * **Suggests:** devtools, knitr, rmarkdown
+
   * **Remotes:** github::thierrygosselin/stackr
 
+If you don't have them, no worries, it's *usually* intalled automatically during 
+**stackr** installation. 
+If you have them, it's your job to update them, because i'm usually using the 
+latest versions... 
+A quick way to start a script when using my packages:
 ```r
-if (!require("reshape2")) install.packages("reshape2")
-if (!require("ggplot2")) install.packages("ggplot2")
-if (!require("stringr")) install.packages("stringr")
-if (!require("stringi")) install.packages("stringi")
-if (!require("plyr")) install.packages("plyr")
-if (!require("dplyr")) install.packages("dplyr")
-if (!require("tidyr")) install.packages("tidyr")
-if (!require("readr")) install.packages("readr")
-if (!require("purrr")) install.packages("purrr")
-if (!require("data.table")) install.packages("data.table")
-if (!require("lazyeval")) install.packages("lazyeval")
-if (!require("adegenet")) install.packages("adegenet")
-if (!require("parallel")) install.packages("parallel")
+if (!require("pacman")) install.packages("pacman")
+library("pacman")
+pacman::p_load(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, readr, purrr, data.table, ape, adegenet, parallel, lazyeval, randomForestSRC)
+if (!require("stackr")){
+  install_github("thierrygosselin/stackr", build_vignettes = TRUE)
+  library("stackr")
+}
+if (!require("assigner")) {
+  install_github("thierrygosselin/assigner", build_vignettes = TRUE)
+  # if assigner was re-installed, uncomment and run the next line to install gsi_sim:
+  #install_gsi_sim(fromSource = TRUE) 
+  library("assigner")
+}
 ```
-If you don't have them, no worries, it's intalled automatically during **assigner** installation. If you have them, it's your job to update them, because i'm usually using the latest versions...
 
 ## Parallel computation and Cloud Computing
 

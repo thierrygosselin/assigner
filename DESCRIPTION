@@ -16,6 +16,7 @@ Depends:
 Imports:
     adegenet,
     data.table,
+    plyr,
     dplyr,
     ggplot2,
     lazyeval,
@@ -32,7 +33,6 @@ Suggests:
     devtools,
     hierfstat,
     knitr,
-    plyr,
     rmarkdown
 Remotes: github::thierrygosselin/stackr
 License: GPL (>=2)
