@@ -40,74 +40,28 @@ chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, H
 
 
 ## Installation
-You can try out the dev version of **assigner**. Follow the 3 steps below:
+You can try out the dev version of **assigner**. Follow the 3 steps below
 
-Step 1 You will need the package **devtools**
+**Step 1:** Install or load the package **devtools**
 ```r
 if (!require("devtools")) install.packages("devtools") # to install
 library(devtools) # to load
 ```
 
-Step 2 Install **assigner** and install [gsi_sim] (https://github.com/eriqande/gsi_sim) from source:
+**Step 2:** Install **assigner** and install [gsi_sim] (https://github.com/eriqande/gsi_sim) from source
 ```r
-install_github("thierrygosselin/assigner") # to install without vignettes
-install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
+devtools::install_github("thierrygosselin/assigner") # to install without vignettes
+devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
 library(assigner) # to load
-install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
+stackr::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 ```
 
-Step 3 (optional) For faster imputations, you need to install an OpenMP enabled **randomForestSRC package** [website](http://www.ccs.miami.edu/~hishwaran/rfsrc.html).
+**Step 3 (optional): Parallel computing** Install an OpenMP enabled [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) package to do imputation in parallel. Follow the steps in this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **stackr**.
 
-Option 1: From source (Linux & Mac OSX)
 
-```r
-# Terminal
-cd ~/Downloads
-curl -O https://cran.r-project.org/src/contrib/randomForestSRC_2.0.7.tar.gz
-tar -zxvf randomForestSRC_2.0.7.tar.gz
-cd randomForestSRC
-autoconf
-# Back in R:
-install.packages(pkgs = "~/Downloads/randomForestSRC", repos = NULL, type = "source")
-```
-Option 2: Use a pre-compiled binary (Mac OSX) [instructions here] (http://www.ccs.miami.edu/~hishwaran/rfsrc.html) or quick copy/paste solution below:
-
-```r
-# Mac OSX
-library("devtools")
-install_url(url = "http://www.ccs.miami.edu/~hishwaran/rfsrc/randomForestSRC_2.0.7.tgz")
-```
-
-**Note for Windows users**:
-
-**assigner** is currently not tested with PC, sorry. 
-I currently don't have the time to do PC bioinformatics troubleshooting.
-
-**Problems during installation:**
-
-Sometimes you'll get warnings while installing dependencies required for **assigner** or other R packages.
-```r
-Warning: cannot remove prior installation of package ‘stringi’
-```
-
-To solve this problem: 
-
-Option 1. Delete the problematic packages manually and reinstall. On MAC computers, in the **Finder**, use the shortcut **cmd+shift+g**, or in the menu bar : **GO -> Go to Folder**, copy/paste the text below:
-```r
-/Library/Frameworks/R.framework/Resources/library
-#Delete the problematic packages.
-```
-
-Option 2. If you know your way around the terminal and understand the consequences of using **sudo rm -R** command, here something faster to remove problematic packages:
-```r
-sudo rm -R /Library/Frameworks/R.framework/Resources/library/package_name
-# Changing 'package_name' to the problematic package.
-# Reinstall the package.
-```
+**Problems during installation:** see this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
 
 **Dependencies**
-
-Here the list of packages that **assigner** needs:
 
   * **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, plyr, dplyr, stackr (>= 0.2.9)
 
@@ -115,11 +69,7 @@ Here the list of packages that **assigner** needs:
 
   * **Remotes:** github::thierrygosselin/stackr
 
-If you don't have them, no worries, it's *usually* intalled automatically during 
-**stackr** installation. 
-If you have them, it's your job to update them, because i'm usually using the 
-latest versions... 
-A quick way to start a script when using my packages:
+A quick way to install/load required packages and start using my packages (copy/paste the whole block):
 ```r
 if (!require("pacman")) install.packages("pacman")
 library("pacman")

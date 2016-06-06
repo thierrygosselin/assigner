@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2016-05-31" />
+<meta name="date" content="2016-06-06" />
 
 <title>Visualize individual’s assignment results</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Visualize individual’s assignment results</h1>
-<h4 class="date"><em>2016-05-31</em></h4>
+<h4 class="date"><em>2016-06-06</em></h4>
 
 
 
@@ -89,21 +89,19 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><p>Clean your desk and remove the clutter in the global environment</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>())</code></pre></div></li>
 <li><p>Load the required libraries</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">if (!<span class="kw">require</span>(<span class="st">&quot;devtools&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;reshape2&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;reshape2&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;ggplot2&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;ggplot2&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;stringr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;stringr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;stringi&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;stringi&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;plyr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;plyr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;dplyr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;dplyr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;tidyr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;tidyr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;readr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;readr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;purrr&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;purrr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;data.table&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;data.table&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;adegenet&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;adegenet&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;stackr&quot;</span>)) <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/stackr&quot;</span>)
-if (!<span class="kw">require</span>(<span class="st">&quot;assigner&quot;</span>)) <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/assigner&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
-<span class="co">#install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run</span></code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">if (!<span class="kw">require</span>(<span class="st">&quot;pacman&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;pacman&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;pacman&quot;</span>)
+pacman::<span class="kw">p_load</span>(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, readr, purrr, data.table, ape, adegenet, parallel, lazyeval, randomForestSRC)
+if (!<span class="kw">require</span>(<span class="st">&quot;stackr&quot;</span>)){
+  <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/stackr&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
+  <span class="kw">library</span>(<span class="st">&quot;stackr&quot;</span>)
+}
+if (!<span class="kw">require</span>(<span class="st">&quot;assigner&quot;</span>)) {
+  <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/assigner&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
+  <span class="co"># if assigner was re-installed, uncomment and run the next line to install gsi_sim:</span>
+  <span class="co">#install_gsi_sim(fromSource = TRUE) </span>
+  <span class="kw">library</span>(<span class="st">&quot;assigner&quot;</span>)
+}</code></pre></div></li>
 <li><p>The first tool we’ll use is <code>assigner::import_subsamples</code>. This function imports the assignment results for each individuals in each of the subsample folder found in the directory you provide in the function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get the folder containing the data:</span>
 https:<span class="er">//</span>github.com/thierrygosselin/package_data/raw/master/top_markers_assignment.tar.gz
