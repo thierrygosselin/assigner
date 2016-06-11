@@ -122,12 +122,11 @@
 #'  and the confidence intervals in the lower triangle.
 #' }
 
-#' @details 
-#' \strong{Input data:}
-#' 
+#' @details \strong{Input data:}
+#'  
 #' To discriminate the long from the wide format, 
 #' the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
-#' for "MARKERS" in column names (TRUE = long format).
+#' for \code{MARKERS or LOCUS} in column names (TRUE = long format).
 #' The data frame is tab delimitted.
 
 #' \strong{Wide format:}
@@ -138,9 +137,9 @@
 #' 
 #' \strong{Long/Tidy format:}
 #' The long format is considered to be a tidy data frame and can store metadata info. 
-#' (e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). A minimum of 4 columns
+#' (e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
 #' are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
-#' \code{MARKERS} and \code{GENOTYPE or GT}. The rest are considered metata info.
+#' \code{MARKERS or LOCUS} and \code{GENOTYPE or GT}. The rest are considered metata info.
 #' 
 #' \strong{2 genotypes formats are available:}
 #' 6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
@@ -148,8 +147,9 @@
 #' The separator can be any of these: \code{"/", ":", "_", "-", "."}.
 #' 
 #' \emph{How to get a tidy data frame ?}
-#' \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
+#' \pkg{stackr} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
 #' in a tidy data frame.
+
 
 
 
@@ -268,6 +268,9 @@ fst_WC84 <- function(data,
   # Import data ---------------------------------------------------------------
   if(verbose) message("Importing data")
   input <- stackr::read_long_tidy_wide(data = data)
+  
+  # switch LOCUS to MARKERS if found
+  if ("LOCUS" %in% colnames(input)) input <- rename(.data = input, MARKERS = LOCUS)
   
   # population levels and strata  ----------------------------------------------
   if (is.null(strata)){ # no strata

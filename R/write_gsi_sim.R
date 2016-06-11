@@ -122,6 +122,7 @@ write_gsi_sim <- function (
   
   # Info for gsi_sim input -----------------------------------------------------
   n.individuals <- n_distinct(input$INDIVIDUALS)  # number of individuals
+  # switch LOCUS to MARKERS if found
   if ("LOCUS" %in% colnames(input)) input <- rename(.data = input, MARKERS = LOCUS)
   n.markers <- n_distinct(input$MARKERS)          # number of markers
   list.markers <- unique(input$MARKERS)           # list of markers
