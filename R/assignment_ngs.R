@@ -1128,16 +1128,16 @@ haplotype file and create a whitelist, for other file type, use
     }
     marker.number <- purrr::discard(.x = marker.number, .p = marker.number > nrow(unique.markers))
     
-    # remove marker number below 10
-    removing.low.marker.number <- purrr::keep(.x = marker.number, .p = marker.number < 10)
-    if (length(removing.low.marker.number) > 0) {
-      message(
-        "Removing marker.number lower than the min (10 markers): ", 
-        stri_c(removing.low.marker.number, collapse = ", ")
-      )
-    }
-    marker.number <- purrr::discard(.x = marker.number, .p = marker.number < 10)
-    
+    # # remove marker number below 10
+    # removing.low.marker.number <- purrr::keep(.x = marker.number, .p = marker.number < 10)
+    # if (length(removing.low.marker.number) > 0) {
+    #   message(
+    #     "Removing marker.number lower than the min (10 markers): ", 
+    #     stri_c(removing.low.marker.number, collapse = ", ")
+    #   )
+    # }
+    # marker.number <- purrr::discard(.x = marker.number, .p = marker.number < 10)
+    # 
     # Functions ******************************************************************
     # Assignment with gsi_sim
     assignment_analysis <- function(
