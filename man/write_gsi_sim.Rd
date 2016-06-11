@@ -61,20 +61,19 @@ and might be of interest for users.
  
 To discriminate the long from the wide format, 
 the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
-for columns number, > 30 for wide. 
-
+for \code{MARKERS or LOCUS} in column names (TRUE = long format).
+The data frame is tab delimitted.
 \strong{Wide format:}
 The wide format cannot store metadata info.
-The wide format contains starts with these 2 id columns: 
+The wide format starts with these 2 id columns: 
 \code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
 the remaining columns are the markers in separate columns storing genotypes.
 
 \strong{Long/Tidy format:}
-This format requires column numbers to be within the range: 4 min -30 max.
 The long format is considered to be a tidy data frame and can store metadata info. 
-(e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). The 4 columns
-required in the long format are: \code{INDIVIDUALS}, \code{POP_ID}, 
-\code{MARKERS} and \code{GENOTYPE or GT}.
+(e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
+are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
+\code{MARKERS or LOCUS} and \code{GENOTYPE or GT}. The rest are considered metata info.
 
 \strong{2 genotypes formats are available:}
 6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
@@ -82,7 +81,7 @@ required in the long format are: \code{INDIVIDUALS}, \code{POP_ID},
 The separator can be any of these: \code{"/", ":", "_", "-", "."}.
 
 \emph{How to get a tidy data frame ?}
-\pkg{stackr} \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
+\pkg{stackr} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
 in a tidy data frame.
 }
 \author{
