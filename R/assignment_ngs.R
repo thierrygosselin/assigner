@@ -1373,7 +1373,7 @@ haplotype file and create a whitelist, for other file type, use
       message("Conducting Assignment analysis with markers selected randomly")
       # Number of times to repeat the sampling of markers
       iterations.list <- 1:iteration.method
-      # iterations.list <- 1:200 # test
+      # iterations.list <- 1:10 # test
       # Function: Random selection of marker function + iteration.method
       marker_selection <- function(iteration.method) {
         m <- as.numeric(m)
