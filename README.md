@@ -40,7 +40,7 @@ chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, H
 
 
 ## Installation
-You can try out the dev version of **assigner**. Follow the 3 steps below
+To try out the dev version of **assigner**, follow the 3 steps below:
 
 **Step 1:** Install or load the package **devtools**
 ```r
@@ -60,6 +60,13 @@ stackr::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 
 
 **Problems during installation:** see this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
+
+**Note:**
+
+The R GUI seems to be prone to crashing in parallel mode. 
+I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) 
+to run **assigner**. The R GUI is unstable with functions using parallel.
+
 
 **Dependencies**
 
