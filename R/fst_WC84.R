@@ -333,7 +333,8 @@ fst_WC84 <- function(data,
   if (is.null(holdout.samples)) { # use all the individuals
     data.genotyped <- input %>%
       filter(GT != "000000") # Check for df and plink...
-  } else { # with holdout set
+  } else { # if holdout set, removes individuals
+    message("removing holdout individuals")
     data.genotyped <- input %>%
       filter(GT != "000000") %>% # remove missing genotypes
       # remove supplementary individual before ranking markers with Fst
@@ -398,7 +399,7 @@ fst_WC84 <- function(data,
     # Removing monomorphic markers------------------------------------------------
     mono.markers <- x %>%
       select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
-      tidyr::separate(col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
+      tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
       tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>%
       filter(GT != "000") %>%
       group_by(MARKERS, GT) %>% 

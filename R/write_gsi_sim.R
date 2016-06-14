@@ -129,7 +129,7 @@ write_gsi_sim <- function (
   
   # Spread/dcast in wide format ------------------------------------------------------
   input <- input %>%
-    tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
+    tidyr::separate(data = ., col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
     tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>% 
     arrange(MARKERS) %>%
     tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%

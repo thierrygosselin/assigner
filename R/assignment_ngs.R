@@ -527,7 +527,7 @@ assignment_ngs <- function(
   if (assignment.analysis == "adegenet") message("Assignment analysis with adegenet")
   if (!is.null(pop.levels) & is.null(pop.labels)) pop.labels <- pop.levels
   if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
-
+  
   # Create a folder based on filename to save the output files *****************
   if (is.null(folder)) {
     # Get date and time to have unique filenaming
@@ -846,7 +846,7 @@ haplotype file and create a whitelist, for other file type, use
         vcf.maf <- tidyr::separate(data = maf.data, 
                                    col = MARKERS, 
                                    into = c("CHROM", "LOCUS", "POS"), 
-                                   sep = "_", 
+                                   sep = "__", 
                                    remove = FALSE, 
                                    extra = "warn"
         )
@@ -930,7 +930,7 @@ haplotype file and create a whitelist, for other file type, use
     } # End of MAF filters
     
     # Adegenet  ****************************************************************
-
+    
     if (assignment.analysis == "adegenet" ) {
       message("Preparing adegenet object")
       genind.prep <- suppressWarnings(
@@ -1828,6 +1828,7 @@ Progress can be monitored with activity in the folder...")
         
         # Ranking Fst with training dataset (keep holdout individuals out)
         message("Ranking markers based on Fst")
+        # THL = "all" ---------
         if (thl == "all") {
           holdout <- NULL
           fst.ranked <- assigner::fst_WC84(
@@ -1842,6 +1843,7 @@ Progress can be monitored with activity in the folder...")
               holdout.samples = NULL
             )$fst.ranked
           }
+          ## THL = 1------------
         } else if (thl == 1) {
           holdout <- data.frame(INDIVIDUALS = i)
           fst.ranked <- assigner::fst_WC84(
@@ -1856,7 +1858,7 @@ Progress can be monitored with activity in the folder...")
               holdout.samples = holdout$INDIVIDUALS
             )$fst.ranked
           }
-        } else { # thl proportion or > 1
+        } else { # thl proportion or > 1 ----------
           holdout <- data.frame(holdout.individuals.list[i])
           fst.ranked <- assigner::fst_WC84(
             data = input, 
@@ -1944,7 +1946,7 @@ Progress can be monitored with activity in the folder...")
           select.markers <- NULL
           markers.names <- NULL
           RANKING <- NULL
-
+          
           # With imputations
           if (!is.null(imputation.method)) {  # with imputations
             

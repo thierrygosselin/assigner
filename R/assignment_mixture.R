@@ -1083,7 +1083,7 @@ haplotype file and create a whitelist, for other file type, use
           LOCUS = stri_pad_left(str = LOCUS, width = 8, pad = "0")
         ) %>%
         arrange(CHROM, LOCUS, POS) %>%
-        tidyr::unite(MARKERS, c(CHROM, LOCUS, POS), sep = "_")
+        tidyr::unite(MARKERS, c(CHROM, LOCUS, POS), sep = "__")
     } # End Unique markers id
     
     # Markers in common between all populations (optional) *********************
@@ -1159,7 +1159,7 @@ haplotype file and create a whitelist, for other file type, use
         if (data.type == "df.file") { # for data frame of genotypes
           maf.data <- input %>%
             filter(!INDIVIDUALS %in% mixture.df$INDIVIDUALS) %>% 
-            tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
+            tidyr::separate(data = ., col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
             tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>%
             select(MARKERS, GT, POP_ID) %>% 
             filter(GT != "000")
@@ -1210,7 +1210,7 @@ package and update your whitelist")
         vcf.maf <- tidyr::separate(data = maf.data, 
                                    col = MARKERS, 
                                    into = c("CHROM", "LOCUS", "POS"), 
-                                   sep = "_", 
+                                   sep = "__", 
                                    remove = FALSE, 
                                    extra = "warn"
         )
@@ -1400,12 +1400,12 @@ package and update your whitelist")
       
       # for haplo.file we need to change back again the gsi.prep file
       gsi.prep <- input %>% 
-        tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
+        tidyr::separate(data = ., col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
         tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) 
     }
     if (data.type == "df.file") { # For data frame of genotypes
       gsi.prep <- input %>% 
-        tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
+        tidyr::separate(data = ., col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
         tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) 
     }
     if (data.type == "plink.file") { # for PLINK
