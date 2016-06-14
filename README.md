@@ -61,18 +61,9 @@ stackr::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 
 **Problems during installation:** see this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
 
-<<<<<<< HEAD
-**Note:**
-
-The R GUI seems to be prone to crashing in parallel mode. 
+**Note:** The R GUI seems to be prone to crashing in parallel mode. 
 I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) 
 to run **assigner**. The R GUI is unstable with functions using parallel.
-=======
-**Note on running assigner**
-The R GUI seems to be prone to crashing in parallel mode. 
-I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/).
->>>>>>> 58e97cbf7e3e9050323190e732d4e83674147c10
-
 
 **Dependencies**
 
