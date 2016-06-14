@@ -804,7 +804,7 @@ haplotype file and create a whitelist, for other file type, use
         # We split the alleles here to prep for MAF
         maf.data <- input %>%
           select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
-          tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
+          tidyr::separate(data = ., col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
           tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>%
           filter(GT != "000")
         
@@ -932,10 +932,10 @@ haplotype file and create a whitelist, for other file type, use
     # Adegenet  ****************************************************************
     
     if (assignment.analysis == "adegenet" ) {
-      message("Preparing adegenet object")
+      message("Preparing adegenet genind object")
       genind.prep <- suppressWarnings(
         input %>%
-          tidyr::separate(data = ., col = GT, into = .(A1, A2), sep = 3, remove = TRUE) %>% 
+          tidyr::separate(data = ., col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
           tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID))  %>%
           filter(GT != "000") %>% 
           tidyr::spread(data = ., key = MARKERS, value = GT) %>% # this reintroduce the missing, but with NA
