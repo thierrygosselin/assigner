@@ -344,12 +344,14 @@
 #' minutes and hours depending on the size of the dataset and polymorphism of
 #' the species used. e.g. with a low polymorphic taxa, and a data set
 #' containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
-#' will require 15 min. This is using multiple CPUs. I made a vignette to 
-#' prepare your computer for parallel computations. Inside R: `vignette("vignette_vcf2dadi")`
+#' will require 15 min. This is using multiple CPUs. To have your computer ready
+#' for parallel computing during imputations follow the steps in this 
+#' vignette (~10 min) : `vignette("vignette_imputations_parallel")`
 #' 
 #' \strong{THL, Ranking and Fst:}
 #' 
-#' With \code{sampling.method = "ranked"}, the markers are first arranged by \emph{decreasing} values of Fst.
+#' With \code{sampling.method = "ranked"}, the markers are first 
+#' arranged by \emph{decreasing} values of Fst.
 #' The Fst is computed with \code{\link{fst_WC84}} function, that uses a fast 
 #' implementation of Weir and Cockerham 1984 Fst/Theta equations. 
 
@@ -370,8 +372,6 @@
 #' it to \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
 #' To compile \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, follow the 
 #' instruction here: \url{https://github.com/eriqande/gsi_sim}.
-
-
 
 #' @export
 #' @rdname assignment_ngs

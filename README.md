@@ -61,8 +61,7 @@ stackr::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 
 **Problems during installation:** see this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
 
-**Note:** The R GUI seems to be prone to crashing in parallel mode. 
-I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) 
+**Note:** I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) 
 to run **assigner**. The R GUI is unstable with functions using parallel.
 
 **Dependencies**
@@ -125,11 +124,27 @@ For previous news:
 
 
 ## Examples and Vignettes
-To view vignettes:
 
+From a browser:
+* [installation problems](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
+* [parallel computing during imputations](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd) 
+* [Pairwise and overall Fst with confidence intervals + building phylogenetic tree](https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_confidence_intervals.Rmd)
+
+Inside R:
 * **inside R**
 ```r
+# The install must have the build_vignettes option:
 install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
+```
+
+```r
+browseVignettes("assigner") # To browse vignettes
+# For Pairwise and overall Fst with confidence intervals + building phylogenetic tree:
+vignette("fst_confidence_intervals")
+# To get top markers for assignment:
+vignette("top_markers_assignment")
+# To visualize individual's assignment results:
+vignette("visualize_individual_assignment_results")
 ```
 
 * **on github** : [link](https://github.com/thierrygosselin/assigner/tree/master/vignettes)
