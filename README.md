@@ -59,17 +59,19 @@ stackr::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 **Step 3 (optional): Parallel computing** Install an OpenMP enabled [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) package to do imputation in parallel. Follow the steps in this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.
 
 
-**Problems during installation:** see this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
 
-**Note:** I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) 
-to run **assigner**. The R GUI is unstable with functions using parallel.
 
-**Dependencies**
+**Notes:**
+  * **Problems during installation:** see this
+  [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
+  * I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) 
+  to run **assigner**. The R GUI is unstable with functions using parallel.
+  * **Windows users**:  to have *assigner* run in parallel, you need to install 
+  and load [parallelsugar](https://github.com/nathanvan/parallelsugar) [instructions](https://github.com/nathanvan/parallelsugar#installation).
 
+**Dependencies:**
   * **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, plyr, dplyr, stackr (>= 0.2.9)
-
   * **Suggests:** devtools, knitr, rmarkdown
-
   * **Remotes:** github::thierrygosselin/stackr
 
 A quick way to install/load required packages and start using my packages (copy/paste the whole block):
