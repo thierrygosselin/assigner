@@ -125,12 +125,12 @@ For previous news:
 
 ## Examples and Vignettes
 
-From a browser:
+* **From a browser:**
 * [installation problems](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
 * [parallel computing during imputations](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd) 
 * [Pairwise and overall Fst with confidence intervals + building phylogenetic tree](https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_confidence_intervals.Rmd)
+* **github** : [link](https://github.com/thierrygosselin/assigner/tree/master/vignettes)
 
-Inside R:
 * **inside R**
 ```r
 # The install must have the build_vignettes option:
@@ -147,7 +147,7 @@ vignette("top_markers_assignment")
 vignette("visualize_individual_assignment_results")
 ```
 
-* **on github** : [link](https://github.com/thierrygosselin/assigner/tree/master/vignettes)
+
 
 Vignettes are in development, check periodically for updates.
 
