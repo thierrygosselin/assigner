@@ -2,19 +2,20 @@
 
 #' return the path where gsi_sim should be in the R system paths
 #' 
+#' @keywords internal
 gsi_sim_binary_path <- function() {
   file.path(system.file(package = "assigner"), "bin", "gsi_sim")
 }
 
 #' return TRUE if gsi_sim exists where it should be
-#' 
+#' @keywords internal
 gsi_sim_exists <- function() {
   file.exists(gsi_sim_binary_path())
 }
 
 
 #' return TRUE if gsi_sim is executable
-#' 
+#' @keywords internal
 gsi_sim_is_executable <- function() {
   NULL #incomplete
 }
@@ -25,6 +26,7 @@ gsi_sim_is_executable <- function() {
 #' This version checks to make sure it is there and throws an
 #' error with a suggestion of how to get it if it is not there.
 #' @export
+#' @keywords internal
 gsi_sim_binary <- function() {
   if(!gsi_sim_exists()) stop("Can't find the gsi_sim executable where it was expected
 at ", gsi_sim_binary_path(), ".  
@@ -57,6 +59,7 @@ from within R by invoking the function \"install_gsi_sim()\"")
 #' If FALSE, then it will download a precompiled binary, if available.  If a 
 #' binary is not available, then it will attempt to download the source.  
 #' @export
+#' @keywords internal
 install_gsi_sim <- function(commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a", fromSource = FALSE) {
   
   # make a bin directory

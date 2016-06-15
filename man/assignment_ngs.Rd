@@ -262,19 +262,27 @@ See example below.
 \description{
 The arguments in the \code{assignment_ngs} function were tailored for the
 reality of GBS/RADseq data for assignment analysis while
-maintaining a reproducible workflow. The assignment analysis can be conducted
-using \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, a tool 
-for doing and simulating genetic stock identification and 
-developed by Eric C. Anderson, or 
+maintaining a reproducible workflow.
+
+\itemize{
+  \item \strong{Imput file:} various file format are supported (see \code{data} argument below)
+  \item \strong{Filters:} genotypes, markers, individuals and populations can be 
+  filtered and/or selected in several ways using blacklist,
+  whitelist and other arguments
+  \item \strong{Cross-Validations:} Markers can be randomly selected for a classic LOO (Leave-One-Out)
+  assignment or chosen based on ranked Fst for a thl
+  (Training, Holdout, Leave-one-out) assignment analysis
+  \item \strong{Imputations:} Map-independent imputation of missing genotype/alleles
+  using Random Forest or the most frequent category.
+  \item \strong{Assignment analysis:} conducted in 
+  \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, a tool 
+  for doing and simulating genetic stock identification and 
+  developed by Eric C. Anderson, or 
 \href{https://github.com/thibautjombart/adegenet}{adegenet}, 
-a R package developed by Thibaul Jombart.
-Various input files are offered. Individuals, populations and
-markers can be filtered and/or selected in several ways using blacklist,
-whitelist and other arguments. Map-independent imputation of missing genotype
-using Random Forest or the most frequent category is also available.
-Markers can be randomly selected for a classic LOO (Leave-One-Out)
-assignment or chosen based on ranked Fst for a thl
-(Training, Holdout, Leave-one-out) assignment analysis.
+an R package developed by Thibaul Jombart
+  \item \strong{Parallel:} The assignment can be conduncted on multiple CPUs
+  \item \strong{Results:} Assignment results in raw or processed tables and figures
+}
 }
 \details{
 \strong{Input files:}
@@ -329,6 +337,9 @@ with \code{--recode transpose},
 \item genepop data file (e.g. \code{data = kiwi_data.gen}). Here, the function can only use
 alleles encoded with 3 digits.
 }
+
+\strong{Imputations:}
+
 The imputations using Random Forest requires more time to compute
 and can take several
 minutes and hours depending on the size of the dataset and polymorphism of
@@ -392,7 +403,7 @@ width = 60,dpi = 600, units = "cm", useDingbats = F)
 }
 }
 \author{
-Thierry Gosselin \email{thierrygosselin@icloud.com}
+Thierry Gosselin \email{thierrygosselin@icloud.com} and Eric C. Anderson
 }
 \references{
 Anderson, Eric C., Robin S. Waples, and Steven T. Kalinowski. (2008)

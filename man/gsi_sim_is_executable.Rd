@@ -9,4 +9,5 @@ gsi_sim_is_executable()
 \description{
 return TRUE if gsi_sim is executable
 }
+\keyword{internal}
 

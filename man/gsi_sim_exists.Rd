@@ -9,4 +9,5 @@ gsi_sim_exists()
 \description{
 return TRUE if gsi_sim exists where it should be
 }
+\keyword{internal}
 
