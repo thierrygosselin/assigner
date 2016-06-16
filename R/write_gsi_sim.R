@@ -107,18 +107,26 @@ write_gsi_sim <- function (
   
   # Checking for missing and/or default arguments ******************************
   if (missing(data)) stop("Input file necessary to write the gsi_sim file is missing")
-  if (missing(pop.levels)) pop.levels <- NULL
-  if (missing(pop.labels)) pop.labels <- NULL
-  if (!is.null(pop.levels) & is.null(pop.labels)) pop.labels <- pop.levels
-  if (missing(strata)) strata <- NULL
   if (missing(filename)) filename <- "gsi_sim.unname.txt"
   
-  # data <- "skipjack.filtered_tidy.tsv" #long
-  # data <- "skipjack.wide.test.tsv" #wide
-  # data <- data.select
+  # POP_ID in gsi_sim does not like spaces, we need to remove space in everything touching POP_ID...
+  # pop.levels, pop.labels, pop.select, strata, etc
+  if (!is.null(pop.levels) & is.null(pop.labels)) {
+    pop.levels <- stri_replace_all_fixed(pop.levels, pattern = " ", replacement = "_", vectorize_all = FALSE)
+    pop.labels <- pop.levels
+  }
+  if (!is.null(pop.labels)) {
+    pop.labels <- stri_replace_all_fixed(pop.labels, pattern = " ", replacement = "_", vectorize_all = FALSE)
+  }
+  if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
   
   # Import data
   input <- stackr::read_long_tidy_wide(data = data, import.metadata = FALSE)
+  
+  # remove space in POP_ID
+  input$POP_ID <- stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
+  
+  
   
   # Info for gsi_sim input -----------------------------------------------------
   n.individuals <- n_distinct(input$INDIVIDUALS)  # number of individuals
@@ -186,6 +194,13 @@ write_gsi_sim <- function (
       replacement = c("-", "-"),
       vectorize_all = FALSE
     )
+    
+    # remove space in POP_ID
+    strata.df$POP_ID <- stri_replace_all_fixed(strata.df$POP_ID, 
+                                               pattern = " ", 
+                                               replacement = "_", 
+                                               vectorize_all = FALSE)
+    
     
     if(is.null(pop.levels)) { # no pop.levels
       input <- input %>%

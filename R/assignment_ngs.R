@@ -545,8 +545,22 @@ assignment_ngs <- function(
   }
   if (assignment.analysis == "gsi_sim") message("Assignment analysis with gsi_sim")
   if (assignment.analysis == "adegenet") message("Assignment analysis with adegenet")
-  if (!is.null(pop.levels) & is.null(pop.labels)) pop.labels <- pop.levels
+  
+  # POP_ID in gsi_sim does not like spaces, we need to remove space in everything touching POP_ID...
+  # pop.levels, pop.labels, pop.select, strata, etc
+  if (!is.null(pop.levels) & is.null(pop.labels)) {
+    pop.levels <- stri_replace_all_fixed(pop.levels, pattern = " ", replacement = "_", vectorize_all = FALSE)
+    pop.labels <- pop.levels
+  }
+  if (!is.null(pop.labels)) {
+    pop.labels <- stri_replace_all_fixed(pop.labels, pattern = " ", replacement = "_", vectorize_all = FALSE)
+  }
   if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
+  if (!is.null(pop.select)) {
+    pop.select <- stri_replace_all_fixed(pop.select, pattern = " ", replacement = "_", vectorize_all = FALSE)
+  }
+  
+  
   
   # Create a folder based on filename to save the output files *****************
   if (is.null(folder)) {
@@ -634,6 +648,9 @@ assignment_ngs <- function(
     pop.select = pop.select,
     filename = NULL
   )
+  
+  # need to remove space in POP_ID name to work in gsi_sim
+  input$POP_ID <- stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
   # create a strata.df
   strata.df <- input %>% 
@@ -1200,6 +1217,7 @@ haplotype file and create a whitelist, for other file type, use
           holdout.id <- holdout$INDIVIDUALS
         }
       }
+      
       
       # Number of markers
       n.locus <- m

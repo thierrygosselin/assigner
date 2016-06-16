@@ -6,11 +6,12 @@
 SNP chip, etc) using \href{https://github.com/eriqande/gsi_sim}{gsi_sim} and \code{\link[adegenet]{adegenet}}.}
 \arguments{
 \item{data}{7 options: vcf, plink, stacks haplotype file, genind, genepop, 
-and a data frame in wide or long/tidy format. \emph{See details}.
+and a data frame in wide or long/tidy format. 
 The function uses 
 \href{https://github.com/thierrygosselin/stackr}{stackr} 
 \code{\link[stackr]{read_long_tidy_wide}} and 
-\code{\link[stackr]{tidy_genomic_data}}.}
+\code{\link[stackr]{tidy_genomic_data}}.
+\emph{See details}.}
 
 \item{assignment.analysis}{Assignment analysis conducted with 
 \code{assignment.analysis = "gsi_sim"} or 
@@ -19,7 +20,8 @@ The function uses
 \item{sampling.method}{(character) Should the markers be randomly selected
 \code{sampling.method == "random"} for a classic Leave-One-Out (LOO) assignment or
 chosen based on ranked Fst \code{sampling.method == "ranked"}, used in a
-Training-Holdout-Leave One Out (thl) assignment ?}
+Training-Holdout-Leave One Out (thl) assignment ?
+\emph{See details}.}
 
 \item{adegenet.dapc.opt}{(optional, character) \strong{Argument available only when 
 using:
@@ -218,10 +220,11 @@ space for the analysis.
 Default: \code{keep.gsi.files = FALSE}}
 
 \item{imputation.method}{(character, optional) 
-Methods available for map-independent imputations of missing genotype: 
+Methods available for map-independent imputations of missing genotypes: 
 (1) \code{"max"} to use the most frequent category for imputations.
 (2) \code{"rf"} using Random Forest algorithm. 
-Default: no imputation \code{imputation.method = NULL}.}
+Default: no imputation \code{imputation.method = NULL}. 
+\emph{See details}.}
 
 \item{impute}{(character, optional) Imputation on missing genotype 
 \code{impute = "genotype"} or alleles \code{impute = "allele"}.
@@ -345,8 +348,16 @@ and can take several
 minutes and hours depending on the size of the dataset and polymorphism of
 the species used. e.g. with a low polymorphic taxa, and a data set
 containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
-will require 15 min.
-The Fst is based on Weir and Cockerham 1984 equations.
+will require 15 min. This is using multiple CPUs. To have your computer ready
+for parallel computing during imputations follow the steps in this 
+vignette (~10 min) : `vignette("vignette_imputations_parallel")`
+
+\strong{THL, Ranking and Fst:}
+
+With \code{sampling.method = "ranked"}, the markers are first 
+arranged by \emph{decreasing} values of Fst.
+The Fst is computed with \code{\link{fst_WC84}} function, that uses a fast 
+implementation of Weir and Cockerham 1984 Fst/Theta equations.
 }
 \note{
 \code{assignment_ngs} assumes that the command line version of 
