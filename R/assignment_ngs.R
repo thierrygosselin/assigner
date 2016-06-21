@@ -197,7 +197,9 @@
 #' case, the id of the pop.
 #' Use this argument to have the pop ordered your way instead of the default 
 #' alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
-#' instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
+#' instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. White spaces
+#' in population names are replaced by underscore.
+#' with white space are repl
 #' Default: \code{pop.levels = NULL}.
 
 #' @param pop.labels (optional, string) Use this argument to rename/relabel
@@ -213,6 +215,8 @@
 #' is not specified. pop.labels = pop.levels.
 #' If you find this too complicated, there is also the
 #' \code{strata} argument that can do the same thing, see below.
+#' White spaces
+#' in population names are replaced by underscore.
 
 #' @param strata (optional for data frame and PLINK files, 
 #' required for VCF and haplotypes files) A tab delimited file with 2 columns with header:
@@ -221,12 +225,14 @@
 #' PLINK files, the \code{tfam} first 2 columns are used. 
 #' If a \code{strata} file is specified, the strata file will have
 #' precedence. The \code{STRATA} column can be any hierarchical grouping. 
-#' To create a strata file see \code{\link[stackr]{individuals2strata}}.
+#' To create a strata file see \code{\link[stackr]{individuals2strata}}. 
+#' White spaces in population names are replaced by underscore.
 #' Default: \code{strata = NULL}.
 
 #' @param pop.select (string, optional) Selected list of populations for 
 #' the analysis. e.g. \code{pop.select = c("QUE", "ONT")} to select \code{QUE}
 #'and \code{ONT} population samples (out of 20 pops).
+#' White spaces in population names are replaced by underscore.
 # Default: \code{pop.select = NULL} 
 
 
@@ -426,6 +432,18 @@
 #' To save the plot:
 #' ggsave("assignment.treefrog.THL.subsample.pdf", height = 35, 
 #' width = 60,dpi = 600, units = "cm", useDingbats = F)
+#' 
+#' # If you want to remove underscore in population names that contained white space:
+#' facet_names <- c(
+#' `some_pop` = "Some POP", 
+#' `some_other_pop` = "This is what I want", 
+#' `OVERALL` = "Overall")
+#' 
+#' # use the labeller in the facet_grid or facet_wrap call:
+#' assignment.treefrog$plot.assignment + 
+#' facet_grid(~CURRENT, labeller = as_labeller(facet_names)) + 
+#' scale_y_continuous(limits = c(0,100)) 
+#' figure # this one should be ok with custom naming in the facets.
 #' }
 
 
