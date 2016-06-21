@@ -1653,7 +1653,8 @@ package and update your whitelist")
             X = pop.list, 
             FUN = impute_rf_pop, 
             mc.preschedule = FALSE, 
-            mc.silent = FALSE, 
+            mc.silent = FALSE,
+            mc.cleanup = TRUE,
             mc.cores = parallel.core
           )
           
@@ -2516,7 +2517,8 @@ Progress can be monitored with activity in the folder...")
         X = markers.random.lists, 
         FUN = assignment_random, 
         mc.preschedule = FALSE, 
-        mc.silent = FALSE, 
+        mc.silent = FALSE,
+        mc.cleanup = TRUE,
         mc.cores = parallel.core
       )
       
@@ -2765,6 +2767,7 @@ Progress can be monitored with activity in the folder...")
         FUN = assignment_marker_loop,
         mc.preschedule = FALSE, 
         mc.silent = FALSE, 
+        mc.cleanup = TRUE,
         mc.cores = parallel.core,
         fst.ranked = fst.ranked,
         fst.ranked.imp = fst.ranked.imp,
