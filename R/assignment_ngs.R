@@ -671,7 +671,7 @@ assignment_ngs <- function(
   # create a strata.df
   strata.df <- input %>% 
     select(INDIVIDUALS, POP_ID) %>% 
-    distinct(INDIVIDUALS)
+    distinct(INDIVIDUALS, .keep_all = TRUE)
   strata <- strata.df
   # pop.levels <- levels(input$POP_ID)
   # pop.labels <- pop.levels
@@ -704,7 +704,7 @@ assignment_ngs <- function(
     return(subsample.select)
   } # End subsampling function
   # create the subsampling list
-  ind.pop.df <- input %>% select(POP_ID, INDIVIDUALS) %>% distinct(POP_ID, INDIVIDUALS)
+  ind.pop.df <- input %>% distinct(POP_ID, INDIVIDUALS)
   subsample.list <- map(.x = 1:iteration.subsample, .f = subsampling_data, subsample = subsample)
   
   # keep track of subsampling individuals and write to directory
@@ -760,7 +760,7 @@ haplotype file and create a whitelist, for other file type, use
              PLINK linkage disequilibrium based SNP pruning option")
       }
       message("Minimizing LD...")
-      snp.locus <- input %>% select(LOCUS, POS) %>% distinct(POS)
+      snp.locus <- input %>% select(LOCUS, POS) %>% distinct(POS, .keep_all = TRUE)
       # Random selection
       if (snp.ld == "random") {
         snp.select <- snp.locus %>%
@@ -806,7 +806,6 @@ haplotype file and create a whitelist, for other file type, use
         group_by(MARKERS) %>%
         filter(n_distinct(POP_ID) == pop.number) %>%
         arrange(MARKERS) %>%
-        select(MARKERS) %>%
         distinct(MARKERS)
       
       message(stri_join("Number of original markers = ", n_distinct(input$MARKERS), 
@@ -874,7 +873,7 @@ haplotype file and create a whitelist, for other file type, use
           arrange(MARKERS, POP_ID, GT) %>% 
           group_by(MARKERS, POP_ID) %>% 
           filter(n == min(n)) %>% 
-          distinct(MARKERS, POP_ID) %>% 
+          distinct(MARKERS, POP_ID, .keep_all = TRUE) %>% 
           select(MARKERS, POP_ID, MAF_LOCAL, MAF_GLOBAL)
       }# end maf calculations with PLINK or data frame of genotypes
       
@@ -1075,7 +1074,7 @@ haplotype file and create a whitelist, for other file type, use
         select(-c(INDIVIDUALS, POP_ID))
       rownames(genind.df) <- ind
       loc.names <- colnames(genind.df)
-      strata <- genind.prep %>% ungroup() %>% select(INDIVIDUALS, POP_ID) %>% distinct(INDIVIDUALS, POP_ID)
+      strata <- genind.prep %>% ungroup() %>% distinct(INDIVIDUALS, POP_ID)
       
       # genind constructor
       prevcall <- match.call()
@@ -1127,7 +1126,6 @@ haplotype file and create a whitelist, for other file type, use
         loc.names <- colnames(genind.df)
         strata <- genind.prep.imp %>% 
           ungroup() %>% 
-          select(INDIVIDUALS, POP_ID) %>% 
           distinct(INDIVIDUALS, POP_ID)
         
         # genind constructor
@@ -1153,7 +1151,6 @@ haplotype file and create a whitelist, for other file type, use
     # unique list of markers after all the filtering
     # if "all" is present in the list, change to the maximum number of markers
     unique.markers <- input %>% 
-      select(MARKERS) %>% 
       distinct(MARKERS) %>% 
       arrange(MARKERS)
     
@@ -1570,10 +1567,10 @@ Progress can be monitored with activity in the folder...")
         }
         # assignment <- mutate(.data = assignment, ITERATIONS = rep(i, n()))
         return(assignment)
-      } # End of iterations for both with and without imputations
+        } # End of iterations for both with and without imputations
       
       assignment.res <- NULL
-      assignment.res <- parallel::mclapply(
+      assignment.res <- mclapply(
         X = markers.random.lists, 
         FUN = assignment_random, 
         mc.preschedule = FALSE, 
@@ -1694,6 +1691,7 @@ Progress can be monitored with activity in the folder...")
               QUANTILE25 = round(stats::quantile(MEAN_i, 0.25), 2),
               QUANTILE75 = round(stats::quantile(MEAN_i, 0.75), 2)
             ) %>%
+            ungroup() %>% 
             arrange(CURRENT, MARKER_NUMBER)
         )
       }
@@ -1736,6 +1734,7 @@ Progress can be monitored with activity in the folder...")
           QUANTILE75 = round(stats::quantile(ASSIGNMENT_PERC, 0.75), 2)
         ) %>%
         mutate(CURRENT = rep("OVERALL", n())) %>%
+        ungroup() %>% 
         arrange(CURRENT, MARKER_NUMBER)
       
       assignment.summary.stats <- suppressWarnings(
@@ -1792,7 +1791,6 @@ Progress can be monitored with activity in the folder...")
       # List of all individuals
       ind.pop.df<- input %>% 
         ungroup %>% 
-        select(POP_ID, INDIVIDUALS) %>% 
         distinct(POP_ID, INDIVIDUALS)
       
       # thl selection
@@ -2095,7 +2093,7 @@ Progress can be monitored with activity in the folder...")
       
       # using mclapply
       assignment.res <- list()
-      assignment.res <- parallel::mclapply(
+      assignment.res <- mclapply(
         X = iterations.list, 
         FUN = assignment_ranking, 
         mc.preschedule = TRUE, 
@@ -2234,6 +2232,7 @@ Progress can be monitored with activity in the folder...")
             SE_MIN = MEAN - SE,
             SE_MAX = MEAN + SE
           ) %>%
+          ungroup() %>% 
           arrange(CURRENT, MARKER_NUMBER)
         
         pop.levels.assignment.stats.overall <- c(levels(assignment.stats.pop$CURRENT), "OVERALL")
@@ -2253,6 +2252,7 @@ Progress can be monitored with activity in the folder...")
             SE_MAX = MEAN + SE
           ) %>%
           mutate(CURRENT = rep("OVERALL", n())) %>%
+          ungroup() %>%
           arrange(CURRENT, MARKER_NUMBER)
         
         assignment.summary.stats <- suppressWarnings(
@@ -2338,6 +2338,7 @@ Progress can be monitored with activity in the folder...")
         QUANTILE75 = round(stats::quantile(ASSIGNMENT_PERC, 0.75), 2)
       ) %>% 
       mutate(SUBSAMPLE = rep("OVERALL", n())) %>%
+      ungroup() %>%
       arrange(CURRENT, MARKER_NUMBER)
     
     res.overall <- res.pop %>% 
@@ -2356,6 +2357,7 @@ Progress can be monitored with activity in the folder...")
         CURRENT = rep("OVERALL", n()),
         SUBSAMPLE = rep("OVERALL", n())
       ) %>% 
+      ungroup() %>% 
       arrange(CURRENT, MARKER_NUMBER)
     
     res.pop.overall <- suppressWarnings(

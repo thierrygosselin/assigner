@@ -668,7 +668,6 @@ assignment_mixture <- function(data,
       input <- sample_n(tbl = input, size = max(as.numeric(max.marker)), replace = FALSE)
       
       max.marker.subsample.select <- input %>% 
-        select(LOCUS) %>% 
         distinct(LOCUS) %>% 
         arrange(LOCUS)
       
@@ -712,7 +711,6 @@ assignment_mixture <- function(data,
       input <- suppressWarnings(
         semi_join(input, 
                   remove.missing.gt %>% 
-                    select(LOCUS) %>% 
                     distinct(LOCUS), 
                   by = "LOCUS")
       )
@@ -723,7 +721,7 @@ assignment_mixture <- function(data,
       message("Removing monomorphic markers...")
       mono.markers <- remove.missing.gt %>%
         group_by(LOCUS, GT) %>%
-        distinct %>% 
+        distinct(LOCUS, GT) %>% 
         group_by(LOCUS) %>%
         tally %>% 
         filter(n == 1) %>% 
@@ -775,7 +773,7 @@ assignment_mixture <- function(data,
     
     # Using the argument strata if provided to replace the current one
     if (is.null(strata)) {
-      strata.df <- input %>% select(INDIVIDUALS, POP_ID) %>% distinct(INDIVIDUALS)
+      strata.df <- input %>% distinct(INDIVIDUALS, POP_ID)
     } else {
       strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
         rename(POP_ID = STRATA)
@@ -890,9 +888,9 @@ assignment_mixture <- function(data,
       message("Control check to keep only whitelisted markers present in the blacklist of genotypes to erase.")
       # updating the whitelist of markers to have all columns that id markers
       if (data.type == "vcf.file"){
-        whitelist.markers.ind <- input %>% select(CHROM, LOCUS, POS, INDIVIDUALS) %>% distinct(CHROM, LOCUS, POS, INDIVIDUALS)
+        whitelist.markers.ind <- input %>% distinct(CHROM, LOCUS, POS, INDIVIDUALS)
       } else {
-        whitelist.markers.ind <- input %>% select(LOCUS, INDIVIDUALS) %>% distinct(LOCUS, INDIVIDUALS)
+        whitelist.markers.ind <- input %>% distinct(LOCUS, INDIVIDUALS)
       }
       
       # updating the blacklist.genotype
@@ -993,7 +991,7 @@ assignment_mixture <- function(data,
   } # End subsampling function
   
   # create the subsampling list
-  ind.pop.df <- input %>% select(POP_ID, INDIVIDUALS) %>% distinct(POP_ID, INDIVIDUALS)
+  ind.pop.df <- input %>% distinct(POP_ID, INDIVIDUALS)
   subsample.list <- map(.x = 1:iteration.subsample, .f = subsampling_data, subsample = subsample)
   
   # keep track of subsampling individuals and write to directory
@@ -1042,7 +1040,7 @@ haplotype file and create a whitelist, for other file type, use
              PLINK linkage disequilibrium based SNP pruning option")
       }
       message("Minimizing LD...")
-      snp.locus <- input %>% select(LOCUS, POS) %>% distinct(POS)
+      snp.locus <- input %>% select(LOCUS, POS) %>% distinct(POS, .keep_all = TRUE)
       # Random selection
       if (snp.ld == "random") {
         snp.select <- snp.locus %>%
@@ -1106,7 +1104,6 @@ haplotype file and create a whitelist, for other file type, use
         group_by(MARKERS) %>%
         filter(n_distinct(POP_ID) == pop.number) %>%
         arrange(MARKERS) %>%
-        select(MARKERS) %>%
         distinct(MARKERS)
       
       message(stri_join("Number of original markers = ", n_distinct(input$MARKERS), 
@@ -1185,7 +1182,7 @@ haplotype file and create a whitelist, for other file type, use
           arrange(MARKERS, POP_ID, GT) %>% 
           group_by(MARKERS, POP_ID) %>% 
           filter(n == min(n)) %>% 
-          distinct(MARKERS, POP_ID) %>% 
+          distinct(MARKERS, POP_ID, .keep_all = TRUE) %>% 
           select(MARKERS, POP_ID, MAF_LOCAL, MAF_GLOBAL)
       }# end maf calculations with PLINK or data frame of genotypes
       
@@ -1476,7 +1473,6 @@ package and update your whitelist")
       loc.names <- colnames(genind.df)
       strata <- genind.prep %>% 
         ungroup() %>% 
-        select(INDIVIDUALS, POP_ID) %>% 
         distinct(INDIVIDUALS, POP_ID) %>% 
         mutate(MIXTURE = ifelse(INDIVIDUALS %in% mixture.df$INDIVIDUALS, "mixture", "baseline"))
       
@@ -1605,7 +1601,6 @@ package and update your whitelist")
         mutate(POP_ID = droplevels(POP_ID))
       
       strata.df.impute <- input.prep %>% 
-        select(INDIVIDUALS, POP_ID) %>% 
         distinct(INDIVIDUALS, POP_ID)
       
       input.prep <- NULL # remove unused object
@@ -2106,7 +2101,6 @@ package and update your whitelist")
         loc.names <- colnames(genind.df)
         strata <- genind.prep.imp %>% 
           ungroup() %>% 
-          select(INDIVIDUALS, POP_ID) %>% 
           distinct(INDIVIDUALS, POP_ID) %>% 
           mutate(MIXTURE = ifelse(INDIVIDUALS %in% mixture.df$INDIVIDUALS, "mixture", "baseline"))
         
@@ -2131,7 +2125,6 @@ package and update your whitelist")
     # unique list of markers after all the filtering
     # if "all" is present in the list, change to the maximum number of markers
     unique.markers <- input %>% 
-      select(MARKERS) %>% 
       distinct(MARKERS) %>% 
       arrange(MARKERS)
     
@@ -2592,7 +2585,6 @@ Progress can be monitored with activity in the folder...")
       # List of all individuals
       ind.pop.df<- input %>% 
         ungroup %>% 
-        select(POP_ID, INDIVIDUALS) %>% 
         distinct(POP_ID, INDIVIDUALS)
       
       message("Using thl method, ranking Fst with training samples...")

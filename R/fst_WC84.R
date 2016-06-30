@@ -348,7 +348,6 @@ fst_WC84 <- function(data,
     
     markers.list <- sigma.loc.alleles %>% 
       ungroup() %>% 
-      select(MARKERS) %>% 
       distinct(MARKERS) %>% 
       arrange(MARKERS)
     
@@ -383,7 +382,6 @@ fst_WC84 <- function(data,
       group_by(MARKERS) %>%
       filter(n_distinct(POP_ID) == pop.number) %>%
       arrange(MARKERS) %>%
-      select(MARKERS) %>%
       distinct(MARKERS)
     
     # number of marker used for computation 
@@ -413,14 +411,15 @@ fst_WC84 <- function(data,
     
     
     # Remove the markers from the dataset
-    x <- anti_join(x, mono.markers, by = "MARKERS")
-
-
+    if (length(mono.markers$MARKERS) > 0) {
+      x <- anti_join(x, mono.markers, by = "MARKERS")
+    }
+    
     # The similar hierfstat steps ----------------------------------------------
     n.pop.locus <- x %>%
       select(MARKERS, POP_ID) %>%
       group_by(MARKERS) %>%
-      distinct(POP_ID) %>%
+      distinct(POP_ID, .keep_all = TRUE) %>%
       tally %>%
       rename(npl = n)
     
@@ -497,8 +496,8 @@ fst_WC84 <- function(data,
     
     ncal <- suppressWarnings(
       freq.al.locus %>%
-        select(MARKERS, ALLELES) %>%
-        group_by(MARKERS, ALLELES) %>%
+        # select(MARKERS, ALLELES) %>%
+        # group_by(MARKERS, ALLELES) %>%
         distinct(MARKERS, ALLELES) %>%
         full_join(ind.count.locus, by = "MARKERS") %>%
         rename(ntal = n) %>%

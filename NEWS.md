@@ -1,3 +1,9 @@
+**v.0.2.9**
+* updated vignettes
+* bug fix in `fst_WC84`
+* bug fix between assinger -> devtools -> github -> travis, [this page helped] (http://itsalocke.com/using-travis-make-sure-use-github-pat/)
+
+
 # assigner v.0.2.8
 
 * While changing some lines with `tidyr::spread` and `tidyr::gather` for `data.table::dcast.data.table` and `data.table::melt.data.table` to make the code faster, I forgot to split genotype into alleles for `gsi_sim`.

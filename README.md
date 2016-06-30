@@ -70,7 +70,7 @@ stackr::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
   and load [parallelsugar](https://github.com/nathanvan/parallelsugar) [instructions](https://github.com/nathanvan/parallelsugar#installation).
 
 **Dependencies:**
-  * **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, plyr, dplyr, stackr (>= 0.2.9)
+  * **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, plyr, dplyr (>= 0.5.0), stackr (>= 0.2.9)
   * **Suggests:** devtools, knitr, rmarkdown
   * **Remotes:** github::thierrygosselin/stackr
 
@@ -116,10 +116,10 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Version, new feature and bug history now lives in the [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
-**v.0.2.9**
+**v.0.3.0**
 * updated vignettes
-* bug fix in `fst_WC84`
-* bug fix between assinger -> devtools -> github -> travis, [this page helped] (http://itsalocke.com/using-travis-make-sure-use-github-pat/)
+* major bug fix that involved dplyr new version (0.5.0) and mostly with 
+the use of dplyr::distinct
 
 For previous news:
 [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
