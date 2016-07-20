@@ -1,4 +1,11 @@
-**v.0.2.9**
+# assigner v.0.3.0
+* updated vignettes
+* major bug fix that involved dplyr new version (0.5.0) and mostly with 
+the use of dplyr::distinct
+
+
+
+# assigner v.0.2.9
 * updated vignettes
 * bug fix in `fst_WC84`
 * bug fix between assinger -> devtools -> github -> travis, [this page helped] (http://itsalocke.com/using-travis-make-sure-use-github-pat/)

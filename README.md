@@ -114,7 +114,12 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 
 ## New features
-Version, new feature and bug history now lives in the [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
+Change log, version, new features and bug history now lives in the [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
+
+**v.0.3.1**
+`assignment_mixture`: 
+* updated with latest modules from `stackr`. 
+* simplified the identification of mixture or unknown samples. See doc.
 
 **v.0.3.0**
 * updated vignettes

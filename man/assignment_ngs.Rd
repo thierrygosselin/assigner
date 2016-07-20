@@ -4,6 +4,22 @@
 \alias{assignment_ngs}
 \title{Assignment analysis of massive parallel sequencing data (GBS/RADseq, 
 SNP chip, etc) using \href{https://github.com/eriqande/gsi_sim}{gsi_sim} and \code{\link[adegenet]{adegenet}}.}
+\usage{
+assignment_ngs(data, assignment.analysis, sampling.method,
+  adegenet.dapc.opt = "optim.a.score", adegenet.n.rep = 30,
+  adegenet.training = 0.9, thl = 1, iteration.method = 10,
+  subsample = NULL, iteration.subsample = 1, marker.number = "all",
+  blacklist.id = NULL, blacklist.genotype = NULL,
+  whitelist.markers = NULL, monomorphic.out = TRUE, snp.ld = NULL,
+  common.markers = TRUE, maf.thresholds = NULL, maf.pop.num.threshold = 1,
+  maf.approach = "SNP", maf.operator = "OR", max.marker = NULL,
+  strata = NULL, pop.levels = NULL, pop.labels = NULL,
+  pop.select = NULL, imputation.method = NULL, impute = "genotype",
+  imputations.group = "populations", num.tree = 100, iteration.rf = 10,
+  split.number = 100, verbose = FALSE, folder = NULL,
+  filename = "assignment_data.txt", keep.gsi.files = FALSE,
+  parallel.core = detectCores() - 1)
+}
 \arguments{
 \item{data}{7 options: vcf, plink, stacks haplotype file, genind, genepop, 
 and a data frame in wide or long/tidy format. 
@@ -168,6 +184,17 @@ subsampled randomly from the 200000 markers. Use \code{whitelist.markers} to
 keep specific markers.
 Default: \code{max.marker = NULL}.}
 
+\item{strata}{(optional for data frame and PLINK files, 
+required for VCF and haplotypes files) A tab delimited file with 2 columns with header:
+\code{INDIVIDUALS} and \code{STRATA}. With a 
+data frame of genotypes the strata is the INDIVIDUALS and POP_ID columns, with
+PLINK files, the \code{tfam} first 2 columns are used. 
+If a \code{strata} file is specified, the strata file will have
+precedence. The \code{STRATA} column can be any hierarchical grouping. 
+To create a strata file see \code{\link[stackr]{individuals2strata}}. 
+White spaces in population names are replaced by underscore.
+Default: \code{strata = NULL}.}
+
 \item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
 case, the id of the pop.
 Use this argument to have the pop ordered your way instead of the default 
@@ -193,37 +220,10 @@ If you find this too complicated, there is also the
 White spaces
 in population names are replaced by underscore.}
 
-\item{strata}{(optional for data frame and PLINK files, 
-required for VCF and haplotypes files) A tab delimited file with 2 columns with header:
-\code{INDIVIDUALS} and \code{STRATA}. With a 
-data frame of genotypes the strata is the INDIVIDUALS and POP_ID columns, with
-PLINK files, the \code{tfam} first 2 columns are used. 
-If a \code{strata} file is specified, the strata file will have
-precedence. The \code{STRATA} column can be any hierarchical grouping. 
-To create a strata file see \code{\link[stackr]{individuals2strata}}. 
-White spaces in population names are replaced by underscore.
-Default: \code{strata = NULL}.}
-
 \item{pop.select}{(string, optional) Selected list of populations for 
 the analysis. e.g. \code{pop.select = c("QUE", "ONT")} to select \code{QUE}
 and \code{ONT} population samples (out of 20 pops).
 White spaces in population names are replaced by underscore.}
-
-\item{folder}{(optional) The name of the folder created in the working 
-directory to save the files/results. Default: \code{folder = NULL} will create
-the folder for you with data and time.}
-
-\item{filename}{(optional) The name of the file written to the directory.
-Use the extension ".txt" at the end. 
-Several info will be appended to the name of the file.
-Default \code{assignment_data.txt}.}
-
-\item{keep.gsi.files}{(logical, optional) With the default, 
-the intermediate input and output gsi_sim files will be deleted from the 
-directory when finished processing. I you decide to keep the files, with 
-\code{keep.gsi.files =TRUE}, remember to allocate a large chunk of the disk 
-space for the analysis.
-Default: \code{keep.gsi.files = FALSE}}
 
 \item{imputation.method}{(character, optional) 
 Methods available for map-independent imputations of missing genotypes: 
@@ -256,6 +256,22 @@ Default: \code{split.number = 100}.}
 in Random Forest ? 
 Default: \code{verbose = FALSE}.}
 
+\item{folder}{(optional) The name of the folder created in the working 
+directory to save the files/results. Default: \code{folder = NULL} will create
+the folder for you with data and time.}
+
+\item{filename}{(optional) The name of the file written to the directory.
+Use the extension ".txt" at the end. 
+Several info will be appended to the name of the file.
+Default \code{assignment_data.txt}.}
+
+\item{keep.gsi.files}{(logical, optional) With the default, 
+the intermediate input and output gsi_sim files will be deleted from the 
+directory when finished processing. I you decide to keep the files, with 
+\code{keep.gsi.files =TRUE}, remember to allocate a large chunk of the disk 
+space for the analysis.
+Default: \code{keep.gsi.files = FALSE}}
+
 \item{parallel.core}{(optional) The number of core for OpenMP shared-memory parallel
 programming of Random Forest imputations. For more info on how to install the
 OpenMP version see \code{\link[randomForestSRC]{randomForestSRC-package}}.
@@ -274,7 +290,7 @@ reality of GBS/RADseq data for assignment analysis while
 maintaining a reproducible workflow.
 
 \itemize{
-  \item \strong{Imput file:} various file format are supported (see \code{data} argument below)
+  \item \strong{Input file:} various file format are supported (see \code{data} argument below)
   \item \strong{Filters:} genotypes, markers, individuals and populations can be 
   filtered and/or selected in several ways using blacklist,
   whitelist and other arguments

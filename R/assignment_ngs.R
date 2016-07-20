@@ -10,7 +10,7 @@
 #' maintaining a reproducible workflow.
 #' 
 #' \itemize{
-#'   \item \strong{Imput file:} various file format are supported (see \code{data} argument below)
+#'   \item \strong{Input file:} various file format are supported (see \code{data} argument below)
 #'   \item \strong{Filters:} genotypes, markers, individuals and populations can be 
 #'   filtered and/or selected in several ways using blacklist,
 #'   whitelist and other arguments
@@ -487,31 +487,6 @@
 
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com} and Eric C. Anderson
 
-# required to pass the R CMD check and have 'no visible binding for global variable'
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(
-    c("ID", "#CHROM", "CHROM", "FORMAT", "INDIVIDUALS", "FORMAT_ID", "LOCUS",
-      "POS", "REF", "ALT", "POP_ID", "READ_DEPTH", "ALLELE_DEPTH", "GL",
-      "ERASE", "GT", "MARKERS", "QQ", "PQ", "N", "MAF_GLOBAL", "MAF_LOCAL",
-      "ALLELES", "POP_ID", "GT", "INDIVIDUALS", "MARKERS", "POP_ID", "nal",
-      "ALLELES_GROUP", "ALLELES", "N_IND_GENE", "P", "N", "nal_sq",
-      "nal_sq_sum", "nal_sq_sum_nt", "npl", "het", "mho", "mhom", "dum",
-      "dum1", "SSG", "ntal", "SSP", "ntalb", "SSi", "MSI", "sigw", "MSP",
-      "siga", "sigb", "lsiga", "lsigb", "lsigw", "FST", "MARKERS",
-      "MARKERS_ALLELES", "ALLELES", "POP_ID", "INDIVIDUALS", "filename",
-      "ID", "KEEPER", "ASSIGN", "OTHERS", "CURRENT", "INFERRED",
-      "SECOND_BEST_POP", "SCORE", "SECOND_BEST_SCORE", "NUMBER", "INDIVIDUALS_ALLELES",
-      "MARKER_NUMBER", "MISSING_DATA", "TOTAL", "ASSIGNMENT_PERC",
-      "MARKERS", "CURRENT", "INFERRED", "MISSING_DATA",
-      "ITERATIONS", "METHOD", "TOTAL", "MEAN_i", "MEAN", "ASSIGNMENT_PERC",
-      "SE", "MEDIAN", "MIN", "MAX", "QUANTILE25", "QUANTILE75", "SE_MIN",
-      "SE_MAX", ".", "QUAL", "FILTER", "INFO", "pb", "SUBSAMPLE", "STRATA", 
-      "sum.pop", "A1", "A2", "INDIVIDUALS_2", "Cnt", "Catalog ID", "GROUP",
-      "COUNT", "MAX_COUNT_MARKERS", "hierarchy", "GT_VCF"
-    )
-  )
-}
-
 assignment_ngs <- function(
   data,
   assignment.analysis,
@@ -549,8 +524,8 @@ assignment_ngs <- function(
   folder = NULL,
   filename = "assignment_data.txt",
   keep.gsi.files = FALSE,
-  parallel.core = detectCores()-1,
-  ...) {
+  parallel.core = detectCores()-1
+  ) {
   
   # Checking for missing and/or default arguments ******************************
   if (missing(data)) stop("Input file missing")
@@ -715,7 +690,7 @@ assignment_ngs <- function(
     subsampling.individuals <- bind_rows(subsample.list)
     write_tsv(
       x = subsampling.individuals, 
-      path = paste0(directory, "subsampling.individuals.tsv"), 
+      path = paste0(directory, "subsampling_individuals.tsv"), 
       col_names = TRUE, 
       append = FALSE
     )
@@ -1157,7 +1132,9 @@ haplotype file and create a whitelist, for other file type, use
     
     marker.number <- as.numeric(
       stri_replace_all_fixed(
-        str = marker.number, pattern = "all", replacement = nrow(unique.markers), 
+        str = marker.number, 
+        pattern = "all", 
+        replacement = nrow(unique.markers), 
         vectorize_all = TRUE
       )
     )
