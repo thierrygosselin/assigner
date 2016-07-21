@@ -36,11 +36,14 @@ If you have already run
 \href{http://catchenlab.life.illinois.edu/stacks/}{stacks} on your data, 
 the strata file is similar to a stacks `population map file`, make sure you 
 have the required column names  (\code{INDIVIDUALS} and \code{STRATA}).
-Default: \code{strata = NULL}.}
+Default: \code{strata = NULL}.
+\strong{mixture samples}: use \code{"mixture"} or \code{"unknown"} inside the
+\code{STRATA} column to identify samples not in the baseline,
+but see details on the other ways to identify your unknown or mixture samples.}
 
 \item{mixture}{(optional) A file in the working directory (e.g. "mixture.txt")
 with mixture individual ID. The column header is \code{INDIVIDUALS}.
-Default: \code{mixture = NULL} but see details on the different ways to 
+Default: \code{mixture = NULL}, but see details on the different ways to 
 identify your unknown or mixture samples.}
 
 \item{assignment.analysis}{Assignment analysis conducted with 
@@ -62,8 +65,9 @@ chosen 10 times.}
 
 \item{subsample}{(Integer or Proportion) Default is no sumsampling, 
 \code{subsample = NULL}.
-With a proportion argument \code{subsample = 0.15}, 15 percent of individuals
-in each populations are chosen randomly to represent the dataset.
+With a proportion argument \code{subsample = 0.15}, 15 percent of 
+\strong{baseline} individuals in each populations are chosen randomly to 
+represent the dataset.
 With \code{subsample = 36}, 36 individuals in each populations are chosen
 randomly to represent the dataset.}
 
@@ -237,22 +241,32 @@ If not selected \code{detectCores()-1} is used as default.}
 Depending on arguments selected, several files are written to the your
 working directory or \code{folder}
 The output in your global environment is a list. To view the assignment results
-\code{$assignment}.
+\code{$assignment} or \code{$assignment.mixture.summary.results}
 }
 \description{
-\code{gsi_sim} is a tool for doing and simulating genetic stock
-identification and developed by Eric C. Anderson.
 The arguments in the \code{assignment_mixture} function were tailored for the
-reality of GBS/RADseq data to assign mixture samples to baseline populations
+reality of GBS/RADseq data for assignment analysis of mixture or unknown samples, 
 while maintaining a reproducible workflow.
-Various input files are offered. Individuals, populations and
-markers can be filtered and/or selected in several ways using blacklist,
-whitelist and other arguments. Map-independent imputation of missing genotype
-using Random Forest or the most frequent category is also available.
-Markers can be randomly selected for a classic LOO (Leave-One-Out)
-assignment or chosen based on ranked Fst. For this, the baseline samples are
-used for the training and the mixture samples as holdout. 
-Classic Leave-one-out is then used to assign individual mixture samples.
+
+\itemize{
+  \item \strong{Input file:} various file format are supported (see \code{data} argument below)
+  \item \strong{Filters:} genotypes, markers, individuals and populations can be 
+  filtered and/or selected in several ways using blacklist,
+  whitelist and other arguments
+  \item \strong{Cross-Validations:} Markers can be randomly selected for a classic LOO (Leave-One-Out)
+  assignment or chosen based on ranked Fst for a thl
+  (Training, Holdout, Leave-one-out) assignment analysis
+  \item \strong{Imputations:} Map-independent imputation of missing genotype/alleles
+  using Random Forest or the most frequent category.
+  \item \strong{Assignment analysis:} conducted in 
+  \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, a tool 
+  for doing and simulating genetic stock identification and 
+  developed by Eric C. Anderson, or 
+\href{https://github.com/thibautjombart/adegenet}{adegenet}, 
+an R package developed by Thibaul Jombart
+  \item \strong{Parallel:} The assignment can be conduncted on multiple CPUs
+  \item \strong{Results:} Assignment results in raw or processed tables and figures
+}
 }
 \details{
 \strong{2 options to identify your unknown or mixture samples, using:}
@@ -264,13 +278,76 @@ Classic Leave-one-out is then used to assign individual mixture samples.
    The column header is \code{INDIVIDUALS}.
   }
 
+\strong{Input files:}
+\enumerate{
+\item VCF file (e.g. \code{data = "batch_1.vcf"}). 
+To make the VCF population ready, you need the \code{strata} argument.
+
+\item haplotype file created in STACKS (e.g. \code{data = "batch_1.haplotypes.tsv"}).
+To make the haplotype file population ready, you need the \code{strata} argument.
+
+\item Data frame
+To discriminate the long from the wide format, 
+the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
+for "MARKERS" in column names (TRUE = long format).
+The data frame is tab delimitted.
+\strong{Wide format:}
+The wide format cannot store metadata info.
+The wide format starts with these 2 id columns: 
+\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
+the remaining columns are the markers in separate columns storing genotypes.
+
+\strong{Long/Tidy format:}
+The long format is considered to be a tidy data frame and can store metadata info. 
+(e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). A minimum of 4 columns
+are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
+\code{MARKERS} and \code{GENOTYPE or GT}. The rest are considered metata info.
+
+\strong{2 genotypes formats are available:}
+6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
+6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
+The separator can be any of these: \code{"/", ":", "_", "-", "."}.
+
+\emph{How to get a tidy data frame ?}
+\pkg{stackr} \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
+in a tidy data frame.
+
+\item PLINK file in 
+\code{tped/tfam} format (e.g. \code{data =  "data.assignment.tped"}). 
+The first 2 columns of the \code{tfam} file will be used for the 
+\code{strata} argument below, unless a new one is provided. 
+Columns 1, 3 and 4 of the \code{tped} are discarded. The remaining columns 
+correspond to the genotype in the format \code{01/04} 
+where \code{A = 01, C = 02, G = 03 and T = 04}. For \code{A/T} format, use 
+PLINK or bash to convert.
+Use \href{http://vcftools.sourceforge.net/}{VCFTOOLS} with \code{--plink-tped} 
+to convert very large VCF file. For \code{.ped} file conversion to 
+\code{.tped} use \href{http://pngu.mgh.harvard.edu/~purcell/plink/}{PLINK} 
+with \code{--recode transpose},
+
+\item \code{\link[adegenet]{genind}} object from \code{\link[adegenet]{adegenet}}.
+
+\item genepop data file (e.g. \code{data = kiwi_data.gen}). Here, the function can only use
+alleles encoded with 3 digits.
+}
+
+\strong{Imputations:}
+
 The imputations using Random Forest requires more time to compute
 and can take several
 minutes and hours depending on the size of the dataset and polymorphism of
 the species used. e.g. with a low polymorphic taxa, and a data set
 containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
-will require 15 min.
-The Fst is based on Weir and Cockerham 1984 equations.
+will require 15 min. This is using multiple CPUs. To have your computer ready
+for parallel computing during imputations follow the steps in this 
+vignette (~10 min) : `vignette("vignette_imputations_parallel")`
+
+\strong{THL, Ranking and Fst:}
+
+With \code{sampling.method = "ranked"}, the markers are first 
+arranged by \emph{decreasing} values of Fst.
+The Fst is computed with \code{\link{fst_WC84}} function, that uses a fast 
+implementation of Weir and Cockerham 1984 Fst/Theta equations.
 }
 \note{
 \code{assignment_mixture} assumes that the command line version of gsi_sim 
@@ -302,7 +379,7 @@ subsample = 25,
 iteration.subsample = 5
 filename = "treefrog.txt",
 keep.gsi.files = FALSE,
-pop.levels = c("PAN", "COS")
+pop.levels = c("PAN", "COS", "mixture")
 imputation.method = NULL,
 parallel.core = 12
 )
@@ -320,7 +397,7 @@ subsample = 25,
 iteration.subsample = 5
 filename = "tuna.txt",
 keep.gsi.files = FALSE,
-pop.levels = c("BAJ", "IND"),
+pop.levels = c("BAJ", "IND", "mixture"),
 imputation.method = "rf", 
 impute.mixture = TRUE, 
 impute = "genotype", 

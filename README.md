@@ -116,6 +116,9 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Change log, version, new features and bug history now lives in the [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
+**v.0.3.2**
+* `assignment_mixture`: added a check that throws an error when pop.levels != the pop.id in strata
+
 **v.0.3.1**
 `assignment_mixture`: 
 * updated with latest modules from `stackr`. 

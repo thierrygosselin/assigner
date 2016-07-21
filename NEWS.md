@@ -1,8 +1,16 @@
+# assigner v.0.3.2
+* `assignment_mixture`: added a check to throw an error when pop.levels != the pop.id in strata
+
+# assigner v.0.3.1
+`assignment_mixture`: 
+* updated with latest modules from `stackr`. 
+* simplified the identification of mixture or unknown samples. See doc.
+
+
 # assigner v.0.3.0
 * updated vignettes
 * major bug fix that involved dplyr new version (0.5.0) and mostly with 
 the use of dplyr::distinct
-
 
 
 # assigner v.0.2.9

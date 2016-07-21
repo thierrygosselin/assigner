@@ -3,19 +3,31 @@
 #' @title Mixture/Baseline assignment analysis of massive parallel sequencing data (GBS/RADseq, 
 #' SNP chip, etc) using \code{gsi_sim} and \code{\link[adegenet]{adegenet}}
 
-#' @description \code{gsi_sim} is a tool for doing and simulating genetic stock
-#' identification and developed by Eric C. Anderson.
+#' @description
 #' The arguments in the \code{assignment_mixture} function were tailored for the
-#' reality of GBS/RADseq data to assign mixture samples to baseline populations
+#' reality of GBS/RADseq data for assignment analysis of mixture or unknown samples, 
 #' while maintaining a reproducible workflow.
-#' Various input files are offered. Individuals, populations and
-#' markers can be filtered and/or selected in several ways using blacklist,
-#' whitelist and other arguments. Map-independent imputation of missing genotype
-#' using Random Forest or the most frequent category is also available.
-#' Markers can be randomly selected for a classic LOO (Leave-One-Out)
-#' assignment or chosen based on ranked Fst. For this, the baseline samples are
-#' used for the training and the mixture samples as holdout. 
-#' Classic Leave-one-out is then used to assign individual mixture samples.
+#' 
+#' \itemize{
+#'   \item \strong{Input file:} various file format are supported (see \code{data} argument below)
+#'   \item \strong{Filters:} genotypes, markers, individuals and populations can be 
+#'   filtered and/or selected in several ways using blacklist,
+#'   whitelist and other arguments
+#'   \item \strong{Cross-Validations:} Markers can be randomly selected for a classic LOO (Leave-One-Out)
+#'   assignment or chosen based on ranked Fst for a thl
+#'   (Training, Holdout, Leave-one-out) assignment analysis
+#'   \item \strong{Imputations:} Map-independent imputation of missing genotype/alleles
+#'   using Random Forest or the most frequent category.
+#'   \item \strong{Assignment analysis:} conducted in 
+#'   \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, a tool 
+#'   for doing and simulating genetic stock identification and 
+#'   developed by Eric C. Anderson, or 
+#' \href{https://github.com/thibautjombart/adegenet}{adegenet}, 
+#' an R package developed by Thibaul Jombart
+#'   \item \strong{Parallel:} The assignment can be conduncted on multiple CPUs
+#'   \item \strong{Results:} Assignment results in raw or processed tables and figures
+#' }
+
 
 #' @param data 6 options: vcf (to make vcf population ready, see details below),
 #' plink, stacks haplotype file, genind, genepop, 
@@ -34,10 +46,13 @@
 #' the strata file is similar to a stacks `population map file`, make sure you 
 #' have the required column names  (\code{INDIVIDUALS} and \code{STRATA}).
 #' Default: \code{strata = NULL}.
+#' \strong{mixture samples}: use \code{"mixture"} or \code{"unknown"} inside the
+#' \code{STRATA} column to identify samples not in the baseline,
+#' but see details on the other ways to identify your unknown or mixture samples.
 
 #' @param mixture (optional) A file in the working directory (e.g. "mixture.txt")
 #' with mixture individual ID. The column header is \code{INDIVIDUALS}.
-#' Default: \code{mixture = NULL} but see details on the different ways to 
+#' Default: \code{mixture = NULL}, but see details on the different ways to 
 #' identify your unknown or mixture samples.
 #' 
 #' @param assignment.analysis Assignment analysis conducted with 
@@ -74,8 +89,9 @@
 
 #' @param subsample (Integer or Proportion) Default is no sumsampling, 
 #' \code{subsample = NULL}.
-#' With a proportion argument \code{subsample = 0.15}, 15 percent of individuals
-#' in each populations are chosen randomly to represent the dataset.
+#' With a proportion argument \code{subsample = 0.15}, 15 percent of 
+#' \strong{baseline} individuals in each populations are chosen randomly to 
+#' represent the dataset.
 #' With \code{subsample = 36}, 36 individuals in each populations are chosen
 #' randomly to represent the dataset.
 
@@ -111,18 +127,82 @@
 #'    The column header is \code{INDIVIDUALS}.
 #'   }
 #' 
+#' \strong{Input files:}
+#' \enumerate{
+#' \item VCF file (e.g. \code{data = "batch_1.vcf"}). 
+#' To make the VCF population ready, you need the \code{strata} argument.
+#' 
+#' \item haplotype file created in STACKS (e.g. \code{data = "batch_1.haplotypes.tsv"}).
+#' To make the haplotype file population ready, you need the \code{strata} argument.
+#' 
+#' \item Data frame
+#' To discriminate the long from the wide format, 
+#' the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
+#' for "MARKERS" in column names (TRUE = long format).
+#' The data frame is tab delimitted.
+
+#' \strong{Wide format:}
+#' The wide format cannot store metadata info.
+#' The wide format starts with these 2 id columns: 
+#' \code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
+#' the remaining columns are the markers in separate columns storing genotypes.
+#' 
+#' \strong{Long/Tidy format:}
+#' The long format is considered to be a tidy data frame and can store metadata info. 
+#' (e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). A minimum of 4 columns
+#' are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
+#' \code{MARKERS} and \code{GENOTYPE or GT}. The rest are considered metata info.
+#' 
+#' \strong{2 genotypes formats are available:}
+#' 6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
+#' 6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
+#' The separator can be any of these: \code{"/", ":", "_", "-", "."}.
+#' 
+#' \emph{How to get a tidy data frame ?}
+#' \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
+#' in a tidy data frame.
+#' 
+#' \item PLINK file in 
+#' \code{tped/tfam} format (e.g. \code{data =  "data.assignment.tped"}). 
+#' The first 2 columns of the \code{tfam} file will be used for the 
+#' \code{strata} argument below, unless a new one is provided. 
+#' Columns 1, 3 and 4 of the \code{tped} are discarded. The remaining columns 
+#' correspond to the genotype in the format \code{01/04} 
+#' where \code{A = 01, C = 02, G = 03 and T = 04}. For \code{A/T} format, use 
+#' PLINK or bash to convert.
+#' Use \href{http://vcftools.sourceforge.net/}{VCFTOOLS} with \code{--plink-tped} 
+#' to convert very large VCF file. For \code{.ped} file conversion to 
+#' \code{.tped} use \href{http://pngu.mgh.harvard.edu/~purcell/plink/}{PLINK} 
+#' with \code{--recode transpose},
+#' 
+#' \item \code{\link[adegenet]{genind}} object from \code{\link[adegenet]{adegenet}}.
+#' 
+#' \item genepop data file (e.g. \code{data = kiwi_data.gen}). Here, the function can only use
+#' alleles encoded with 3 digits.
+#' }
+#' 
+#' \strong{Imputations:}
+#' 
 #' The imputations using Random Forest requires more time to compute
 #' and can take several
 #' minutes and hours depending on the size of the dataset and polymorphism of
 #' the species used. e.g. with a low polymorphic taxa, and a data set
 #' containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
-#' will require 15 min.
-#' The Fst is based on Weir and Cockerham 1984 equations.
+#' will require 15 min. This is using multiple CPUs. To have your computer ready
+#' for parallel computing during imputations follow the steps in this 
+#' vignette (~10 min) : `vignette("vignette_imputations_parallel")`
+#' 
+#' \strong{THL, Ranking and Fst:}
+#' 
+#' With \code{sampling.method = "ranked"}, the markers are first 
+#' arranged by \emph{decreasing} values of Fst.
+#' The Fst is computed with \code{\link{fst_WC84}} function, that uses a fast 
+#' implementation of Weir and Cockerham 1984 Fst/Theta equations. 
 
 #' @return Depending on arguments selected, several files are written to the your
 #' working directory or \code{folder}
 #' The output in your global environment is a list. To view the assignment results
-#' \code{$assignment}.
+#' \code{$assignment} or \code{$assignment.mixture.summary.results}
 
 #' @note \code{assignment_mixture} assumes that the command line version of gsi_sim 
 #' is properly installed into \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
@@ -166,7 +246,7 @@
 #' iteration.subsample = 5
 #' filename = "treefrog.txt",
 #' keep.gsi.files = FALSE,
-#' pop.levels = c("PAN", "COS")
+#' pop.levels = c("PAN", "COS", "mixture")
 #' imputation.method = NULL,
 #' parallel.core = 12
 #' )
@@ -184,7 +264,7 @@
 #' iteration.subsample = 5
 #' filename = "tuna.txt",
 #' keep.gsi.files = FALSE,
-#' pop.levels = c("BAJ", "IND"),
+#' pop.levels = c("BAJ", "IND", "mixture"),
 #' imputation.method = "rf", 
 #' impute.mixture = TRUE, 
 #' impute = "genotype", 
@@ -278,7 +358,7 @@ assignment_mixture <- function(
   cat("#################### assigner::assignment_mixture #####################\n")
   cat("#######################################################################\n")
   
-  # Checking for missing and/or default arguments ******************************
+  # Checking for missing and/or default arguments ------------------------------
   if (missing(data)) stop("Input file missing")
   if (missing(assignment.analysis)) stop("assignment.analysis argument missing")
   if (assignment.analysis == "gsi_sim" & !gsi_sim_exists()){
@@ -296,10 +376,13 @@ assignment_mixture <- function(
     pop.levels <- stri_replace_all_fixed(pop.levels, pattern = " ", replacement = "_", vectorize_all = FALSE)
     pop.labels <- pop.levels
   }
+  if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
+  
   if (!is.null(pop.labels)) {
+    if (length(pop.labels) != length(pop.levels)) stop("pop.labels and pop.levels must have the same length")
     pop.labels <- stri_replace_all_fixed(pop.labels, pattern = " ", replacement = "_", vectorize_all = FALSE)
   }
-  if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
+  
   if (!is.null(pop.select)) {
     pop.select <- stri_replace_all_fixed(pop.select, pattern = " ", replacement = "_", vectorize_all = FALSE)
   }
@@ -364,7 +447,7 @@ assignment_mixture <- function(
   # Base filename
   base.filename <- filename # filename will change from time to time in the function
   
-  # Create a folder based on filename to save the output files *****************
+  # Create a folder based on filename to save the output files -----------------
   if (is.null(folder)) {
     # Get date and time to have unique filenaming
     file.date <- stri_replace_all_fixed(Sys.time(), pattern = " EDT", replacement = "")
@@ -388,12 +471,12 @@ assignment_mixture <- function(
     message(stri_join("Folder: ", directory))
   }
   
-  # Strata argument required for VCF and haplotypes files **********************
+  # Strata argument required for VCF and haplotypes files ----------------------
   if (data.type == "haplo.file" | data.type == "vcf.file") {
     if (is.null(strata)) stop("strata argument is required")
   }
   
-  # Import input ***************************************************************
+  # Import input ---------------------------------------------------------------
   input <- stackr::tidy_genomic_data(
     data = data, 
     vcf.metadata = FALSE,
@@ -423,7 +506,7 @@ assignment_mixture <- function(
     vectorize_all = FALSE
   )
   
-  # mixture data  **************************************************************
+  # mixture data ---------------------------------------------------------------
   if ("mixture" %in% unique(input$POP_ID)) {
     mixture.df <- input %>% 
       filter(POP_ID == "mixture") %>% 
@@ -435,7 +518,12 @@ assignment_mixture <- function(
     input <- mutate(.data = input, POP_ID = if_else(INDIVIDUALS %in% mixture.df$INDIVIDUALS, "mixture", as.character(POP_ID)))
   }
   
-  # subsampling data ***********************************************************
+  # keep a new pop.levels and pop.labels  --------------------------------------
+  if (is.null(pop.levels)){
+  pop.levels <- pop.labels <- levels(factor(input$POP_ID))
+  }
+  
+  # subsampling data -----------------------------------------------------------
   # Function:
   subsampling_data <- function(iteration.subsample, ...) {
     if (is.null(subsample)) {
@@ -490,7 +578,7 @@ assignment_mixture <- function(
   subsampling.individuals <- NULL
   ind.pop.df <- NULL
   
-  # assignment analysis ********************************************************
+  # assignment analysis --------------------------------------------------------
   # Function:
   assignment_function <- function(data, ...) {
     # data <- subsample.list[[1]] # test
@@ -581,7 +669,7 @@ haplotype file and create a whitelist, for other file type, use
       pop.filter <- NULL # ununsed object
     } # End common markers
     
-    # Minor Allele Frequency filter ********************************************
+    # Minor Allele Frequency filter --------------------------------------------
     # maf.thresholds <- c(0.05, 0.1) # test
     if (!is.null(maf.thresholds)) { # with MAF
       maf.local.threshold <- maf.thresholds[1]
@@ -755,7 +843,7 @@ package and update your whitelist")
       maf.data <- NULL
     } # End of MAF filters
 
-    # Keep a strata df ---------------------------------------------------------
+    # Keep a strata df --------------------------------------------------------
     strata.df <- distinct(.data = input, INDIVIDUALS, POP_ID)
     
     # Adegenet no imputations --------------------------------------------------
@@ -1040,7 +1128,7 @@ package and update your whitelist")
   } # End assignment_analysis_adegenet function
   
   
-  # Random method ************************************************************
+  # Random method --------------------------------------------------------------
   if (sampling.method == "random") {
     message("Conducting Assignment analysis with markers selected randomly")
     # Number of times to repeat the sampling of markers
@@ -1546,7 +1634,7 @@ if (sampling.method == "random") {
   }
   if (assignment.analysis == "adegenet") {
     assignment.mixture.summary.subsample <- res %>% 
-      select(-X1, -X2) %>% 
+      # select(-X1, -X2) %>% 
       ungroup() %>%
       mutate(CURRENT = factor(CURRENT)) %>% 
       group_by(INDIVIDUALS, CURRENT, INFERRED, ANALYSIS, MARKER_NUMBER, MISSING_DATA, SUBSAMPLE) %>%
@@ -1594,7 +1682,8 @@ if (sampling.method == "ranked") {
   }
   if (assignment.analysis == "adegenet") {
     assignment.mixture.summary.subsample <- res %>%
-      select(-X1, -X2, -ITERATIONS) %>%
+      # select(-X1, -X2, -ITERATIONS) %>%
+      select(-ITERATIONS) %>%
       ungroup() %>%
       mutate(CURRENT = factor(CURRENT)) %>%
       group_by(INDIVIDUALS, CURRENT, INFERRED, ANALYSIS, MARKER_NUMBER, METHOD, MISSING_DATA) %>%
