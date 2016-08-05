@@ -12,7 +12,7 @@ restriction-site-associated DNA sequencing (RADseq)) produce huge numbers of mar
 
 This is the development page of the **assigner** package for the R software. The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*. It's first use in french dates back to XIIIe.
 
-**Use assigner to:**
+**assigner features:**
 
 * **Conduct assignment analysis** and **mixture analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
 by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis.
@@ -24,18 +24,18 @@ by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet] (
     4. **genepop** for traditionalists... (Raymond and Rousset 1995; Rousset 2008) 
     5. **haplotypes data frame file** produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013). (e.g. *batch_x.haplotypes.tsv*) 
     6. a data frame of genotypes in wide or long/tidy format
-* assigner provides a fast implementation of Weir and Cockerham (1984) Fst/Theta. Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
-* Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
-* Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
-whitelist** and other arguments
-* **Map-independent imputation** of missing genotype or alleles using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
-* Genotypes of poor quality (e.g. in coverage, genotype likelihood or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument.
 * Markers can be randomly selected for a **classic LOO (Leave-One-Out) assignment** or 
 chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis** (reviewed in Anderson 2010)
 * Use `iteration.method` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
+* assigner provides a fast implementation of Weir and Cockerham (1984) Fst/Theta. Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
+* **Map-independent imputation** of missing genotype or alleles using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
+* Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
+whitelist** and other arguments
+* Genotypes of poor quality (e.g. in coverage, genotype likelihood or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument.
 * The impact of the minor allele frequency, MAF, (local and global) can also be easily explored with custom thresholds
 * The impact of filters used in other software can be explored by using the `whitelist.markers` argument.
 * Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
+* Using [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) output, compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * `ggplot2`-based plotting to view assignment results and create publication-ready figures
 * Fast computations with optimized codes to run in parallel!
 
