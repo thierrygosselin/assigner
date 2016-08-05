@@ -46,15 +46,12 @@ To try out the dev version of **assigner**, follow the 3 steps below:
 **Step 1:** Install or load the package **devtools**
 ```r
 if (!require("devtools")) install.packages("devtools") # to install
-library(devtools) # to load
 ```
 
 **Step 2:** Install **assigner** and install [gsi_sim] (https://github.com/eriqande/gsi_sim) from source
 ```r
-devtools::install_github("thierrygosselin/assigner") # to install without vignettes
 devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
-library(assigner) # to load
-stackr::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
+assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 ```
 
 **Step 3 (optional): Parallel computing** Install an OpenMP enabled [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) package to do imputation in parallel. Follow the steps in this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.
@@ -78,8 +75,7 @@ stackr::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 A quick way to install/load required packages and start using my packages (copy/paste the whole block):
 ```r
 if (!require("pacman")) install.packages("pacman")
-library("pacman")
-pacman::p_load(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, readr, purrr, data.table, ape, adegenet, parallel, lazyeval, randomForestSRC)
+pacman::p_load(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, tibble, readr, purrr, data.table, ape, adegenet, parallel, lazyeval, randomForestSRC)
 if (!require("stackr")){
   install_github("thierrygosselin/stackr", build_vignettes = TRUE)
   library("stackr")
@@ -164,7 +160,7 @@ Vignettes are in development, check periodically for updates.
 
 ## Roadmap of future developments:
 
-* The ability to provide the ranking of markers based on something else than Fst (Weir and Cockerham, 1984) currently used in the function. e.g. Informativeness for Assignment Measure (In, Rosenberg et al. 2003), the Absolute Allele Frequency Differences (delta, δ, Shriver et al., 1997).
+* The ability to provide the ranking of markers based on other statistics, something else than the Fst (Weir and Cockerham, 1984) currently used in the function. e.g. Informativeness for Assignment Measure (In, Rosenberg et al. 2003), the Absolute Allele Frequency Differences (delta, δ, Shriver et al., 1997).
 * Provide ranking from other software: e.g. Toolbox for Ranking and Evaluation of SNPs [TRES](http://mlkd.csd.auth.gr/bio/tres/), [BayeScan](http://cmpg.unibe.ch/software/BayeScan/) and [OutFLANK](https://github.com/whitlock/OutFLANK).
 * Would be very cool to use genotype likelihood information to get more accurate assignment.
 * Use Shiny and ggvis when subplots or facets are available
