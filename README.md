@@ -21,7 +21,7 @@ by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet] (
     2. **PLINK** tped/tfam format (Purcell et al. 2007), usefull for very 
     large files (> 50 000 markers),
     3. **genind** and **genlight** objets from [adegenet] (https://github.com/thibautjombart/adegenet) (Jombart et al. 2010; Jombart and Ahmed, 2011)
-    4. **genepop** for traditionalist... (Raymond and Rousset 1995; Rousset 2008) 
+    4. **genepop** for traditionalists... (Raymond and Rousset 1995; Rousset 2008) 
     5. **haplotypes data frame file** produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013). (e.g. *batch_x.haplotypes.tsv*) 
     6. a data frame of genotypes in wide or long/tidy format
 * assigner provides a fast implementation of Weir and Cockerham (1984) Fst/Theta. Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
