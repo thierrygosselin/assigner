@@ -29,7 +29,7 @@ chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, H
 * Use `iteration.method` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
 * assigner provides a fast implementation of Weir and Cockerham (1984) Fst/Theta. Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
 * **Map-independent imputation** of missing genotype or alleles using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
-* **Filters: **
+* **Filters:**
   + Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
 whitelist** and other arguments
   + Genotypes of poor quality (e.g. in coverage, **genotype likelihood** or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument
