@@ -29,11 +29,12 @@ chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, H
 * Use `iteration.method` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
 * assigner provides a fast implementation of Weir and Cockerham (1984) Fst/Theta. Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
 * **Map-independent imputation** of missing genotype or alleles using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
-* Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
+* **Filters: **
+  + Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
 whitelist** and other arguments
-* Genotypes of poor quality (e.g. in coverage, genotype likelihood or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument.
-* The impact of the minor allele frequency, MAF, (local and global) can also be easily explored with custom thresholds
-* The impact of filters used in other software can be explored by using the `whitelist.markers` argument.
+  + Genotypes of poor quality (e.g. in coverage, **genotype likelihood** or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument
+  + The impact of the **minor allele frequency**, MAF, (local and global) can also be easily explored with custom thresholds
+  + Use the `whitelist.markers` argument to explore the impact of filters used in other software
 * Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
 * Using [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) output, compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * `ggplot2`-based plotting to view assignment results and create publication-ready figures
