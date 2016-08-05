@@ -21,8 +21,8 @@ assignment_ngs(data, assignment.analysis, sampling.method,
   parallel.core = detectCores() - 1)
 }
 \arguments{
-\item{data}{7 options: vcf, plink, stacks haplotype file, genind, genepop, 
-and a data frame in wide or long/tidy format. 
+\item{data}{8 options: vcf, plink, stacks haplotype file, genind, genlight, 
+genepop, and a data frame in wide or long/tidy format. 
 The function uses 
 \href{https://github.com/thierrygosselin/stackr}{stackr} 
 \code{\link[stackr]{read_long_tidy_wide}} and 
@@ -357,10 +357,12 @@ to convert very large VCF file. For \code{.ped} file conversion to
 \code{.tped} use \href{http://pngu.mgh.harvard.edu/~purcell/plink/}{PLINK} 
 with \code{--recode transpose},
 
-\item \code{\link[adegenet]{genind}} object from \code{\link[adegenet]{adegenet}}.
+\item \code{\link[adegenet]{genind}} and \code{\link[adegenet]{genlight}} 
+objects from the package \code{\link[adegenet]{adegenet}}.
 
-\item genepop data file (e.g. \code{data = kiwi_data.gen}). Here, the function can only use
-alleles encoded with 3 digits.
+\item genepop data file (e.g. \code{data = kiwi_data.gen}). 
+See \href{http://genepop.curtin.edu.au/help_input.html}{genepop format} for
+more details.
 }
 
 \strong{Imputations:}
@@ -497,6 +499,18 @@ BMC Genet. 2010:11: 94. doi:10.1186/1471-2156-11-94
 Jombart T, Ahmed I. adegenet 1.3-1: new tools for the analysis 
 of genome-wide SNP data. 
 Bioinformatics. 2011:27: 3070–3071. doi:10.1093/bioinformatics/btr521
+
+Raymond M. & Rousset F, (1995). 
+GENEPOP (version 1.2): population genetics software for exact tests 
+and ecumenicism. 
+J. Heredity, 86:248-249
+
+Rousset F. 
+genepop'007: a complete re-implementation of the genepop software
+for Windows and Linux.
+Molecular Ecology Resources. 
+2008, 8: 103-106. 
+doi:10.1111/j.1471-8286.2007.01931.x
 }
 \seealso{
 \code{gsi_sim} development page is available here: \url{https://github.com/eriqande/gsi_sim}
