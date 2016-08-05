@@ -41,3 +41,7 @@ artifacts:
 
   - path: '\*_*.zip'
     name: Bits
+
+environment:
+  access_token:
+    secure: 8c9122cf58cc2c61b4733207850ea2547cd56b6d==

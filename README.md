@@ -6,9 +6,9 @@
 
 
 Next-generation sequencing techniques that reduce the size of the genome (e.g. genotype-by-sequencing (GBS) and
-restriction-site-associated DNA sequencing (RADseq)) produce huge numbers of markers that hold great potential and promises for assignment analysis. After hitting the bioinformatic wall with the different workflows you'll likely end up with several folders containing whitelist and blacklist of markers and individuals, data sets with various *de novo* and/or filtering parameters and missing data. This reality of GBS/RAD data is quite hard on GUI software traditionally used for assignment analysis. The end results is usually poor data exploration, constrained by time, and poor reproducibility.
+restriction-site-associated DNA sequencing (RADseq)) produce huge numbers of markers that hold great potential and promises for assignment analysis. After hitting the bioinformatic wall with the different workflows you'll likely end up with several folders containing whitelist and blacklist of markers and individuals, data sets with various *de novo* and/or filtering parameters and missing data. This reality of GBS/RADseq data is quite hard on GUI software traditionally used for assignment analysis. The end results is usually poor data exploration, constrained by time, and poor reproducibility.
 
-**assigner** was tailored to make it easy to conduct assignment analysis using GBS/RAD data within R. Additionally, combining the use of tools like [RStudio] (https://www.rstudio.com) and [GitHub] (https://github.com) will make effortless documenting your workflows and pipelines.
+**assigner** was tailored to make it easy to conduct assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like [R Notebook] (http://rmarkdown.rstudio.com/r_notebooks.html), [RStudio] (https://www.rstudio.com) and [GitHub] (https://github.com) will make effortless documenting your workflows and pipelines.
 
 This is the development page of the **assigner** package for the R software. The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*. It's first use in french dates back to XIIIe.
 
@@ -17,12 +17,13 @@ This is the development page of the **assigner** package for the R software. The
 * **Conduct assignment analysis** and **mixture analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
 by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis.
 * The input file are:
-    1. a VCF file format (Danecek et al. 2011) (*batch_x.vcf*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013),
-    2. an haplotypes data frame file (*batch_x.haplotypes.tsv*) produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013),
-    3. very large files (> 50 000 markers) can be imported in PLINK tped/tfam format (Purcell et al. 2007),
-    4. a data frame of genotypes in wide or long/tidy format
-    5. genind object
-    6. genepop file, directly or through the use [genepopedit](https://github.com/rystanley/genepopedit) to prepare the file for assigner.
+    1. **VCF** (Danecek et al. 2011),
+    2. **PLINK** tped/tfam format (Purcell et al. 2007), usefull for very 
+    large files (> 50 000 markers),
+    3. **genind** and **genlight** objets from [adegenet] (https://github.com/thibautjombart/adegenet) (Jombart et al. 2010; Jombart and Ahmed, 2011)
+    4. **genepop** for traditionalist... (Raymond and Rousset 1995; Rousset 2008) 
+    5. **haplotypes data frame file** produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013). (e.g. *batch_x.haplotypes.tsv*) 
+    6. a data frame of genotypes in wide or long/tidy format
 * assigner provides a fast implementation of Weir and Cockerham (1984) Fst/Theta. Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
 * Compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
@@ -222,7 +223,14 @@ Purcell S, Neale B, Todd-Brown K, Thomas L, Ferreira MAR, Bender D, et al.
 PLINK: a tool set for whole-genome association and population-based linkage analyses. 
 American Journal of Human Genetics. 2007; 81: 559–575. doi:10.1086/519795
 
+Raymond M. & Rousset F, (1995). GENEPOP (version 1.2): population genetics 
+software for exact tests and ecumenicism. J. Heredity, 86:248-249
+
 Rosenberg NA, Li LM, Ward R, Pritchard JK (2003) Informativeness of genetic markers for inference of ancestry. American Journal of Human Genetics, 73, 1402–1422.
+
+Rousset F. genepop'007: a complete re-implementation of the genepop software
+for Windows and Linux. Molecular Ecology Resources. 2008, 8: 103-106. 
+doi:10.1111/j.1471-8286.2007.01931.x
 
 Shriver MD, Smith MW, Jin L et al. (1997) Ethnic-affiliation estimation by use of population-specific DNA markers. American Journal of Human Genetics, 60, 957.
 
