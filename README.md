@@ -65,9 +65,8 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
   [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
   * I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) 
   to run **assigner**. The R GUI is unstable with functions using parallel.
-  * **Windows users**:  to have *assigner* run in parallel, you need to install 
-  and load [parallelsugar](https://github.com/nathanvan/parallelsugar) [instructions](https://github.com/nathanvan/parallelsugar#installation).
-
+  * **Windows users**:  1. Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/). 2. To have *assigner* run in parallel, use [parallelsugar](https://github.com/nathanvan/parallelsugar).
+  Easy to install and use ([instructions](https://github.com/nathanvan/parallelsugar#installation)).
 **Dependencies:**
   * **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, plyr, dplyr (>= 0.5.0), stackr (>= 0.2.9)
   * **Suggests:** devtools, knitr, rmarkdown
