@@ -374,7 +374,7 @@ fst_WC84 <- function(data,
   # fst function
   compute_fst <- function(x, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
     # x = data.genotyped # test
-    
+    # x = data.genotyped %>% filter(POP_ID %in% c("upj", "dsj"))
     # Markers in common between all populations ********************************
     pop.number <- n_distinct(x$POP_ID)
     
@@ -505,19 +505,31 @@ fst_WC84 <- function(data,
     )
     
     data.genotyped.het <- x %>%
-      mutate(het = ifelse(stri_sub(GT, 1, 3) != stri_sub(GT, 4, 6), 1, 0))
-    
+      mutate(
+        het = ifelse(stri_sub(GT, 1, 3) != stri_sub(GT, 4, 6), 1, 0),
+        AL1 = stri_sub(GT, 1, 3),
+        AL2 = stri_sub(GT, 4, 6)
+      ) %>% 
+      select(-GT) %>%
+      tidyr::gather(data = ., key = ALLELES_GROUP, value = ALLELES, -c(INDIVIDUALS, MARKERS, POP_ID, het)) %>%
+      select(-ALLELES_GROUP) %>% 
+      group_by(MARKERS, POP_ID, ALLELES) %>%
+      summarise(n = length(het[het == 1])) %>% 
+      group_by(MARKERS, ALLELES) %>% 
+      tidyr::spread(data = ., key = POP_ID, value = n, fill = 0) %>% 
+      tidyr::gather(data = ., key = POP_ID, value = mho, -c(MARKERS, ALLELES))
     
     fst.stats.prep <- suppressWarnings(
       data.genotyped.het %>%
-        group_by(MARKERS, POP_ID) %>%
+        # group_by(MARKERS, POP_ID) %>%
         # = the number of heterozygote individuals per pop and markers
-        summarise(mho = sum(het, na.rm = TRUE)) %>%  
-        group_by(MARKERS) %>%
-        tidyr::spread(data = ., key = POP_ID, value = mho) %>%
-        tidyr::gather(key = POP_ID, value = mho, -MARKERS) %>%
-        mutate(mho = as.numeric(stri_replace_na(str = mho, replacement = 0))) %>%
-        full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS")) %>%
+        # summarise(mho = sum(het, na.rm = TRUE)) %>%  
+        # group_by(MARKERS) %>%
+        # tidyr::spread(data = ., key = POP_ID, value = mho) %>%
+        # tidyr::gather(key = POP_ID, value = mho, -MARKERS) %>%
+        # mutate(mho = as.numeric(stri_replace_na(str = mho, replacement = 0))) %>%
+        # full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS")) %>%
+        full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS", "ALLELES")) %>%
         mutate(
           mhom = round(((2 * nal * P - mho)/2), 0),
           dum = nal * (P - 2 * P^2) + mhom
