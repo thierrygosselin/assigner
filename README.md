@@ -27,7 +27,7 @@ by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet] (
 * Markers can be randomly selected for a **classic LOO (Leave-One-Out) assignment** or 
 chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis** (reviewed in Anderson 2010)
 * Use `iteration.method` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
-* assigner provides a fast implementation of Weir and Cockerham (1984) Fst/Theta. Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
+* assigner provides a fast implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
 * **Map-independent imputation** of missing genotype or alleles using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
 * **Filters:**
   + Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, 
@@ -113,23 +113,13 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Change log, version, new features and bug history now lives in the [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
+**v.0.3.4**
+* `fst_NEI87`: very fast function that can compute: the overall and pairwise Nei's (1987) fst and f'st (prime). 
+Bootstrap resampling of markers is avalaible to build Confidence Intervals. The estimates are available as a data frame and a matrix with upper diagonal filled with Fst values and lower diagonal filled with the confidence intervals. Jost's D is also given ;)
 
 **v.0.3.3**
 * `fst_WC84`: bug fix, the function was not properly configured for multi-allelic markers (e.g. microsatellite, and haplotype format from STACKS). Thanks to Craig McDougall for catching this.
 
-
-**v.0.3.2**
-* `assignment_mixture`: added a check that throws an error when pop.levels != the pop.id in strata
-
-**v.0.3.1**
-`assignment_mixture`: 
-* updated with latest modules from `stackr`. 
-* simplified the identification of mixture or unknown samples. See doc.
-
-**v.0.3.0**
-* updated vignettes
-* major bug fix that involved dplyr new version (0.5.0) and mostly with 
-the use of dplyr::distinct
 
 For previous news:
 [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
@@ -215,6 +205,8 @@ Jombart T, Ahmed I (2011) adegenet 1.3-1: new tools for the analysis of genome-w
 Kavakiotis I, Triantafyllidis A, Ntelidou D et al. (2015) TRES: Identification of Discriminatory and Informative SNPs from Population Genomic Data. Journal of Heredity, 106, 672–676.
 
 Meirmans PG, Van Tienderen PH (2004) genotype and genodive: two programs for the analysis of genetic diversity of asexual organisms. Molecular Ecology Notes, 4, 792-794.
+
+Nei M. (1987) Molecular Evolutionary Genetics. Columbia University Press.
 
 Paetkau D, Slade R, Burden M, Estoup A (2004) Genetic assignment methods for the direct, real-time estimation of migration rate: a simulation-based exploration of accuracy and power. Molecular Ecology, 13, 55-65.
 

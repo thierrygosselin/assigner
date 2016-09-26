@@ -1,23 +1,24 @@
-# Compute Weir and Cockerham (1984) Fst
+# Compute Nei's 1987 Fst
 
-#' @name fst_WC84
+#' @name fst_NEI87
 
-#' @title A fast implementation of Weir and Cockerham (1984) Fst/Theta 
-#' (overall and paiwise estimates)
+#' @title A fast implementation of Nei's 1987 Fst (overall and paiwise estimates)
 
-#' @description The function computes Weir and Cockerham (1984) 
-#' Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
+#' @description 
+#' The function computes Nei's 1987 Fst for diploid genomes. 
+#' 2 version are offered: the classic Nei's Gst and Nei's G'st (prime), 
+#' that comes with a correction for the bias that stems from sampling a limited 
+#' number of populations.
+#' Both overall and pairwise Fst can be estimated with 
 #' confidence intervals based on bootstrap of markers (resampling with replacement). 
-#' The function gives identical results \emph{at the 9th decimal} when tested 
+#' The function should give identical results \emph{at the 4th decimal} when tested 
 #' against \code{\link[hierfstat]{genet.dist}} in \pkg{hierfstat} and with 
-#' the Fst computed in \code{Calculate Distances} or \code{Paiwise Differentiation} 
-#' options in \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-#' that uses the Analysis of Molecular Variance 
-#' (AMOVA, Excoffier et al., 1992; Michalakis and Excoffier, 1996). 
+#' the Fst computed in \code{Calculate Distances} or 
+#' \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}.
 #' The fastest computation is still 
 #' \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-#' but it does compute confidence intervals. For an R implementation, \code{\link{fst_WC84}} is very fast. 
-#' The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
+#' but here the R solution computes confidence intervals and is very fast. 
+#' The computations takes advantage of \pkg{tidyverse} packages, 
 #' \pkg{data.table} and \pkg{parallel}.
 #' 
 #' \emph{Special concerns for genome-wide estimate and filtering bias}
@@ -75,7 +76,7 @@
 #' Default: \code{holdout.samples = NULL}.
 
 #' @param pairwise (logical, optional) With \code{pairwise = TRUE}, the 
-#' pairwise WC84 Fst is calculated between populations. 
+#' pairwise NEI87 Fst is calculated between populations. 
 #' Default: \code{pairwise = FALSE}.
 
 #' @param ci (logical, optional) Compute bootstrapped confidence intervals. 
@@ -104,22 +105,18 @@
 #' @param ... other parameters passed to the function.
 
 #' @return With pairwise comparison computed, the function returns a list with 
-#' 11 objects:
+#' 10 objects:
 #' \itemize{
-#'   \item \code{$sigma.loc}: the variance components per locus 
-#'       (\code{lsiga}: among populations, 
-#'       \code{lsigb}: among individuals within populations,
-#'       \code{lsigw}: within individuals)
-#'  \item \code{$fst.markers}: the fst by markers,
-#'  \item \code{$fst.ranked}: the fst ranked,
-#'  \item \code{$fst.overall}: the mean fst overall markers and the number of markers 
+#'  \item \code{$fst.markers}: Nei's Gst, Nei's G'st and Jost's D by markers,
+#'  \item \code{$fst.ranked}: Nei's Gst, Nei's G'st and Jost's D by markers ranked by Nei's Gst,
+#'  \item \code{$fst.overall}: the overall Nei's Gst, Nei's G'st and Jost's D by markers with confidence intervals.
 #'  \item \code{$fis.markers}: the fis by markers,
-#'  \item \code{$fis.overall}: the mean fis overall markers and the number of markers,
-#'  \item \code{$fst.plot}: the histogram of the overall Fst per markers,
-#'  \item \code{$pairwise.fst}: the pairwise fst in long/tidy data frame and the number of markers ,
-#'  \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix,
-#'  \item \code{$pairwise.fst.full.matrix}: the pairwise fst matrix (duplicated upper and lower triangle),
-#'  \item \code{$pairwise.fst.ci.matrix}: matrix with pairwise fst in the upper triangle
+#'  \item \code{$fis.overall}: the mean fis overall markers with confidence intervals and the number of markers,
+#'  \item \code{$fst.plot}: the histogram of the overall G'st per markers,
+#'  \item \code{$pairwise.fst}: pairwise Nei's Gst, Nei's G'st and Jost's D in long/tidy data frame and the number of markers ,
+#'  \item \code{$pairwise.fst.upper.matrix}: the pairwise fst prime in a upper triangle matrix,
+#'  \item \code{$pairwise.fst.full.matrix}: the pairwise fst prime matrix (duplicated upper and lower triangle),
+#'  \item \code{$pairwise.fst.ci.matrix}: matrix with pairwise fst prime in the upper triangle
 #'  and the confidence intervals in the lower triangle.
 #' }
 
@@ -152,7 +149,7 @@
 #' in a tidy data frame.
 
 #' @export
-#' @rdname fst_WC84
+#' @rdname fst_NEI87
 #' @import stringi
 #' @import dplyr
 #' @import utils
@@ -162,7 +159,7 @@
 
 #' @examples
 #' \dontrun{
-#' wombat.fst.pairwise <- fst_WC84(
+#' wombat.fst.pairwise <- fst_NEI87(
 #' data = "wombat.filtered.tidy.tsv", 
 #' sep = "/", 
 #' pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
@@ -185,21 +182,11 @@
 #' pairwise.fst.ci.df <- data.frame(pairwise.fst.ci.matrix) %>% add_rownames("POP")
 #' }
 
-#' @references Excoffier L, Smouse PE, Quattro JM. 
-#' Analysis of molecular variance inferred from metric distances among 
-#' DNA haplotypes: application to human mitochondrial DNA restriction data. 
-#' Genetics. 1992;131: 479-491.
+#' @references Nei M. (1987) Molecular Evolutionary Genetics.
+#' Columbia University Press
 #' @references Meirmans PG, Van Tienderen PH (2004) genotype and genodive: 
 #' two programs for the analysis of genetic diversity of asexual organisms. 
 #' Molecular Ecology Notes, 4, 792-794.
-#' @references Michalakis Y, Excoffier L. 
-#' A generic estimation of population 
-#' subdivision using distances between alleles with special reference for 
-#' microsatellite loci. 
-#' Genetics. 1996;142: 1061-1064. 
-#' @references Weir BS, Cockerham CC (1984) Estimating F-Statistics for the
-#' Analysis of Population Structure. 
-#' Evolution, 38, 1358-1370.
 #' @references Roesti M, Salzburger W, Berner D. (2012)
 #' Uninformative polymorphisms bias genome scans for signatures of selection. 
 #' BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x
@@ -212,8 +199,6 @@
 #' possibly using a hierarchical population structure, (see AMOVA)'}
 #' 
 #' To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
-#' or \code{\link[mmod]{Phi_st_Meirmans}} 
-#' in \code{\link[mmod]{mmod}}.
 #' 
 #' \code{hierfstat} is available on 
 #' CRAN \url{http://cran.r-project.org/web/packages/hierfstat/} and 
@@ -229,8 +214,8 @@
 
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
-# Fst function: Weir & Cockerham 1984
-fst_WC84 <- function(
+# Fst function: Nei's 1987
+fst_NEI87 <- function(
   data,
   pop.levels = NULL, 
   pop.labels = NULL, 
@@ -247,10 +232,11 @@ fst_WC84 <- function(
   
   if (verbose) {
     cat("#######################################################################\n")
-    cat("######################### assigner::fst_WC84 ##########################\n")
+    cat("######################## assigner::fst_NEI87 ##########################\n")
     cat("#######################################################################\n")
   }
   
+  message("WARNING: This function is still under testing, use with caution, compare the results with GENODIVE and report bugs")
   
   # Checking for missing and/or default arguments ------------------------------
   if (missing(data)) stop("Input file necessary to write the genepop file is missing")
@@ -318,8 +304,6 @@ fst_WC84 <- function(
     }
   }
   
-  # Get the number of pop  -----------------------------------------------------
-  # pop.number <- n_distinct(input$POP_ID)
   
   # genotyped data and holdout sample  -----------------------------------------
   if (is.null(holdout.samples)) { # use all the individuals
@@ -333,12 +317,12 @@ fst_WC84 <- function(
       filter(!INDIVIDUALS %in% holdout.samples) 
   }
   
-  # Function to compute WC84 Fst ----------------------------------------------
+  # Function to compute Nei's 1987 Fst ----------------------------------------------
   
   # Confidence interval function
-  boot_ci <- function(x, sigma.loc.alleles){
-    
-    markers.list <- sigma.loc.alleles %>% 
+  boot_ci <- function(x, fst.data){
+    # x <- 1
+    markers.list <- fst.data %>% 
       ungroup() %>% 
       distinct(MARKERS) %>% 
       arrange(MARKERS)
@@ -347,29 +331,42 @@ fst_WC84 <- function(
       sample_n(tbl = ., size = nrow(markers.list), replace = TRUE) %>% 
       arrange(MARKERS)
     
-    fst.fis.overall.iterations <- sigma.loc.alleles %>% 
+    fst.data.overall.iterations <- fst.data %>%
       right_join(subsample.markers, by = "MARKERS") %>% 
       ungroup %>%
-      summarise(
-        tsiga = sum(siga, na.rm = TRUE),
-        tsigb = sum(sigb, na.rm = TRUE),
-        tsigw = sum(sigw, na.rm = TRUE)
-      ) %>% 
-      summarise(
-        FST = round(tsiga/(tsiga + tsigb + tsigw), digits),
-        FIS = round(tsigb/(tsigb + tsigw), digits)
-      ) %>% 
       mutate(
-        ITERATIONS = rep(x, n()),
-        FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0)
-      )
-    return(fst.fis.overall.iterations)
+        HS = MN / (MN - 1) * (1 - MSP2 - HO / 2 / MN),
+        HT = 1 - MP2 + HS / MN / NP - HO / 2 / MN / NP,
+        FIS = 1 - HO / HS,
+        DST = HT - HS,
+        DST_P = NP / (NP - 1) * DST,
+        HT_P = HS + DST_P,
+        NEI_FST = DST / HT,
+        NEI_FST = dplyr::if_else(NEI_FST < 0, true = 0, false = NEI_FST, missing = 0),
+        NEI_FST_P = DST_P / HT_P,
+        NEI_FST_P = dplyr::if_else(NEI_FST_P < 0, true = 0, false = NEI_FST_P, missing = 0),
+        JOST_D = DST_P / (1 - HS)
+      ) %>% 
+      summarise_if(is.numeric, funs(mean(., na.rm = TRUE))) %>% 
+      mutate(
+        NEI_FST = DST / HT,
+        NEI_FST = dplyr::if_else(NEI_FST < 0, true = 0, false = NEI_FST, missing = 0),
+        NEI_FST_P = DST_P / HT_P,
+        NEI_FST_P = dplyr::if_else(NEI_FST_P < 0, true = 0, false = NEI_FST_P, missing = 0),
+        FIS = 1 - (HO / HS),
+        JOST_D = DST_P / (1 - HS)
+      ) %>% 
+      ungroup() %>%
+      mutate_if(is.numeric, funs( round(x = ., digits = digits))) %>%
+      select(HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D) %>% 
+      mutate(ITERATIONS = rep(x, n()))
+    return(fst.data.overall.iterations)
   } # End boot_ci function
   
   # fst function
   compute_fst <- function(x, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
+    # x = data.select
     # x = data.genotyped # test
-    # x = data.genotyped %>% filter(POP_ID %in% c("upj", "dsj"))
     # Markers in common between all populations ********************************
     pop.number <- n_distinct(x$POP_ID)
     
@@ -378,7 +375,7 @@ fst_WC84 <- function(
       filter(n_distinct(POP_ID) == pop.number) %>%
       arrange(MARKERS) %>%
       distinct(MARKERS)
-    
+
     # number of marker used for computation 
     n.markers <- n_distinct(pop.filter$MARKERS)
     
@@ -410,251 +407,225 @@ fst_WC84 <- function(
       x <- anti_join(x, mono.markers, by = "MARKERS")
     }
     
-    # The similar hierfstat steps ----------------------------------------------
-    n.pop.locus <- x %>%
-      select(MARKERS, POP_ID) %>%
-      group_by(MARKERS) %>%
-      distinct(POP_ID, .keep_all = TRUE) %>%
-      tally %>%
-      rename(npl = n)
+    mono.markers <- NULL
     
-    ind.count.locus <- x %>%
-      group_by(MARKERS) %>%
-      tally
+    x <- x %>%
+      select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
+      mutate(
+        A1 = stri_sub(GT, 1, 3),
+        A2 = stri_sub(GT, 4,6)
+      ) %>% 
+      select(-GT)
     
-    ind.count.locus.pop <- x %>%
+    x.split.long <- data.table::melt.data.table(
+      data = as.data.table(x), 
+      id.vars = c("MARKERS", "INDIVIDUALS", "POP_ID"), 
+      variable.name = "ALLELES",
+      variable.factor = FALSE,
+      value.name = "GT"
+    ) %>% 
+      as_data_frame()
+    
+    #n: number of individuals, per pop and markers
+    ind.count.locus.pop <- x.split.long %>%
       group_by(POP_ID, MARKERS) %>%
+      distinct(INDIVIDUALS) %>% 
       tally %>%
       rename(nal = n) %>%
       mutate(
         nal_sq = nal^2,
         N_IND_GENE = nal*2
-      )
+      ) %>% 
+      ungroup() %>% 
+      select(POP_ID, MARKERS, N_IND_GENE)
     
-    freq.al.locus <- x %>%
-      tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3) %>%
-      # separate the genotypes into alleles
-      tidyr::gather(key = ALLELES_GROUP, ALLELES, -c(INDIVIDUALS, POP_ID, MARKERS))
+    # frequency per markes, alleles, pop
+    p <- x.split.long %>%
+      group_by(MARKERS, GT, POP_ID) %>%
+      tally %>%
+      inner_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS")) %>% 
+      mutate(P = n/N_IND_GENE) %>% 
+      select(-n, -N_IND_GENE)# %>% 
+    #tidyr::spread(data = ., POP_ID, P, fill = 0)
     
-    # freq.al.locus2 <- tidyr::separate(data = x, col = GT, into = c("A1", "A2"), sep = 3)
-    # system.time(
-    #   freq.al.locus2 <- data.table::melt.data.table(
-    #     data = as.data.table(freq.al.locus2), 
-    #     id.vars = c("INDIVIDUALS", "POP_ID", "MARKERS"), 
-    #     variable.name = "ALLELES_GROUP",
-    #     variable.factor = FALSE,
-    #     value.name = "ALLELES"
-    #   ) %>% 
-    #     as_data_frame()
-    # )
+    # msp2 mean frequency per markers and pop
+    mean.frequency.pop.markers <- p %>% 
+      group_by(MARKERS, POP_ID) %>% 
+      summarise(SP2 = sum(P^2))# %>% 
+    #tidyr::spread(data = ., POP_ID, SP2, fill = 0)
     
-    # identical(freq.al.locus, freq.al.locus2)
+    # msp2 mean frequency per markers
+    mean.frequency.markers <- mean.frequency.pop.markers %>% 
+      group_by(MARKERS) %>% 
+      summarise(MSP2 = mean(SP2, na.rm = TRUE))
     
-    #pop
-    freq.al.locus.pop <- suppressWarnings(
-      freq.al.locus %>%
-        group_by(POP_ID, MARKERS, ALLELES) %>%
-        tally %>%
-        full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS")) %>%
-        mutate(P = n/N_IND_GENE) %>% # Freq. Allele per pop
-        select(POP_ID, MARKERS, ALLELES, P) %>%
-        group_by(MARKERS, ALLELES) %>%
-        tidyr::spread(data = ., key = POP_ID, value = P) %>%
-        tidyr::gather(key = POP_ID, value = P, -c(MARKERS, ALLELES)) %>%
-        mutate(P = as.numeric(stri_replace_na(str = P, replacement = 0))) %>%
-        full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS"))
-    )    
+    # mp: mean frequency per markers
+    mean.p2 <- p %>% 
+      tidyr::spread(data = ., POP_ID, P, fill = 0) %>% 
+      tidyr::gather(data = ., POP_ID, P, -c(MARKERS, GT)) %>% 
+      group_by(MARKERS, GT) %>% 
+      summarise(MP = mean(P, na.rm = TRUE)) %>% 
+      group_by(MARKERS) %>% 
+      summarise(MP2 = sum(MP^2))
     
-    freq.al.locus.global <- suppressWarnings(
-      freq.al.locus %>%
-        group_by(MARKERS, ALLELES) %>%
-        tally %>%
-        full_join(
-          ind.count.locus %>%
-            rename(N = n), 
-          by = "MARKERS"
-        ) %>%
-        mutate(pb = n/(2*N)) %>% # Global Freq. Allele
-        select(MARKERS, ALLELES, pb)
-    )    
-    
-    mean.n.pop.corrected.per.locus <- suppressWarnings(
-      ind.count.locus.pop %>%
-        group_by(MARKERS) %>%
-        summarise(nal_sq_sum = sum(nal_sq, na.rm = TRUE)) %>%
-        full_join(ind.count.locus, by = "MARKERS") %>%
-        mutate(nal_sq_sum_nt = (n - nal_sq_sum/n)) %>%
-        full_join(n.pop.locus, by = "MARKERS") %>%
-        mutate(ncal = nal_sq_sum_nt/(npl - 1)) %>%
-        select(MARKERS, ncal)
-    )
-    
-    ncal <- suppressWarnings(
-      freq.al.locus %>%
-        # select(MARKERS, ALLELES) %>%
-        # group_by(MARKERS, ALLELES) %>%
-        distinct(MARKERS, ALLELES) %>%
-        full_join(ind.count.locus, by = "MARKERS") %>%
-        rename(ntal = n) %>%
-        full_join(mean.n.pop.corrected.per.locus, by = "MARKERS")
-    )
-    
-    data.genotyped.het <- x %>%
+    # For diploid-------------------------------------------------------------------
+    # Mean heterozygosity observed per pop and markers
+    mean.het.obs.pop.markers <- x %>%
+      group_by(POP_ID, MARKERS, INDIVIDUALS) %>% 
       mutate(
-        het = ifelse(stri_sub(GT, 1, 3) != stri_sub(GT, 4, 6), 1, 0),
-        AL1 = stri_sub(GT, 1, 3),
-        AL2 = stri_sub(GT, 4, 6)
+        HO = if_else(A1 != A2, 1, 0)
       ) %>% 
-      select(-GT) %>%
-      tidyr::gather(data = ., key = ALLELES_GROUP, value = ALLELES, -c(INDIVIDUALS, MARKERS, POP_ID, het)) %>%
-      select(-ALLELES_GROUP) %>% 
-      group_by(MARKERS, POP_ID, ALLELES) %>%
-      summarise(n = length(het[het == 1])) %>% 
-      group_by(MARKERS, ALLELES) %>% 
-      tidyr::spread(data = ., key = POP_ID, value = n, fill = 0) %>% 
-      tidyr::gather(data = ., key = POP_ID, value = mho, -c(MARKERS, ALLELES))
+      group_by(POP_ID, MARKERS) %>% 
+      summarise(SHO = mean(HO))
     
-    fst.stats.prep <- suppressWarnings(
-      data.genotyped.het %>%
-        # group_by(MARKERS, POP_ID) %>%
-        # = the number of heterozygote individuals per pop and markers
-        # summarise(mho = sum(het, na.rm = TRUE)) %>%  
-        # group_by(MARKERS) %>%
-        # tidyr::spread(data = ., key = POP_ID, value = mho) %>%
-        # tidyr::gather(key = POP_ID, value = mho, -MARKERS) %>%
-        # mutate(mho = as.numeric(stri_replace_na(str = mho, replacement = 0))) %>%
-        # full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS")) %>%
-        full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS", "ALLELES")) %>%
-        mutate(
-          mhom = round(((2 * nal * P - mho)/2), 0),
-          dum = nal * (P - 2 * P^2) + mhom
-        ) %>%
-        group_by(MARKERS, ALLELES) %>%
-        full_join(freq.al.locus.global, by = c("MARKERS", "ALLELES")) %>%
-        mutate(
-          SSi = sum(dum, na.rm = TRUE),
-          dum1 = nal * (P - pb)^2
-        ) %>%
-        group_by(MARKERS, ALLELES) %>%
-        mutate(SSP = 2 * sum(dum1, na.rm = TRUE)) %>%
-        group_by(MARKERS, POP_ID) %>%
-        mutate(SSG = nal * P - mhom) %>%
-        group_by(MARKERS, ALLELES) %>%
-        full_join(ncal, by = c("MARKERS", "ALLELES")) %>%
-        full_join(n.pop.locus, by = "MARKERS") %>%
-        rename(ntalb = npl) %>%
-        mutate(
-          sigw = round(sum(SSG, na.rm = TRUE), 2)/ntal,
-          MSP = SSP/(ntalb - 1),
-          MSI = SSi/(ntal - ntalb),
-          sigb = 0.5 * (MSI - sigw),
-          siga = 1/2/ncal * (MSP - MSI)
-        )
-    )
+    # mean heterozygosity across all markers
+    mean.het.obs.markers <- mean.het.obs.pop.markers %>% 
+      group_by(MARKERS) %>% 
+      summarise(MHO = mean(SHO))
     
-    # variance components of allele frequencies for each allele
-    # siga: among populations
-    # sigb: among individuals within populations
-    # sigw: within individuals
-    sigma.loc.alleles <- fst.stats.prep %>%
-      group_by(MARKERS, ALLELES) %>% 
+    # mean.pop.markers <- mean.frequency.pop.markers %>% 
+    #   full_join(mean.het.obs.pop.markers, by = c("MARKERS", "POP_ID")) %>% 
+    #   full_join(ind.count.locus.pop, by = c("MARKERS", "POP_ID")) %>% 
+    #   mutate(
+    #     HS = ((N_IND_GENE / 2) / ((N_IND_GENE / 2) - 1)) * (1 - SP2 - (SHO / N_IND_GENE)),
+    #     FIS = 1 - SHO / HS
+    #   )
+    # %>% 
+    # select(MARKERS, POP_ID, FIS) %>% 
+    # tidyr::spread(data = ., POP_ID, FIS, fill = 0)
+    
+    mean.het.obs.pop.markers <- mean.frequency.pop.markers <- NULL
+    
+    # np: number of population per markers
+    num.pop.markers <- x %>% 
+      distinct(MARKERS, POP_ID) %>% 
+      group_by(MARKERS) %>% 
+      tally %>% 
+      rename(NP = n)
+    
+    # mn: corrected mean number of individuals per markers
+    fst.data <- ind.count.locus.pop %>%
+      ungroup() %>%
+      group_by(MARKERS) %>% 
+      mutate(
+        N = N_IND_GENE / 2,
+        N_INV = 1 / N
+      ) %>% 
       summarise(
-        siga = mean(siga, na.rm = TRUE),
-        sigb = mean(sigb, na.rm = TRUE),
-        sigw = mean(sigw, na.rm = TRUE)
-      ) 
-    
-    # variance components per locus
-    # lsiga: among populations
-    # lsigb: among individuals within populations
-    # lsigw: within individuals
-    
-    sigma.loc <- sigma.loc.alleles %>% 
-      group_by(MARKERS) %>%
-      summarise(
-        lsiga = round(sum(siga, na.rm = TRUE), digits),
-        lsigb = round(sum(sigb, na.rm = TRUE), digits),
-        lsigw = round(sum(sigw, na.rm = TRUE), digits)
+        NP = sum(!is.na(N)), # number of pop per markers
+        MN = NP / sum(N_INV, na.rm = TRUE)
+      ) %>% 
+      ungroup() %>% 
+      distinct(MARKERS, NP, MN) %>% 
+      full_join(mean.het.obs.markers, by = "MARKERS") %>% 
+      full_join(mean.frequency.markers, by = "MARKERS") %>%
+      full_join(mean.p2, by = "MARKERS") %>% 
+      rename(HO = MHO) %>% 
+      mutate(
+        HS = MN / (MN - 1) * (1 - MSP2 - HO / 2 / MN),
+        HT = 1 - MP2 + HS / MN / NP - HO / 2 / MN / NP,
+        FIS = 1 - HO / HS,
+        DST = HT - HS,
+        DST_P = NP / (NP - 1) * DST,
+        HT_P = HS + DST_P,
+        NEI_FST = DST / HT,
+        NEI_FST = dplyr::if_else(NEI_FST < 0, true = 0, false = NEI_FST, missing = 0),
+        NEI_FST_P = DST_P / HT_P,
+        NEI_FST_P = dplyr::if_else(NEI_FST_P < 0, true = 0, false = NEI_FST_P, missing = 0),
+        JOST_D = DST_P / (1 - HS)
       )
     
-    fst.fis.markers <- sigma.loc %>% 
-      group_by(MARKERS) %>%
-      summarise(
-        FST = round(lsiga/(lsiga + lsigb + lsigw), digits),
-        FIS = round(lsigb/(lsigb + lsigw), digits)
-      ) %>% 
-      mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
+    fst.data.select <- fst.data %>% 
+      select(MARKERS, HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D)
     
-    fst.fis.overall <- sigma.loc.alleles %>% 
-      ungroup %>%
-      summarise(
-        tsiga = sum(siga, na.rm = TRUE),
-        tsigb = sum(sigb, na.rm = TRUE),
-        tsigw = sum(sigw, na.rm = TRUE)
+    mean.p2 <- mean.het.obs.markers <- mean.frequency.markers <- ind.count.locus.pop <- NULL
+    
+    overall <- fst.data.select %>% 
+      summarise_if(is.numeric, funs(mean(., na.rm = TRUE))) %>% 
+      mutate(
+        MARKERS = "OVERALL",
+        NEI_FST = DST / HT,
+        NEI_FST = dplyr::if_else(NEI_FST < 0, true = 0, false = NEI_FST, missing = 0),
+        NEI_FST_P = DST_P / HT_P,
+        NEI_FST_P = dplyr::if_else(NEI_FST_P < 0, true = 0, false = NEI_FST_P, missing = 0),
+        FIS = 1 - (HO / HS),
+        JOST_D = DST_P / (1 - HS)
       ) %>% 
-      summarise(
-        FST = round(tsiga/(tsiga + tsigb + tsigw), digits),
-        FIS = round(tsigb/(tsigb + tsigw), digits)
-      ) %>% 
-      mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
+      ungroup() %>%
+      mutate_if(is.numeric, funs( round(x = ., digits = digits))) %>%
+      select(MARKERS, HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D)
     # add new column with number of markers
-    fst.fis.overall$N_MARKERS <- n.markers
+    
+    overall$N_MARKERS <- n.markers
     
     # Confidence Intervals -----------------------------------------------------
     # over loci for the overall Fst estimate
     if (ci) {
       # the function:
-      boot.fst.list <- purrr::map(.x = 1:iteration.ci, .f = boot_ci, sigma.loc.alleles = sigma.loc.alleles)
-      boot.fst <- bind_rows(boot.fst.list)
-      boot.fst.summary <- boot.fst %>% 
+      boot.fst.list <- purrr::map(.x = 1:iteration.ci, .f = boot_ci, fst.data = fst.data)
+      boot.fst.summary <- bind_rows(boot.fst.list) %>% 
         summarise(
-          CI_LOW = round(quantile(FST, 
-                                  probs = quantiles.ci[1], 
-                                  na.rm = TRUE), 
-                         digits),
-          CI_HIGH = round(quantile(FST, 
-                                   probs = quantiles.ci[2], 
-                                   na.rm = TRUE), 
-                          digits)
-        )
+          FIS_CI_LOW = quantile(FIS, probs = quantiles.ci[1], na.rm = TRUE),
+          FIS_CI_HIGH = quantile(FIS, probs = quantiles.ci[2], na.rm = TRUE),
+          DST_CI_LOW = quantile(DST, probs = quantiles.ci[1], na.rm = TRUE),
+          DST_CI_HIGH = quantile(DST, probs = quantiles.ci[2], na.rm = TRUE),
+          DST_P_CI_LOW = quantile(DST_P, probs = quantiles.ci[1], na.rm = TRUE),
+          DST_P_CI_HIGH = quantile(DST_P, probs = quantiles.ci[2], na.rm = TRUE),
+          NEI_FST_CI_LOW = quantile(NEI_FST, probs = quantiles.ci[1], na.rm = TRUE),
+          NEI_FST_CI_HIGH = quantile(NEI_FST, probs = quantiles.ci[2], na.rm = TRUE),
+          NEI_FST_P_CI_LOW = quantile(NEI_FST_P, probs = quantiles.ci[1], na.rm = TRUE),
+          NEI_FST_P_CI_HIGH = quantile(NEI_FST_P, probs = quantiles.ci[2], na.rm = TRUE),
+          JOST_D_CI_LOW = quantile(JOST_D, probs = quantiles.ci[1], na.rm = TRUE),
+          JOST_D_CI_HIGH = quantile(JOST_D, probs = quantiles.ci[2], na.rm = TRUE)
+        ) %>% 
+        mutate_if(is.numeric, funs( round(x = ., digits = digits)))
+      fst.data <- NULL
+      } else {
+      fst.data <- NULL
     }
     
     # Fst markers  -------------------------------------------------------------
-    fst.markers <- fst.fis.markers %>% 
-      select(MARKERS, FST) %>% 
+    fst.markers <- fst.data.select %>% 
+      select(MARKERS, NEI_FST, NEI_FST_P, JOST_D) %>% 
       arrange(MARKERS)
     
     # Ranked fst   -------------------------------------------------------------
     fst.ranked <- fst.markers %>%
-      arrange(desc(FST)) %>%
-      select(MARKERS, FST) %>%
+      arrange(desc(NEI_FST)) %>%
       mutate(
         RANKING = seq(from = 1, to = n()),
-        QUARTILE = ntile(FST,10)
+        QUARTILE = ntile(NEI_FST,10)
       )
     
     # Fst overall  -------------------------------------------------------------
     if (ci) {
-      fst.overall <- fst.fis.overall %>% 
-        select(FST, N_MARKERS) %>% 
-        bind_cols(boot.fst.summary)
+      fst.overall <- overall %>% 
+        bind_cols(boot.fst.summary) %>%
+        select(NEI_FST, NEI_FST_CI_LOW, NEI_FST_CI_HIGH, NEI_FST_P, NEI_FST_P_CI_LOW, NEI_FST_P_CI_HIGH, JOST_D, JOST_D_CI_LOW, JOST_D_CI_HIGH, N_MARKERS)
     } else {
-      fst.overall <- fst.fis.overall %>% 
-        select(FST, N_MARKERS)
+      fst.overall <- overall %>% 
+        select(NEI_FST, NEI_FST_P, JOST_D, N_MARKERS)
     }
     
     # Fis markers  -------------------------------------------------------------
-    fis.markers <- fst.fis.markers %>% 
+    fis.markers <- fst.data.select %>% 
       select(MARKERS, FIS) %>% 
       arrange(MARKERS)
     
     # Fis overall   ------------------------------------------------------------
-    fis.overall <- fst.fis.overall %>% select(FIS, N_MARKERS)
+    fis.overall <- overall %>% select(FIS, N_MARKERS)
+    if (ci) {
+      fis.overall <- overall %>% 
+        bind_cols(boot.fst.summary) %>%
+        select(FIS, FIS_CI_LOW, FIS_CI_HIGH, N_MARKERS)
+    } else {
+      fis.overall <- overall %>% select(FIS, N_MARKERS)
+    }
     
     # Plot -----------------------------------------------------------------------
-    fst.plot <- ggplot(fst.markers, aes(x = FST, na.rm = T)) +
+    fst.plot <- ggplot(fst.markers, aes(x = NEI_FST_P, na.rm = T)) +
       geom_histogram(binwidth = 0.01) +
-      labs(x = "Fst (overall)") +
+      labs(x = "Nei's G'st (overall)") +
       expand_limits(x = 0) +
       theme(
         legend.position = "none",
@@ -666,7 +637,6 @@ fst_WC84 <- function(
     
     # Results ------------------------------------------------------------------
     res <- list()
-    res$sigma.loc <- sigma.loc
     res$fst.markers <- fst.markers
     res$fst.ranked <- fst.ranked
     res$fst.overall <- fst.overall
@@ -679,8 +649,9 @@ fst_WC84 <- function(
   
   # Pairwise Fst function
   pairwise_fst <- function(list.pair, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
+    # list.pair <- 2
     pop.select <- stri_paste(flatten(pop.pairwise[list.pair]))
-    data.select <- data.genotyped %>% 
+    data.select <- data.genotyped %>%
       filter(POP_ID %in% pop.select) %>% 
       mutate(POP_ID = droplevels(x = POP_ID))
     fst.select <- compute_fst(x = data.select, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci)
@@ -729,8 +700,8 @@ fst_WC84 <- function(
       )
     # Matrix--------------------------------------------------------------------
     upper.mat.fst <- pairwise.fst %>% 
-      select(POP1, POP2, FST) %>% 
-      tidyr::spread(data = ., POP2, FST, fill = "", drop = FALSE) %>% 
+      select(POP1, POP2, NEI_FST_P) %>% 
+      tidyr::spread(data = ., POP2, NEI_FST_P, fill = "", drop = FALSE) %>% 
       rename(POP = POP1)
     rn <- upper.mat.fst$POP # rownames
     upper.mat.fst <- as.matrix(upper.mat.fst[,-1])# make matrix without first column
@@ -748,8 +719,8 @@ fst_WC84 <- function(
     if (ci) {
       # bind upper and lower diagonal of matrix
       lower.mat.ci <- pairwise.fst %>% 
-        select(POP1, POP2, CI_LOW, CI_HIGH) %>% 
-        tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>% 
+        select(POP1, POP2, NEI_FST_P_CI_LOW, NEI_FST_P_CI_HIGH) %>% 
+        tidyr::unite(data = ., CI, NEI_FST_P_CI_LOW, NEI_FST_P_CI_HIGH, sep = " - ") %>% 
         tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>% 
         rename(POP = POP1)
       
@@ -778,9 +749,9 @@ fst_WC84 <- function(
   if (verbose) {
     cat("############################### RESULTS ###############################\n")
     if (ci) {
-      message(stri_paste("Fst (overall): ", res$fst.overall$FST, " [", res$fst.overall$CI_LOW, " - ", res$fst.overall$CI_HIGH, "]"))
+      message(stri_paste("Nei's G'st (overall): ", res$fst.overall$NEI_FST_P, " [", res$fst.overall$NEI_FST_P_CI_LOW, " - ", res$fst.overall$NEI_FST_P_CI_HIGH, "]"))
     } else{
-      message(stri_paste("Fst (overall): ", res$fst.overall$FST))
+      message(stri_paste("Nei's G'st (overall): ", res$fst.overall$NEI_FST_P))
     }
     cat("#######################################################################\n")
   }

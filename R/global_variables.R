@@ -21,6 +21,11 @@ if (getRversion() >= "2.15.1") {
       "COUNT", "MAX_COUNT_MARKERS", "hierarchy", "GT_VCF", "ANALYSIS",
       "MEAN_ITERATIONS", "MEAN_SUBSAMPLE", "NUMBER_ITERATIONS",
       "NUMBER_SUBSAMPLE", "TOTAL_ITERATIONS", "TOTAL_SUBSAMPLE", "X1", "X2",
-      "strata.df")
+      "strata.df", "GENOTYPE", "FIS", "POP1", "POP2", "tsiga", "tsigb", "tsigw", "CI", 
+      "CI_LOW", "CI_HIGH", "N_MARKERS","sigma.loc.alleles", "DST", "DST_P", 
+      "FIS_CI_HIGH", "FIS_CI_LOW", "HO", "HS", "HT", "HT_P", "JOST_D", "MHO", 
+      "MN", "MP", "MP2", "MSP2", "NEI_FST", "NEI_FST_CI_HIGH", "NEI_FST_CI_LOW",
+      "NEI_FST_P", "NEI_FST_P_CI_HIGH", "NEI_FST_P_CI_LOW", "NP", "N_INV", 
+      "SHO", "SP2", "n.markers", "JOST_D_CI_LOW", "JOST_D_CI_HIGH")
   )
 }
