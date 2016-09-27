@@ -154,6 +154,7 @@
 #' @import dplyr
 #' @import utils
 #' @import stackr
+#' @import tidyr
 #' @importFrom purrr map
 #' @importFrom data.table fread
 
@@ -375,7 +376,7 @@ fst_NEI87 <- function(
       filter(n_distinct(POP_ID) == pop.number) %>%
       arrange(MARKERS) %>%
       distinct(MARKERS)
-
+    
     # number of marker used for computation 
     n.markers <- n_distinct(pop.filter$MARKERS)
     
@@ -409,110 +410,69 @@ fst_NEI87 <- function(
     
     mono.markers <- NULL
     
+    # split the data per alleles and melt
     x <- x %>%
-      select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
       mutate(
         A1 = stri_sub(GT, 1, 3),
         A2 = stri_sub(GT, 4,6)
       ) %>% 
-      select(-GT)
-    
-    x.split.long <- data.table::melt.data.table(
-      data = as.data.table(x), 
-      id.vars = c("MARKERS", "INDIVIDUALS", "POP_ID"), 
-      variable.name = "ALLELES",
-      variable.factor = FALSE,
-      value.name = "GT"
-    ) %>% 
-      as_data_frame()
-    
-    #n: number of individuals, per pop and markers
-    ind.count.locus.pop <- x.split.long %>%
-      group_by(POP_ID, MARKERS) %>%
-      distinct(INDIVIDUALS) %>% 
-      tally %>%
-      rename(nal = n) %>%
-      mutate(
-        nal_sq = nal^2,
-        N_IND_GENE = nal*2
+      select(-GT) %>% 
+      as.data.table() %>% 
+      data.table::melt.data.table(
+        data = ., 
+        id.vars = c("MARKERS", "INDIVIDUALS", "POP_ID"), 
+        variable.name = "ALLELES",
+        variable.factor = FALSE,
+        value.name = "GT"
       ) %>% 
-      ungroup() %>% 
-      select(POP_ID, MARKERS, N_IND_GENE)
+      as_data_frame()
+      
     
     # frequency per markes, alleles, pop
-    p <- x.split.long %>%
-      group_by(MARKERS, GT, POP_ID) %>%
-      tally %>%
-      inner_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS")) %>% 
-      mutate(P = n/N_IND_GENE) %>% 
-      select(-n, -N_IND_GENE)# %>% 
-    #tidyr::spread(data = ., POP_ID, P, fill = 0)
-    
-    # msp2 mean frequency per markers and pop
-    mean.frequency.pop.markers <- p %>% 
-      group_by(MARKERS, POP_ID) %>% 
-      summarise(SP2 = sum(P^2))# %>% 
-    #tidyr::spread(data = ., POP_ID, SP2, fill = 0)
-    
-    # msp2 mean frequency per markers
-    mean.frequency.markers <- mean.frequency.pop.markers %>% 
-      group_by(MARKERS) %>% 
-      summarise(MSP2 = mean(SP2, na.rm = TRUE))
+    p <- x %>%
+      group_by(MARKERS, POP_ID) %>%
+      count(GT) %>% 
+      mutate(P = n / sum(n)) %>% 
+      select(-n) %>% 
+      arrange(MARKERS, POP_ID, GT) #%>% complete(data = ., POP_ID, nesting(MARKERS, GT), fill = list(P = 0)) %>%
     
     # mp: mean frequency per markers
     mean.p2 <- p %>% 
-      tidyr::spread(data = ., POP_ID, P, fill = 0) %>% 
-      tidyr::gather(data = ., POP_ID, P, -c(MARKERS, GT)) %>% 
+      tidyr::complete(data = ., POP_ID, tidyr::nesting(MARKERS, GT), fill = list(P = 0)) %>%
       group_by(MARKERS, GT) %>% 
       summarise(MP = mean(P, na.rm = TRUE)) %>% 
       group_by(MARKERS) %>% 
       summarise(MP2 = sum(MP^2))
     
+    # msp2 mean frequency per markers
+    mean.frequency.markers <- p %>%
+      group_by(MARKERS, POP_ID) %>% 
+      summarise(SP2 = sum(P^2)) %>% 
+      group_by(MARKERS) %>% 
+      summarise(MSP2 = mean(SP2, na.rm = TRUE))
+    
     # For diploid-------------------------------------------------------------------
     # Mean heterozygosity observed per pop and markers
-    mean.het.obs.pop.markers <- x %>%
-      group_by(POP_ID, MARKERS, INDIVIDUALS) %>% 
-      mutate(
-        HO = if_else(A1 != A2, 1, 0)
-      ) %>% 
-      group_by(POP_ID, MARKERS) %>% 
-      summarise(SHO = mean(HO))
-    
     # mean heterozygosity across all markers
-    mean.het.obs.markers <- mean.het.obs.pop.markers %>% 
+    mean.het.obs.markers <- x %>%
+      group_by(POP_ID, MARKERS, INDIVIDUALS) %>% 
+      mutate(HO = if_else(GT[ALLELES == "A1"] != GT[ALLELES == "A2"], 1, 0)) %>% 
+      group_by(POP_ID, MARKERS) %>% 
+      summarise(HO = mean(HO)) %>% 
       group_by(MARKERS) %>% 
-      summarise(MHO = mean(SHO))
-    
-    # mean.pop.markers <- mean.frequency.pop.markers %>% 
-    #   full_join(mean.het.obs.pop.markers, by = c("MARKERS", "POP_ID")) %>% 
-    #   full_join(ind.count.locus.pop, by = c("MARKERS", "POP_ID")) %>% 
-    #   mutate(
-    #     HS = ((N_IND_GENE / 2) / ((N_IND_GENE / 2) - 1)) * (1 - SP2 - (SHO / N_IND_GENE)),
-    #     FIS = 1 - SHO / HS
-    #   )
-    # %>% 
-    # select(MARKERS, POP_ID, FIS) %>% 
-    # tidyr::spread(data = ., POP_ID, FIS, fill = 0)
-    
-    mean.het.obs.pop.markers <- mean.frequency.pop.markers <- NULL
-    
-    # np: number of population per markers
-    num.pop.markers <- x %>% 
-      distinct(MARKERS, POP_ID) %>% 
-      group_by(MARKERS) %>% 
-      tally %>% 
-      rename(NP = n)
+      summarise(HO = mean(HO))
     
     # mn: corrected mean number of individuals per markers
-    fst.data <- ind.count.locus.pop %>%
-      ungroup() %>%
+    #n: number of individuals, per pop and markers
+    fst.data <- x %>%
+      group_by(POP_ID, MARKERS) %>%
+      distinct(INDIVIDUALS) %>% 
+      tally %>% 
+      mutate(N_INV = 1 / n) %>% 
+      ungroup() %>% 
       group_by(MARKERS) %>% 
-      mutate(
-        N = N_IND_GENE / 2,
-        N_INV = 1 / N
-      ) %>% 
       summarise(
-        NP = sum(!is.na(N)), # number of pop per markers
+        NP = sum(!is.na(n)), # number of pop per markers
         MN = NP / sum(N_INV, na.rm = TRUE)
       ) %>% 
       ungroup() %>% 
@@ -520,7 +480,6 @@ fst_NEI87 <- function(
       full_join(mean.het.obs.markers, by = "MARKERS") %>% 
       full_join(mean.frequency.markers, by = "MARKERS") %>%
       full_join(mean.p2, by = "MARKERS") %>% 
-      rename(HO = MHO) %>% 
       mutate(
         HS = MN / (MN - 1) * (1 - MSP2 - HO / 2 / MN),
         HT = 1 - MP2 + HS / MN / NP - HO / 2 / MN / NP,
@@ -538,7 +497,7 @@ fst_NEI87 <- function(
     fst.data.select <- fst.data %>% 
       select(MARKERS, HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D)
     
-    mean.p2 <- mean.het.obs.markers <- mean.frequency.markers <- ind.count.locus.pop <- NULL
+    mean.p2 <- mean.het.obs.markers <- mean.frequency.markers <- NULL
     
     overall <- fst.data.select %>% 
       summarise_if(is.numeric, funs(mean(., na.rm = TRUE))) %>% 
@@ -580,7 +539,7 @@ fst_NEI87 <- function(
         ) %>% 
         mutate_if(is.numeric, funs( round(x = ., digits = digits)))
       fst.data <- NULL
-      } else {
+    } else {
       fst.data <- NULL
     }
     
