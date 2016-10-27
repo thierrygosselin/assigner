@@ -26,6 +26,11 @@ if (getRversion() >= "2.15.1") {
       "FIS_CI_HIGH", "FIS_CI_LOW", "HO", "HS", "HT", "HT_P", "JOST_D", "MHO", 
       "MN", "MP", "MP2", "MSP2", "NEI_FST", "NEI_FST_CI_HIGH", "NEI_FST_CI_LOW",
       "NEI_FST_P", "NEI_FST_P_CI_HIGH", "NEI_FST_P_CI_LOW", "NP", "N_INV", 
-      "SHO", "SP2", "n.markers", "JOST_D_CI_LOW", "JOST_D_CI_HIGH")
+      "SHO", "SP2", "n.markers", "JOST_D_CI_LOW", "JOST_D_CI_HIGH", 
+      "NEW_MARKERS", "PHI", "PHI_CI_HIGH", "PHI_CI_LOW", "PHI_PRIME",
+      "PHI_PRIME_CI_HIGH", "PHI_PRIME_CI_LOW", "DATA", "ID1", "ID2", "DISTANCE",
+      "nn", "maxsdap", "ID1_POP", "POP_COMP", "AMOVA", "F_STATS", "MC_ITERATIONS",
+      "MODEL_VALUE", "OBS_VALUE", "SIGMA2A", "SIGMA2A_PRIME", "SIGMA2B",
+      "VARIANCE", "global_boot", "iteration")
   )
 }

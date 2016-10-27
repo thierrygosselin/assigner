@@ -113,6 +113,9 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Change log, version, new features and bug history now lives in the [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
+**v.0.3.5**
+* bug fix in population not recognise properly
+
 **v.0.3.4**
 * `fst_NEI87`: very fast function that can compute: the overall and pairwise Nei's (1987) fst and f'st (prime). 
 Bootstrap resampling of markers is avalaible to build Confidence Intervals. The estimates are available as a data frame and a matrix with upper diagonal filled with Fst values and lower diagonal filled with the confidence intervals. Jost's D is also given ;)

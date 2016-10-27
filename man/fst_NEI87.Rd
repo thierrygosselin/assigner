@@ -110,7 +110,7 @@ the Fst computed in \code{Calculate Distances} or
 \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}.
 The fastest computation is still 
 \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-but here the R solution computes confidence intervals and is very fast. 
+but here, the R solution computes confidence intervals and is very fast. 
 The computations takes advantage of \pkg{tidyverse} packages, 
 \pkg{data.table} and \pkg{parallel}.
 
@@ -152,9 +152,15 @@ The separator can be any of these: \code{"/", ":", "_", "-", "."}.
 in a tidy data frame.
 }
 \note{
-Negative Fst are technical artifact of the computation 
+\strong{Negative Fst} are technical artifact of the computation 
 (see Roesti el al. 2012) and are automatically replaced with zero inside 
 this function.
+
+\strong{Why no p-values ?}
+
+There is no null hypothesis testing with \emph{P}-values.
+Confidence intervals provided with the \emph{F}-statistics 
+enables more reliable conclusions about the biological trends in the data.
 }
 \examples{
 \dontrun{

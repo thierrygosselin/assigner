@@ -537,14 +537,14 @@ assignment_ngs <- function(
   folder = NULL,
   filename = "assignment_data.txt",
   keep.gsi.files = FALSE,
-  parallel.core = detectCores()-1
+  parallel.core = detectCores() - 1
   ) {
   
   # Checking for missing and/or default arguments ******************************
   if (missing(data)) stop("Input file missing")
   if (missing(assignment.analysis)) stop("assignment.analysis argument missing")
   if (missing(sampling.method)) stop("sampling.method argument missing")
-  if (assignment.analysis == "gsi_sim" & !gsi_sim_exists()){
+  if (assignment.analysis == "gsi_sim" & !gsi_sim_exists()) {
     stop("Can't find the gsi_sim executable where it was expected at ", gsi_sim_binary_path(), ".  
          If you have internet access, you can install it
          from within R by invoking the function \"install_gsi_sim(fromSource = TRUE)\"")
@@ -591,40 +591,7 @@ assignment_ngs <- function(
   }
   
   # File type detection ********************************************************
-  if(adegenet::is.genind(data)){
-    data.type <- "genind.file"
-    message("File type: genind object")
-  } else {
-    data.type <- readChar(con = data, nchars = 16L, useBytes = TRUE)
-    if (identical(data.type, "##fileformat=VCF") | stri_detect_fixed(str = data, pattern = ".vcf")) {
-      data.type <- "vcf.file"
-      # message("File type: VCF")
-    }
-    if (stri_detect_fixed(str = data, pattern = ".tped")) {
-      data.type <- "plink.file"
-      # message("File type: PLINK")
-      if (!file.exists(stri_replace_all_fixed(str = data, pattern = ".tped", replacement = ".tfam", vectorize_all = FALSE))) {
-        stop("Missing tfam file with the same prefix as your tped")
-      }
-    } 
-    if (stri_detect_fixed(str = data.type, pattern = "POP_ID") | stri_detect_fixed(str = data.type, pattern = "INDIVIDUALS") | stri_detect_fixed(str = data.type, pattern = "MARKERS")) {
-      data.type <- "df.file"
-      # message("File type: data frame of genotypes")
-    }
-    if (stri_detect_fixed(str = data.type, pattern = "Catalog")) {
-      # data.type <- "haplo.file"
-      message("File type: haplotypes from stacks")
-      if (is.null(blacklist.genotype)) {
-        stop("blacklist.genotype file missing. 
-             Use stackr's missing_genotypes function to create this blacklist")
-      }
-    }
-    if (stri_detect_fixed(str = data, pattern = ".gen")) {
-      # data.type <- "genepop.file"
-      message("File type: genepop")
-    } 
-    
-  } # end file type detection
+  data.type <- detect_genomic_format(data)
   
   # Strata argument required for VCF and haplotypes files **********************
   if (data.type == "haplo.file" | data.type == "vcf.file") {
@@ -656,13 +623,15 @@ assignment_ngs <- function(
   # need to remove space in POP_ID name to work in gsi_sim
   input$POP_ID <- stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
+  input <- stackr::change_pop_names(data = input)
+  
   # create a strata.df
   strata.df <- input %>% 
     select(INDIVIDUALS, POP_ID) %>% 
     distinct(INDIVIDUALS, .keep_all = TRUE)
   strata <- strata.df
-  # pop.levels <- levels(input$POP_ID)
-  # pop.labels <- pop.levels
+  pop.levels <- levels(input$POP_ID)
+  pop.labels <- pop.levels
   
   # subsampling data ***********************************************************
   # Function:
@@ -1444,7 +1413,7 @@ Progress can be monitored with activity in the folder...")
         i <- as.numeric(unique(mrl$ITERATIONS))     # iteration
         m <- as.numeric(unique(mrl$MARKER_NUMBER))  # number of marker selected
         
-        select.markers <- mrl %>%                   # markers
+        select.markers <- mrl %>%# markers
           ungroup() %>% 
           select(MARKERS) %>% 
           arrange(MARKERS)
@@ -1571,7 +1540,7 @@ Progress can be monitored with activity in the folder...")
       
       # Compiling the results
       message("Compiling results")
-      if(assignment.analysis == "adegenet") {
+      if (assignment.analysis == "adegenet") {
         assignment.res <- suppressWarnings(
           bind_rows(assignment.res) %>% 
             rename(CURRENT = POP_ID) %>% 
@@ -1643,7 +1612,7 @@ Progress can be monitored with activity in the folder...")
               "assignment", sampling.method, "no.imputation", "results", 
               "iterations", "subsample", subsample.id, "tsv", sep = "."
             )
-          } else { # with imputations
+          } else {# with imputations
             filename.assignment.res <- stri_join(
               "assignment", sampling.method, "imputed", "results", "iterations",
               "subsample", subsample.id, "tsv", sep = "."
@@ -1748,7 +1717,7 @@ Progress can be monitored with activity in the folder...")
             "assignment", sampling.method, "no.imputation", "results", 
             "summary.stats", "tsv", sep = "."
           )
-        } else { # with imputations
+        } else {# with imputations
           filename.assignment.sum <- stri_join(
             "assignment", sampling.method, "imputed", "results", "summary.stats",
             "tsv", sep = "."
@@ -1760,7 +1729,7 @@ Progress can be monitored with activity in the folder...")
             "assignment", sampling.method, "no.imputation", "results", 
             "summary.stats", "subsample", subsample.id, "tsv", sep = "."
           )
-        } else { # with imputations
+        } else {# with imputations
           filename.assignment.sum <- stri_join(
             "assignment", sampling.method, "imputed", "results", "summary.stats",
             "subsample", subsample.id, "tsv", sep = "."
@@ -1885,7 +1854,7 @@ Progress can be monitored with activity in the folder...")
               holdout.samples = holdout$INDIVIDUALS
             )$fst.ranked
           }
-        } else { # thl proportion or > 1 ----------
+        } else {# thl proportion or > 1 ----------
           holdout <- data.frame(holdout.individuals.list[i])
           fst.ranked <- assigner::fst_WC84(
             data = input, 
@@ -2096,7 +2065,7 @@ Progress can be monitored with activity in the folder...")
       # Compiling the results
       message("Compiling results")
       assignment.res.summary <- suppressWarnings(
-        bind_rows(assignment.res)%>% 
+        bind_rows(assignment.res) %>% 
           mutate(SUBSAMPLE = rep(subsample.id, n())) %>% 
           # arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA, ITERATIONS)
           arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER, MISSING_DATA)
@@ -2106,13 +2075,13 @@ Progress can be monitored with activity in the folder...")
       if (is.null(subsample)) {
         if (is.null(imputation.method)) {
           filename.assignment.res <- stri_join("assignment", sampling.method, "no.imputation", "results", "individuals", "iterations", "tsv", sep = ".")
-        } else { # with imputations
+        } else {# with imputations
           filename.assignment.res <- stri_join("assignment", sampling.method, "imputed", "results", "individuals", "iterations", "tsv", sep = ".")
         }
       } else {# with subsampling
         if (is.null(imputation.method)) {
           filename.assignment.res <- stri_join("assignment", sampling.method, "no.imputation", "results", "individuals","iterations", "subsample", subsample.id, "tsv", sep = ".")
-        } else { # with imputations
+        } else {# with imputations
           filename.assignment.res <- stri_join("assignment", sampling.method, "imputed", "results", "individuals", "iterations", "subsample", subsample.id, "tsv", sep = ".")
         }
       }
@@ -2192,13 +2161,13 @@ Progress can be monitored with activity in the folder...")
         if (is.null(subsample)) {
           if (is.null(imputation.method)) {
             filename.assignment.res.sum <- stri_join("assignment", sampling.method, "no.imputation", "results", "summary", "tsv", sep = ".")
-          } else { # with imputations
+          } else {# with imputations
             filename.assignment.res.sum <- stri_join("assignment", sampling.method, "imputed", "results", "summary", "tsv", sep = ".")
           }
         } else {# with subsampling
           if (is.null(imputation.method)) {
             filename.assignment.res.sum <- stri_join("assignment", sampling.method, "no.imputation", "results", "summary", "subsample", subsample.id, "tsv", sep = ".")
-          } else { # with imputations
+          } else {# with imputations
             filename.assignment.res.sum <- stri_join("assignment", sampling.method, "imputed", "results", "summary", "subsample", subsample.id, "tsv", sep = ".")
           }
         }
@@ -2274,7 +2243,7 @@ Progress can be monitored with activity in the folder...")
     assignment.summary.stats <- assignment.summary.stats %>% 
       mutate(SUBSAMPLE = rep(subsample.id, n()))
     return(assignment.summary.stats)
-  } # End assignment_function
+  }# End assignment_function
   
   res <- map(.x = subsample.list, .f = assignment_function,
              assignment.analysis = assignment.analysis,
@@ -2307,7 +2276,7 @@ Progress can be monitored with activity in the folder...")
   
   if (is.null(imputation.method)) {
     filename.res <- stri_join("assignment", sampling.method, "no.imputation.results.summary.stats.subsample", "tsv", sep = ".")
-  } else { # with imputations
+  } else {# with imputations
     filename.res <- stri_join("assignment", sampling.method, "imputed.results,summary.stats.subsample", "tsv", sep = ".")
   }
   write_tsv(x = res, path = paste0(directory,filename.res), col_names = TRUE, append = FALSE)
@@ -2370,7 +2339,7 @@ Progress can be monitored with activity in the folder...")
     
     if (is.null(imputation.method)) {
       filename.assignment.sum.subsample <- stri_join("assignment", sampling.method, "no.imputation.results.summary.stats.subsample.overall", "tsv", sep = ".")
-    } else { # with imputations
+    } else {# with imputations
       filename.assignment.sum.subsample <- stri_join("assignment", sampling.method, "imputed.results.summary.stats.subsample.overall", "tsv", sep = ".")
     }
     write_tsv(x = res, path = paste0(directory, filename.assignment.sum.subsample), col_names = TRUE, append = FALSE)
@@ -2385,13 +2354,13 @@ Progress can be monitored with activity in the folder...")
   
   # Assignment plot
   if (is.null(imputation.method)) { # no imputation
-    plot.assignment <- ggplot(res, aes(x = factor(MARKER_NUMBER), y = MEAN))+
+    plot.assignment <- ggplot(res, aes(x = factor(MARKER_NUMBER), y = MEAN)) +
       geom_point(size = 2, alpha = 0.5) +
       geom_errorbar(aes(ymin = SE_MIN, ymax = SE_MAX), width = 0.3) +
-      scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100))+
-      labs(x = "Marker number")+
-      labs(y = "Assignment success (%)")+
-      theme_bw()+
+      scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100)) +
+      labs(x = "Marker number") +
+      labs(y = "Assignment success (%)") +
+      theme_bw() +
       theme(
         legend.position = "bottom",      
         panel.grid.minor.x = element_blank(), 
@@ -2401,16 +2370,16 @@ Progress can be monitored with activity in the folder...")
         axis.title.y = element_text(size = 10, family = "Helvetica", face = "bold"), 
         axis.text.y = element_text(size = 10, family = "Helvetica", face = "bold")
       )
-  } else { #with imputations
+  } else {#with imputations
     
-    plot.assignment <- ggplot(res, aes(x = factor(MARKER_NUMBER), y = MEAN))+
+    plot.assignment <- ggplot(res, aes(x = factor(MARKER_NUMBER), y = MEAN)) +
       geom_point(aes(colour = MISSING_DATA), size = 2, alpha = 0.8) +
       geom_errorbar(aes(ymin = SE_MIN, ymax = SE_MAX), width = 0.3) +
-      scale_colour_manual(name = "Missing data", values = c("gray33", "dodgerblue"))+
-      scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100))+
-      labs(x = "Marker number")+
-      labs(y = "Assignment success (%)")+
-      theme_bw()+
+      scale_colour_manual(name = "Missing data", values = c("gray33", "dodgerblue")) +
+      scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100)) +
+      labs(x = "Marker number") +
+      labs(y = "Assignment success (%)") +
+      theme_bw() +
       theme(
         legend.position = "bottom",      
         panel.grid.minor.x = element_blank(), 

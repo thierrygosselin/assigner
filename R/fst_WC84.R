@@ -16,7 +16,7 @@
 #' (AMOVA, Excoffier et al., 1992; Michalakis and Excoffier, 1996). 
 #' The fastest computation is still 
 #' \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-#' but it does compute confidence intervals. For an R implementation, \code{\link{fst_WC84}} is very fast. 
+#' but it doesn't compute confidence intervals. For an R implementation, \code{\link{fst_WC84}} is very fast. 
 #' The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
 #' \pkg{data.table} and \pkg{parallel}.
 #' 
@@ -28,10 +28,17 @@
 #' better genome-wide estimate. This is even more important when your project 
 #' involves more than 2 populations that evolved more by neutral processes 
 #' (e.g. genetic drift) than by natural selection (see the vignette for more details).
-#' 
-#' @note Negative Fst are technical artifact of the computation 
+ 
+#' @note \strong{Negative Fst} are technical artifact of the computation 
 #' (see Roesti el al. 2012) and are automatically replaced with zero inside 
 #' this function.
+#' 
+#' \strong{Why no p-values ?}
+#' 
+#' There is no null hypothesis testing with \emph{P}-values.
+#' Confidence intervals provided with the \emph{F}-statistics 
+#' enables more reliable conclusions about the biological trends in the data.
+
 
 #' @param data A file in the working directory or object in the global environment 
 #' in wide or long (tidy) formats. To import, the function uses internally
@@ -157,6 +164,7 @@
 #' @import dplyr
 #' @import utils
 #' @import stackr
+#' @import parallel
 #' @importFrom purrr map
 #' @importFrom data.table fread
 
@@ -253,7 +261,7 @@ fst_WC84 <- function(
   
   
   # Checking for missing and/or default arguments ------------------------------
-  if (missing(data)) stop("Input file necessary to write the genepop file is missing")
+  if (missing(data)) stop("Input file is missing")
   if (!is.null(pop.levels) & is.null(pop.labels)) pop.labels <- pop.levels
   if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
   
@@ -712,7 +720,7 @@ fst_WC84 <- function(
     # Fst for all pairwise populations
     list.pair <- 1:length(pop.pairwise)
     # list.pair <- 5 #  test
-    fst.all.pop <- parallel::mclapply(
+    fst.all.pop <- mclapply(
       X = list.pair, 
       FUN = pairwise_fst, 
       mc.preschedule = FALSE, 
