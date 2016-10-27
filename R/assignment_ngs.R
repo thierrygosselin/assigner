@@ -388,6 +388,7 @@
 #' @import adegenet
 #' @import dplyr
 #' @import stackr
+#' @import strataG
 #' @importFrom stats var median quantile
 #' @importFrom purrr map
 #' @importFrom purrr flatten
