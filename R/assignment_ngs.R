@@ -286,7 +286,7 @@
 #' @param parallel.core (optional) The number of core for OpenMP shared-memory parallel
 #' programming of Random Forest imputations. For more info on how to install the
 #' OpenMP version see \code{\link[randomForestSRC]{randomForestSRC-package}}.
-#' If not selected \code{detectCores()-1} is used as default.
+#' If not selected \code{detectCores() - 1} is used as default.
 
 #' @details 
 #' \strong{Input files:}
@@ -1533,8 +1533,8 @@ Progress can be monitored with activity in the folder...")
       assignment.res <- mclapply(
         X = markers.random.lists, 
         FUN = assignment_random, 
-        mc.preschedule = FALSE, 
-        mc.silent = FALSE, 
+        mc.preschedule = TRUE, 
+        mc.silent = TRUE, 
         mc.cleanup = TRUE,
         mc.cores = parallel.core
       )
