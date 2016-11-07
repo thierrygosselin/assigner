@@ -8,7 +8,7 @@
 fst_WC84(data, pop.levels = NULL, pop.labels = NULL, strata = NULL,
   holdout.samples = NULL, pairwise = FALSE, ci = FALSE,
   iteration.ci = 100, quantiles.ci = c(0.025, 0.975), digits = 9,
-  parallel.core = detectCores() - 1, verbose = FALSE, ...)
+  parallel.core = parallel::detectCores() - 1, verbose = FALSE, ...)
 }
 \arguments{
 \item{data}{A file in the working directory or object in the global environment 
@@ -41,29 +41,29 @@ To rename \code{"QUE"} to \code{"TAS"}:
 Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
 \code{strata} argument that can do the same thing, see below.}
 
-\item{strata}{(optional) A tab delimited file with 2 columns with header:
+\item{strata}{(optional, data frame) A tab delimited file with 2 columns with header:
 \code{INDIVIDUALS} and \code{STRATA}.
 If a \code{strata} file is specified, the strata file will have
 precedence over any grouping found input file (\code{data}). 
 The \code{STRATA} column can be any hierarchical grouping.
 Default: \code{strata = NULL}.}
 
-\item{holdout.samples}{(optional) Samples that don't participate in the Fst 
+\item{holdout.samples}{(optional, data frame) Samples that don't participate in the Fst 
 computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
 Default: \code{holdout.samples = NULL}.}
 
-\item{pairwise}{(logical, optional) With \code{pairwise = TRUE}, the 
+\item{pairwise}{(optional, logical) With \code{pairwise = TRUE}, the 
 pairwise WC84 Fst is calculated between populations. 
 Default: \code{pairwise = FALSE}.}
 
-\item{ci}{(logical, optional) Compute bootstrapped confidence intervals. 
+\item{ci}{(optional, logical) Compute bootstrapped confidence intervals. 
 Default: \code{ci = FALSE}.}
 
-\item{iteration.ci}{(integer, optional) The number of iterations for 
+\item{iteration.ci}{(optional, integer) The number of iterations for 
 the boostraps (resampling with replacement of markers). 
 Default: \code{iteration.ci = 100}.}
 
-\item{quantiles.ci}{(double, optional) 
+\item{quantiles.ci}{(optional, double) 
 The quantiles for the bootstrapped confidence intervals. 
 Default: \code{quantiles.ci = c(0.025,0.975)}.}
 
@@ -71,11 +71,11 @@ Default: \code{quantiles.ci = c(0.025,0.975)}.}
 results.
 Default: \code{digits = 9}.}
 
-\item{parallel.core}{(optional) The number of core for parallel computation 
-of pairwise Fst. 
-If not selected \code{detectCores()-1} is used as default.}
+\item{parallel.core}{(optional, integer) The number of core for parallel computation 
+of pairwise Fst.
+Default: \code{parallel.core = parallel::detectCores() - 1}.}
 
-\item{verbose}{(logical, optional) \code{verbose = TRUE} to be chatty 
+\item{verbose}{(optional, logical) \code{verbose = TRUE} to be chatty 
 during execution. 
 Default: \code{verbose = FALSE}.}
 

@@ -215,8 +215,8 @@ Default: \code{iteration.rf = 10}.}
 random splitting in Random Forest. 
 Default: \code{split.number = 100}.}
 
-\item{verbose}{(logical, optional) Should trace output be enabled on each iteration
-in Random Forest ? 
+\item{verbose}{(optional, logical) When \code{verbose = TRUE} 
+the function is a little more chatty during execution.
 Default: \code{verbose = FALSE}.}
 
 \item{folder}{(optional) The name of the folder created in the working 

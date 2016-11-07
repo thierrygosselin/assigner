@@ -1030,7 +1030,7 @@ haplotype file and create a whitelist, for other file type, use
       pop <- genind.prep$POP_ID
       genind.df <- genind.prep %>% ungroup() %>% 
         select(-c(INDIVIDUALS, POP_ID))
-      rownames(genind.df) <- ind
+      suppressWarnings(rownames(genind.df) <- ind)
       loc.names <- colnames(genind.df)
       strata <- genind.prep %>% ungroup() %>% distinct(INDIVIDUALS, POP_ID)
       
@@ -1080,7 +1080,7 @@ haplotype file and create a whitelist, for other file type, use
           ungroup() %>% 
           select(-c(INDIVIDUALS, POP_ID))
         
-        rownames(genind.df) <- ind
+        suppressWarnings(rownames(genind.df) <- ind)
         loc.names <- colnames(genind.df)
         strata <- genind.prep.imp %>% 
           ungroup() %>% 

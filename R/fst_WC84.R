@@ -70,29 +70,29 @@
 #' Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
 #' \code{strata} argument that can do the same thing, see below.
 
-#' @param strata (optional) A tab delimited file with 2 columns with header:
+#' @param strata (optional, data frame) A tab delimited file with 2 columns with header:
 #' \code{INDIVIDUALS} and \code{STRATA}.
 #' If a \code{strata} file is specified, the strata file will have
 #' precedence over any grouping found input file (\code{data}). 
 #' The \code{STRATA} column can be any hierarchical grouping.
 #' Default: \code{strata = NULL}.
 
-#' @param holdout.samples (optional) Samples that don't participate in the Fst 
+#' @param holdout.samples (optional, data frame) Samples that don't participate in the Fst 
 #' computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
 #' Default: \code{holdout.samples = NULL}.
 
-#' @param pairwise (logical, optional) With \code{pairwise = TRUE}, the 
+#' @param pairwise (optional, logical) With \code{pairwise = TRUE}, the 
 #' pairwise WC84 Fst is calculated between populations. 
 #' Default: \code{pairwise = FALSE}.
 
-#' @param ci (logical, optional) Compute bootstrapped confidence intervals. 
+#' @param ci (optional, logical) Compute bootstrapped confidence intervals. 
 #' Default: \code{ci = FALSE}.
 
-#' @param iteration.ci (integer, optional) The number of iterations for 
+#' @param iteration.ci (optional, integer) The number of iterations for 
 #' the boostraps (resampling with replacement of markers). 
 #' Default: \code{iteration.ci = 100}.
 
-#' @param quantiles.ci (double, optional) 
+#' @param quantiles.ci (optional, double) 
 #' The quantiles for the bootstrapped confidence intervals. 
 #' Default: \code{quantiles.ci = c(0.025,0.975)}.
 
@@ -100,11 +100,11 @@
 #' results.
 #' Default: \code{digits = 9}.
 
-#' @param parallel.core (optional) The number of core for parallel computation 
-#' of pairwise Fst. 
-#' If not selected \code{detectCores()-1} is used as default.
+#' @param parallel.core (optional, integer) The number of core for parallel computation 
+#' of pairwise Fst.
+#' Default: \code{parallel.core = parallel::detectCores() - 1}.
 
-#' @param verbose (logical, optional) \code{verbose = TRUE} to be chatty 
+#' @param verbose (optional, logical) \code{verbose = TRUE} to be chatty 
 #' during execution. 
 #' Default: \code{verbose = FALSE}.
 
@@ -160,13 +160,12 @@
 
 #' @export
 #' @rdname fst_WC84
-#' @import stringi
-#' @import dplyr
-#' @import utils
-#' @import stackr
+#' @importFrom stringi stri_replace_all_regex stri_join stri_replace_na stri_sub
 #' @import parallel
-#' @importFrom purrr map
-#' @importFrom data.table fread
+#' @importFrom stackr read_long_tidy_wide
+#' @importFrom tidyr separate gather spread unite
+#' @importFrom purrr map flatten
+#' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n
 
 #' @examples
 #' \dontrun{
@@ -249,7 +248,7 @@ fst_WC84 <- function(
   iteration.ci = 100,
   quantiles.ci = c(0.025,0.975),
   digits = 9,
-  parallel.core = detectCores() - 1,
+  parallel.core = parallel::detectCores() - 1,
   verbose = FALSE,
   ...) {
   
@@ -257,6 +256,7 @@ fst_WC84 <- function(
     cat("#######################################################################\n")
     cat("######################### assigner::fst_WC84 ##########################\n")
     cat("#######################################################################\n")
+    timing <- proc.time()
   }
   
   
@@ -270,7 +270,7 @@ fst_WC84 <- function(
   input <- stackr::read_long_tidy_wide(data = data)
   
   # switch LOCUS to MARKERS if found
-  if ("LOCUS" %in% colnames(input)) input <- rename(.data = input, MARKERS = LOCUS)
+  if ("LOCUS" %in% colnames(input)) input <- dplyr::rename(.data = input, MARKERS = LOCUS)
   
   # population levels and strata  ----------------------------------------------
   if (is.null(strata)) { # no strata
@@ -282,11 +282,11 @@ fst_WC84 <- function(
       }
     } else {# with pop.levels
       input <- input %>%
-        mutate( # Make population ready
+        dplyr::mutate( # Make population ready
           POP_ID = factor(
-            stri_replace_all_regex(
+            stringi::stri_replace_all_regex(
               POP_ID, 
-              stri_paste("^", pop.levels, "$", sep = ""), 
+              stringi::stri_join("^", pop.levels, "$", sep = ""), 
               pop.labels,
               vectorize_all = FALSE), 
             levels = unique(pop.labels), 
@@ -297,26 +297,26 @@ fst_WC84 <- function(
   } else {# Make population ready with the strata provided
     if (is.vector(strata)) {
       strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-        rename(POP_ID = STRATA)
+        dplyr::rename(POP_ID = STRATA)
     } else {
       strata.df <- strata
     }
     if (is.null(pop.levels)) { # no pop.levels
       input <- input %>%
-        select(-POP_ID) %>% 
-        mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-        left_join(strata.df, by = "INDIVIDUALS") %>% 
-        mutate(POP_ID = factor(POP_ID))
+        dplyr::select(-POP_ID) %>% 
+        dplyr::mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
+        dplyr::left_join(strata.df, by = "INDIVIDUALS") %>% 
+        dplyr::mutate(POP_ID = factor(POP_ID))
     } else {# with pop.levels
       input <- input %>%
-        select(-POP_ID) %>% 
-        mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-        left_join(strata.df, by = "INDIVIDUALS") %>%
-        mutate(
+        dplyr::select(-POP_ID) %>% 
+        dplyr::mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
+        dplyr::left_join(strata.df, by = "INDIVIDUALS") %>%
+        dplyr::mutate(
           POP_ID = factor(
-            stri_replace_all_regex(
+            stringi::stri_replace_all_regex(
               POP_ID, 
-              stri_paste("^", pop.levels, "$", sep = ""), 
+              stringi::stri_join("^", pop.levels, "$", sep = ""), 
               pop.labels, 
               vectorize_all = FALSE
             ),
@@ -327,18 +327,18 @@ fst_WC84 <- function(
   }
   
   # Get the number of pop  -----------------------------------------------------
-  # pop.number <- n_distinct(input$POP_ID)
+  # pop.number <- dplyr::n_distinct(input$POP_ID)
   
   # genotyped data and holdout sample  -----------------------------------------
   if (is.null(holdout.samples)) { # use all the individuals
     data.genotyped <- input %>%
-      filter(GT != "000000") # Check for df and plink...
+      dplyr::filter(GT != "000000") # Check for df and plink...
   } else {# if holdout set, removes individuals
     message("removing holdout individuals")
     data.genotyped <- input %>%
-      filter(GT != "000000") %>% # remove missing genotypes
+      dplyr::filter(GT != "000000") %>% # remove missing genotypes
       # remove supplementary individual before ranking markers with Fst
-      filter(!INDIVIDUALS %in% holdout.samples) 
+      dplyr::filter(!INDIVIDUALS %in% holdout.samples) 
   }
   
   # Function to compute WC84 Fst ----------------------------------------------
@@ -347,27 +347,27 @@ fst_WC84 <- function(
   boot_ci <- function(x, sigma.loc.alleles){
     
     markers.list <- sigma.loc.alleles %>% 
-      ungroup() %>% 
-      distinct(MARKERS) %>% 
-      arrange(MARKERS)
+      dplyr::ungroup(.) %>% 
+      dplyr::distinct(MARKERS) %>% 
+      dplyr::arrange(MARKERS)
     
     subsample.markers <- markers.list %>% 
-      sample_n(tbl = ., size = nrow(markers.list), replace = TRUE) %>% 
-      arrange(MARKERS)
+      dplyr::sample_n(tbl = ., size = nrow(markers.list), replace = TRUE) %>% 
+      dplyr::arrange(MARKERS)
     
     fst.fis.overall.iterations <- sigma.loc.alleles %>% 
-      right_join(subsample.markers, by = "MARKERS") %>% 
-      ungroup %>%
-      summarise(
+      dplyr::right_join(subsample.markers, by = "MARKERS") %>% 
+      dplyr::ungroup(.) %>%
+      dplyr::summarise(
         tsiga = sum(siga, na.rm = TRUE),
         tsigb = sum(sigb, na.rm = TRUE),
         tsigw = sum(sigw, na.rm = TRUE)
       ) %>% 
-      summarise(
+      dplyr::summarise(
         FST = round(tsiga/(tsiga + tsigb + tsigw), digits),
         FIS = round(tsigb/(tsigb + tsigw), digits)
       ) %>% 
-      mutate(
+      dplyr::mutate(
         ITERATIONS = rep(x, n()),
         FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0)
       )
@@ -377,21 +377,21 @@ fst_WC84 <- function(
   # fst function
   compute_fst <- function(x, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
     # x = data.genotyped # test
-    # x = data.genotyped %>% filter(POP_ID %in% c("upj", "dsj"))
+    # x = data.genotyped %>% dplyr::filter(POP_ID %in% c("upj", "dsj"))
     # Markers in common between all populations ********************************
-    pop.number <- n_distinct(x$POP_ID)
+    pop.number <- dplyr::n_distinct(x$POP_ID)
     
     pop.filter <- x %>% 
-      group_by(MARKERS) %>%
-      filter(n_distinct(POP_ID) == pop.number) %>%
-      arrange(MARKERS) %>%
-      distinct(MARKERS)
+      dplyr::group_by(MARKERS) %>%
+      dplyr::filter(dplyr::n_distinct(POP_ID) == pop.number) %>%
+      dplyr::arrange(MARKERS) %>%
+      dplyr::distinct(MARKERS)
     
     # number of marker used for computation 
-    n.markers <- n_distinct(pop.filter$MARKERS)
+    n.markers <- dplyr::n_distinct(pop.filter$MARKERS)
     
     #Filter
-    x <- suppressWarnings(x %>% semi_join(pop.filter, by = "MARKERS"))
+    x <- suppressWarnings(x %>% dplyr::semi_join(pop.filter, by = "MARKERS"))
     
     # ununsed objects
     pop.filter <- NULL
@@ -399,42 +399,42 @@ fst_WC84 <- function(
     
     # Removing monomorphic markers------------------------------------------------
     mono.markers <- x %>%
-      select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
+      dplyr::select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
       tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
       tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>%
-      filter(GT != "000") %>%
-      group_by(MARKERS, GT) %>% 
-      tally %>%
-      ungroup() %>% 
-      select(MARKERS) %>% 
-      group_by(MARKERS) %>% 
-      tally %>% 
-      filter(n == 1) %>% 
-      select(MARKERS)
+      dplyr::filter(GT != "000") %>%
+      dplyr::group_by(MARKERS, GT) %>% 
+      dplyr::tally(.) %>%
+      dplyr::ungroup(.) %>% 
+      dplyr::select(MARKERS) %>% 
+      dplyr::group_by(MARKERS) %>% 
+      dplyr::tally(.) %>% 
+      dplyr::filter(n == 1) %>% 
+      dplyr::select(MARKERS)
     
     
     # Remove the markers from the dataset
     if (length(mono.markers$MARKERS) > 0) {
-      x <- anti_join(x, mono.markers, by = "MARKERS")
+      x <- dplyr::anti_join(x, mono.markers, by = "MARKERS")
     }
     
     # The similar hierfstat steps ----------------------------------------------
     n.pop.locus <- x %>%
-      select(MARKERS, POP_ID) %>%
-      group_by(MARKERS) %>%
-      distinct(POP_ID, .keep_all = TRUE) %>%
-      tally %>%
-      rename(npl = n)
+      dplyr::select(MARKERS, POP_ID) %>%
+      dplyr::group_by(MARKERS) %>%
+      dplyr::distinct(POP_ID, .keep_all = TRUE) %>%
+      dplyr::tally(.) %>%
+      dplyr::rename(npl = n)
     
     ind.count.locus <- x %>%
-      group_by(MARKERS) %>%
-      tally
+      dplyr::group_by(MARKERS) %>%
+      dplyr::tally(.)
     
     ind.count.locus.pop <- x %>%
-      group_by(POP_ID, MARKERS) %>%
-      tally %>%
-      rename(nal = n) %>%
-      mutate(
+      dplyr::group_by(POP_ID, MARKERS) %>%
+      dplyr::tally(.) %>%
+      dplyr::rename(nal = n) %>%
+      dplyr::mutate(
         nal_sq = nal^2,
         N_IND_GENE = nal*2
       )
@@ -461,97 +461,97 @@ fst_WC84 <- function(
     #pop
     freq.al.locus.pop <- suppressWarnings(
       freq.al.locus %>%
-        group_by(POP_ID, MARKERS, ALLELES) %>%
-        tally %>%
-        full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS")) %>%
-        mutate(P = n/N_IND_GENE) %>% # Freq. Allele per pop
-        select(POP_ID, MARKERS, ALLELES, P) %>%
-        group_by(MARKERS, ALLELES) %>%
+        dplyr::group_by(POP_ID, MARKERS, ALLELES) %>%
+        dplyr::tally(.) %>%
+        dplyr::full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS")) %>%
+        dplyr::mutate(P = n/N_IND_GENE) %>% # Freq. Allele per pop
+        dplyr::select(POP_ID, MARKERS, ALLELES, P) %>%
+        dplyr::group_by(MARKERS, ALLELES) %>%
         tidyr::spread(data = ., key = POP_ID, value = P) %>%
         tidyr::gather(key = POP_ID, value = P, -c(MARKERS, ALLELES)) %>%
-        mutate(P = as.numeric(stri_replace_na(str = P, replacement = 0))) %>%
-        full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS"))
+        dplyr::mutate(P = as.numeric(stringi::stri_replace_na(str = P, replacement = 0))) %>%
+        dplyr::full_join(ind.count.locus.pop, by = c("POP_ID", "MARKERS"))
     )    
     
     freq.al.locus.global <- suppressWarnings(
       freq.al.locus %>%
-        group_by(MARKERS, ALLELES) %>%
-        tally %>%
-        full_join(
+        dplyr::group_by(MARKERS, ALLELES) %>%
+        dplyr::tally(.) %>%
+        dplyr::full_join(
           ind.count.locus %>%
-            rename(N = n), 
+            dplyr::rename(N = n), 
           by = "MARKERS"
         ) %>%
-        mutate(pb = n/(2*N)) %>% # Global Freq. Allele
-        select(MARKERS, ALLELES, pb)
+        dplyr::mutate(pb = n/(2*N)) %>% # Global Freq. Allele
+        dplyr::select(MARKERS, ALLELES, pb)
     )    
     
     mean.n.pop.corrected.per.locus <- suppressWarnings(
       ind.count.locus.pop %>%
-        group_by(MARKERS) %>%
-        summarise(nal_sq_sum = sum(nal_sq, na.rm = TRUE)) %>%
-        full_join(ind.count.locus, by = "MARKERS") %>%
-        mutate(nal_sq_sum_nt = (n - nal_sq_sum/n)) %>%
-        full_join(n.pop.locus, by = "MARKERS") %>%
-        mutate(ncal = nal_sq_sum_nt/(npl - 1)) %>%
-        select(MARKERS, ncal)
+        dplyr::group_by(MARKERS) %>%
+        dplyr::summarise(nal_sq_sum = sum(nal_sq, na.rm = TRUE)) %>%
+        dplyr::full_join(ind.count.locus, by = "MARKERS") %>%
+        dplyr::mutate(nal_sq_sum_nt = (n - nal_sq_sum/n)) %>%
+        dplyr::full_join(n.pop.locus, by = "MARKERS") %>%
+        dplyr::mutate(ncal = nal_sq_sum_nt/(npl - 1)) %>%
+        dplyr::select(MARKERS, ncal)
     )
     
     ncal <- suppressWarnings(
       freq.al.locus %>%
-        # select(MARKERS, ALLELES) %>%
-        # group_by(MARKERS, ALLELES) %>%
-        distinct(MARKERS, ALLELES) %>%
-        full_join(ind.count.locus, by = "MARKERS") %>%
-        rename(ntal = n) %>%
-        full_join(mean.n.pop.corrected.per.locus, by = "MARKERS")
+        # dplyr::select(MARKERS, ALLELES) %>%
+        # dplyr::group_by(MARKERS, ALLELES) %>%
+        dplyr::distinct(MARKERS, ALLELES) %>%
+        dplyr::full_join(ind.count.locus, by = "MARKERS") %>%
+        dplyr::rename(ntal = n) %>%
+        dplyr::full_join(mean.n.pop.corrected.per.locus, by = "MARKERS")
     )
     
     data.genotyped.het <- x %>%
-      mutate(
-        het = ifelse(stri_sub(GT, 1, 3) != stri_sub(GT, 4, 6), 1, 0),
-        AL1 = stri_sub(GT, 1, 3),
-        AL2 = stri_sub(GT, 4, 6)
+      dplyr::mutate(
+        het = ifelse(stringi::stri_sub(GT, 1, 3) != stringi::stri_sub(GT, 4, 6), 1, 0),
+        AL1 = stringi::stri_sub(GT, 1, 3),
+        AL2 = stringi::stri_sub(GT, 4, 6)
       ) %>% 
-      select(-GT) %>%
+      dplyr::select(-GT) %>%
       tidyr::gather(data = ., key = ALLELES_GROUP, value = ALLELES, -c(INDIVIDUALS, MARKERS, POP_ID, het)) %>%
-      select(-ALLELES_GROUP) %>% 
-      group_by(MARKERS, POP_ID, ALLELES) %>%
-      summarise(n = length(het[het == 1])) %>% 
-      group_by(MARKERS, ALLELES) %>% 
+      dplyr::select(-ALLELES_GROUP) %>% 
+      dplyr::group_by(MARKERS, POP_ID, ALLELES) %>%
+      dplyr::summarise(n = length(het[het == 1])) %>% 
+      dplyr::group_by(MARKERS, ALLELES) %>% 
       tidyr::spread(data = ., key = POP_ID, value = n, fill = 0) %>% 
       tidyr::gather(data = ., key = POP_ID, value = mho, -c(MARKERS, ALLELES))
     
     fst.stats.prep <- suppressWarnings(
       data.genotyped.het %>%
-        # group_by(MARKERS, POP_ID) %>%
+        # dplyr::group_by(MARKERS, POP_ID) %>%
         # = the number of heterozygote individuals per pop and markers
-        # summarise(mho = sum(het, na.rm = TRUE)) %>%  
-        # group_by(MARKERS) %>%
+        # dplyr::summarise(mho = sum(het, na.rm = TRUE)) %>%  
+        # dplyr::group_by(MARKERS) %>%
         # tidyr::spread(data = ., key = POP_ID, value = mho) %>%
         # tidyr::gather(key = POP_ID, value = mho, -MARKERS) %>%
-        # mutate(mho = as.numeric(stri_replace_na(str = mho, replacement = 0))) %>%
-        # full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS")) %>%
-        full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS", "ALLELES")) %>%
-        mutate(
+        # dplyr::mutate(mho = as.numeric(stringi::stri_replace_na(str = mho, replacement = 0))) %>%
+        # dplyr::full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS")) %>%
+        dplyr::full_join(freq.al.locus.pop, by = c("POP_ID", "MARKERS", "ALLELES")) %>%
+        dplyr::mutate(
           mhom = round(((2 * nal * P - mho)/2), 0),
           dum = nal * (P - 2 * P^2) + mhom
         ) %>%
-        group_by(MARKERS, ALLELES) %>%
-        full_join(freq.al.locus.global, by = c("MARKERS", "ALLELES")) %>%
-        mutate(
+        dplyr::group_by(MARKERS, ALLELES) %>%
+        dplyr::full_join(freq.al.locus.global, by = c("MARKERS", "ALLELES")) %>%
+        dplyr::mutate(
           SSi = sum(dum, na.rm = TRUE),
           dum1 = nal * (P - pb)^2
         ) %>%
-        group_by(MARKERS, ALLELES) %>%
-        mutate(SSP = 2 * sum(dum1, na.rm = TRUE)) %>%
-        group_by(MARKERS, POP_ID) %>%
-        mutate(SSG = nal * P - mhom) %>%
-        group_by(MARKERS, ALLELES) %>%
-        full_join(ncal, by = c("MARKERS", "ALLELES")) %>%
-        full_join(n.pop.locus, by = "MARKERS") %>%
-        rename(ntalb = npl) %>%
-        mutate(
+        dplyr::group_by(MARKERS, ALLELES) %>%
+        dplyr::mutate(SSP = 2 * sum(dum1, na.rm = TRUE)) %>%
+        dplyr::group_by(MARKERS, POP_ID) %>%
+        dplyr::mutate(SSG = nal * P - mhom) %>%
+        dplyr::group_by(MARKERS, ALLELES) %>%
+        dplyr::full_join(ncal, by = c("MARKERS", "ALLELES")) %>%
+        dplyr::full_join(n.pop.locus, by = "MARKERS") %>%
+        dplyr::rename(ntalb = npl) %>%
+        dplyr::mutate(
           sigw = round(sum(SSG, na.rm = TRUE), 2)/ntal,
           MSP = SSP/(ntalb - 1),
           MSI = SSi/(ntal - ntalb),
@@ -565,8 +565,8 @@ fst_WC84 <- function(
     # sigb: among individuals within populations
     # sigw: within individuals
     sigma.loc.alleles <- fst.stats.prep %>%
-      group_by(MARKERS, ALLELES) %>% 
-      summarise(
+      dplyr::group_by(MARKERS, ALLELES) %>% 
+      dplyr::summarise(
         siga = mean(siga, na.rm = TRUE),
         sigb = mean(sigb, na.rm = TRUE),
         sigw = mean(sigw, na.rm = TRUE)
@@ -578,33 +578,33 @@ fst_WC84 <- function(
     # lsigw: within individuals
     
     sigma.loc <- sigma.loc.alleles %>% 
-      group_by(MARKERS) %>%
-      summarise(
+      dplyr::group_by(MARKERS) %>%
+      dplyr::summarise(
         lsiga = round(sum(siga, na.rm = TRUE), digits),
         lsigb = round(sum(sigb, na.rm = TRUE), digits),
         lsigw = round(sum(sigw, na.rm = TRUE), digits)
       )
     
     fst.fis.markers <- sigma.loc %>% 
-      group_by(MARKERS) %>%
-      summarise(
+      dplyr::group_by(MARKERS) %>%
+      dplyr::summarise(
         FST = round(lsiga/(lsiga + lsigb + lsigw), digits),
         FIS = round(lsigb/(lsigb + lsigw), digits)
       ) %>% 
-      mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
+      dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
     
     fst.fis.overall <- sigma.loc.alleles %>% 
-      ungroup %>%
-      summarise(
+      dplyr::ungroup(.) %>%
+      dplyr::summarise(
         tsiga = sum(siga, na.rm = TRUE),
         tsigb = sum(sigb, na.rm = TRUE),
         tsigw = sum(sigw, na.rm = TRUE)
       ) %>% 
-      summarise(
+      dplyr::summarise(
         FST = round(tsiga/(tsiga + tsigb + tsigw), digits),
         FIS = round(tsigb/(tsigb + tsigw), digits)
       ) %>% 
-      mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
+      dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
     # add new column with number of markers
     fst.fis.overall$N_MARKERS <- n.markers
     
@@ -615,7 +615,7 @@ fst_WC84 <- function(
       boot.fst.list <- purrr::map(.x = 1:iteration.ci, .f = boot_ci, sigma.loc.alleles = sigma.loc.alleles)
       boot.fst <- bind_rows(boot.fst.list)
       boot.fst.summary <- boot.fst %>% 
-        summarise(
+        dplyr::summarise(
           CI_LOW = round(quantile(FST, 
                                   probs = quantiles.ci[1], 
                                   na.rm = TRUE), 
@@ -629,14 +629,14 @@ fst_WC84 <- function(
     
     # Fst markers  -------------------------------------------------------------
     fst.markers <- fst.fis.markers %>% 
-      select(MARKERS, FST) %>% 
-      arrange(MARKERS)
+      dplyr::select(MARKERS, FST) %>% 
+      dplyr::arrange(MARKERS)
     
     # Ranked fst   -------------------------------------------------------------
     fst.ranked <- fst.markers %>%
-      arrange(desc(FST)) %>%
-      select(MARKERS, FST) %>%
-      mutate(
+      dplyr::arrange(desc(FST)) %>%
+      dplyr::select(MARKERS, FST) %>%
+      dplyr::mutate(
         RANKING = seq(from = 1, to = n()),
         QUARTILE = ntile(FST,10)
       )
@@ -644,20 +644,20 @@ fst_WC84 <- function(
     # Fst overall  -------------------------------------------------------------
     if (ci) {
       fst.overall <- fst.fis.overall %>% 
-        select(FST, N_MARKERS) %>% 
+        dplyr::select(FST, N_MARKERS) %>% 
         bind_cols(boot.fst.summary)
     } else {
       fst.overall <- fst.fis.overall %>% 
-        select(FST, N_MARKERS)
+        dplyr::select(FST, N_MARKERS)
     }
     
     # Fis markers  -------------------------------------------------------------
     fis.markers <- fst.fis.markers %>% 
-      select(MARKERS, FIS) %>% 
-      arrange(MARKERS)
+      dplyr::select(MARKERS, FIS) %>% 
+      dplyr::arrange(MARKERS)
     
     # Fis overall   ------------------------------------------------------------
-    fis.overall <- fst.fis.overall %>% select(FIS, N_MARKERS)
+    fis.overall <- fst.fis.overall %>% dplyr::select(FIS, N_MARKERS)
     
     # Plot -----------------------------------------------------------------------
     fst.plot <- ggplot(fst.markers, aes(x = FST, na.rm = T)) +
@@ -687,15 +687,15 @@ fst_WC84 <- function(
   
   # Pairwise Fst function
   pairwise_fst <- function(list.pair, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
-    pop.select <- stri_paste(flatten(pop.pairwise[list.pair]))
+    pop.select <- stringi::stri_join(purrr::flatten(pop.pairwise[list.pair]))
     data.select <- data.genotyped %>% 
-      filter(POP_ID %in% pop.select) %>% 
-      mutate(POP_ID = droplevels(x = POP_ID))
+      dplyr::filter(POP_ID %in% pop.select) %>% 
+      dplyr::mutate(POP_ID = droplevels(x = POP_ID))
     fst.select <- compute_fst(x = data.select, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci)
     # if (ci){
     df.select <- data_frame(POP1 = pop.select[1], POP2 = pop.select[2])
     df.select <- bind_cols(df.select, fst.select$fst.overall) 
-    # %>% rename(FST = fst.overall)
+    # %>% dplyr::rename(FST = fst.overall)
     # } else {
     # df.select <- data_frame(POP1 = pop.select[1], 
     # POP2 = pop.select[2], 
@@ -731,15 +731,15 @@ fst_WC84 <- function(
     
     # Table with Fst------------------------------------------------------------
     pairwise.fst <- bind_rows(fst.all.pop) %>% 
-      mutate(
+      dplyr::mutate(
         POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
         POP2 = factor(POP2, levels = pop.list, ordered = TRUE)
       )
     # Matrix--------------------------------------------------------------------
     upper.mat.fst <- pairwise.fst %>% 
-      select(POP1, POP2, FST) %>% 
+      dplyr::select(POP1, POP2, FST) %>% 
       tidyr::spread(data = ., POP2, FST, fill = "", drop = FALSE) %>% 
-      rename(POP = POP1)
+      dplyr::rename(POP = POP1)
     rn <- upper.mat.fst$POP # rownames
     upper.mat.fst <- as.matrix(upper.mat.fst[,-1])# make matrix without first column
     rownames(upper.mat.fst) <- rn
@@ -756,10 +756,10 @@ fst_WC84 <- function(
     if (ci) {
       # bind upper and lower diagonal of matrix
       lower.mat.ci <- pairwise.fst %>% 
-        select(POP1, POP2, CI_LOW, CI_HIGH) %>% 
+        dplyr::select(POP1, POP2, CI_LOW, CI_HIGH) %>% 
         tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>% 
         tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>% 
-        rename(POP = POP1)
+        dplyr::rename(POP = POP1)
       
       cn <- colnames(lower.mat.ci) # bk of colnames
       lower.mat.ci <- t(lower.mat.ci[,-1]) # transpose
@@ -786,10 +786,12 @@ fst_WC84 <- function(
   if (verbose) {
     cat("############################### RESULTS ###############################\n")
     if (ci) {
-      message(stri_paste("Fst (overall): ", res$fst.overall$FST, " [", res$fst.overall$CI_LOW, " - ", res$fst.overall$CI_HIGH, "]"))
+      message(stringi::stri_join("Fst (overall): ", res$fst.overall$FST, " [", res$fst.overall$CI_LOW, " - ", res$fst.overall$CI_HIGH, "]"))
     } else{
-      message(stri_paste("Fst (overall): ", res$fst.overall$FST))
+      message(stringi::stri_join("Fst (overall): ", res$fst.overall$FST))
     }
+    timing <- proc.time() - timing
+    message(stringi::stri_join("Computation time: ", round(timing[[3]]), " sec"))
     cat("#######################################################################\n")
   }
   # Results pairwise -----------------------------------------------------------

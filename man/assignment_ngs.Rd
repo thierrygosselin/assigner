@@ -275,7 +275,7 @@ Default: \code{keep.gsi.files = FALSE}}
 \item{parallel.core}{(optional) The number of core for OpenMP shared-memory parallel
 programming of Random Forest imputations. For more info on how to install the
 OpenMP version see \code{\link[randomForestSRC]{randomForestSRC-package}}.
-If not selected \code{detectCores()-1} is used as default.}
+If not selected \code{detectCores() - 1} is used as default.}
 }
 \value{
 Depending on arguments selected, several files are written to the your
