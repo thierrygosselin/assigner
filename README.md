@@ -134,6 +134,7 @@ For previous news:
     * [installation problems](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
     * [parallel computing during imputations](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd) 
     * [Pairwise and overall Fst with confidence intervals + building phylogenetic tree](https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_confidence_intervals.Rmd)
+    * Why use assigner to compute Fst of W&C (1984) in R ? [R Notebook](https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_comparisons.Rmd) [html vignette](https://www.dropbox.com/s/fl4s30enh6nnxiy/fst_comparisons.nb.html?dl=0)
     * **github** : [link](https://github.com/thierrygosselin/assigner/tree/master/vignettes)
 
 * **inside R**
