@@ -37,19 +37,19 @@ This is the development page of the **assigner** package for the R software. The
 Next-generation sequencing techniques that reduce the size of the genome (e.g. genotype-by-sequencing (GBS) and
 restriction-site-associated DNA sequencing (RADseq)) produce huge numbers of markers that hold great potential and promises for assignment analysis. After hitting the bioinformatic wall with the different workflows you'll likely end up with several folders containing whitelist and blacklist of markers and individuals, data sets with various *de novo* and/or filtering parameters and missing data. This reality of GBS/RADseq data is quite hard on GUI software traditionally used for assignment analysis. The end results is usually poor data exploration, constrained by time, and poor reproducibility.
 
-**assigner** was tailored to make it easy to conduct assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like [R Notebook] (http://rmarkdown.rstudio.com/r_notebooks.html), [RStudio] (https://www.rstudio.com) and [GitHub] (https://github.com) will make effortless documenting your workflows and pipelines.
+**assigner** was tailored to make it easy to conduct assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like [R Notebook](http://rmarkdown.rstudio.com/r_notebooks.html), [RStudio](https://www.rstudio.com) and [GitHub](https://github.com) will make effortless documenting your workflows and pipelines.
 
 **assigner features:**
 
-* **Conduct assignment analysis** and **mixture analysis** using [gsi_sim] (https://github.com/eriqande/gsi_sim), a tool developed 
-by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet] (https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis.
+* **Conduct assignment analysis** and **mixture analysis** using [gsi_sim](https://github.com/eriqande/gsi_sim), a tool developed 
+by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet](https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis.
 * The input file are:
     1. **VCF** (Danecek et al. 2011),
     2. **PLINK** tped/tfam format (Purcell et al. 2007), usefull for very 
     large files (> 50 000 markers),
-    3. **genind** and **genlight** objets from [adegenet] (https://github.com/thibautjombart/adegenet) (Jombart et al. 2010; Jombart and Ahmed, 2011)
+    3. **genind** and **genlight** objets from [adegenet](https://github.com/thibautjombart/adegenet) (Jombart et al. 2010; Jombart and Ahmed, 2011)
     4. **genepop** for traditionalists... (Raymond and Rousset 1995; Rousset 2008) 
-    5. **haplotypes data frame file** produced by [STACKS] (http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013). (e.g. *batch_x.haplotypes.tsv*) 
+    5. **haplotypes data frame file** produced by [STACKS](http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013). (e.g. *batch_x.haplotypes.tsv*) 
     6. a data frame of genotypes in wide or long/tidy format
 * Markers can be randomly selected for a **classic LOO (Leave-One-Out) assignment** or 
 chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis** (reviewed in Anderson 2010)
@@ -62,8 +62,8 @@ whitelist** and other arguments
   + Genotypes of poor quality (e.g. in coverage, **genotype likelihood** or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument
   + The impact of the **minor allele frequency**, MAF, (local and global) can also be easily explored with custom thresholds
   + Use the `whitelist.markers` argument to explore the impact of filters used in other software
-* Import and summarise the assignment results from [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
-* Using [GenoDive] (http://www.bentleydrummer.nl/software/software/GenoDive.html) output, compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
+* Import and summarise the assignment results from [GenoDive](http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
+* Using [GenoDive](http://www.bentleydrummer.nl/software/software/GenoDive.html) output, compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
 * `ggplot2`-based plotting to view assignment results and create publication-ready figures
 * Fast computations with optimized codes to run in parallel!
 
@@ -76,7 +76,7 @@ To try out the dev version of **assigner**, follow the 3 steps below:
 if (!require("devtools")) install.packages("devtools") # to install
 ```
 
-**Step 2:** Install **assigner** and install [gsi_sim] (https://github.com/eriqande/gsi_sim) from source
+**Step 2:** Install **assigner** and install [gsi_sim](https://github.com/eriqande/gsi_sim) from source
 ```r
 devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
 assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
@@ -124,21 +124,21 @@ If you decide to keep intermediate files during assignment analysis,
 you will need a large external drive (disk space is cheap). 
 Solid State Drive and thunderbolt cables will provide fast input/output. 
 
-If disk space and computer power is an issue, cloud computing with [Google Cloud Compute Engine] (https://cloud.google.com/compute/) and 
-[Amazon Elastic Cloud Compute] (https://aws.amazon.com/ec2/) is cheap and can be used easily. 
+If disk space and computer power is an issue, cloud computing with [Google Cloud Compute Engine](https://cloud.google.com/compute/) and 
+[Amazon Elastic Cloud Compute](https://aws.amazon.com/ec2/) is cheap and can be used easily. 
 
 A tutorial and pipeline along an Amazon Machine Image (AMI) are available 
-in our [tutorial-workflow] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/). 
+in our [tutorial-workflow](http://gbs-cloud-tutorial.readthedocs.org/en/latest/). 
 
 The AMI is preloaded with **gsi_sim** and the required **R packages**. 
-Following a few steps: [link] (http://gbs-cloud-tutorial.readthedocs.org/en/latest/10_use_rstudio.html), 
-you can have [RStudio server] (https://www.rstudio.com/) running and used through your web browser!
+Following a few steps: [link](http://gbs-cloud-tutorial.readthedocs.org/en/latest/10_use_rstudio.html), 
+you can have [RStudio server](https://www.rstudio.com/) running and used through your web browser!
 
-The Amazon image can be imported into Google Cloud Compute Engine to start a new compute engine virtual machine: [link] (https://cloud.google.com/compute/docs/creating-custom-image#import_an_ami_image). 
+The Amazon image can be imported into Google Cloud Compute Engine to start a new compute engine virtual machine: [link](https://cloud.google.com/compute/docs/creating-custom-image#import_an_ami_image). 
 
 
 ## New features
-Change log, version, new features and bug history now lives in the [NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
+Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
 **v.0.3.5**
 * bug fix in population not recognise properly
@@ -152,7 +152,7 @@ Bootstrap resampling of markers is avalaible to build Confidence Intervals. The 
 
 
 For previous news:
-[NEWS.md file] (https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
+[NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
 
 ## Examples and Vignettes
