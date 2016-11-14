@@ -28,7 +28,7 @@ gsi_sim_is_executable <- function() {
 #' @export
 #' @keywords internal
 gsi_sim_binary <- function() {
-  if(!gsi_sim_exists()) stop("Can't find the gsi_sim executable where it was expected
+  if (!gsi_sim_exists()) stop("Can't find the gsi_sim executable where it was expected
 at ", gsi_sim_binary_path(), ".  
 If you have internet access, you can install it
 from within R by invoking the function \"install_gsi_sim()\"")
@@ -60,6 +60,8 @@ from within R by invoking the function \"install_gsi_sim()\"")
 #' binary is not available, then it will attempt to download the source.  
 #' @export
 #' @keywords internal
+#' @importFrom utils download.file
+#' 
 install_gsi_sim <- function(commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a", fromSource = FALSE) {
   
   # make a bin directory
@@ -69,23 +71,23 @@ install_gsi_sim <- function(commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a",
   urlbase <- paste("https://github.com/eriqande/gsi_sim/blob/", commit,
                "/gsi_sim-", sep = "")
   
-  if(fromSource == FALSE) {
-    if(uname == "Darwin") {
+  if (fromSource == FALSE) {
+    if (uname == "Darwin") {
       url <- paste(urlbase, "Darwin", sep = "")
     }
-    if(uname == "Windows") {
+    if (uname == "Windows") {
       url <- paste(urlbase, "MINGW32_NT-6.1", sep = "")
     }
-    if(uname == "Darwin" || uname == "Windows") {
+    if (uname == "Darwin" || uname == "Windows") {
       message("Downloading file ", url)
       message("And copying to ", gsi_sim_binary_path())
-      download.file(url = url, destfile = gsi_sim_binary_path())
+      utils::download.file(url = url, destfile = gsi_sim_binary_path())
       Sys.chmod(gsi_sim_binary_path()) # make it executable
     }
     return(NULL)
   }
   
-  if(uname == "Linux" || fromSource == TRUE) {  # in this case we will just compile from source
+  if (uname == "Linux" || fromSource == TRUE) {  # in this case we will just compile from source
     td <- tempdir()
     
     message("Will be cloning gsi_sim repository to ", td)
@@ -102,14 +104,14 @@ install_gsi_sim <- function(commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a",
                   "&& git submodule init && git submodule update ",
                   "&& ./Compile_gsi_sim.sh ", sep = "")
     boing <- system(comm)
-    if(boing != 0) {
+    if (boing != 0) {
       stop("Failed trying to clone and compile gsi_sim")
     } else {
       message("Apparently successful compiling gsi_sim.  Now copying to ", gsi_sim_binary_path())
       trycopy <- file.copy(from = paste(td, "/gsi_sim/gsi_sim-", uname, sep = ""), 
                 to = gsi_sim_binary_path(),
                 overwrite = TRUE)
-      if(trycopy == FALSE) stop("Apparently failed trying to copy ", 
+      if (trycopy == FALSE) stop("Apparently failed trying to copy ", 
                                 paste(td, "/gsi_sim/gsi_sim-", uname, sep = ""),
                                 "to ",
                                 gsi_sim_binary_path())
