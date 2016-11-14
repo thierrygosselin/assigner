@@ -1,6 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-[![packageversion](https://img.shields.io/badge/Package%20version-0.3.5-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--11--09-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.3.6-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--11--14-brightgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -57,22 +57,27 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 
 **Step 3 (optional): Parallel computing** Install an OpenMP enabled [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) package to do imputation in parallel. Follow the steps in this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.
 
-**<Notes:**> \* **Problems during installation:\*\* see this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd) \* I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) to run **assigner**. The R GUI is unstable with functions using parallel. \* **Windows users**: 1. Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/). 2. To have *assigner* run in parallel, use [parallelsugar](https://github.com/nathanvan/parallelsugar). Easy to install and use ([instructions](https://github.com/nathanvan/parallelsugar#installation)). **Dependencies:** \* **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, plyr, dplyr (&gt;= 0.5.0), stackr (&gt;= 0.2.9) \* **Suggests:** devtools, knitr, rmarkdown \* **Remotes:** github::thierrygosselin/stackr
+\*\*<Notes:**>
+
+-   **Problems during installation:** see this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
+-   I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) to run **assigner**. The R GUI is unstable with functions using parallel.
+-   **Windows users**: 1. Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/). 2. To have *assigner* run in parallel, use [parallelsugar](https://github.com/nathanvan/parallelsugar). Easy to install and use ([instructions](https://github.com/nathanvan/parallelsugar#installation)). **Dependencies:**
+-   **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, plyr, dplyr (&gt;= 0.5.0), stackr (&gt;= 0.2.9)
+-   **Suggests:** devtools, knitr, rmarkdown
+-   **Remotes:** github::thierrygosselin/stackr
 
 A quick way to install/load required packages and start using my packages (copy/paste the whole block):
 
 ``` r
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, tibble, readr, purrr, data.table, ape, adegenet, parallel, lazyeval, randomForestSRC)
-if (!require("stackr")){
-  install_github("thierrygosselin/stackr", build_vignettes = TRUE)
-  library("stackr")
-}
-if (!require("assigner")) {
-  install_github("thierrygosselin/assigner", build_vignettes = TRUE)
-  # if assigner was re-installed, uncomment and run the next line to install gsi_sim:
-  #install_gsi_sim(fromSource = TRUE) 
-  library("assigner")
+library("pacman")
+pacman::p_load(devtools, tidyverse, data.table, parallel, lazyeval, randomForestSRC)
+pacman::p_load(devtools, tidyverse, data.table, parallel, lazyeval, randomForestSRC)
+devtools::install_github("thierrygosselin/stackr", build_vignettes = TRUE)
+library("stackr")
+devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)
+library("assigner")
+assigner::install_gsi_sim(fromSource = TRUE) 
 }
 ```
 
@@ -94,11 +99,23 @@ New features
 
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
-**v.0.3.5** \* bug fix in population not recognise properly
+**v.0.3.6**
 
-**v.0.3.4** \* `fst_NEI87`: very fast function that can compute: the overall and pairwise Nei's (1987) fst and f'st (prime). Bootstrap resampling of markers is avalaible to build Confidence Intervals. The estimates are available as a data frame and a matrix with upper diagonal filled with Fst values and lower diagonal filled with the confidence intervals. Jost's D is also given ;)
+-   bug fix `assignment_ngs` during imputation, the imputation module could not recognise that REF/ALT allele are not necessary or usefull for assignment analysis. \*enhancement to `assignment_ngs` and `assignment_mixture` so that when `marker.number` include `"all"` the `iteration.method` is set automatically to `1` when conducting the assignment with all the markers. Iterations at this point is useless.
+-   random seed number is now stored in the appropriate files.
+-   `assignment_mixture`: with `assignment.analysis = "gsi_sim` the unknown/mixture samples are compared with baseline populations using common markers between the pair. Now, the tables include the number of markers used. The summary provides the mean number of markers. This number will change each time randomness is used.
 
-**v.0.3.3** \* `fst_WC84`: bug fix, the function was not properly configured for multi-allelic markers (e.g. microsatellite, and haplotype format from STACKS). Thanks to Craig McDougall for catching this.
+**v.0.3.5**
+
+-   bug fix in population not recognise properly
+
+**v.0.3.4**
+
+-   `fst_NEI87`: very fast function that can compute: the overall and pairwise Nei's (1987) fst and f'st (prime). Bootstrap resampling of markers is avalaible to build Confidence Intervals. The estimates are available as a data frame and a matrix with upper diagonal filled with Fst values and lower diagonal filled with the confidence intervals. Jost's D is also given ;)
+
+**v.0.3.3**
+
+-   `fst_WC84`: bug fix, the function was not properly configured for multi-allelic markers (e.g. microsatellite, and haplotype format from STACKS). Thanks to Craig McDougall for catching this.
 
 For previous news: [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
@@ -145,10 +162,17 @@ Contributions:
 --------------
 
 This package has been developed in the open, and it wouldn’t be nearly as good without your contributions. There are a number of ways you can help me make this package even better:
-\* If you don’t understand something, please let me know. \* Your feedback on what is confusing or hard to understand is valuable. \* If you spot a typo, feel free to edit the underlying page and send a pull request.
+
+-   If you don’t understand something, please let me know.
+-   Your feedback on what is confusing or hard to understand is valuable.
+-   If you spot a typo, feel free to edit the underlying page and send a pull request.
 
 New to pull request on github ? The process is very easy:
-\* Click the edit this page on the sidebar. \* Make the changes using github’s in-page editor and save. \* Submit a pull request and include a brief description of your changes. \* “Fixing typos” is perfectly adequate.
+
+-   Click the edit this page on the sidebar.
+-   Make the changes using github’s in-page editor and save.
+-   Submit a pull request and include a brief description of your changes.
+-   “Fixing typos” is perfectly adequate.
 
 Citation:
 ---------

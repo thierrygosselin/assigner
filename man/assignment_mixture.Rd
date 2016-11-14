@@ -2,8 +2,7 @@
 % Please edit documentation in R/assignment_mixture.R
 \name{assignment_mixture}
 \alias{assignment_mixture}
-\title{Mixture/Baseline assignment analysis of massive parallel sequencing data (GBS/RADseq, 
-SNP chip, etc) using \code{gsi_sim} and \code{\link[adegenet]{adegenet}}}
+\title{Mixture/Baseline assignment analysis tailored for RADseq data}
 \usage{
 assignment_mixture(data, strata = NULL, mixture = NULL, assignment.analysis,
   sampling.method, iteration.method = 10, subsample = NULL,
@@ -17,15 +16,22 @@ assignment_mixture(data, strata = NULL, mixture = NULL, assignment.analysis,
   imputations.group = "populations", num.tree = 100, iteration.rf = 10,
   split.number = 100, verbose = FALSE, folder = NULL,
   filename = "assignment_data.txt", keep.gsi.files = FALSE,
-  parallel.core = detectCores() - 1)
+  random.seed = NULL, parallel.core = parallel::detectCores() - 1)
 }
 \arguments{
-\item{data}{6 options: vcf (to make vcf population ready, see details below),
-plink, stacks haplotype file, genind, genepop, 
+\item{data}{8 options: vcf (to make vcf population ready, see details below),
+plink, stacks haplotype file, genind (library(adegenet)), 
+genlight (library(adegenet)), gtypes (library(strataG)), genepop, 
 and a data frame in wide format. \emph{See details}.}
 
-\item{strata}{(optional for data frame and PLINK files, 
-required for VCF and haplotypes files) A tab delimited file with 2 columns with header:
+\item{strata}{(optional/required) Required for VCF and haplotypes files, 
+optional for the other file formats supported.
+
+\strong{mixture samples}: use \code{"mixture"} or \code{"unknown"} inside the
+\code{STRATA} column to identify samples not in the baseline,
+but see details on the other ways to identify your unknown or mixture samples.
+
+The strata file is a tab delimited file with 2 columns with header:
 \code{INDIVIDUALS} and \code{STRATA}. With a 
 data frame of genotypes the strata is the INDIVIDUALS and POP_ID columns, with
 PLINK files, the \code{tfam} first 2 columns are used. 
@@ -36,32 +42,34 @@ If you have already run
 \href{http://catchenlab.life.illinois.edu/stacks/}{stacks} on your data, 
 the strata file is similar to a stacks `population map file`, make sure you 
 have the required column names  (\code{INDIVIDUALS} and \code{STRATA}).
-Default: \code{strata = NULL}.
-\strong{mixture samples}: use \code{"mixture"} or \code{"unknown"} inside the
-\code{STRATA} column to identify samples not in the baseline,
-but see details on the other ways to identify your unknown or mixture samples.}
+Default: \code{strata = NULL}.}
 
 \item{mixture}{(optional) A file in the working directory (e.g. "mixture.txt")
 with mixture individual ID. The column header is \code{INDIVIDUALS}.
 Default: \code{mixture = NULL}, but see details on the different ways to 
 identify your unknown or mixture samples.}
 
-\item{assignment.analysis}{Assignment analysis conducted with 
+\item{assignment.analysis}{(character) Assignment analysis conducted with 
 \code{assignment.analysis = "gsi_sim"} or 
 \code{assignment.analysis = "adegenet"}.}
 
 \item{sampling.method}{(character) Should the markers be randomly selected
-\code{"random"} for a classic Leave-One-Out (LOO) assignment or
-chosen based on ranked Fst \code{"ranked"} using the baseline samples 
-for the training and the mixture samples as holdout. 
+\code{sampling.method = "random"}, for a classic Leave-One-Out (LOO)
+assignment or chosen based on ranked Fst \code{sampling.method = "ranked"},
+using the baseline samples for the training and the mixture samples as holdout. 
 Classic Leave-one-out is then used to assign individual mixture samples.}
 
 \item{iteration.method}{With random marker selection the iterations argument =
-the number of iterations to repeat marker resampling. 
-Default: \code{iteration.method = 10}.
+the number of iterations to repeat marker resampling.
 With \code{marker.number = c(500, 1000)} and default iterations setting,
 500 markers will be randomly chosen 10 times and 1000 markers will be randomly
-chosen 10 times.}
+chosen 10 times.
+
+\strong{Notes:} If all the markers are used, with \code{marker.number = "all"}
+or in a series of marker number groupings \code{marker.number = c(200, 500, "all")},
+the number of iteration is automatically set to 1. The remaining groupings
+are unaffected.
+Default: \code{iteration.method = 10}.}
 
 \item{subsample}{(Integer or Proportion) Default is no sumsampling, 
 \code{subsample = NULL}.
@@ -77,10 +85,11 @@ With \code{subsample = 20} and \code{iteration.subsample = 10},
 20 individuals/populations will be randomly chosen 10 times.}
 
 \item{marker.number}{(Integer or string of number or "all") Calculations with
-fixed or subsample of your markers. Default= \code{"all"}.
-e.g. To test 500, 1000, 2000 and all the markers:
+fixed or subsample of your markers.
+e.g. To test 500, 1000, 2000 and all  the markers:
 \code{marker.number = c(500, 1000, 2000, "all")}.
-To use only 500 makers \code{marker.number = 500}.}
+To use only 500 makers \code{marker.number = 500}.
+Default = \code{marker.number = "all"}.}
 
 \item{blacklist.id}{(optional) A blacklist with individual ID and
 a column header 'INDIVIDUALS'. The blacklist is in the working directory
@@ -163,6 +172,7 @@ case, the id of the pop.
 Use this argument to have the pop ordered your way instead of the default 
 alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
 instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
+White spaces in population names are replaced by underscore.
 Default: \code{pop.levels = NULL}.}
 
 \item{pop.labels}{(optional, string) Use this argument to rename/relabel
@@ -171,13 +181,14 @@ into a new pop called \code{"NEW"}:
 (1) First, define the levels for your pop with \code{pop.levels} argument: 
 \code{pop.levels = c("QUE", "ONT", "ALB")}. 
 (2) then, use \code{pop.labels} argument: 
-\code{pop.levels = c("NEW", "NEW", "ALB")}.#' 
+\code{pop.levels = c("NEW", "NEW", "ALB")}.
 To rename \code{"QUE"} to \code{"TAS"}:
 \code{pop.labels = c("TAS", "ONT", "ALB")}.
 Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
-\code{strata} argument that can do the same thing, see below.}
+\code{strata} argument that can do the same thing, see below.
+White spaces in population names are replaced by underscore.}
 
-\item{pop.select}{(string, optional) Selected list of populations for 
+\item{pop.select}{(string, optional) Selected list of populations for
 the analysis. e.g. \code{pop.select = c("QUE", "ONT")} to select \code{QUE}
 and \code{ONT} population samples (out of 20 pops).
 Default: \code{pop.select = NULL}}
@@ -227,10 +238,17 @@ Use the extension ".txt" at the end.
 Default \code{filename = assignment_data.txt}.
 The number of markers used will be appended to the name of the file.}
 
-\item{keep.gsi.files}{(Logical) With default: \code{keep.gsi.files = FALSE}, 
-the input and output gsi_sim files
-will be deleted from the directory when finished processing.
-With \code{keep.gsi.files = TRUE}, remember to allocate a large chunk of the disk space for the analysis.}
+\item{keep.gsi.files}{(logical, optional) With the default, 
+the intermediate input and output gsi_sim files will be deleted from the 
+directory when finished processing. I you decide to keep the files, with 
+\code{keep.gsi.files = TRUE}, remember to allocate a large chunk of the disk 
+space for the analysis.
+Default: \code{keep.gsi.files = FALSE}}
+
+\item{random.seed}{(integer, optional) For reproducibility, set an integer
+that will be used inside function that requires randomness. With default,
+a random number is generated and printed in the appropriate output.
+Default: \code{random.seed = NULL}.}
 
 \item{parallel.core}{(optional) The number of core for OpenMP shared-memory parallel
 programming of Random Forest imputations. For more info on how to install the
@@ -246,16 +264,18 @@ The output in your global environment is a list. To view the assignment results
 \description{
 The arguments in the \code{assignment_mixture} function were tailored for the
 reality of GBS/RADseq data for assignment analysis of mixture or unknown samples, 
-while maintaining a reproducible workflow.
+while maintaining a reproducible workflow. Assignment are conducted
+using \code{gsi_sim} or \code{\link[adegenet]{adegenet}}.
 
 \itemize{
   \item \strong{Input file:} various file format are supported (see \code{data} argument below)
   \item \strong{Filters:} genotypes, markers, individuals and populations can be 
   filtered and/or selected in several ways using blacklist,
-  whitelist and other arguments
+  whitelist and other arguments.
   \item \strong{Cross-Validations:} Markers can be randomly selected for a classic LOO (Leave-One-Out)
   assignment or chosen based on ranked Fst for a thl
-  (Training, Holdout, Leave-one-out) assignment analysis
+  (Training, Holdout, Leave-one-out) assignment analysis.
+  Baseline = training set, Mixture/unknown = holdout/test set.
   \item \strong{Imputations:} Map-independent imputation of missing genotype/alleles
   using Random Forest or the most frequent category.
   \item \strong{Assignment analysis:} conducted in 
@@ -279,57 +299,8 @@ an R package developed by Thibaul Jombart
   }
 
 \strong{Input files:}
-\enumerate{
-\item VCF file (e.g. \code{data = "batch_1.vcf"}). 
-To make the VCF population ready, you need the \code{strata} argument.
-
-\item haplotype file created in STACKS (e.g. \code{data = "batch_1.haplotypes.tsv"}).
-To make the haplotype file population ready, you need the \code{strata} argument.
-
-\item Data frame
-To discriminate the long from the wide format, 
-the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
-for "MARKERS" in column names (TRUE = long format).
-The data frame is tab delimitted.
-\strong{Wide format:}
-The wide format cannot store metadata info.
-The wide format starts with these 2 id columns: 
-\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
-the remaining columns are the markers in separate columns storing genotypes.
-
-\strong{Long/Tidy format:}
-The long format is considered to be a tidy data frame and can store metadata info. 
-(e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). A minimum of 4 columns
-are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
-\code{MARKERS} and \code{GENOTYPE or GT}. The rest are considered metata info.
-
-\strong{2 genotypes formats are available:}
-6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
-6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
-The separator can be any of these: \code{"/", ":", "_", "-", "."}.
-
-\emph{How to get a tidy data frame ?}
-\pkg{stackr} \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
-in a tidy data frame.
-
-\item PLINK file in 
-\code{tped/tfam} format (e.g. \code{data =  "data.assignment.tped"}). 
-The first 2 columns of the \code{tfam} file will be used for the 
-\code{strata} argument below, unless a new one is provided. 
-Columns 1, 3 and 4 of the \code{tped} are discarded. The remaining columns 
-correspond to the genotype in the format \code{01/04} 
-where \code{A = 01, C = 02, G = 03 and T = 04}. For \code{A/T} format, use 
-PLINK or bash to convert.
-Use \href{http://vcftools.sourceforge.net/}{VCFTOOLS} with \code{--plink-tped} 
-to convert very large VCF file. For \code{.ped} file conversion to 
-\code{.tped} use \href{http://pngu.mgh.harvard.edu/~purcell/plink/}{PLINK} 
-with \code{--recode transpose},
-
-\item \code{\link[adegenet]{genind}} object from \code{\link[adegenet]{adegenet}}.
-
-\item genepop data file (e.g. \code{data = kiwi_data.gen}). Here, the function can only use
-alleles encoded with 3 digits.
-}
+\strong{Input files:} see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}
+for detailed information about supported file format.
 
 \strong{Imputations:}
 
@@ -339,8 +310,9 @@ minutes and hours depending on the size of the dataset and polymorphism of
 the species used. e.g. with a low polymorphic taxa, and a data set
 containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
 will require 15 min. This is using multiple CPUs. To have your computer ready
-for parallel computing during imputations follow the steps in this 
-vignette (~10 min) : `vignette("vignette_imputations_parallel")`
+for parallel computing during imputations follow the steps in the
+\href{https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd}{vignette}
+(~10 min)
 
 \strong{THL, Ranking and Fst:}
 

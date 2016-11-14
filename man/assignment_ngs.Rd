@@ -2,8 +2,7 @@
 % Please edit documentation in R/assignment_ngs.R
 \name{assignment_ngs}
 \alias{assignment_ngs}
-\title{Assignment analysis of massive parallel sequencing data (GBS/RADseq, 
-SNP chip, etc) using \href{https://github.com/eriqande/gsi_sim}{gsi_sim} and \code{\link[adegenet]{adegenet}}.}
+\title{Assignment analysis tailored for RADseq data}
 \usage{
 assignment_ngs(data, assignment.analysis, sampling.method,
   adegenet.dapc.opt = "optim.a.score", adegenet.n.rep = 30,
@@ -18,25 +17,22 @@ assignment_ngs(data, assignment.analysis, sampling.method,
   imputations.group = "populations", num.tree = 100, iteration.rf = 10,
   split.number = 100, verbose = FALSE, folder = NULL,
   filename = "assignment_data.txt", keep.gsi.files = FALSE,
-  parallel.core = detectCores() - 1)
+  random.seed = NULL, parallel.core = parallel::detectCores() - 1)
 }
 \arguments{
-\item{data}{8 options: vcf, plink, stacks haplotype file, genind, genlight, 
-genepop, and a data frame in wide or long/tidy format. 
-The function uses 
-\href{https://github.com/thierrygosselin/stackr}{stackr} 
-\code{\link[stackr]{read_long_tidy_wide}} and 
-\code{\link[stackr]{tidy_genomic_data}}.
-\emph{See details}.}
+\item{data}{8 options: vcf (to make vcf population ready, see details below),
+plink, stacks haplotype file, genind (library(adegenet)), 
+genlight (library(adegenet)), gtypes (library(strataG)), genepop, 
+and a data frame in wide format. \emph{See details}.}
 
-\item{assignment.analysis}{Assignment analysis conducted with 
+\item{assignment.analysis}{(character) Assignment analysis conducted with 
 \code{assignment.analysis = "gsi_sim"} or 
 \code{assignment.analysis = "adegenet"}.}
 
 \item{sampling.method}{(character) Should the markers be randomly selected
 \code{sampling.method == "random"} for a classic Leave-One-Out (LOO) assignment or
 chosen based on ranked Fst \code{sampling.method == "ranked"}, used in a
-Training-Holdout-Leave One Out (thl) assignment ?
+Training-Holdout-Leave One Out (thl) assignment. 
 \emph{See details}.}
 
 \item{adegenet.dapc.opt}{(optional, character) \strong{Argument available only when 
@@ -49,8 +45,7 @@ The assignment using dapc can use the optimized alpha score
 cross-validation \code{adegenet.dapc.opt == "xval"}
 for stability of group membership probabilities. 
 For fine tuning the trade-off between power of discrimination and over-fitting.
-See \pkg{adegenet} documentation for more details. 
-
+See \pkg{adegenet} documentation for more details.
 \code{adegenet.dapc.opt == "xval"} doesn't work with missing data, so it's 
 only available with \strong{imputed data} (i.e. imputation.method == "rf" or "max").
 With non imputed data or the default: \code{adegenet.dapc.opt == "optim.a.score"}.}
@@ -82,12 +77,19 @@ With \code{thl = "all"} all individuals are used for ranking (not good) and
 For the other thl values, you can create different holdout individuals lists
 with the \code{iteration.method} argument below (bootstrap).}
 
-\item{iteration.method}{With random marker selection the iterations argument =
+\item{iteration.method}{(integer) With random marker selection the iterations argument =
 the number of iterations to repeat marker resampling. 
 Default: \code{iteration.method = 10}.
 With \code{marker.number = c(500, 1000)} and default iterations setting,
 500 markers will be randomly chosen 10 times and 1000 markers will be randomly
-chosen 10 times. For the ranked method, using \code{thl = 1}, the analysis
+chosen 10 times.
+
+\strong{Notes:} If all the markers are used, with \code{marker.number = "all"}
+or in a series of marker number groupings \code{marker.number = c(200, 500, "all")}, 
+the number of iteration is automatically set to 1. The remaining groupings
+are unaffected.
+
+For the ranked method, using \code{thl = 1}, the analysis
 will be repeated for each individuals in the data set for every
 \code{marker.number} selected. With a proportion argument \code{thl = 0.15},
 15 percent of individuals in each populations are chosen randomly as holdout
@@ -101,15 +103,17 @@ With \code{subsample = 36}, 36 individuals in each populations are chosen
 randomly to represent the dataset.}
 
 \item{iteration.subsample}{(Integer) The number of iterations to repeat 
-subsampling, default: \code{iteration.subsample = 1}.
+subsampling.
 With \code{subsample = 20} and \code{iteration.subsample = 10},
-20 individuals/populations will be randomly chosen 10 times.}
+20 individuals/populations will be randomly chosen 10 times.
+Default: \code{iteration.subsample = 1}.}
 
 \item{marker.number}{(Integer or string of number or "all") Calculations with
-fixed or subsample of your markers. Default= \code{"all"}.
+fixed or subsample of your markers.
 e.g. To test 500, 1000, 2000 and all  the markers:
 \code{marker.number = c(500, 1000, 2000, "all")}.
-To use only 500 makers \code{marker.number = 500}.}
+To use only 500 makers \code{marker.number = 500}.
+Default = \code{marker.number = "all"}.}
 
 \item{blacklist.id}{(optional) A blacklist with individual ID and
 a column header 'INDIVIDUALS'. The blacklist is in the working directory
@@ -119,10 +123,10 @@ Default: \code{blacklist.id = NULL}.}
 \item{blacklist.genotype}{(optional) Useful to erase genotype with below 
 average quality, e.g. genotype with more than 2 alleles in diploid likely 
 sequencing errors or genotypes with poor genotype likelihood or coverage. 
-The blacklist as a minimum of 2 column headers (markers and individuals). 
+The blacklist has a minimum of 2 column headers (markers and individuals). 
 Markers can be 1 column (CHROM or LOCUS or POS), 
 a combination of 2 (e.g. CHROM and POS or CHROM and LOCUS or LOCUS and POS) or 
-all 3 (CHROM, LOCUS, POS) The markers columns must be designated: CHROM (character
+all 3 (CHROM, LOCUS, POS). The markers columns must be designated: CHROM (character
 or integer) and/or LOCUS (integer) and/or POS (integer). The id column designated
 INDIVIDUALS (character) columns header. The blacklist must be in the working 
 directory (e.g. "blacklist.genotype.txt"). For de novo VCF, CHROM column 
@@ -157,19 +161,22 @@ will only keep markers in common (genotyped) between all the populations.}
 local/populations and global/overall maf thresholds, respectively.
 e.g. \code{maf.thresholds = c(0.05, 0.1)} for a local maf threshold 
 of 0.05 and a global threshold of 0.1. Available for VCF, PLINK and data frame 
-files. Use stackr for haplotypes files and use the whitelist of markers.
+files.
 Default: \code{maf.thresholds = NULL}.}
 
 \item{maf.pop.num.threshold}{(integer, optional) When maf thresholds are used,
 this argument is for the number of pop required to pass the maf thresholds
 to keep the locus. Default: \code{maf.pop.num.threshold = 1}}
 
-\item{maf.approach}{(character, optional). By \code{maf.approach = "SNP"} or 
-by \code{maf.approach = "haplotype"}.
-The function will consider the SNP or ID/LOCUS/haplotype/read MAF statistics 
-to filter the markers.
-Default is \code{maf.approach = "SNP"}. The \code{haplotype} approach is 
-restricted to VCF file.}
+\item{maf.approach}{(character, optional). 
+\code{maf.approach = "haplotype"} : looks at the minimum MAF found on the 
+read/haplotype. Using this option will discard all the markers/snp on 
+that read based on the thresholds chosen. This method is only available 
+for VCF and haplotype files, or tidy data frame from those file types.
+\code{maf.approach = "SNP"} : treats all the SNP on the same 
+haplotype/read as independent. Doesn't work with haplotype file, 
+but does work for all other file type.
+Default is \code{maf.approach = "SNP"}.}
 
 \item{maf.operator}{(character, optional) \code{maf.operator = "AND"} or 
 default \code{maf.operator = "OR"}.
@@ -184,24 +191,28 @@ subsampled randomly from the 200000 markers. Use \code{whitelist.markers} to
 keep specific markers.
 Default: \code{max.marker = NULL}.}
 
-\item{strata}{(optional for data frame and PLINK files, 
-required for VCF and haplotypes files) A tab delimited file with 2 columns with header:
+\item{strata}{(optional/required) Required for VCF and haplotypes files, 
+optional for the other file formats supported. 
+
+The strata file is a tab delimited file with 2 columns with header:
 \code{INDIVIDUALS} and \code{STRATA}. With a 
 data frame of genotypes the strata is the INDIVIDUALS and POP_ID columns, with
 PLINK files, the \code{tfam} first 2 columns are used. 
 If a \code{strata} file is specified, the strata file will have
 precedence. The \code{STRATA} column can be any hierarchical grouping. 
-To create a strata file see \code{\link[stackr]{individuals2strata}}. 
-White spaces in population names are replaced by underscore.
+To create a strata file see \code{\link[stackr]{individuals2strata}}.
+If you have already run 
+\href{http://catchenlab.life.illinois.edu/stacks/}{stacks} on your data, 
+the strata file is similar to a stacks `population map file`, make sure you 
+have the required column names (\code{INDIVIDUALS} and \code{STRATA}).
 Default: \code{strata = NULL}.}
 
 \item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
 case, the id of the pop.
 Use this argument to have the pop ordered your way instead of the default 
 alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
-instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. White spaces
-in population names are replaced by underscore.
-with white space are repl
+instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
+White spaces in population names are replaced by underscore.
 Default: \code{pop.levels = NULL}.}
 
 \item{pop.labels}{(optional, string) Use this argument to rename/relabel
@@ -210,27 +221,23 @@ into a new pop called \code{"NEW"}:
 (1) First, define the levels for your pop with \code{pop.levels} argument: 
 \code{pop.levels = c("QUE", "ONT", "ALB")}. 
 (2) then, use \code{pop.labels} argument: 
-\code{pop.levels = c("NEW", "NEW", "ALB")}.#' 
+\code{pop.levels = c("NEW", "NEW", "ALB")}.
 To rename \code{"QUE"} to \code{"TAS"}:
 \code{pop.labels = c("TAS", "ONT", "ALB")}.
-Default: \code{pop.labels = NULL}. When pop.levels is not null and pop.labels
-is not specified. pop.labels = pop.levels.
-If you find this too complicated, there is also the
+Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
 \code{strata} argument that can do the same thing, see below.
-White spaces
-in population names are replaced by underscore.}
-
-\item{pop.select}{(string, optional) Selected list of populations for 
-the analysis. e.g. \code{pop.select = c("QUE", "ONT")} to select \code{QUE}
-and \code{ONT} population samples (out of 20 pops).
 White spaces in population names are replaced by underscore.}
 
+\item{pop.select}{(string, optional) Selected list of populations for
+the analysis. e.g. \code{pop.select = c("QUE", "ONT")} to select \code{QUE}
+and \code{ONT} population samples (out of 20 pops).
+Default: \code{pop.select = NULL}}
+
 \item{imputation.method}{(character, optional) 
-Methods available for map-independent imputations of missing genotypes: 
+Methods available for map-independent imputations of missing genotype: 
 (1) \code{"max"} to use the most frequent category for imputations.
 (2) \code{"rf"} using Random Forest algorithm. 
-Default: no imputation \code{imputation.method = NULL}. 
-\emph{See details}.}
+Default: no imputation \code{imputation.method = NULL}.}
 
 \item{impute}{(character, optional) Imputation on missing genotype 
 \code{impute = "genotype"} or alleles \code{impute = "allele"}.
@@ -252,8 +259,8 @@ Default: \code{iteration.rf = 10}.}
 random splitting in Random Forest. 
 Default: \code{split.number = 100}.}
 
-\item{verbose}{(logical, optional) Should trace output be enabled on each iteration
-in Random Forest ? 
+\item{verbose}{(optional, logical) When \code{verbose = TRUE} 
+the function is a little more chatty during execution.
 Default: \code{verbose = FALSE}.}
 
 \item{folder}{(optional) The name of the folder created in the working 
@@ -268,14 +275,19 @@ Default \code{assignment_data.txt}.}
 \item{keep.gsi.files}{(logical, optional) With the default, 
 the intermediate input and output gsi_sim files will be deleted from the 
 directory when finished processing. I you decide to keep the files, with 
-\code{keep.gsi.files =TRUE}, remember to allocate a large chunk of the disk 
+\code{keep.gsi.files = TRUE}, remember to allocate a large chunk of the disk 
 space for the analysis.
 Default: \code{keep.gsi.files = FALSE}}
+
+\item{random.seed}{(integer, optional) For reproducibility, set an integer
+that will be used inside function that requires randomness. With default,
+a random number is generated and printed in the appropriate output.
+Default: \code{random.seed = NULL}.}
 
 \item{parallel.core}{(optional) The number of core for OpenMP shared-memory parallel
 programming of Random Forest imputations. For more info on how to install the
 OpenMP version see \code{\link[randomForestSRC]{randomForestSRC-package}}.
-If not selected \code{detectCores() - 1} is used as default.}
+If not selected \code{detectCores()-1} is used as default.}
 }
 \value{
 Depending on arguments selected, several files are written to the your
@@ -287,7 +299,9 @@ See example below.
 \description{
 The arguments in the \code{assignment_ngs} function were tailored for the
 reality of GBS/RADseq data for assignment analysis while
-maintaining a reproducible workflow.
+maintaining a reproducible workflow. Assignment are conducted using
+\href{https://github.com/eriqande/gsi_sim}{gsi_sim} or 
+\code{\link[adegenet]{adegenet}}. 
 
 \itemize{
   \item \strong{Input file:} various file format are supported (see \code{data} argument below)
@@ -310,60 +324,8 @@ an R package developed by Thibaul Jombart
 }
 }
 \details{
-\strong{Input files:}
-\enumerate{
-\item VCF file (e.g. \code{data = "batch_1.vcf"}). 
-To make the VCF population ready, you need the \code{strata} argument.
-
-\item haplotype file created in STACKS (e.g. \code{data = "batch_1.haplotypes.tsv"}).
-To make the haplotype file population ready, you need the \code{strata} argument.
-
-\item Data frame
-To discriminate the long from the wide format, 
-the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
-for "MARKERS" in column names (TRUE = long format).
-The data frame is tab delimitted.
-\strong{Wide format:}
-The wide format cannot store metadata info.
-The wide format starts with these 2 id columns: 
-\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
-the remaining columns are the markers in separate columns storing genotypes.
-
-\strong{Long/Tidy format:}
-The long format is considered to be a tidy data frame and can store metadata info. 
-(e.g. from a VCF see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}). A minimum of 4 columns
-are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
-\code{MARKERS} and \code{GENOTYPE or GT}. The rest are considered metata info.
-
-\strong{2 genotypes formats are available:}
-6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
-6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
-The separator can be any of these: \code{"/", ":", "_", "-", "."}.
-
-\emph{How to get a tidy data frame ?}
-\pkg{stackr} \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
-in a tidy data frame.
-
-\item PLINK file in 
-\code{tped/tfam} format (e.g. \code{data =  "data.assignment.tped"}). 
-The first 2 columns of the \code{tfam} file will be used for the 
-\code{strata} argument below, unless a new one is provided. 
-Columns 1, 3 and 4 of the \code{tped} are discarded. The remaining columns 
-correspond to the genotype in the format \code{01/04} 
-where \code{A = 01, C = 02, G = 03 and T = 04}. For \code{A/T} format, use 
-PLINK or bash to convert.
-Use \href{http://vcftools.sourceforge.net/}{VCFTOOLS} with \code{--plink-tped} 
-to convert very large VCF file. For \code{.ped} file conversion to 
-\code{.tped} use \href{http://pngu.mgh.harvard.edu/~purcell/plink/}{PLINK} 
-with \code{--recode transpose},
-
-\item \code{\link[adegenet]{genind}} and \code{\link[adegenet]{genlight}} 
-objects from the package \code{\link[adegenet]{adegenet}}.
-
-\item genepop data file (e.g. \code{data = kiwi_data.gen}). 
-See \href{http://genepop.curtin.edu.au/help_input.html}{genepop format} for
-more details.
-}
+\strong{Input files:} see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}
+for detailed information about supported file format.
 
 \strong{Imputations:}
 
@@ -373,8 +335,8 @@ minutes and hours depending on the size of the dataset and polymorphism of
 the species used. e.g. with a low polymorphic taxa, and a data set
 containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
 will require 15 min. This is using multiple CPUs. To have your computer ready
-for parallel computing during imputations follow the steps in this 
-vignette (~10 min) : `vignette("vignette_imputations_parallel")`
+for parallel computing during imputations follow the steps in the
+(~10 min)
 
 \strong{THL, Ranking and Fst:}
 
@@ -389,8 +351,8 @@ implementation of Weir and Cockerham 1984 Fst/Theta equations.
 is properly installed into \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
 Things are set up so that it will try running gsi_sim, and if it does not find it, the 
 program will throw an error and ask the user to run \code{\link{install_gsi_sim}}
-which will do its best to put a usable copy of gsi_sim where it is needed.  To do 
-so, you must be connected to the internet. If that doesn't work, you will
+which will do its best to put a usable copy of gsi_sim where it is needed. 
+To do so, you must be connected to the internet. If that doesn't work, you will
 need to compile the program yourself, or get it yourself, and the manually copy
 it to \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
 To compile \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, follow the 
@@ -473,7 +435,7 @@ Weir BS, Cockerham CC (1984) Estimating F-Statistics for the
 Analysis of Population Structure. Evolution, 38, 1358–1370.
 
 Ishwaran H. and Kogalur U.B. (2015). Random Forests for Survival,
- Regression and Classification (RF-SRC), R package version 1.6.1.
+Regression and Classification (RF-SRC), R package version 1.6.1.
 
 Ishwaran H. and Kogalur U.B. (2007). Random survival forests
 for R. R News 7(2), 25-31.

@@ -1,8 +1,8 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with GBS/RADseq Data using R
-Version: 0.3.5
-Date: 2016-10-27
+Version: 0.3.6
+Date: 2016-11-14
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
@@ -13,8 +13,7 @@ Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
 Description: Set of tools for assignment analysis, tailored for GBS/RADseq data.
 Depends:
     R (>= 3.0.1),
-    adegenet,
-    strataG
+    adegenet
 Imports:
     data.table,
     plyr,
@@ -34,7 +33,8 @@ Imports:
     tidyverse,
     tibble,
     reshape2,
-    modelr
+    modelr,
+    magrittr
 Suggests:
     devtools,
     hierfstat,
