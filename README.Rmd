@@ -85,9 +85,7 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 **Step 3 (optional): Parallel computing** Install an OpenMP enabled [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) package to do imputation in parallel. Follow the steps in this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.
 
 
-
-
-**Notes:**
+**Notes: **
 
   * **Problems during installation:** see this
   [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
@@ -141,12 +139,12 @@ Change log, version, new features and bug history now lives in the [NEWS.md file
 
 **v.0.3.6**
 
-* bug fix `assignment_ngs` during imputation, the imputation module could not recognise that REF/ALT allele
-are not necessary or usefull for assignment analysis.
+* bug fix `assignment_ngs` during imputations, the imputation module could not
+recognise that REF/ALT alleles are not necessary or usefull for assignment analysis.
 *enhancement to `assignment_ngs` and `assignment_mixture` so that when 
 `marker.number` include `"all"` the `iteration.method` is set automatically to `1`
 when conducting the assignment with all the markers.
-Iterations at this point is useless.
+Iterations at this point is useless and a waist of time.
 * random seed number is now stored in the appropriate files.
 * `assignment_mixture`: with `assignment.analysis = "gsi_sim` the unknown/mixture samples
 are compared with baseline populations using common markers between the pair.
