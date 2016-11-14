@@ -31,6 +31,7 @@ if (getRversion() >= "2.15.1") {
       "PHI_PRIME_CI_HIGH", "PHI_PRIME_CI_LOW", "DATA", "ID1", "ID2", "DISTANCE",
       "nn", "maxsdap", "ID1_POP", "POP_COMP", "AMOVA", "F_STATS", "MC_ITERATIONS",
       "MODEL_VALUE", "OBS_VALUE", "SIGMA2A", "SIGMA2A_PRIME", "SIGMA2B",
-      "VARIANCE", "global_boot", "iteration")
+      "VARIANCE", "global_boot", "iteration", "MARKERS_COMMON", "MEAN_MARKERS_COMMON"
+    )
   )
 }
