@@ -166,6 +166,10 @@
 #' @importFrom tidyr separate gather spread unite
 #' @importFrom purrr map flatten
 #' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n
+#' @importFrom stats quantile
+#' @importFrom utils count.fields combn
+
+
 
 #' @examples
 #' \dontrun{
@@ -272,59 +276,44 @@ fst_WC84 <- function(
   # switch LOCUS to MARKERS if found
   if ("LOCUS" %in% colnames(input)) input <- dplyr::rename(.data = input, MARKERS = LOCUS)
   
-  # population levels and strata  ----------------------------------------------
-  if (is.null(strata)) { # no strata
-    if (is.null(pop.levels)) { # no pop.levels
-      if (is.factor(input$POP_ID)) {
-        input$POP_ID <- droplevels(x = input$POP_ID)
-      } else {
-        input$POP_ID <- factor(input$POP_ID)
-      }
-    } else {# with pop.levels
-      input <- input %>%
-        dplyr::mutate( # Make population ready
-          POP_ID = factor(
-            stringi::stri_replace_all_regex(
-              POP_ID, 
-              stringi::stri_join("^", pop.levels, "$", sep = ""), 
-              pop.labels,
-              vectorize_all = FALSE), 
-            levels = unique(pop.labels), 
-            ordered = TRUE
-          )
-        )
-    }
-  } else {# Make population ready with the strata provided
+  # population levels and strata------------------------------------------------
+  if (!is.null(strata)) {
     if (is.vector(strata)) {
-      strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-        dplyr::rename(POP_ID = STRATA)
+      # message("strata file: yes")
+      number.columns.strata <- max(utils::count.fields(strata, sep = "\t"))
+      col.types <- stringi::stri_join(rep("c", number.columns.strata), collapse = "")
+      suppressMessages(strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = col.types) %>% 
+                         dplyr::rename(POP_ID = STRATA))
     } else {
+      # message("strata object: yes")
+      colnames(strata) <- stringi::stri_replace_all_fixed(
+        str = colnames(strata), 
+        pattern = "STRATA", 
+        replacement = "POP_ID", 
+        vectorize_all = FALSE
+      )
       strata.df <- strata
     }
-    if (is.null(pop.levels)) { # no pop.levels
-      input <- input %>%
-        dplyr::select(-POP_ID) %>% 
-        dplyr::mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-        dplyr::left_join(strata.df, by = "INDIVIDUALS") %>% 
-        dplyr::mutate(POP_ID = factor(POP_ID))
-    } else {# with pop.levels
-      input <- input %>%
-        dplyr::select(-POP_ID) %>% 
-        dplyr::mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-        dplyr::left_join(strata.df, by = "INDIVIDUALS") %>%
-        dplyr::mutate(
-          POP_ID = factor(
-            stringi::stri_replace_all_regex(
-              POP_ID, 
-              stringi::stri_join("^", pop.levels, "$", sep = ""), 
-              pop.labels, 
-              vectorize_all = FALSE
-            ),
-            levels = unique(pop.labels), ordered = TRUE
-          )
-        )
-    }
+    
+    # Remove potential whitespace in pop_id
+    strata.df$POP_ID <- stringi::stri_replace_all_fixed(strata.df$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
+    
+    strata.df$INDIVIDUALS <- stringi::stri_replace_all_fixed(
+      str = strata.df$INDIVIDUALS, 
+      pattern = c("_", ":"), 
+      replacement = c("-", "-"),
+      vectorize_all = FALSE
+    )
+    
+    input <- input %>%
+      dplyr::select(-POP_ID) %>% 
+      dplyr::left_join(strata.df, by = "INDIVIDUALS")
   }
+  
+  # using pop.levels and pop.labels info if present
+  input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
+  
+  
   
   # Get the number of pop  -----------------------------------------------------
   # pop.number <- dplyr::n_distinct(input$POP_ID)
@@ -616,11 +605,11 @@ fst_WC84 <- function(
       boot.fst <- bind_rows(boot.fst.list)
       boot.fst.summary <- boot.fst %>% 
         dplyr::summarise(
-          CI_LOW = round(quantile(FST, 
+          CI_LOW = round(stats::quantile(FST, 
                                   probs = quantiles.ci[1], 
                                   na.rm = TRUE), 
                          digits),
-          CI_HIGH = round(quantile(FST, 
+          CI_HIGH = round(stats::quantile(FST, 
                                    probs = quantiles.ci[2], 
                                    na.rm = TRUE), 
                           digits)
@@ -716,7 +705,7 @@ fst_WC84 <- function(
     if (verbose) message("Computing paiwise fst")
     pop.list <- levels(input$POP_ID) # pop list
     # all combination of populations
-    pop.pairwise <- combn(unique(pop.list), 2, simplify = FALSE) 
+    pop.pairwise <- utils::combn(unique(pop.list), 2, simplify = FALSE) 
     # Fst for all pairwise populations
     list.pair <- 1:length(pop.pairwise)
     # list.pair <- 5 #  test

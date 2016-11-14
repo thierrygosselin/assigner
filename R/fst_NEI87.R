@@ -156,14 +156,17 @@
 
 #' @export
 #' @rdname fst_NEI87
-#' @import stringi
-#' @import dplyr
-#' @import utils
-#' @import stackr
-#' @import tidyr
 #' @import parallel
+#' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs summarise_if mutate_if count
+#' @importFrom stackr read_long_tidy_wide
+#' @importFrom tidyr spread gather unite separate complete nesting
+#' @importFrom stringi stri_replace_all_regex stri_sub stri_join
 #' @importFrom purrr map
-#' @importFrom data.table fread
+#' @importFrom data.table fread melt.data.table as.data.table
+#' @importFrom tibble as_data_frame data_frame
+#' @importFrom readr read_tsv
+#' @importFrom utils count.fields combn
+#' @importFrom stats quantile
 
 #' @examples
 #' \dontrun{
@@ -234,7 +237,7 @@ fst_NEI87 <- function(
   iteration.ci = 100,
   quantiles.ci = c(0.025,0.975),
   digits = 9,
-  parallel.core = detectCores() - 1,
+  parallel.core = parallel::detectCores() - 1,
   verbose = FALSE,
   ...) {
   
@@ -255,74 +258,64 @@ fst_NEI87 <- function(
   if (verbose) message("Importing data")
   input <- stackr::read_long_tidy_wide(data = data)
   
+  # Change individuals names containing special character
+  input$INDIVIDUALS <- stringi::stri_replace_all_fixed(
+    str = input$INDIVIDUALS, 
+    pattern = c("_", ":"), 
+    replacement = c("-", "-"),
+    vectorize_all = FALSE
+  )
   # switch LOCUS to MARKERS if found
-  if ("LOCUS" %in% colnames(input)) input <- rename(.data = input, MARKERS = LOCUS)
+  if ("LOCUS" %in% colnames(input)) input <- dplyr::rename(.data = input, MARKERS = LOCUS)
   
-  # population levels and strata  ----------------------------------------------
-  if (is.null(strata)) { # no strata
-    if (is.null(pop.levels)) { # no pop.levels
-      if (is.factor(input$POP_ID)) {
-        input$POP_ID <- droplevels(x = input$POP_ID)
-      } else {
-        input$POP_ID <- factor(input$POP_ID)
-      }
-    } else {# with pop.levels
-      input <- input %>%
-        mutate( # Make population ready
-          POP_ID = factor(
-            stri_replace_all_regex(
-              POP_ID, 
-              stri_paste("^", pop.levels, "$", sep = ""), 
-              pop.labels,
-              vectorize_all = FALSE), 
-            levels = unique(pop.labels), 
-            ordered = TRUE
-          )
-        )
-    }
-  } else {# Make population ready with the strata provided
+  # population levels and strata------------------------------------------------
+  if (!is.null(strata)) {
     if (is.vector(strata)) {
-      strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-        rename(POP_ID = STRATA)
+      # message("strata file: yes")
+      number.columns.strata <- max(utils::count.fields(strata, sep = "\t"))
+      col.types <- stringi::stri_join(rep("c", number.columns.strata), collapse = "")
+      suppressMessages(strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = col.types) %>% 
+                         dplyr::rename(POP_ID = STRATA))
     } else {
+      # message("strata object: yes")
+      colnames(strata) <- stringi::stri_replace_all_fixed(
+        str = colnames(strata), 
+        pattern = "STRATA", 
+        replacement = "POP_ID", 
+        vectorize_all = FALSE
+      )
       strata.df <- strata
     }
-    if (is.null(pop.levels)) { # no pop.levels
-      input <- input %>%
-        select(-POP_ID) %>% 
-        mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-        left_join(strata.df, by = "INDIVIDUALS") %>% 
-        mutate(POP_ID = factor(POP_ID))
-    } else {# with pop.levels
-      input <- input %>%
-        select(-POP_ID) %>% 
-        mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-        left_join(strata.df, by = "INDIVIDUALS") %>%
-        mutate(
-          POP_ID = factor(
-            stri_replace_all_regex(
-              POP_ID, 
-              stri_paste("^", pop.levels, "$", sep = ""), 
-              pop.labels, 
-              vectorize_all = FALSE
-            ),
-            levels = unique(pop.labels), ordered = TRUE
-          )
-        )
-    }
+
+    # Remove potential whitespace in pop_id
+    strata.df$POP_ID <- stringi::stri_replace_all_fixed(strata.df$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
+    
+    strata.df$INDIVIDUALS <- stringi::stri_replace_all_fixed(
+      str = strata.df$INDIVIDUALS, 
+      pattern = c("_", ":"), 
+      replacement = c("-", "-"),
+      vectorize_all = FALSE
+    )
+    
+    input <- input %>%
+      dplyr::select(-POP_ID) %>% 
+      dplyr::left_join(strata.df, by = "INDIVIDUALS")
   }
+  
+  # using pop.levels and pop.labels info if present
+  input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
   
   
   # genotyped data and holdout sample  -----------------------------------------
   if (is.null(holdout.samples)) { # use all the individuals
     data.genotyped <- input %>%
-      filter(GT != "000000") # Check for df and plink...
+      dplyr::filter(GT != "000000") # Check for df and plink...
   } else {# if holdout set, removes individuals
     message("removing holdout individuals")
     data.genotyped <- input %>%
-      filter(GT != "000000") %>% # remove missing genotypes
+      dplyr::filter(GT != "000000") %>% # remove missing genotypes
       # remove supplementary individual before ranking markers with Fst
-      filter(!INDIVIDUALS %in% holdout.samples) 
+      dplyr::filter(!INDIVIDUALS %in% holdout.samples) 
   }
   
   # Function to compute Nei's 1987 Fst ----------------------------------------------
@@ -331,18 +324,18 @@ fst_NEI87 <- function(
   boot_ci <- function(x, fst.data){
     # x <- 1
     markers.list <- fst.data %>% 
-      ungroup() %>% 
-      distinct(MARKERS) %>% 
-      arrange(MARKERS)
+      dplyr::ungroup(.) %>% 
+      dplyr::distinct(MARKERS) %>% 
+      dplyr::arrange(MARKERS)
     
     subsample.markers <- markers.list %>% 
       sample_n(tbl = ., size = nrow(markers.list), replace = TRUE) %>% 
-      arrange(MARKERS)
+      dplyr::arrange(MARKERS)
     
     fst.data.overall.iterations <- fst.data %>%
-      right_join(subsample.markers, by = "MARKERS") %>% 
-      ungroup %>%
-      mutate(
+      dplyr::right_join(subsample.markers, by = "MARKERS") %>% 
+      dplyr::ungroup(.) %>%
+      dplyr::mutate(
         HS = MN / (MN - 1) * (1 - MSP2 - HO / 2 / MN),
         HT = 1 - MP2 + HS / MN / NP - HO / 2 / MN / NP,
         FIS = 1 - HO / HS,
@@ -355,8 +348,8 @@ fst_NEI87 <- function(
         NEI_FST_P = dplyr::if_else(NEI_FST_P < 0, true = 0, false = NEI_FST_P, missing = 0),
         JOST_D = DST_P / (1 - HS)
       ) %>% 
-      summarise_if(is.numeric, funs(mean(., na.rm = TRUE))) %>% 
-      mutate(
+      dplyr::summarise_if(is.numeric, funs(mean(., na.rm = TRUE))) %>% 
+      dplyr::mutate(
         NEI_FST = DST / HT,
         NEI_FST = dplyr::if_else(NEI_FST < 0, true = 0, false = NEI_FST, missing = 0),
         NEI_FST_P = DST_P / HT_P,
@@ -364,10 +357,10 @@ fst_NEI87 <- function(
         FIS = 1 - (HO / HS),
         JOST_D = DST_P / (1 - HS)
       ) %>% 
-      ungroup() %>%
-      mutate_if(is.numeric, funs( round(x = ., digits = digits))) %>%
-      select(HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D) %>% 
-      mutate(ITERATIONS = rep(x, n()))
+      dplyr::ungroup(.) %>%
+      dplyr::mutate_if(is.numeric, funs( round(x = ., digits = digits))) %>%
+      dplyr::select(HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D) %>% 
+      dplyr::mutate(ITERATIONS = rep(x, n()))
     return(fst.data.overall.iterations)
   } # End boot_ci function
   
@@ -376,19 +369,19 @@ fst_NEI87 <- function(
     # x = data.select
     # x = data.genotyped # test
     # Markers in common between all populations ********************************
-    pop.number <- n_distinct(x$POP_ID)
+    pop.number <- dplyr::n_distinct(x$POP_ID)
     
     pop.filter <- x %>% 
-      group_by(MARKERS) %>%
-      filter(n_distinct(POP_ID) == pop.number) %>%
-      arrange(MARKERS) %>%
-      distinct(MARKERS)
+      dplyr::group_by(MARKERS) %>%
+      dplyr::filter(dplyr::n_distinct(POP_ID) == pop.number) %>%
+      dplyr::arrange(MARKERS) %>%
+      dplyr::distinct(MARKERS)
     
     # number of marker used for computation 
-    n.markers <- n_distinct(pop.filter$MARKERS)
+    n.markers <- dplyr::n_distinct(pop.filter$MARKERS)
     
     #Filter
-    x <- suppressWarnings(x %>% semi_join(pop.filter, by = "MARKERS"))
+    x <- suppressWarnings(dplyr::semi_join(x, pop.filter, by = "MARKERS"))
     
     # ununsed objects
     pop.filter <- NULL
@@ -396,35 +389,35 @@ fst_NEI87 <- function(
     
     # Removing monomorphic markers------------------------------------------------
     mono.markers <- x %>%
-      select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
+      dplyr::select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
       tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
       tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>%
-      filter(GT != "000") %>%
-      group_by(MARKERS, GT) %>% 
-      tally %>%
-      ungroup() %>% 
-      select(MARKERS) %>% 
-      group_by(MARKERS) %>% 
-      tally %>% 
-      filter(n == 1) %>% 
-      select(MARKERS)
+      dplyr::filter(GT != "000") %>%
+      dplyr::group_by(MARKERS, GT) %>% 
+      dplyr::tally(.) %>%
+      dplyr::ungroup(.) %>% 
+      dplyr::select(MARKERS) %>% 
+      dplyr::group_by(MARKERS) %>% 
+      dplyr::tally(.) %>% 
+      dplyr::filter(n == 1) %>% 
+      dplyr::select(MARKERS)
     
     
     # Remove the markers from the dataset
     if (length(mono.markers$MARKERS) > 0) {
-      x <- anti_join(x, mono.markers, by = "MARKERS")
+      x <- dplyr::anti_join(x, mono.markers, by = "MARKERS")
     }
     
     mono.markers <- NULL
     
     # split the data per alleles and melt
     x <- x %>%
-      mutate(
-        A1 = stri_sub(GT, 1, 3),
-        A2 = stri_sub(GT, 4,6)
+      dplyr::mutate(
+        A1 = stringi::stri_sub(GT, 1, 3),
+        A2 = stringi::stri_sub(GT, 4,6)
       ) %>% 
-      select(-GT) %>% 
-      as.data.table() %>% 
+      dplyr::select(-GT) %>% 
+      data.table::as.data.table() %>% 
       data.table::melt.data.table(
         data = ., 
         id.vars = c("MARKERS", "INDIVIDUALS", "POP_ID"), 
@@ -437,57 +430,57 @@ fst_NEI87 <- function(
     
     # frequency per markes, alleles, pop
     p <- x %>%
-      group_by(MARKERS, POP_ID) %>%
-      count(GT) %>% 
-      mutate(P = n / sum(n)) %>% 
-      select(-n) %>% 
-      arrange(MARKERS, POP_ID, GT) #%>% complete(data = ., POP_ID, nesting(MARKERS, GT), fill = list(P = 0)) %>%
+      dplyr::group_by(MARKERS, POP_ID) %>%
+      dplyr::count(GT) %>% 
+      dplyr::mutate(P = n / sum(n)) %>% 
+      dplyr::select(-n) %>% 
+      dplyr::arrange(MARKERS, POP_ID, GT) #%>% complete(data = ., POP_ID, nesting(MARKERS, GT), fill = list(P = 0)) %>%
     
     # mp: mean frequency per markers
     mean.p2 <- p %>% 
       tidyr::complete(data = ., POP_ID, tidyr::nesting(MARKERS, GT), fill = list(P = 0)) %>%
-      group_by(MARKERS, GT) %>% 
-      summarise(MP = mean(P, na.rm = TRUE)) %>% 
-      group_by(MARKERS) %>% 
-      summarise(MP2 = sum(MP^2))
+      dplyr::group_by(MARKERS, GT) %>% 
+      dplyr::summarise(MP = mean(P, na.rm = TRUE)) %>% 
+      dplyr::group_by(MARKERS) %>% 
+      dplyr::summarise(MP2 = sum(MP^2))
     
     # msp2 mean frequency per markers
     mean.frequency.markers <- p %>%
-      group_by(MARKERS, POP_ID) %>% 
-      summarise(SP2 = sum(P^2)) %>% 
-      group_by(MARKERS) %>% 
-      summarise(MSP2 = mean(SP2, na.rm = TRUE))
+      dplyr::group_by(MARKERS, POP_ID) %>% 
+      dplyr::summarise(SP2 = sum(P^2)) %>% 
+      dplyr::group_by(MARKERS) %>% 
+      dplyr::summarise(MSP2 = mean(SP2, na.rm = TRUE))
     
     # For diploid-------------------------------------------------------------------
     # Mean heterozygosity observed per pop and markers
     # mean heterozygosity across all markers
     mean.het.obs.markers <- x %>%
-      group_by(POP_ID, MARKERS, INDIVIDUALS) %>% 
-      mutate(HO = if_else(GT[ALLELES == "A1"] != GT[ALLELES == "A2"], 1, 0)) %>% 
-      group_by(POP_ID, MARKERS) %>% 
-      summarise(HO = mean(HO)) %>% 
-      group_by(MARKERS) %>% 
-      summarise(HO = mean(HO))
+      dplyr::group_by(POP_ID, MARKERS, INDIVIDUALS) %>% 
+      dplyr::mutate(HO = if_else(GT[ALLELES == "A1"] != GT[ALLELES == "A2"], 1, 0)) %>% 
+      dplyr::group_by(POP_ID, MARKERS) %>% 
+      dplyr::summarise(HO = mean(HO)) %>% 
+      dplyr::group_by(MARKERS) %>% 
+      dplyr::summarise(HO = mean(HO))
     
     # mn: corrected mean number of individuals per markers
     #n: number of individuals, per pop and markers
     fst.data <- x %>%
-      group_by(POP_ID, MARKERS) %>%
-      distinct(INDIVIDUALS) %>% 
-      tally %>% 
-      mutate(N_INV = 1 / n) %>% 
-      ungroup() %>% 
-      group_by(MARKERS) %>% 
-      summarise(
+      dplyr::group_by(POP_ID, MARKERS) %>%
+      dplyr::distinct(INDIVIDUALS) %>% 
+      dplyr::tally(.) %>% 
+      dplyr::mutate(N_INV = 1 / n) %>% 
+      dplyr::ungroup(.) %>% 
+      dplyr::group_by(MARKERS) %>% 
+      dplyr::summarise(
         NP = sum(!is.na(n)), # number of pop per markers
         MN = NP / sum(N_INV, na.rm = TRUE)
       ) %>% 
-      ungroup() %>% 
-      distinct(MARKERS, NP, MN) %>% 
-      full_join(mean.het.obs.markers, by = "MARKERS") %>% 
-      full_join(mean.frequency.markers, by = "MARKERS") %>%
-      full_join(mean.p2, by = "MARKERS") %>% 
-      mutate(
+      dplyr::ungroup(.) %>% 
+      dplyr::distinct(MARKERS, NP, MN) %>% 
+      dplyr::full_join(mean.het.obs.markers, by = "MARKERS") %>% 
+      dplyr::full_join(mean.frequency.markers, by = "MARKERS") %>%
+      dplyr::full_join(mean.p2, by = "MARKERS") %>% 
+      dplyr::mutate(
         HS = MN / (MN - 1) * (1 - MSP2 - HO / 2 / MN),
         HT = 1 - MP2 + HS / MN / NP - HO / 2 / MN / NP,
         FIS = 1 - HO / HS,
@@ -502,13 +495,13 @@ fst_NEI87 <- function(
       )
     
     fst.data.select <- fst.data %>% 
-      select(MARKERS, HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D)
+      dplyr::select(MARKERS, HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D)
     
     mean.p2 <- mean.het.obs.markers <- mean.frequency.markers <- NULL
     
     overall <- fst.data.select %>% 
-      summarise_if(is.numeric, funs(mean(., na.rm = TRUE))) %>% 
-      mutate(
+      dplyr::summarise_if(is.numeric, funs(mean(., na.rm = TRUE))) %>% 
+      dplyr::mutate(
         MARKERS = "OVERALL",
         NEI_FST = DST / HT,
         NEI_FST = dplyr::if_else(NEI_FST < 0, true = 0, false = NEI_FST, missing = 0),
@@ -517,9 +510,9 @@ fst_NEI87 <- function(
         FIS = 1 - (HO / HS),
         JOST_D = DST_P / (1 - HS)
       ) %>% 
-      ungroup() %>%
-      mutate_if(is.numeric, funs( round(x = ., digits = digits))) %>%
-      select(MARKERS, HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D)
+      dplyr::ungroup(.) %>%
+      dplyr::mutate_if(is.numeric, dplyr::funs( round(x = ., digits = digits))) %>%
+      dplyr::select(MARKERS, HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D)
     # add new column with number of markers
     
     overall$N_MARKERS <- n.markers
@@ -529,22 +522,22 @@ fst_NEI87 <- function(
     if (ci) {
       # the function:
       boot.fst.list <- purrr::map(.x = 1:iteration.ci, .f = boot_ci, fst.data = fst.data)
-      boot.fst.summary <- bind_rows(boot.fst.list) %>% 
-        summarise(
-          FIS_CI_LOW = quantile(FIS, probs = quantiles.ci[1], na.rm = TRUE),
-          FIS_CI_HIGH = quantile(FIS, probs = quantiles.ci[2], na.rm = TRUE),
-          DST_CI_LOW = quantile(DST, probs = quantiles.ci[1], na.rm = TRUE),
-          DST_CI_HIGH = quantile(DST, probs = quantiles.ci[2], na.rm = TRUE),
-          DST_P_CI_LOW = quantile(DST_P, probs = quantiles.ci[1], na.rm = TRUE),
-          DST_P_CI_HIGH = quantile(DST_P, probs = quantiles.ci[2], na.rm = TRUE),
-          NEI_FST_CI_LOW = quantile(NEI_FST, probs = quantiles.ci[1], na.rm = TRUE),
-          NEI_FST_CI_HIGH = quantile(NEI_FST, probs = quantiles.ci[2], na.rm = TRUE),
-          NEI_FST_P_CI_LOW = quantile(NEI_FST_P, probs = quantiles.ci[1], na.rm = TRUE),
-          NEI_FST_P_CI_HIGH = quantile(NEI_FST_P, probs = quantiles.ci[2], na.rm = TRUE),
-          JOST_D_CI_LOW = quantile(JOST_D, probs = quantiles.ci[1], na.rm = TRUE),
-          JOST_D_CI_HIGH = quantile(JOST_D, probs = quantiles.ci[2], na.rm = TRUE)
+      boot.fst.summary <- dplyr::bind_rows(boot.fst.list) %>% 
+        dplyr::summarise(
+          FIS_CI_LOW = stats::quantile(FIS, probs = quantiles.ci[1], na.rm = TRUE),
+          FIS_CI_HIGH = stats::quantile(FIS, probs = quantiles.ci[2], na.rm = TRUE),
+          DST_CI_LOW = stats::quantile(DST, probs = quantiles.ci[1], na.rm = TRUE),
+          DST_CI_HIGH = stats::quantile(DST, probs = quantiles.ci[2], na.rm = TRUE),
+          DST_P_CI_LOW = stats::quantile(DST_P, probs = quantiles.ci[1], na.rm = TRUE),
+          DST_P_CI_HIGH = stats::quantile(DST_P, probs = quantiles.ci[2], na.rm = TRUE),
+          NEI_FST_CI_LOW = stats::quantile(NEI_FST, probs = quantiles.ci[1], na.rm = TRUE),
+          NEI_FST_CI_HIGH = stats::quantile(NEI_FST, probs = quantiles.ci[2], na.rm = TRUE),
+          NEI_FST_P_CI_LOW = stats::quantile(NEI_FST_P, probs = quantiles.ci[1], na.rm = TRUE),
+          NEI_FST_P_CI_HIGH = stats::quantile(NEI_FST_P, probs = quantiles.ci[2], na.rm = TRUE),
+          JOST_D_CI_LOW = stats::quantile(JOST_D, probs = quantiles.ci[1], na.rm = TRUE),
+          JOST_D_CI_HIGH = stats::quantile(JOST_D, probs = quantiles.ci[2], na.rm = TRUE)
         ) %>% 
-        mutate_if(is.numeric, funs( round(x = ., digits = digits)))
+        dplyr::mutate_if(is.numeric, funs( round(x = ., digits = digits)))
       fst.data <- NULL
     } else {
       fst.data <- NULL
@@ -552,13 +545,13 @@ fst_NEI87 <- function(
     
     # Fst markers  -------------------------------------------------------------
     fst.markers <- fst.data.select %>% 
-      select(MARKERS, NEI_FST, NEI_FST_P, JOST_D) %>% 
-      arrange(MARKERS)
+      dplyr::select(MARKERS, NEI_FST, NEI_FST_P, JOST_D) %>% 
+      dplyr::arrange(MARKERS)
     
     # Ranked fst   -------------------------------------------------------------
     fst.ranked <- fst.markers %>%
-      arrange(desc(NEI_FST)) %>%
-      mutate(
+      dplyr::arrange(desc(NEI_FST)) %>%
+      dplyr::mutate(
         RANKING = seq(from = 1, to = n()),
         QUARTILE = ntile(NEI_FST,10)
       )
@@ -566,26 +559,26 @@ fst_NEI87 <- function(
     # Fst overall  -------------------------------------------------------------
     if (ci) {
       fst.overall <- overall %>% 
-        bind_cols(boot.fst.summary) %>%
-        select(NEI_FST, NEI_FST_CI_LOW, NEI_FST_CI_HIGH, NEI_FST_P, NEI_FST_P_CI_LOW, NEI_FST_P_CI_HIGH, JOST_D, JOST_D_CI_LOW, JOST_D_CI_HIGH, N_MARKERS)
+        dplyr::bind_cols(boot.fst.summary) %>%
+        dplyr::select(NEI_FST, NEI_FST_CI_LOW, NEI_FST_CI_HIGH, NEI_FST_P, NEI_FST_P_CI_LOW, NEI_FST_P_CI_HIGH, JOST_D, JOST_D_CI_LOW, JOST_D_CI_HIGH, N_MARKERS)
     } else {
       fst.overall <- overall %>% 
-        select(NEI_FST, NEI_FST_P, JOST_D, N_MARKERS)
+        dplyr::select(NEI_FST, NEI_FST_P, JOST_D, N_MARKERS)
     }
     
     # Fis markers  -------------------------------------------------------------
     fis.markers <- fst.data.select %>% 
-      select(MARKERS, FIS) %>% 
-      arrange(MARKERS)
+      dplyr::select(MARKERS, FIS) %>% 
+      dplyr::arrange(MARKERS)
     
     # Fis overall   ------------------------------------------------------------
-    fis.overall <- overall %>% select(FIS, N_MARKERS)
+    fis.overall <- overall %>% dplyr::select(FIS, N_MARKERS)
     if (ci) {
       fis.overall <- overall %>% 
-        bind_cols(boot.fst.summary) %>%
-        select(FIS, FIS_CI_LOW, FIS_CI_HIGH, N_MARKERS)
+        dplyr::bind_cols(boot.fst.summary) %>%
+        dplyr::select(FIS, FIS_CI_LOW, FIS_CI_HIGH, N_MARKERS)
     } else {
-      fis.overall <- overall %>% select(FIS, N_MARKERS)
+      fis.overall <- overall %>% dplyr::select(FIS, N_MARKERS)
     }
     
     # Plot -----------------------------------------------------------------------
@@ -616,17 +609,17 @@ fst_NEI87 <- function(
   # Pairwise Fst function
   pairwise_fst <- function(list.pair, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
     # list.pair <- 2
-    pop.select <- stri_paste(flatten(pop.pairwise[list.pair]))
+    pop.select <- stringi::stri_join(flatten(pop.pairwise[list.pair]))
     data.select <- data.genotyped %>%
-      filter(POP_ID %in% pop.select) %>% 
-      mutate(POP_ID = droplevels(x = POP_ID))
+      dplyr::filter(POP_ID %in% pop.select) %>% 
+      dplyr::mutate(POP_ID = droplevels(x = POP_ID))
     fst.select <- compute_fst(x = data.select, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci)
     # if (ci){
-    df.select <- data_frame(POP1 = pop.select[1], POP2 = pop.select[2])
-    df.select <- bind_cols(df.select, fst.select$fst.overall) 
-    # %>% rename(FST = fst.overall)
+    df.select <- tibble::data_frame(POP1 = pop.select[1], POP2 = pop.select[2])
+    df.select <- dplyr::bind_cols(df.select, fst.select$fst.overall) 
+    # %>% dplyr::rename(FST = fst.overall)
     # } else {
-    # df.select <- data_frame(POP1 = pop.select[1], 
+    # df.select <- tibble::data_frame(POP1 = pop.select[1], 
     # POP2 = pop.select[2], 
     # FST = fst.select$fst.overall
     # )
@@ -645,7 +638,7 @@ fst_NEI87 <- function(
     if (verbose) message("Computing paiwise fst")
     pop.list <- levels(input$POP_ID) # pop list
     # all combination of populations
-    pop.pairwise <- combn(unique(pop.list), 2, simplify = FALSE) 
+    pop.pairwise <- utils::combn(unique(pop.list), 2, simplify = FALSE) 
     # Fst for all pairwise populations
     list.pair <- 1:length(pop.pairwise)
     # list.pair <- 5 #  test
@@ -659,16 +652,16 @@ fst_NEI87 <- function(
     )
     
     # Table with Fst------------------------------------------------------------
-    pairwise.fst <- bind_rows(fst.all.pop) %>% 
-      mutate(
+    pairwise.fst <- dplyr::bind_rows(fst.all.pop) %>% 
+      dplyr::mutate(
         POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
         POP2 = factor(POP2, levels = pop.list, ordered = TRUE)
       )
     # Matrix--------------------------------------------------------------------
     upper.mat.fst <- pairwise.fst %>% 
-      select(POP1, POP2, NEI_FST_P) %>% 
+      dplyr::select(POP1, POP2, NEI_FST_P) %>% 
       tidyr::spread(data = ., POP2, NEI_FST_P, fill = "", drop = FALSE) %>% 
-      rename(POP = POP1)
+      dplyr::rename(POP = POP1)
     rn <- upper.mat.fst$POP # rownames
     upper.mat.fst <- as.matrix(upper.mat.fst[,-1])# make matrix without first column
     rownames(upper.mat.fst) <- rn
@@ -685,10 +678,10 @@ fst_NEI87 <- function(
     if (ci) {
       # bind upper and lower diagonal of matrix
       lower.mat.ci <- pairwise.fst %>% 
-        select(POP1, POP2, NEI_FST_P_CI_LOW, NEI_FST_P_CI_HIGH) %>% 
+        dplyr::select(POP1, POP2, NEI_FST_P_CI_LOW, NEI_FST_P_CI_HIGH) %>% 
         tidyr::unite(data = ., CI, NEI_FST_P_CI_LOW, NEI_FST_P_CI_HIGH, sep = " - ") %>% 
         tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>% 
-        rename(POP = POP1)
+        dplyr::rename(POP = POP1)
       
       cn <- colnames(lower.mat.ci) # bk of colnames
       lower.mat.ci <- t(lower.mat.ci[,-1]) # transpose
@@ -715,9 +708,9 @@ fst_NEI87 <- function(
   if (verbose) {
     cat("############################### RESULTS ###############################\n")
     if (ci) {
-      message(stri_paste("Nei's G'st (overall): ", res$fst.overall$NEI_FST_P, " [", res$fst.overall$NEI_FST_P_CI_LOW, " - ", res$fst.overall$NEI_FST_P_CI_HIGH, "]"))
+      message(stringi::stri_join("Nei's G'st (overall): ", res$fst.overall$NEI_FST_P, " [", res$fst.overall$NEI_FST_P_CI_LOW, " - ", res$fst.overall$NEI_FST_P_CI_HIGH, "]"))
     } else{
-      message(stri_paste("Nei's G'st (overall): ", res$fst.overall$NEI_FST_P))
+      message(stringi::stri_join("Nei's G'st (overall): ", res$fst.overall$NEI_FST_P))
     }
     cat("#######################################################################\n")
   }
