@@ -428,39 +428,44 @@ fst_NEI87 <- function(
       tibble::as_data_frame()
       
     
-    # frequency per markes, alleles, pop
+    # frequency per markers, alleles, pop
     p <- x %>%
       dplyr::group_by(MARKERS, POP_ID) %>%
       dplyr::count(GT) %>% 
       dplyr::mutate(P = n / sum(n)) %>% 
       dplyr::select(-n) %>% 
-      dplyr::arrange(MARKERS, POP_ID, GT) #%>% complete(data = ., POP_ID, nesting(MARKERS, GT), fill = list(P = 0)) %>%
+      dplyr::arrange(MARKERS, POP_ID, GT) %>%  #%>% complete(data = ., POP_ID, nesting(MARKERS, GT), fill = list(P = 0)) %>%
+      dplyr::ungroup(.)
     
     # mp: mean frequency per markers
+    # mp2: sum of square mean frequency per markers
     mean.p2 <- p %>% 
       tidyr::complete(data = ., POP_ID, tidyr::nesting(MARKERS, GT), fill = list(P = 0)) %>%
       dplyr::group_by(MARKERS, GT) %>% 
       dplyr::summarise(MP = mean(P, na.rm = TRUE)) %>% 
       dplyr::group_by(MARKERS) %>% 
-      dplyr::summarise(MP2 = sum(MP^2))
+      dplyr::summarise(MP2 = sum(MP^2)) %>% 
+      dplyr::ungroup(.)
     
-    # msp2 mean frequency per markers
+    # msp2 mean frequency per markers per pop
     mean.frequency.markers <- p %>%
       dplyr::group_by(MARKERS, POP_ID) %>% 
       dplyr::summarise(SP2 = sum(P^2)) %>% 
       dplyr::group_by(MARKERS) %>% 
-      dplyr::summarise(MSP2 = mean(SP2, na.rm = TRUE))
+      dplyr::summarise(MSP2 = mean(SP2, na.rm = TRUE)) %>% 
+      dplyr::ungroup(.)
     
     # For diploid-------------------------------------------------------------------
     # Mean heterozygosity observed per pop and markers
     # mean heterozygosity across all markers
     mean.het.obs.markers <- x %>%
       dplyr::group_by(POP_ID, MARKERS, INDIVIDUALS) %>% 
-      dplyr::mutate(HO = if_else(GT[ALLELES == "A1"] != GT[ALLELES == "A2"], 1, 0)) %>% 
+      dplyr::mutate(HO = dplyr::if_else(GT[ALLELES == "A1"] != GT[ALLELES == "A2"], 1, 0)) %>% 
       dplyr::group_by(POP_ID, MARKERS) %>% 
       dplyr::summarise(HO = mean(HO)) %>% 
       dplyr::group_by(MARKERS) %>% 
-      dplyr::summarise(HO = mean(HO))
+      dplyr::summarise(HO = mean(HO)) %>% 
+      dplyr::ungroup(.)
     
     # mn: corrected mean number of individuals per markers
     #n: number of individuals, per pop and markers
@@ -481,8 +486,8 @@ fst_NEI87 <- function(
       dplyr::full_join(mean.frequency.markers, by = "MARKERS") %>%
       dplyr::full_join(mean.p2, by = "MARKERS") %>% 
       dplyr::mutate(
-        HS = MN / (MN - 1) * (1 - MSP2 - HO / 2 / MN),
-        HT = 1 - MP2 + HS / MN / NP - HO / 2 / MN / NP,
+        HS = MN / (MN - 1) * (1 - MSP2 - HO / 2 / MN),#Expected Heterozygosity within populations
+        HT = 1 - MP2 + HS / MN / NP - HO / 2 / MN / NP,# Total Gene diversity
         FIS = 1 - HO / HS,
         DST = HT - HS,
         DST_P = NP / (NP - 1) * DST,

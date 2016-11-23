@@ -4,10 +4,10 @@ if (getRversion() >= "2.15.1") {
     c("ID", "#CHROM", "CHROM", "FORMAT", "INDIVIDUALS", "FORMAT_ID", "LOCUS",
       "POS", "REF", "ALT", "POP_ID", "READ_DEPTH", "ALLELE_DEPTH", "GL",
       "ERASE", "GT", "MARKERS", "QQ", "PQ", "N", "MAF_GLOBAL", "MAF_LOCAL",
-      "ALLELES", "POP_ID", "GT", "INDIVIDUALS", "MARKERS", "POP_ID", "nal",
-      "ALLELES_GROUP", "ALLELES", "N_IND_GENE", "P", "N", "nal_sq",
-      "nal_sq_sum", "nal_sq_sum_nt", "npl", "het", "mho", "mhom", "dum",
-      "dum1", "SSG", "ntal", "SSP", "ntalb", "SSi", "MSI", "sigw", "MSP",
+      "ALLELES", "POP_ID", "GT", "INDIVIDUALS", "MARKERS", "POP_ID",
+      "ALLELES_GROUP", "ALLELES", "N_IND_GENE", "P", "N",
+      "het", "dum",
+      "dum1", "SSG", "SSP", "SSi", "MSI", "sigw", "MSP",
       "siga", "sigb", "lsiga", "lsigb", "lsigw", "FST", "MARKERS",
       "MARKERS_ALLELES", "ALLELES", "POP_ID", "INDIVIDUALS", "filename",
       "ID", "KEEPER", "ASSIGN", "OTHERS", "CURRENT", "INFERRED",
@@ -21,8 +21,8 @@ if (getRversion() >= "2.15.1") {
       "COUNT", "MAX_COUNT_MARKERS", "hierarchy", "GT_VCF", "ANALYSIS",
       "MEAN_ITERATIONS", "MEAN_SUBSAMPLE", "NUMBER_ITERATIONS",
       "NUMBER_SUBSAMPLE", "TOTAL_ITERATIONS", "TOTAL_SUBSAMPLE", "X1", "X2",
-      "strata.df", "GENOTYPE", "FIS", "POP1", "POP2", "tsiga", "tsigb", "tsigw", "CI", 
-      "CI_LOW", "CI_HIGH", "N_MARKERS","sigma.loc.alleles", "DST", "DST_P", 
+      "strata.df", "GENOTYPE", "FIS", "POP1", "POP2", "tsiga", "tsigb", "tsigw",
+      "CI", "CI_LOW", "CI_HIGH", "N_MARKERS","sigma.loc.alleles", "DST", "DST_P", 
       "FIS_CI_HIGH", "FIS_CI_LOW", "HO", "HS", "HT", "HT_P", "JOST_D", "MHO", 
       "MN", "MP", "MP2", "MSP2", "NEI_FST", "NEI_FST_CI_HIGH", "NEI_FST_CI_LOW",
       "NEI_FST_P", "NEI_FST_P_CI_HIGH", "NEI_FST_P_CI_LOW", "NP", "N_INV", 
@@ -31,7 +31,9 @@ if (getRversion() >= "2.15.1") {
       "PHI_PRIME_CI_HIGH", "PHI_PRIME_CI_LOW", "DATA", "ID1", "ID2", "DISTANCE",
       "nn", "maxsdap", "ID1_POP", "POP_COMP", "AMOVA", "F_STATS", "MC_ITERATIONS",
       "MODEL_VALUE", "OBS_VALUE", "SIGMA2A", "SIGMA2A_PRIME", "SIGMA2B",
-      "VARIANCE", "global_boot", "iteration", "MARKERS_COMMON", "MEAN_MARKERS_COMMON"
+      "VARIANCE", "global_boot", "iteration", "MARKERS_COMMON",
+      "MEAN_MARKERS_COMMON", "FREQ_AL", "FREQ_APL", "MHOM", "NAPL", "NC", "NIL",
+      "NIPL", "NIPL_SQ", "NIPL_SQ_SUM", "NPL"
     )
   )
 }

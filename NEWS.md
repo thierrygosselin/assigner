@@ -1,3 +1,31 @@
+# assigner v.0.3.7
+* `assigner::fst_WC84` is 30% faster!
+
+
+# assigner v.0.3.6
+* bug fix `assignment_ngs` during imputations, the imputation module could not
+recognise that REF/ALT alleles are not necessary or usefull for assignment analysis.
+*enhancement to `assignment_ngs` and `assignment_mixture` so that when 
+`marker.number` include `"all"` the `iteration.method` is set automatically to `1`
+when conducting the assignment with all the markers.
+Iterations at this point is useless and a waist of time.
+* random seed number is now stored in the appropriate files.
+* `assignment_mixture`: with `assignment.analysis = "gsi_sim` the unknown/mixture samples
+are compared with baseline populations using common markers between the pair.
+Now, the tables include the number of markers used. The summary provides the mean
+number of markers. This number will change each time randomness is used.
+
+# assigner v.0.3.5
+* bug fix in population not recognise properly
+
+# assigner v.0.3.4
+* `fst_NEI87`: very fast function that can compute: the overall and pairwise Nei's (1987) fst and f'st (prime). 
+Bootstrap resampling of markers is avalaible to build Confidence Intervals. The estimates are available as a data frame and a matrix with upper diagonal filled with Fst values and lower diagonal filled with the confidence intervals. Jost's D is also given ;)
+
+# assigner v.0.3.3
+* `fst_WC84`: bug fix, the function was not properly configured for multi-allelic markers (e.g. microsatellite, and haplotype format from STACKS). Thanks to Craig McDougall for catching this.
+
+
 # assigner v.0.3.2
 * `assignment_mixture`: added a check to throw an error when pop.levels != the pop.id in strata
 
