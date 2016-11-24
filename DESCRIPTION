@@ -34,7 +34,7 @@ Imports:
     tibble,
     modelr,
     magrittr,
-    survival (>= 2.40.1),
+    survival (>= 2.40-1),
     Hmisc,
     SNPRelate
 Suggests:
