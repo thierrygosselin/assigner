@@ -369,7 +369,7 @@ fst_WC84 <- function(
     }
     
     unique.markers.pop <- dplyr::distinct(.data = data.genotyped, MARKERS, POP_ID)
-
+    
   }
   
   # results stored in this list:
@@ -381,28 +381,27 @@ fst_WC84 <- function(
   compute_fst <- function(x, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
     # x = data.genotyped # test
     
-    # Markers in common between all populations---------------------------------
-    # x <- suppressMessages(stackr::keep_common_markers(data = x))
-    
     # Removing monomorphic markers------------------------------------------------
-    mono.markers <- x %>%
-      dplyr::select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
-      tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
-      tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>%
-      dplyr::filter(GT != "000") %>%
-      dplyr::group_by(MARKERS, GT) %>% 
-      dplyr::tally(.) %>%
-      dplyr::ungroup(.) %>% 
-      dplyr::select(MARKERS) %>% 
-      dplyr::group_by(MARKERS) %>% 
-      dplyr::tally(.) %>% 
-      dplyr::filter(n == 1) %>% 
-      dplyr::select(MARKERS)
+    # mono.markers <- x %>%
+    #   dplyr::select(MARKERS,POP_ID, INDIVIDUALS, GT) %>%
+    #   tidyr::separate(col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
+    #   tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>%
+    #   dplyr::filter(GT != "000") %>%
+    #   dplyr::group_by(MARKERS, GT) %>% 
+    #   dplyr::tally(.) %>%
+    #   dplyr::ungroup(.) %>% 
+    #   dplyr::select(MARKERS) %>% 
+    #   dplyr::group_by(MARKERS) %>% 
+    #   dplyr::tally(.) %>% 
+    #   dplyr::filter(n == 1) %>% 
+    #   dplyr::select(MARKERS)
+    # 
+    # # Remove the markers from the dataset
+    # if (length(mono.markers$MARKERS) > 0) {
+    #   x <- dplyr::anti_join(x, mono.markers, by = "MARKERS")
+    # }
     
-    # Remove the markers from the dataset
-    if (length(mono.markers$MARKERS) > 0) {
-      x <- dplyr::anti_join(x, mono.markers, by = "MARKERS")
-    }
+    x <- stackr::discard_monomorphic_markers(data = x, verbose = FALSE)$input
     
     # number of marker used for computation 
     n.markers <- dplyr::n_distinct(x$MARKERS)
@@ -617,17 +616,20 @@ fst_WC84 <- function(
   
   # Pairwise Fst function
   pairwise_fst <- function(list.pair, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
+    
     pop.select <- stringi::stri_join(purrr::flatten(pop.pairwise[list.pair]))
     
-    set1 <- unique.markers.pop %>% 
-      dplyr::filter(POP_ID == pop.select[1]) %>% 
+    # data.select <- stackr::keep_common_markers(data = data.select) # longer than below
+    # common markers
+    set1 <- unique.markers.pop %>%
+      dplyr::filter(POP_ID == pop.select[1]) %>%
       dplyr::select(MARKERS)
     
-    set2 <- unique.markers.pop %>% 
-      dplyr::filter(POP_ID == pop.select[2]) %>% 
+    set2 <- unique.markers.pop %>%
+      dplyr::filter(POP_ID == pop.select[2]) %>%
       dplyr::select(MARKERS)
     
-    common.set <- dplyr::intersect(set1, set2) %>% 
+    common.set <- dplyr::intersect(set1, set2) %>%
       dplyr::arrange(MARKERS)
     
     data.genotyped <- suppressWarnings(dplyr::semi_join(data.genotyped, common.set, by = "MARKERS"))
@@ -635,6 +637,7 @@ fst_WC84 <- function(
     data.select <- data.genotyped %>% 
       dplyr::filter(POP_ID %in% pop.select) %>% 
       dplyr::mutate(POP_ID = droplevels(x = POP_ID))
+    
     fst.select <- compute_fst(x = data.select, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci)
     df.select <- data_frame(POP1 = pop.select[1], POP2 = pop.select[2])
     df.select <- bind_cols(df.select, fst.select$fst.overall) 
@@ -644,40 +647,11 @@ fst_WC84 <- function(
   
   # Pairwise Fst function with SNPRelate
   pairwise_fst_snprelate <- function(pop.pairwise, data, strata, unique.markers.pop) {
-    # pop.select <- pop.pairwise[[1]]
-    # pop.select <- stringi::stri_join(purrr::flatten(pop.pairwise[1]))
-    # pop.pairwise <- c("G122", "G124")
-    
-    # filter dataset with selected pop
-    # data <- dplyr::filter(.data = data, POP_ID %in% pop.pairwise) %>% # filter the pop
-      # dplyr::mutate(POP_ID = droplevels(POP_ID)) # remove unnecessary factors
-    
-    # remove mono markers
-    # data <- suppressMessages(discard_monomorphic_markers(data = data)$input)
-    
-    # Markers in common between all populations
-    # data <- suppressMessages(stackr::keep_common_markers(data = data))
-    
-    # snp.id <- dplyr::distinct(.data = data, MARKERS) %>%
-    #   dplyr::arrange(MARKERS) %>%
-    #   purrr::flatten_chr(.)
-    # 
-    # strata.df <- data %>%
-    #   dplyr::ungroup(.) %>% 
-    #   dplyr::distinct(POP_ID, INDIVIDUALS)
-    # 
-    # gds.genotypes <- suppressWarnings(
-    #   dplyr::select(.data = data, MARKERS, INDIVIDUALS, GT_BIN) %>%
-    #     dplyr::group_by(MARKERS) %>% 
-    #     tidyr::spread(data = ., key = INDIVIDUALS, value = GT_BIN) %>% 
-    #     dplyr::arrange(MARKERS) %>%
-    #     tibble::column_to_rownames(df = ., var = "MARKERS") %>% 
-    #     data.matrix(.)
-    # )
     
     strata.df <- dplyr::filter(.data = strata, POP_ID %in% pop.pairwise) %>% # filter the pop
       dplyr::mutate(POP_ID = droplevels(POP_ID)) # remove unnecessary factors
     
+    # markers in common between pair of pop
     set1 <- unique.markers.pop %>% 
       dplyr::filter(POP_ID == pop.pairwise[1]) %>% 
       dplyr::select(MARKERS)
@@ -686,40 +660,6 @@ fst_WC84 <- function(
       dplyr::select(MARKERS)
     common.set <- dplyr::intersect(set1, set2) %>% 
       dplyr::arrange(MARKERS)
-    
-    # gds.data <- NULL
-    # gds.data <- SNPRelate::snpgdsCreateGeno(
-    #   gds.fn = "assigner.gds",
-    #   genmat = gds.genotypes,
-    #   sample.id = NULL,
-    #   snp.id = snp.id,
-    #   snp.rs.id = NULL,
-    #   snp.chromosome = NULL,
-    #   snp.position = NULL,
-    #   snp.allele = NULL,
-    #   snpfirstdim = TRUE,
-    #   compress.annotation = "ZIP_RA.max",
-    #   compress.geno = "",
-    #   other.vars = NULL
-    # )
-    
-    # gds.file.connection <- SNPRelate::snpgdsOpen("assigner.gds")
-    
-    # population pair specific Fst
-    
-    # fst.snprelate <- SNPRelate::snpgdsFst(
-    #   gdsobj = gds.file.connection,
-    #   population = strata.df$POP_ID, # factors required
-    #   sample.id = NULL,
-    #   snp.id = NULL,
-    #   method = "W&C84",
-    #   remove.monosnp = FALSE,
-    #   maf = NaN,
-    #   missing.rate = NaN,
-    #   autosome.only = FALSE,
-    #   with.id = FALSE,
-    #   verbose = FALSE
-    # )
     
     fst.snprelate <- SNPRelate::snpgdsFst(
       gdsobj = data,
@@ -734,9 +674,6 @@ fst_WC84 <- function(
       with.id = FALSE,
       verbose = FALSE
     )
-    
-    # close SNPRelate connection
-    # SNPRelate::snpgdsClose(gds.file.connection)
     return(fst.snprelate)
   }
   
@@ -774,16 +711,9 @@ fst_WC84 <- function(
   # Compute global Fst ---------------------------------------------------------
   if (snprelate) {
     if (verbose) message("Generating GDS format...")
-    
-    # remove mono markers
-    # if (verbose) message("Discarding monomorphic markers")
-    # gds.genotypes <- suppressMessages(stackr::discard_monomorphic_markers(data = input)$input)
-    
-    # Markers in common between all populations
-    # if (verbose) message("Keeping markers in common between all populations")
+    # keep markers in common
     gds.genotypes <- suppressMessages(stackr::keep_common_markers(data = input))
     
-    # strata.df <- dplyr::distinct(input, POP_ID, INDIVIDUALS) %>% 
     strata.df <- dplyr::distinct(gds.genotypes, POP_ID, INDIVIDUALS) %>%
       dplyr::mutate(POP_ID = factor(POP_ID))
     
@@ -792,7 +722,6 @@ fst_WC84 <- function(
       purrr::flatten_chr(.)
     
     gds.genotypes <- suppressWarnings(
-      # dplyr::select(.data = input, MARKERS, INDIVIDUALS, GT_BIN) %>%
       dplyr::select(.data = gds.genotypes, MARKERS, INDIVIDUALS, GT_BIN) %>%
         dplyr::group_by(MARKERS) %>% 
         tidyr::spread(data = ., key = INDIVIDUALS, value = GT_BIN) %>% 
@@ -800,7 +729,7 @@ fst_WC84 <- function(
         tibble::column_to_rownames(df = ., var = "MARKERS") %>% 
         data.matrix(.)
     )  
-
+    
     gds.data <- NULL
     gds.data <- SNPRelate::snpgdsCreateGeno(
       gds.fn = "assigner.gds",
@@ -833,13 +762,17 @@ fst_WC84 <- function(
       with.id = FALSE,
       verbose = FALSE
     )$Fst
-    # close SNPRelate connection
-    # SNPRelate::snpgdsClose(gds.file.connection)
     
     fst.overall <- tibble::data_frame(FST = round(fst.snprelate, digits)) %>% 
       dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
     
     res$fst.overall <- fst.overall
+    
+    # close SNPRelate connection if no more computation with SNPRelate
+    if (!pairwise) {
+      SNPRelate::snpgdsClose(gds.file.connection)
+    }
+    
     
   } else {
     if (verbose) message("Computing global fst")
@@ -873,8 +806,10 @@ fst_WC84 <- function(
           FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0),
           FST = round(FST, digits)
         )
+      
       # close SNPRelate connection
       SNPRelate::snpgdsClose(gds.file.connection)
+      
     } else {
       # Fst for all pairwise populations
       list.pair <- 1:length(pop.pairwise)
