@@ -13,6 +13,11 @@ install:
 # Adapt as necessary starting from here
 
 use_bioc: true
+bioc_required: true
+
+# Install packages from github
+r_github_packages:
+  - zhengxwen/gdsfmt
 
 build_script:
   - travis-tool.sh install_deps
