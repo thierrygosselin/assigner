@@ -28,12 +28,10 @@ Imports:
     readr,
     stackr,
     stringi,
-    stringr,
     tidyr,
     utils,
     tidyverse,
     tibble,
-    reshape2,
     modelr,
     magrittr,
     SNPRelate
