@@ -34,8 +34,8 @@ Imports:
     tibble,
     modelr,
     magrittr,
-    SNPRelate,
-    Hmisc
+    Hmisc,
+    SNPRelate
 Suggests:
     devtools,
     hierfstat,
