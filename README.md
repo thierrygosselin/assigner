@@ -1,6 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-[![packageversion](https://img.shields.io/badge/Package%20version-0.3.7-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--11--22-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.3.8-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--11--24-brightgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -99,7 +99,13 @@ New features
 
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
-**v.0.3.7** \* `assigner::fst_WC84` is 30% faster!
+**v.0.3.8**
+
+-   `assigner::fst_WC84` can now use [SNPRelate](https://github.com/zhengxwen/SNPRelate) to compute Fst. The confidence intervals are not implemented, yet. The speed increase left me speechless, dataset with 30K snp are computed in less than 15 sec!
+
+**v.0.3.7**
+
+-   `assigner::fst_WC84` is 40% faster!
 
 **v.0.3.6**
 

@@ -5,8 +5,8 @@
 \title{A fast implementation of Weir and Cockerham (1984) Fst/Theta 
 (overall and paiwise estimates)}
 \usage{
-fst_WC84(data, pop.levels = NULL, pop.labels = NULL, strata = NULL,
-  holdout.samples = NULL, pairwise = FALSE, ci = FALSE,
+fst_WC84(data, snprelate = FALSE, pop.levels = NULL, pop.labels = NULL,
+  strata = NULL, holdout.samples = NULL, pairwise = FALSE, ci = FALSE,
   iteration.ci = 100, quantiles.ci = c(0.025, 0.975), digits = 9,
   parallel.core = parallel::detectCores() - 1, verbose = FALSE, ...)
 }
@@ -21,6 +21,12 @@ in wide or long (tidy) formats. To import, the function uses internally
 \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
 in a tidy data frame. You can also use this function to filter your dataset using
 whitelist of markers, blacklist of individuals and genotypes.}
+
+\item{snprelate}{(logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
+to compute the Fst. Testing as shown an upward bias with \code{SNPRelate::snpgdsFst} function.
+The values are 0.99 correlated with my built in codes and with \code{Hierfstat}.
+But it's the fastest computation I've seen so far!
+Default: \code{snprelate = FALSE}}
 
 \item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
 case, the id of the pop.
@@ -107,16 +113,14 @@ The function computes Weir and Cockerham (1984)
 Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
 confidence intervals based on bootstrap of markers (resampling with replacement). 
 The function gives identical results \emph{at the 9th decimal} when tested 
-against \code{\link[hierfstat]{genet.dist}} in \pkg{hierfstat} and with 
-the Fst computed in \code{Calculate Distances} or \code{Paiwise Differentiation} 
-options in \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-that uses the Analysis of Molecular Variance 
-(AMOVA, Excoffier et al., 1992; Michalakis and Excoffier, 1996). 
-The fastest computation is still 
-\href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-but it doesn't compute confidence intervals. For an R implementation, \code{\link{fst_WC84}} is very fast. 
+against \code{\link[hierfstat]{genet.dist}} in \pkg{hierfstat}. Using the 
+argument \code{snprelate = TRUE} will compute the Fst with 
+\href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}. This implementation
+gives slightly upward bias values but provided the fastest computations I know,
+but it doesn't compute confidence intervals, for now. 
+For an R implementation, \code{\link{fst_WC84}} is very fast. 
 The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
-\pkg{data.table} and \pkg{parallel}.
+\pkg{data.table}, \pkg{parallel} and \pkg{SNPRelate}.
 
 \emph{Special concerns for genome-wide estimate and filtering bias}
 
@@ -217,6 +221,11 @@ Evolution, 38, 1358-1370.
 Roesti M, Salzburger W, Berner D. (2012)
 Uninformative polymorphisms bias genome scans for signatures of selection. 
 BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x
+
+Zheng X, Levine D, Shen J, Gogarten SM, Laurie C, Weir BS.
+A high-performance computing toolset for relatedness and principal component
+analysis of SNP data. Bioinformatics. 2012;28: 3326-3328.
+doi:10.1093/bioinformatics/bts606
 }
 \seealso{
 From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive} manual:

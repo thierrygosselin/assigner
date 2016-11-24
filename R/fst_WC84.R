@@ -9,16 +9,14 @@
 #' Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
 #' confidence intervals based on bootstrap of markers (resampling with replacement). 
 #' The function gives identical results \emph{at the 9th decimal} when tested 
-#' against \code{\link[hierfstat]{genet.dist}} in \pkg{hierfstat} and with 
-#' the Fst computed in \code{Calculate Distances} or \code{Paiwise Differentiation} 
-#' options in \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-#' that uses the Analysis of Molecular Variance 
-#' (AMOVA, Excoffier et al., 1992; Michalakis and Excoffier, 1996). 
-#' The fastest computation is still 
-#' \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-#' but it doesn't compute confidence intervals. For an R implementation, \code{\link{fst_WC84}} is very fast. 
+#' against \code{\link[hierfstat]{genet.dist}} in \pkg{hierfstat}. Using the 
+#' argument \code{snprelate = TRUE} will compute the Fst with 
+#' \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}. This implementation
+#' gives slightly upward bias values but provided the fastest computations I know,
+#' but it doesn't compute confidence intervals, for now. 
+#' For an R implementation, \code{\link{fst_WC84}} is very fast. 
 #' The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
-#' \pkg{data.table} and \pkg{parallel}.
+#' \pkg{data.table}, \pkg{parallel} and \pkg{SNPRelate}.
 #' 
 #' \emph{Special concerns for genome-wide estimate and filtering bias}
 #' 
@@ -50,6 +48,12 @@
 #' \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
 #' in a tidy data frame. You can also use this function to filter your dataset using
 #' whitelist of markers, blacklist of individuals and genotypes.
+
+#' @param snprelate (logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
+#' to compute the Fst. Testing as shown an upward bias with \code{SNPRelate::snpgdsFst} function.
+#' The values are 0.99 correlated with my built in codes and with \code{Hierfstat}.
+#' But it's the fastest computation I've seen so far!
+#' Default: \code{snprelate = FALSE}
 
 #' @param pop.levels (optional, string) This refers to the levels in a factor. In this 
 #' case, the id of the pop.
@@ -162,13 +166,14 @@
 #' @rdname fst_WC84
 #' @importFrom stringi stri_replace_all_regex stri_join stri_replace_na stri_sub
 #' @import parallel
-#' @importFrom stackr read_long_tidy_wide
+#' @importFrom stackr read_long_tidy_wide discard_monomorphic_markers keep_common_markers
 #' @importFrom tidyr separate gather spread unite
 #' @importFrom purrr map flatten
 #' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n
 #' @importFrom stats quantile
 #' @importFrom utils count.fields combn
-
+#' @importFrom SNPRelate snpgdsOpen snpgdsClose snpgdsFst snpgdsCreateGeno
+#' @importFrom tibble data_frame column_to_rownames has_name
 
 
 #' @examples
@@ -214,6 +219,10 @@
 #' @references Roesti M, Salzburger W, Berner D. (2012)
 #' Uninformative polymorphisms bias genome scans for signatures of selection. 
 #' BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x
+#' @references Zheng X, Levine D, Shen J, Gogarten SM, Laurie C, Weir BS.
+#' A high-performance computing toolset for relatedness and principal component
+#' analysis of SNP data. Bioinformatics. 2012;28: 3326-3328.
+#' doi:10.1093/bioinformatics/bts606
 
 #' @seealso
 #' From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive} manual:
@@ -243,6 +252,7 @@
 # Fst function: Weir & Cockerham 1984
 fst_WC84 <- function(
   data,
+  snprelate = FALSE,
   pop.levels = NULL, 
   pop.labels = NULL, 
   strata = NULL,
@@ -263,6 +273,15 @@ fst_WC84 <- function(
     timing <- proc.time()
   }
   
+  if (snprelate) {
+    message("Fst computations with SNPRelate")
+    if (ci) {
+      message("Confidence Intervals are not implemented with SNPRelate, for now...")
+      ci <- FALSE
+    }
+  } else {
+    message("Fst computations with assigner built-in function")
+  }
   
   # Checking for missing and/or default arguments ------------------------------
   if (missing(data)) stop("Input file is missing")
@@ -271,10 +290,12 @@ fst_WC84 <- function(
   
   # Import data ---------------------------------------------------------------
   if (verbose) message("Importing data")
-  input <- stackr::read_long_tidy_wide(data = data)
+  input <- stackr::read_long_tidy_wide(data = data, import.metadata = TRUE)
   
-  # switch LOCUS to MARKERS if found
-  if ("LOCUS" %in% colnames(input)) input <- dplyr::rename(.data = input, MARKERS = LOCUS)
+  # For long tidy format, switch LOCUS to MARKERS column name, if found MARKERS not found
+  if (tibble::has_name(input, "LOCUS") && !tibble::has_name(input, "MARKERS")) {
+    input <- dplyr::rename(.data = input, MARKERS = LOCUS)
+  }
   
   # population levels and strata------------------------------------------------
   if (!is.null(strata)) {
@@ -313,15 +334,46 @@ fst_WC84 <- function(
   # using pop.levels and pop.labels info if present
   input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
   
-  # genotyped data and holdout sample  -----------------------------------------
-  data.genotyped <- dplyr::select(.data = input, MARKERS, POP_ID, INDIVIDUALS, GT) %>% 
-    dplyr::filter(GT != "000000")
-  
-  # if holdout set, removes individuals
-  if (!is.null(holdout.samples)) {
-    message("removing holdout individuals")
-    data.genotyped <- dplyr::filter(.data = data.genotyped, !INDIVIDUALS %in% holdout.samples)
+  # SNPRelate prep -------------------------------------------------------------
+  if (snprelate) {
+    message("Detect if data is biallelic")
+    biallelic <- stackr::detect_biallelic_markers(data = input)
+    
+    if (!biallelic) {
+      warning("Data is not biallelic = cannot run assigner with SNPRelate Fst function")
+      message("Continuing the Fst computations with built in function...")
+      snprelate <- FALSE
+    }
   }
+  
+  if (snprelate) {
+    # if holdout set, removes individuals
+    if (!is.null(holdout.samples)) {
+      message("removing holdout individuals")
+      input <- dplyr::filter(.data = input, !INDIVIDUALS %in% holdout.samples)
+    }
+    
+    unique.markers.pop <- input %>% 
+      dplyr::filter(!is.na(GT_BIN)) %>%
+      dplyr::distinct(MARKERS, POP_ID)
+    
+  } else {
+    # genotyped data and holdout sample
+    data.genotyped <- dplyr::select(.data = input, MARKERS, POP_ID, INDIVIDUALS, GT) %>% 
+      dplyr::filter(GT != "000000")
+    
+    # if holdout set, removes individuals
+    if (!is.null(holdout.samples)) {
+      message("removing holdout individuals")
+      data.genotyped <- dplyr::filter(.data = data.genotyped, !INDIVIDUALS %in% holdout.samples)
+    }
+    
+    unique.markers.pop <- dplyr::distinct(.data = data.genotyped, MARKERS, POP_ID)
+
+  }
+  
+  # results stored in this list:
+  res <- list()
   
   # Function to compute WC84 Fst ----------------------------------------------
   
@@ -330,10 +382,7 @@ fst_WC84 <- function(
     # x = data.genotyped # test
     
     # Markers in common between all populations---------------------------------
-    x <- suppressMessages(stackr::keep_common_markers(data = x))
-    
-    # number of marker used for computation 
-    n.markers <- dplyr::n_distinct(x$MARKERS)
+    # x <- suppressMessages(stackr::keep_common_markers(data = x))
     
     # Removing monomorphic markers------------------------------------------------
     mono.markers <- x %>%
@@ -355,9 +404,12 @@ fst_WC84 <- function(
       x <- dplyr::anti_join(x, mono.markers, by = "MARKERS")
     }
     
+    # number of marker used for computation 
+    n.markers <- dplyr::n_distinct(x$MARKERS)
+    
     count.locus <- dplyr::group_by(.data = x, MARKERS) %>%
       dplyr::summarise(
-        NPL = n_distinct(POP_ID),# number of popualtions per locus
+        NPL = n_distinct(POP_ID),# number of populations per locus
         NIL = n() # number of individuals per locus
       )
     
@@ -552,7 +604,6 @@ fst_WC84 <- function(
         strip.text.x = element_text(size = 10, family = "Helvetica", face = "bold"))
     
     # Results ------------------------------------------------------------------
-    res <- list()
     res$sigma.loc <- sigma.loc
     res$fst.markers <- fst.markers
     res$fst.ranked <- fst.ranked
@@ -567,6 +618,20 @@ fst_WC84 <- function(
   # Pairwise Fst function
   pairwise_fst <- function(list.pair, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci) {
     pop.select <- stringi::stri_join(purrr::flatten(pop.pairwise[list.pair]))
+    
+    set1 <- unique.markers.pop %>% 
+      dplyr::filter(POP_ID == pop.select[1]) %>% 
+      dplyr::select(MARKERS)
+    
+    set2 <- unique.markers.pop %>% 
+      dplyr::filter(POP_ID == pop.select[2]) %>% 
+      dplyr::select(MARKERS)
+    
+    common.set <- dplyr::intersect(set1, set2) %>% 
+      dplyr::arrange(MARKERS)
+    
+    data.genotyped <- suppressWarnings(dplyr::semi_join(data.genotyped, common.set, by = "MARKERS"))
+    
     data.select <- data.genotyped %>% 
       dplyr::filter(POP_ID %in% pop.select) %>% 
       dplyr::mutate(POP_ID = droplevels(x = POP_ID))
@@ -576,6 +641,104 @@ fst_WC84 <- function(
     fst.select <- NULL
     return(df.select)
   } # End pairwise_fst
+  
+  # Pairwise Fst function with SNPRelate
+  pairwise_fst_snprelate <- function(pop.pairwise, data, strata, unique.markers.pop) {
+    # pop.select <- pop.pairwise[[1]]
+    # pop.select <- stringi::stri_join(purrr::flatten(pop.pairwise[1]))
+    # pop.pairwise <- c("G122", "G124")
+    
+    # filter dataset with selected pop
+    # data <- dplyr::filter(.data = data, POP_ID %in% pop.pairwise) %>% # filter the pop
+      # dplyr::mutate(POP_ID = droplevels(POP_ID)) # remove unnecessary factors
+    
+    # remove mono markers
+    # data <- suppressMessages(discard_monomorphic_markers(data = data)$input)
+    
+    # Markers in common between all populations
+    # data <- suppressMessages(stackr::keep_common_markers(data = data))
+    
+    # snp.id <- dplyr::distinct(.data = data, MARKERS) %>%
+    #   dplyr::arrange(MARKERS) %>%
+    #   purrr::flatten_chr(.)
+    # 
+    # strata.df <- data %>%
+    #   dplyr::ungroup(.) %>% 
+    #   dplyr::distinct(POP_ID, INDIVIDUALS)
+    # 
+    # gds.genotypes <- suppressWarnings(
+    #   dplyr::select(.data = data, MARKERS, INDIVIDUALS, GT_BIN) %>%
+    #     dplyr::group_by(MARKERS) %>% 
+    #     tidyr::spread(data = ., key = INDIVIDUALS, value = GT_BIN) %>% 
+    #     dplyr::arrange(MARKERS) %>%
+    #     tibble::column_to_rownames(df = ., var = "MARKERS") %>% 
+    #     data.matrix(.)
+    # )
+    
+    strata.df <- dplyr::filter(.data = strata, POP_ID %in% pop.pairwise) %>% # filter the pop
+      dplyr::mutate(POP_ID = droplevels(POP_ID)) # remove unnecessary factors
+    
+    set1 <- unique.markers.pop %>% 
+      dplyr::filter(POP_ID == pop.pairwise[1]) %>% 
+      dplyr::select(MARKERS)
+    set2 <- unique.markers.pop %>% 
+      dplyr::filter(POP_ID == pop.pairwise[2]) %>% 
+      dplyr::select(MARKERS)
+    common.set <- dplyr::intersect(set1, set2) %>% 
+      dplyr::arrange(MARKERS)
+    
+    # gds.data <- NULL
+    # gds.data <- SNPRelate::snpgdsCreateGeno(
+    #   gds.fn = "assigner.gds",
+    #   genmat = gds.genotypes,
+    #   sample.id = NULL,
+    #   snp.id = snp.id,
+    #   snp.rs.id = NULL,
+    #   snp.chromosome = NULL,
+    #   snp.position = NULL,
+    #   snp.allele = NULL,
+    #   snpfirstdim = TRUE,
+    #   compress.annotation = "ZIP_RA.max",
+    #   compress.geno = "",
+    #   other.vars = NULL
+    # )
+    
+    # gds.file.connection <- SNPRelate::snpgdsOpen("assigner.gds")
+    
+    # population pair specific Fst
+    
+    # fst.snprelate <- SNPRelate::snpgdsFst(
+    #   gdsobj = gds.file.connection,
+    #   population = strata.df$POP_ID, # factors required
+    #   sample.id = NULL,
+    #   snp.id = NULL,
+    #   method = "W&C84",
+    #   remove.monosnp = FALSE,
+    #   maf = NaN,
+    #   missing.rate = NaN,
+    #   autosome.only = FALSE,
+    #   with.id = FALSE,
+    #   verbose = FALSE
+    # )
+    
+    fst.snprelate <- SNPRelate::snpgdsFst(
+      gdsobj = data,
+      population = strata.df$POP_ID, # factors required
+      sample.id = strata.df$INDIVIDUALS,
+      snp.id = common.set$MARKERS,
+      method = "W&C84",
+      remove.monosnp = TRUE,
+      maf = NaN,
+      missing.rate = NaN,
+      autosome.only = FALSE,
+      with.id = FALSE,
+      verbose = FALSE
+    )
+    
+    # close SNPRelate connection
+    # SNPRelate::snpgdsClose(gds.file.connection)
+    return(fst.snprelate)
+  }
   
   # Confidence interval function
   boot_ci <- function(x, sigma.loc.alleles){
@@ -609,33 +772,129 @@ fst_WC84 <- function(
   } # End boot_ci function
   
   # Compute global Fst ---------------------------------------------------------
-  if (verbose) message("Computing global fst")
-  res <- compute_fst(x = data.genotyped, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci)
+  if (snprelate) {
+    if (verbose) message("Generating GDS format...")
+    
+    # remove mono markers
+    # if (verbose) message("Discarding monomorphic markers")
+    # gds.genotypes <- suppressMessages(stackr::discard_monomorphic_markers(data = input)$input)
+    
+    # Markers in common between all populations
+    # if (verbose) message("Keeping markers in common between all populations")
+    gds.genotypes <- suppressMessages(stackr::keep_common_markers(data = input))
+    
+    # strata.df <- dplyr::distinct(input, POP_ID, INDIVIDUALS) %>% 
+    strata.df <- dplyr::distinct(gds.genotypes, POP_ID, INDIVIDUALS) %>%
+      dplyr::mutate(POP_ID = factor(POP_ID))
+    
+    snp.id <- dplyr::distinct(.data = gds.genotypes, MARKERS) %>%
+      dplyr::arrange(MARKERS) %>%
+      purrr::flatten_chr(.)
+    
+    gds.genotypes <- suppressWarnings(
+      # dplyr::select(.data = input, MARKERS, INDIVIDUALS, GT_BIN) %>%
+      dplyr::select(.data = gds.genotypes, MARKERS, INDIVIDUALS, GT_BIN) %>%
+        dplyr::group_by(MARKERS) %>% 
+        tidyr::spread(data = ., key = INDIVIDUALS, value = GT_BIN) %>% 
+        dplyr::arrange(MARKERS) %>%
+        tibble::column_to_rownames(df = ., var = "MARKERS") %>% 
+        data.matrix(.)
+    )  
+
+    gds.data <- NULL
+    gds.data <- SNPRelate::snpgdsCreateGeno(
+      gds.fn = "assigner.gds",
+      genmat = gds.genotypes,
+      sample.id = strata.df$INDIVIDUALS,
+      snp.id = snp.id,
+      snp.rs.id = NULL,
+      snp.chromosome = NULL,
+      snp.position = NULL,
+      snp.allele = NULL,
+      snpfirstdim = TRUE,
+      compress.annotation = "ZIP_RA.max",
+      compress.geno = "",
+      other.vars = NULL
+    )
+    
+    # Compute the global Fst
+    if (verbose) message("Computing global fst")
+    gds.file.connection <- SNPRelate::snpgdsOpen("assigner.gds")
+    fst.snprelate <- SNPRelate::snpgdsFst(
+      gdsobj = gds.file.connection,
+      population = strata.df$POP_ID,
+      sample.id = strata.df$INDIVIDUALS,
+      snp.id = NULL,
+      method = "W&C84",
+      remove.monosnp = TRUE,
+      maf = NaN,
+      missing.rate = NaN,
+      autosome.only = FALSE,
+      with.id = FALSE,
+      verbose = FALSE
+    )$Fst
+    # close SNPRelate connection
+    # SNPRelate::snpgdsClose(gds.file.connection)
+    
+    fst.overall <- tibble::data_frame(FST = round(fst.snprelate, digits)) %>% 
+      dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
+    
+    res$fst.overall <- fst.overall
+    
+  } else {
+    if (verbose) message("Computing global fst")
+    res <- compute_fst(x = data.genotyped, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci)
+  }
   
   # Compute pairwise Fst -------------------------------------------------------
   if (pairwise) {
     if (verbose) message("Computing paiwise fst")
+    
     pop.list <- levels(input$POP_ID) # pop list
     # all combination of populations
-    pop.pairwise <- utils::combn(unique(pop.list), 2, simplify = FALSE) 
-    # Fst for all pairwise populations
-    list.pair <- 1:length(pop.pairwise)
-    # list.pair <- 5 #  test
-    fst.all.pop <- mclapply(
-      X = list.pair, 
-      FUN = pairwise_fst, 
-      mc.preschedule = FALSE, 
-      mc.silent = FALSE, 
-      mc.cores = parallel.core, 
-      ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci
-    )
+    pop.pairwise <- utils::combn(pop.list, 2, simplify = FALSE) 
     
-    # Table with Fst------------------------------------------------------------
-    pairwise.fst <- bind_rows(fst.all.pop) %>% 
-      dplyr::mutate(
-        POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
-        POP2 = factor(POP2, levels = pop.list, ordered = TRUE)
+    if (snprelate) {
+      fst.all.pop <- purrr::map(
+        .x = pop.pairwise,
+        .f = pairwise_fst_snprelate,
+        data = gds.file.connection,
+        strata = strata.df,
+        unique.markers.pop = unique.markers.pop
       )
+      # Table with Fst
+      pairwise.fst <- t(data.frame(pop.pairwise)) %>% 
+        tibble::as_data_frame(.) %>%
+        dplyr::bind_cols(dplyr::bind_rows(fst.all.pop)) %>% 
+        dplyr::rename(POP1 = V1, POP2 = V2, FST = Fst) %>% 
+        dplyr::mutate(
+          POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
+          POP2 = factor(POP2, levels = pop.list, ordered = TRUE),
+          FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0),
+          FST = round(FST, digits)
+        )
+      # close SNPRelate connection
+      SNPRelate::snpgdsClose(gds.file.connection)
+    } else {
+      # Fst for all pairwise populations
+      list.pair <- 1:length(pop.pairwise)
+      # list.pair <- 5 #  test
+      fst.all.pop <- mclapply(
+        X = list.pair, 
+        FUN = pairwise_fst, 
+        mc.preschedule = FALSE, 
+        mc.silent = FALSE, 
+        mc.cores = parallel.core, 
+        ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci
+      )
+      # Table with Fst
+      pairwise.fst <- bind_rows(fst.all.pop) %>% 
+        dplyr::mutate(
+          POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
+          POP2 = factor(POP2, levels = pop.list, ordered = TRUE)
+        )
+    }#End pairwise Fst
+    
     # Matrix--------------------------------------------------------------------
     upper.mat.fst <- pairwise.fst %>% 
       dplyr::select(POP1, POP2, FST) %>% 
@@ -681,7 +940,6 @@ fst_WC84 <- function(
     full.mat.fst <- "pairwise fst not selected"
     pairwise.fst.ci.matrix <- "pairwise fst not selected"
   }
-  
   
   # messages -------------------------------------------------------------------
   if (verbose) {

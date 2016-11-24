@@ -33,7 +33,7 @@ if (getRversion() >= "2.15.1") {
       "MODEL_VALUE", "OBS_VALUE", "SIGMA2A", "SIGMA2A_PRIME", "SIGMA2B",
       "VARIANCE", "global_boot", "iteration", "MARKERS_COMMON",
       "MEAN_MARKERS_COMMON", "FREQ_AL", "FREQ_APL", "MHOM", "NAPL", "NC", "NIL",
-      "NIPL", "NIPL_SQ", "NIPL_SQ_SUM", "NPL"
+      "NIPL", "NIPL_SQ", "NIPL_SQ_SUM", "NPL", "V1", "V2", "Fst", "GT_BIN"
     )
   )
 }

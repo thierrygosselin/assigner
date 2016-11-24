@@ -1,6 +1,11 @@
-# assigner v.0.3.7
-* `assigner::fst_WC84` is 30% faster!
+# assigner v.0.3.8
+* `assigner::fst_WC84` can now use [SNPRelate](https://github.com/zhengxwen/SNPRelate)
+to compute Fst. The confidence intervals are not implemented, yet.
+The speed increase left me speechless, dataset with 30K snp are computed in less than 15 sec!
 
+
+# assigner v.0.3.7
+* `assigner::fst_WC84` is 40% faster!
 
 # assigner v.0.3.6
 * bug fix `assignment_ngs` during imputations, the imputation module could not

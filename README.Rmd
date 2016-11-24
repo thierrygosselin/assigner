@@ -138,8 +138,15 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
 
+**v.0.3.8**
+
+* `assigner::fst_WC84` can now use [SNPRelate](https://github.com/zhengxwen/SNPRelate)
+to compute Fst. The confidence intervals are not implemented, yet.
+The speed increase left me speechless, dataset with 30K snp are computed in less than 15 sec!
+
 **v.0.3.7**
-* `assigner::fst_WC84` is 30% faster!
+
+* `assigner::fst_WC84` is 40% faster!
 
 **v.0.3.6**
 
