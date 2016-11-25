@@ -46,7 +46,7 @@
 #' @export
 #' @rdname write_gsi_sim
 
-#' @import stackr
+#' @importFrom stackr
 
 #' @importFrom data.table fread dcast.data.table as.data.table
 #' @importFrom tibble as_data_frame

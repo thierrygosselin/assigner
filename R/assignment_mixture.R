@@ -166,8 +166,7 @@
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs sample_n sample_frac mutate_each summarise_each_ intersect
 #' @importFrom stats var median quantile
 #' @importFrom purrr map map2 flatten flatten_df keep discard
-#' @importFrom data.table fread
-#' @importFrom stackr tidy_genomic_data stackr_imputations_module write_genind
+#' @importFrom stackr tidy_genomic_data stackr_imputations_module write_genind snp_ld keep_common_markers stackr_maf_module
 #' @importFrom tibble as_data_frame data_frame
 #' @importFrom tidyr spread gather separate
 

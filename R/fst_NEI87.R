@@ -158,7 +158,7 @@
 #' @rdname fst_NEI87
 #' @import parallel
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs summarise_if mutate_if count bind_rows bind_cols
-#' @importFrom stackr read_long_tidy_wide
+#' @importFrom stackr read_long_tidy_wide change_pop_names
 #' @importFrom tidyr spread gather unite separate complete nesting
 #' @importFrom stringi stri_replace_all_regex stri_sub stri_join
 #' @importFrom purrr map

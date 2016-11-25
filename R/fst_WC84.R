@@ -166,7 +166,7 @@
 #' @rdname fst_WC84
 #' @import parallel
 #' @import ggplot2
-#' @importFrom stackr read_long_tidy_wide discard_monomorphic_markers keep_common_markers
+#' @importFrom stackr read_long_tidy_wide discard_monomorphic_markers keep_common_markers change_pop_names detect_biallelic_markers
 #' @importFrom tidyr separate gather spread unite
 #' @importFrom purrr map flatten
 #' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n bind_rows bind_cols
