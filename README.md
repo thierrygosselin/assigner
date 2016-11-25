@@ -1,6 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-[![packageversion](https://img.shields.io/badge/Package%20version-0.3.8-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--11--24-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.3.8-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--11--25-brightgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -13,29 +13,121 @@ Next-generation sequencing techniques that reduce the size of the genome (e.g. g
 
 **assigner** was tailored to make it easy to conduct assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like [R Notebook](http://rmarkdown.rstudio.com/r_notebooks.html), [RStudio](https://www.rstudio.com) and [GitHub](https://github.com) will make effortless documenting your workflows and pipelines.
 
-**assigner features:**
+### Features:
 
--   **Conduct assignment analysis** and **mixture analysis** using [gsi\_sim](https://github.com/eriqande/gsi_sim), a tool developed by Eric C. Anderson (see Anderson et al. 2008 and Anderson 2010) or [adegenet](https://github.com/thibautjombart/adegenet), a R package developed by Thibaul Jombart, to conduct the assignment analysis.
--   The input file are:
-    1.  **VCF** (Danecek et al. 2011),
-    2.  **PLINK** tped/tfam format (Purcell et al. 2007), usefull for very large files (&gt; 50 000 markers),
-    3.  **genind** and **genlight** objets from [adegenet](https://github.com/thibautjombart/adegenet) (Jombart et al. 2010; Jombart and Ahmed, 2011)
-    4.  **genepop** for traditionalists... (Raymond and Rousset 1995; Rousset 2008)
-    5.  **haplotypes data frame file** produced by [STACKS](http://catchenlab.life.illinois.edu/stacks/) (Catchen et al. 2011, 2013). (e.g. *batch\_x.haplotypes.tsv*)
-    6.  a data frame of genotypes in wide or long/tidy format
--   Markers can be randomly selected for a **classic LOO (Leave-One-Out) assignment** or chosen based on **ranked Fst** (Weir & Cockerham, 1984) for a **THL (Training, Holdout, Leave-one-out) assignment analysis** (reviewed in Anderson 2010)
--   Use `iteration.method` and/or `iteration.subsample` arguments to resample markers or individuals to get statistics!
--   assigner provides a fast implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
--   **Map-independent imputation** of missing genotype or alleles using **Random Forest** or the most frequent category is also available to test the impact of missing data on assignment analysis
--   **Filters:**
--   Individuals, populations and markers can be **filtered** and/or selected in several ways using **blacklist, whitelist** and other arguments
--   Genotypes of poor quality (e.g. in coverage, **genotype likelihood** or sequencing errors) can be erased prior to imputations or assignment analysis with the use of a `blacklist.genotype` argument
--   The impact of the **minor allele frequency**, MAF, (local and global) can also be easily explored with custom thresholds
--   Use the `whitelist.markers` argument to explore the impact of filters used in other software
--   Import and summarise the assignment results from [GenoDive](http://www.bentleydrummer.nl/software/software/GenoDive.html) (Meirmans and Van Tienderen, 2004)
--   Using [GenoDive](http://www.bentleydrummer.nl/software/software/GenoDive.html) output, compute the **genotype likelihood ratio distance metric (Dlr)** (Paetkau's et al. 1997, 2004)
--   `ggplot2`-based plotting to view assignment results and create publication-ready figures
--   Fast computations with optimized codes to run in parallel!
+<table style="width:100%;">
+<colgroup>
+<col width="26%" />
+<col width="73%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Caracteristics</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><strong>Analysis</strong></td>
+<td align="left"><a href="https://github.com/eriqande/gsi_sim">gsi_sim</a> (Anderson et al., 2008; Anderson, 2010) or <a href="https://github.com/thibautjombart/adegenet">adegenet</a> (Jombart, 2008; Jombart and Ahmed, 2011)<br><br>Conducted on: samples of <strong>known origin (population)</strong> or <strong>unknown/mixture</strong></td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Input files</strong></td>
+<td align="left"><a href="https://samtools.github.io/hts-specs/">VCF</a> (Danecek et al., 2011), <a href="http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#tr">PLINK tped/tfam</a> (Purcell et al., 2007), <a href="https://github.com/thibautjombart/adegenet">adegenet genind and genlight</a> (Jombart et al., 2010; Jombart and Ahmed, 2011), <a href="https://github.com/EricArcher/strataG">strataG gtypes</a>, <a href="http://genepop.curtin.edu.au">Genepop</a> (Raymond and Rousset, 1995; Rousset, 2008), <a href="http://catchenlab.life.illinois.edu/stacks/">STACKS haplotype file</a> (Catchen et al., 2011, 2013), dataframes of genotypes in wide or long/tidy format</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Markers selections</strong></td>
+<td align="left">Random or ranked based on W&amp;C's Fst (Weir and Cockerham, 1984) or Nei's Gst (Nei, 1987)</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Cross-Validations</strong></td>
+<td align="left"><strong>classic LOO</strong> (Leave-One-Out) or <strong>THL</strong> (Training, Holdout, Leave-one-out) (see Anderson, 2010)</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Resampling/Bootstrap/Subsampling</strong></td>
+<td align="left">markers and individuals</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Imputations</strong></td>
+<td align="left"><strong>Map-independent</strong> imputations of missing genotypes.<br>Using <strong>Random Forest</strong> or the most frequent category.<br> Imputations can be conducted <strong>overall samples</strong> or <strong>by populations</strong>.</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Filters</strong></td>
+<td align="left">Whitelist and blacklist arguments provide the way to select/filter(include/exclude):<br>genotypes, markers, individuals and populations.<br><br>See the dedicated filtering arguments on the next table below.</td>
+</tr>
+<tr class="even">
+<td align="left"><strong><a href="http://ggplot2.org">ggplot2</a>-based plotting</strong></td>
+<td align="left">View assignment results and create publication-ready figures</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Parallel</strong></td>
+<td align="left">Codes designed and optimized for fast computations running imputations, iterations, etc. in parallel</td>
+</tr>
+</tbody>
+</table>
+
+#### Specialized filtering arguments tailored for RADseq data and assignment analysis:
+
+<table style="width:76%;">
+<colgroup>
+<col width="23%" />
+<col width="52%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Filters</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><strong><code>pop.select</code></strong></td>
+<td align="left">Keep selected populations</td>
+</tr>
+<tr class="even">
+<td align="left"><strong><code>blacklist.id</code></strong></td>
+<td align="left">Discard individuals</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong><code>whitelist.markers</code></strong></td>
+<td align="left">Keep favorite markers</td>
+</tr>
+<tr class="even">
+<td align="left"><strong><code>blacklist.genotype</code></strong></td>
+<td align="left">Genotypes of poor quality (e.g. in <strong>coverage</strong>, <strong>genotype likelihood</strong> or <strong>sequencing errors</strong>) can be <strong>erased</strong> prior to imputations or assignment analysis</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong><code>maf.thresholds</code></strong></td>
+<td align="left">Test different thresholds of the minor allele frequency (local and global MAF)</td>
+</tr>
+<tr class="even">
+<td align="left"><strong><code>common.markers</code></strong></td>
+<td align="left">Keep only markers in common between populations (optimized for pairwise analysis)</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong><code>monomorphic.out</code></strong></td>
+<td align="left">Discard monomorphic markers</td>
+</tr>
+<tr class="even">
+<td align="left"><strong><code>snp.ld</code></strong></td>
+<td align="left">Prune markers based on short-distance linkage disequilibrium</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong><code>marker.number</code></strong></td>
+<td align="left">Test different groupings of marker numbers automatically (selected randomly or based on the ranking method described in the table above)</td>
+</tr>
+<tr class="even">
+<td align="left"><strong><code>More filters?</code></strong></td>
+<td align="left">For more info on how to filter RADseq data, see <a href="https://github.com/thierrygosselin/stackr">stackr</a></td>
+</tr>
+</tbody>
+</table>
+
+#### Independent modules:
+
+-   assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement). See the [vignettes for this below](https://github.com/thierrygosselin/assigner#examples-and-vignettes)
+-   **AMOVA:** Analysis of Molecular Variance that run fast and works with missing values.
+-   **Dlr:** Compute the genotype likelihood ratio distance metric (Paetkau's et al. 1997, 2004).
 
 Installation
 ------------
@@ -118,22 +210,17 @@ Examples and Vignettes
     -   Why use assigner to compute Fst of W&C (1984) in R ? [(Rmd Notebook)](https://www.dropbox.com/s/djxvudh2amx2ayw/fst_comparisons.Rmd?dl=0) and [(html vignette)](https://www.dropbox.com/s/fl4s30enh6nnxiy/fst_comparisons.nb.html?dl=0)
     -   How to run several whitelists of markers in `assigner::assignment_ngs`[(html vignette)](https://www.dropbox.com/s/btt2oqx2qec601x/assignment.whitelists.Rmd?dl=0)
     -   **github** : [link](https://github.com/thierrygosselin/assigner/tree/master/vignettes)
--   **inside R**
+-   **inside R** During installation of the package you need to select the buil vignette option: `install_github("thierrygosselin/assigner", build_vignettes = TRUE)`
 
     ``` r
-    # The install must have the build_vignettes option:
-    install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
+    browseVignettes("assigner") # To browse vignettes
+    # For Pairwise and overall Fst with confidence intervals + building phylogenetic tree:
+    vignette("fst_confidence_intervals")
+    # To get top markers for assignment:
+    vignette("top_markers_assignment")
+    # To visualize individual's assignment results:
+    vignette("visualize_individual_assignment_results")
     ```
-
-``` r
-browseVignettes("assigner") # To browse vignettes
-# For Pairwise and overall Fst with confidence intervals + building phylogenetic tree:
-vignette("fst_confidence_intervals")
-# To get top markers for assignment:
-vignette("top_markers_assignment")
-# To visualize individual's assignment results:
-vignette("visualize_individual_assignment_results")
-```
 
 Vignettes are in development, check periodically for updates.
 
