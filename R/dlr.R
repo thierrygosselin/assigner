@@ -33,11 +33,12 @@
 #' the matrix and the table written in the working directory. 
 #' @return A list with 3 objects of class: table ($dlr.table), dist (a lower
 #' diagonal matrix, $dlr.dist), data.frame (a mirrored matrix, $dlr.matrix).
-#' @import dplyr
-#' @import readr
-#' @import lazyeval
-#' @import stringi
-#' @importFrom  stats as.dist dist
+#' @importFrom dplyr mutate select filter group_by ungroup filter_ mutate_ summarise ungroup add_rownames left_join
+#' @importFrom readr read_tsv read_delim write_tsv
+#' @importFrom lazyeval interp
+#' @importFrom stringi stri_dup stri_join stri_replace_all_fixed stri_sub
+#' @importFrom stats as.dist dist
+#' @importFrom utils combn
 #' @export 
 #' @rdname dlr
 #' @references Paetkau D, Slade R, Burden M, Estoup A (2004) 
@@ -52,24 +53,17 @@
 #' Molecular Ecology Notes, 4, 792-794.
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
-# required to pass the R CMD check and have 'no visible binding for global variable'
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(
-    c('INDIVIDUALS', 'Current', 'Inferred', 'Lik_max', 'Lik_home', 'Lik_ratio', 
-      'POP_ID', 'RATIO', 'DLR', 'DLR_RELATIVE')
-  )
-}
-
-dlr <- function (data, 
-                 l.skip, 
-                 number.individuals, 
-                 number.pop, 
-                 pop.id.start, 
-                 pop.id.end, 
-                 pop.levels, 
-                 pop.labels, 
-                 strata,
-                 filename) {
+dlr <- function (
+  data, 
+  l.skip, 
+  number.individuals, 
+  number.pop, 
+  pop.id.start, 
+  pop.id.end, 
+  pop.levels, 
+  pop.labels, 
+  strata,
+  filename) {
   
   if (missing(data)) stop("GenoDive file missing")
   if (missing(strata)) strata <- NULL
@@ -84,33 +78,33 @@ dlr <- function (data,
   
   
   # import and modify the assignment file form GenoDive-------------------------
-  assignment <- read_delim(
+  assignment <- readr::read_delim(
     data,
     delim = "\t",
     skip = l.skip,
     n_max = number.individuals,
     col_names = TRUE,
     progress = interactive(),
-    col_types = stri_join("cccddd", stri_dup("d", times = number.pop), sep = "")) %>% 
-    select(-c(Current, Inferred, Lik_max, Lik_home, Lik_ratio))
+    col_types = stringi::stri_join("cccddd", stringi::stri_dup("d", times = number.pop), sep = "")) %>% 
+    dplyr::select(-c(Current, Inferred, Lik_max, Lik_home, Lik_ratio))
   
   if (is.null(strata)){
     header <- names(assignment)
     header.sites <- header[2:(1+number.pop)]
-    header.sites.clean <- stri_sub(header.sites, pop.id.start, pop.id.end)
-    header.pop <- stri_replace_all_fixed(header.sites.clean, pop.levels, pop.labels, vectorize_all = FALSE)
+    header.sites.clean <- stringi::stri_sub(header.sites, pop.id.start, pop.id.end)
+    header.pop <- stringi::stri_replace_all_fixed(header.sites.clean, pop.levels, pop.labels, vectorize_all = FALSE)
     new.header <- c("INDIVIDUALS", header.pop)
     colnames(assignment) <- new.header
     
     assignment <- assignment %>%
-      mutate(
-        POP_ID = stri_sub(INDIVIDUALS, pop.id.start, pop.id.end),
-        POP_ID = factor(stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered = TRUE),
+      dplyr::mutate(
+        POP_ID = stringi::stri_sub(INDIVIDUALS, pop.id.start, pop.id.end),
+        POP_ID = factor(stringi::stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered = TRUE),
         POP_ID = droplevels(POP_ID),
         INDIVIDUALS =  as.character(INDIVIDUALS)
       )
   } else { # strata provided
-    strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
+    strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
       rename(POP_ID = STRATA)
     
     header.pop <- as.character(unique(strata.df$POP_ID))
@@ -118,33 +112,33 @@ dlr <- function (data,
     colnames(assignment) <- new.header
     
     assignment <- assignment %>%
-      mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-      left_join(strata.df, by = "INDIVIDUALS") %>% 
-      mutate(POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered =TRUE))
+      dplyr::mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
+      dplyr::left_join(strata.df, by = "INDIVIDUALS") %>% 
+      dplyr::mutate(POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered =TRUE))
   }
   # Dlr relative for one combination of pop-------------------------------------
   dlr.relative <- function(pop1, pop2){
     
     dlr <- suppressWarnings(
       assignment %>%
-        filter_(interp(~ POP_ID == as.name(pop1) | POP_ID == as.name(pop2))) %>%
-        group_by(INDIVIDUALS) %>%
-        mutate_(
-          RATIO1 = interp(~pop1 - pop2, pop1 = as.name(pop1), pop2 = as.name(pop2)),
-          RATIO2 = interp(~pop2 - pop1, pop1 = as.name(pop1), pop2 = as.name(pop2)),
-          RATIO = interp(~ifelse(POP_ID == pop1, c.RATIO1, c.RATIO2),
+        dplyr::filter_(lazyeval::interp(~ POP_ID == as.name(pop1) | POP_ID == as.name(pop2))) %>%
+        dplyr::group_by(INDIVIDUALS) %>%
+        dplyr::mutate_(
+          RATIO1 = lazyeval::interp(~pop1 - pop2, pop1 = as.name(pop1), pop2 = as.name(pop2)),
+          RATIO2 = lazyeval::interp(~pop2 - pop1, pop1 = as.name(pop1), pop2 = as.name(pop2)),
+          RATIO = lazyeval::interp(~ifelse(POP_ID == pop1, c.RATIO1, c.RATIO2),
                          POP_ID = quote(POP_ID), pop1 = as.name("pop1"),
                          c.RATIO1 = quote(RATIO1), c.RATIO2 = quote(RATIO2))) %>% 
-        group_by(POP_ID) %>%
-        summarise(DLR_RELATIVE = (sum(RATIO)/length(RATIO)^2)) %>%
-        ungroup %>%
-        summarise(DLR_RELATIVE = sum(DLR_RELATIVE)/2)
+        dplyr::group_by(POP_ID) %>%
+        dplyr::summarise(DLR_RELATIVE = (sum(RATIO)/length(RATIO)^2)) %>%
+        dplyr::ungroup(.) %>%
+        dplyr::summarise(DLR_RELATIVE = sum(DLR_RELATIVE)/2)
     )
     return(dlr)
   }
   
   # All combination of populations----------------------------------------------
-  pop.pairwise <- combn(unique(pop.labels), 2)
+  pop.pairwise <- utils::combn(unique(pop.labels), 2)
   pop.pairwise <- matrix(pop.pairwise,nrow = 2)
   
   # Dlr for all pairwise populations--------------------------------------------
@@ -156,10 +150,10 @@ dlr <- function (data,
 dlr.all.pop <- as.numeric(dlr.all.pop)
 
 # Table with Dlr--------------------------------------------------------------
-names.pairwise <- combn(unique(pop.labels), 2, paste, collapse = '-')
+names.pairwise <- utils::combn(unique(pop.labels), 2, paste, collapse = '-')
 
-dlr.table <- data_frame(PAIRWISE_POP = names.pairwise, DLR = dlr.all.pop) %>%
-  mutate(DLR = round(as.numeric(DLR), 2))
+dlr.table <- tibble::data_frame(PAIRWISE_POP = names.pairwise, DLR = dlr.all.pop) %>%
+  dplyr::mutate(DLR = round(as.numeric(DLR), 2))
 
 
 # Dist and Matrix-------------------------------------------------------------
@@ -171,7 +165,7 @@ colnames(dlr.dist.matrix) <- rownames(dlr.dist.matrix) <- unique(pop.labels)
 dlr.dist.matrix <- stats::as.dist(dlr.dist.matrix)
 
 dlr.matrix <- as.data.frame(as.matrix(dlr.dist.matrix)) %>%
-  add_rownames(var = "POP")
+  dplyr::add_rownames(var = "POP")
 
 # Results---------------------------------------------------------------------
 dlr.results.list <- list()
@@ -184,12 +178,12 @@ if (is.null(filename)) {
   message("Writing files to directory: no")
 } else {
   # saving table
-  filename.table <- stri_join(filename, "table.tsv", sep = ".") 
-  write_tsv(dlr.table, filename.table)
+  filename.table <- stringi::stri_join(filename, "table.tsv", sep = ".") 
+  readr::write_tsv(dlr.table, filename.table)
   
   # saving matrix
-  filename.matrix <- stri_join(filename, "matrix.tsv", sep = ".") 
-  write_tsv(dlr.matrix, filename.matrix)
+  filename.matrix <- stringi::stri_join(filename, "matrix.tsv", sep = ".") 
+  readr::write_tsv(dlr.matrix, filename.matrix)
   message("Writing files to directory: yes")
   message(paste0("Filenames : ", "\n", filename.table, "\n", filename.matrix))
 }
@@ -200,9 +194,9 @@ return(dlr.results.list)
 # dlr.absolute <- assignment %>%
 #   group_by(Individuals) %>%
 #   mutate_(
-#     RATIO1 = interp(~pop1 - pop2, pop1 = as.name(pop1), pop2 = as.name(pop2)),
-#     RATIO2 = interp(~pop2 - pop1, pop1 = as.name(pop1), pop2 = as.name(pop2)),
-#     RATIO = interp(~ifelse(Populations == pop1, c.RATIO1, c.RATIO2), Populations = quote(Populations), pop1 = as.name("pop1"), c.RATIO1 = quote(RATIO1), c.RATIO2 = quote(RATIO2))) %>% 
+#     RATIO1 = lazyeval::interp(~pop1 - pop2, pop1 = as.name(pop1), pop2 = as.name(pop2)),
+#     RATIO2 = lazyeval::interp(~pop2 - pop1, pop1 = as.name(pop1), pop2 = as.name(pop2)),
+#     RATIO = lazyeval::interp(~ifelse(Populations == pop1, c.RATIO1, c.RATIO2), Populations = quote(Populations), pop1 = as.name("pop1"), c.RATIO1 = quote(RATIO1), c.RATIO2 = quote(RATIO2))) %>% 
 #     group_by(Populations) %>%
 #     summarise(DLR_ABSOLUTE = sum(RATIO)/length(RATIO)) %>%
 #     ungroup %>%

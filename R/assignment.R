@@ -38,20 +38,21 @@
 #' @rdname assignment_genodive
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
-assignment_genodive <- function(assignment.lmax, assignment.lhome, 
-                                lmax.migrant.skip, 
-                                lmax.number.migrant, 
-                                lmax.skip, 
-                                lhome.migrant.skip,
-                                lhome.number.migrant,
-                                lhome.skip,
-                                sites.levels,
-                                pop.labels,
-                                pop.levels,
-                                pop.id.start, 
-                                pop.id.end, 
-                                number.individuals, 
-                                number.pop) {
+assignment_genodive <- function(
+  assignment.lmax, assignment.lhome, 
+  lmax.migrant.skip, 
+  lmax.number.migrant, 
+  lmax.skip, 
+  lhome.migrant.skip,
+  lhome.number.migrant,
+  lhome.skip,
+  sites.levels,
+  pop.labels,
+  pop.levels,
+  pop.id.start, 
+  pop.id.end, 
+  number.individuals, 
+  number.pop) {
   
   Individuals <- NULL
   Current <- NULL
@@ -343,7 +344,7 @@ plot_assignment_stacked_bar <- function(assignment.summary, pop.levels) {
 #' @return A list with the assignment table and the assignment plot.
 #' @import dplyr
 #' @import readr
-#' @import lazyeval
+#' @importFrom lazyeval interp
 #' @import stringi
 #' @export 
 #' @rdname plot_assignment_dlr
@@ -365,20 +366,21 @@ if (getRversion() >= "2.15.1") {
   )
 }
 
-plot_assignment_dlr <- function(data, 
-                                l.skip, 
-                                number.individuals, 
-                                number.pop, 
-                                pop.id.start, 
-                                pop.id.end, 
-                                pop.levels, 
-                                pop.labels, 
-                                strata,
-                                POPA, POPB,
-                                dlr, x.dlr, y.dlr,
-                                fst, x.fst, y.fst,
-                                filename,
-                                plot.width, plot.height, plot.dpi) {
+plot_assignment_dlr <- function(
+  data, 
+  l.skip, 
+  number.individuals, 
+  number.pop, 
+  pop.id.start, 
+  pop.id.end, 
+  pop.levels, 
+  pop.labels, 
+  strata,
+  POPA, POPB,
+  dlr, x.dlr, y.dlr,
+  fst, x.fst, y.fst,
+  filename,
+  plot.width, plot.height, plot.dpi) {
   
   if (missing(data)) stop("GenoDive file missing")
   if (missing(strata)) strata <- NULL
@@ -432,7 +434,7 @@ plot_assignment_dlr <- function(data,
   }
   
   assignment <- assignment %>%
-    filter_(interp(~ POP_ID == as.name(POPA) | POP_ID == as.name(POPB)))
+    filter_(lazyeval::interp(~ POP_ID == as.name(POPA) | POP_ID == as.name(POPB)))
   
   x_title <- stri_join("Log (genotype likelihood) population: ", POPA, sep = "") 
   y_title <- stri_join("Log (genotype likelihood) population: ", POPB, sep = "") 
