@@ -13,7 +13,7 @@
 #' @rdname import_subsamples
 #' @importFrom dplyr bind_rows
 #' @importFrom tibble as_data_frame
-#' @importFrom stringi stri_paste stri_detect_fixed stri_replace_all_fixed
+#' @importFrom stringi stri_join stri_detect_fixed stri_replace_all_fixed
 #' @importFrom readr read_tsv
 
 #' @examples

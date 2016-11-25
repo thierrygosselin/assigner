@@ -10,9 +10,10 @@
 
 #' @export
 #' @rdname import_subsamples_fst
-#' @import dplyr
-#' @import stringi
-
+#' @importFrom stringi stri_join
+#' @importFrom dplyr bind_rows
+#' @importFrom tibble as_data_frame
+#' @importFrom readr read_tsv
 
 #' @examples
 #' \dontrun{
@@ -33,19 +34,19 @@ import_subsamples_fst <- function(dir.path){
   
   data.subsample <- list()
   for (i in subsample.folders) {
-    fst.files.list <- list.files(path = stri_paste(dir.path, "/", i), pattern = "fst.ranked", full.names = FALSE)
+    fst.files.list <- list.files(path = stringi::stri_join(dir.path, "/", i), pattern = "fst.ranked", full.names = FALSE)
     data.fst <- list()
     for (j in fst.files.list) {
-      fst.file <- read_tsv(file = stri_paste(dir.path, "/", i, "/", j), col_names = TRUE) %>% 
+      fst.file <- readr::read_tsv(file = stringi::stri_join(dir.path, "/", i, "/", j), col_names = TRUE) %>% 
         mutate(
           SUBSAMPLE = rep(i, n()),
           ITERATIONS = rep(j, n())
         )
       data.fst[[j]] <- fst.file
     }
-    data.fst <- as_data_frame(bind_rows(data.fst))
+    data.fst <- tibble::as_data_frame(dplyr::bind_rows(data.fst))
     data.subsample[[i]] <- data.fst
   }
-  data <- as_data_frame(bind_rows(data.subsample))
+  data <- tibble::as_data_frame(dplyr::bind_rows(data.subsample))
   return(data)
 }
