@@ -169,11 +169,11 @@
 #' @importFrom stackr read_long_tidy_wide discard_monomorphic_markers keep_common_markers
 #' @importFrom tidyr separate gather spread unite
 #' @importFrom purrr map flatten
-#' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n
+#' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n bind_rows bind_cols
 #' @importFrom stats quantile
 #' @importFrom utils count.fields combn
 #' @importFrom SNPRelate snpgdsOpen snpgdsClose snpgdsFst snpgdsCreateGeno
-#' @importFrom tibble data_frame column_to_rownames has_name
+#' @importFrom tibble data_frame column_to_rownames has_name as_data_frame
 
 
 #' @examples
@@ -543,7 +543,7 @@ fst_WC84 <- function(
     if (ci) {
       # the function:
       boot.fst.list <- purrr::map(.x = 1:iteration.ci, .f = boot_ci, sigma.loc.alleles = sigma.loc.alleles)
-      boot.fst <- bind_rows(boot.fst.list)
+      boot.fst <- dplyr::bind_rows(boot.fst.list)
       boot.fst.summary <- boot.fst %>% 
         dplyr::summarise(
           CI_LOW = round(stats::quantile(FST, 
@@ -575,19 +575,18 @@ fst_WC84 <- function(
     if (ci) {
       fst.overall <- fst.fis.overall %>% 
         dplyr::select(FST, N_MARKERS) %>% 
-        bind_cols(boot.fst.summary)
+        dplyr::bind_cols(boot.fst.summary)
     } else {
       fst.overall <- fst.fis.overall %>% 
         dplyr::select(FST, N_MARKERS)
     }
     
     # Fis markers  -------------------------------------------------------------
-    fis.markers <- fst.fis.markers %>% 
-      dplyr::select(MARKERS, FIS) %>% 
+    fis.markers <- dplyr::select(.data = fst.fis.markers, MARKERS, FIS) %>% 
       dplyr::arrange(MARKERS)
     
     # Fis overall   ------------------------------------------------------------
-    fis.overall <- fst.fis.overall %>% dplyr::select(FIS, N_MARKERS)
+    fis.overall <- dplyr::select(.data = fst.fis.overall, FIS, N_MARKERS)
     
     # Plot -----------------------------------------------------------------------
     fst.plot <- ggplot(fst.markers, aes(x = FST, na.rm = T)) +
@@ -639,8 +638,8 @@ fst_WC84 <- function(
       dplyr::mutate(POP_ID = droplevels(x = POP_ID))
     
     fst.select <- compute_fst(x = data.select, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci)
-    df.select <- data_frame(POP1 = pop.select[1], POP2 = pop.select[2])
-    df.select <- bind_cols(df.select, fst.select$fst.overall) 
+    df.select <- tibble::data_frame(POP1 = pop.select[1], POP2 = pop.select[2])
+    df.select <- dplyr::bind_cols(df.select, fst.select$fst.overall) 
     fst.select <- NULL
     return(df.select)
   } # End pairwise_fst
@@ -823,7 +822,7 @@ fst_WC84 <- function(
         ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci
       )
       # Table with Fst
-      pairwise.fst <- bind_rows(fst.all.pop) %>% 
+      pairwise.fst <- dplyr::bind_rows(fst.all.pop) %>% 
         dplyr::mutate(
           POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
           POP2 = factor(POP2, levels = pop.list, ordered = TRUE)
