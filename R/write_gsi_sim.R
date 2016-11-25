@@ -8,15 +8,9 @@
 #' Used internally in \href{https://github.com/thierrygosselin/assigner}{assigner}
 #' and might be of interest for users.
 
-#' @param data A file in the working directory or object in the global environment 
-#' in wide or long (tidy) formats. To import, the function uses 
-#' \href{https://github.com/thierrygosselin/stackr}{stackr} 
-#' \code{\link[stackr]{read_long_tidy_wide}}. See details for more info.
-#' 
+#' @param data A tidy genomic data set in the working directory tidy formats.
 #' \emph{How to get a tidy data frame ?}
-#' \href{https://github.com/thierrygosselin/stackr}{stackr} 
-#' \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
-#' in a tidy data frame.
+#' Look for \pkg{stackr} \code{\link{tidy_genomic_data}}.
 
 #' @param pop.levels (option, string) This refers to the levels in a factor. In this 
 #' case, the id of the pop.
@@ -51,40 +45,15 @@
 #' @return A gsi_sim input file is saved to the working directory. 
 #' @export
 #' @rdname write_gsi_sim
+
 #' @import stackr
-#' @import dplyr
-#' @import stringi
-#' @importFrom data.table fread
-#' @importFrom data.table dcast.data.table
-#' @importFrom data.table as.data.table
 
-#' @details \strong{Input data:}
-#'  
-#' To discriminate the long from the wide format, 
-#' the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
-#' for \code{MARKERS or LOCUS} in column names (TRUE = long format).
-#' The data frame is tab delimitted.
-
-#' \strong{Wide format:}
-#' The wide format cannot store metadata info.
-#' The wide format starts with these 2 id columns: 
-#' \code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
-#' the remaining columns are the markers in separate columns storing genotypes.
-#' 
-#' \strong{Long/Tidy format:}
-#' The long format is considered to be a tidy data frame and can store metadata info. 
-#' (e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
-#' are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
-#' \code{MARKERS or LOCUS} and \code{GENOTYPE or GT}. The rest are considered metata info.
-#' 
-#' \strong{2 genotypes formats are available:}
-#' 6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
-#' 6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
-#' The separator can be any of these: \code{"/", ":", "_", "-", "."}.
-#' 
-#' \emph{How to get a tidy data frame ?}
-#' \pkg{stackr} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
-#' in a tidy data frame.
+#' @importFrom data.table fread dcast.data.table as.data.table
+#' @importFrom tibble as_data_frame
+#' @importFrom tidyr separate gather unite 
+#' @importFrom dplyr n_distinct rename mutate select left_join
+#' @importFrom readr read_tsv write_delim
+#' @importFrom stringi stri_replace_all_regex stri_paste stri_replace_all_fixed
 
 
 #' @references Anderson, Eric C., Robin S. Waples, and Steven T. Kalinowski. (2008)
@@ -97,7 +66,7 @@
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
 
-write_gsi_sim <- function (
+write_gsi_sim <- function(
   data, 
   pop.levels = NULL, 
   pop.labels = NULL, 
@@ -107,125 +76,99 @@ write_gsi_sim <- function (
   
   # Checking for missing and/or default arguments ******************************
   if (missing(data)) stop("Input file necessary to write the gsi_sim file is missing")
-  if (missing(filename)) filename <- "gsi_sim.unname.txt"
   
   # POP_ID in gsi_sim does not like spaces, we need to remove space in everything touching POP_ID...
   # pop.levels, pop.labels, pop.select, strata, etc
   if (!is.null(pop.levels) & is.null(pop.labels)) {
-    pop.levels <- stri_replace_all_fixed(pop.levels, pattern = " ", replacement = "_", vectorize_all = FALSE)
+    pop.levels <- stringi::stri_replace_all_fixed(pop.levels, pattern = " ", replacement = "_", vectorize_all = FALSE)
     pop.labels <- pop.levels
   }
   if (!is.null(pop.labels)) {
-    pop.labels <- stri_replace_all_fixed(pop.labels, pattern = " ", replacement = "_", vectorize_all = FALSE)
+    pop.labels <- stringi::stri_replace_all_fixed(pop.labels, pattern = " ", replacement = "_", vectorize_all = FALSE)
   }
   if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
   
   # Import data
-  input <- stackr::read_long_tidy_wide(data = data, import.metadata = FALSE)
+  input <- data
+  
+  colnames(input) <- stringi::stri_replace_all_fixed(
+    str = colnames(input), 
+    pattern = "GENOTYPE", 
+    replacement = "GT", 
+    vectorize_all = FALSE)
   
   # remove space in POP_ID
-  input$POP_ID <- stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
-  
+  input$POP_ID <- stringi::stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
   
   # Info for gsi_sim input -----------------------------------------------------
-  n.individuals <- n_distinct(input$INDIVIDUALS)  # number of individuals
+  n.individuals <- dplyr::n_distinct(input$INDIVIDUALS)  # number of individuals
+  
   # switch LOCUS to MARKERS if found
-  if ("LOCUS" %in% colnames(input)) input <- rename(.data = input, MARKERS = LOCUS)
-  n.markers <- n_distinct(input$MARKERS)          # number of markers
+  if ("LOCUS" %in% colnames(input)) input <- dplyr::rename(.data = input, MARKERS = LOCUS)
+  
+  n.markers <- dplyr::n_distinct(input$MARKERS)          # number of markers
   list.markers <- unique(input$MARKERS)           # list of markers
   
   # Spread/dcast in wide format ------------------------------------------------------
   input <- input %>%
     tidyr::separate(data = ., col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
     tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>% 
-    arrange(MARKERS) %>%
+    dplyr::arrange(MARKERS) %>%
     tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
-    arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES)
+    dplyr::arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES)
   
   input <- data.table::dcast.data.table(
-    as.data.table(input), 
+    data.table::as.data.table(input), 
     formula = POP_ID + INDIVIDUALS ~ MARKERS_ALLELES, 
     value.var = "GT"
   ) %>% 
-    as_data_frame()
+    tibble::as_data_frame(.)
   
   # change sep in individual name
-  input$INDIVIDUALS <- stri_replace_all_fixed(
+  input$INDIVIDUALS <- stringi::stri_replace_all_fixed(
     str = input$INDIVIDUALS, 
     pattern = c("_", ":"), 
     replacement = c("-", "-"),
     vectorize_all = FALSE
   )
   
-  # population levels ----------------------------------------------------------
-  if (is.null(strata)){ # no strata
-    if(is.null(pop.levels)) { # no pop.levels
-      if (is.factor(input$POP_ID)) {
-        input$POP_ID <- droplevels(x = input$POP_ID)
-      } else {
-        input$POP_ID <- factor(input$POP_ID)
-      }
-    } else { # with pop.levels
-      input <- input %>%
-        mutate( # Make population ready
-          POP_ID = factor(
-            stri_replace_all_regex(
-              POP_ID, 
-              stri_paste("^", pop.levels, "$", sep = ""), 
-              pop.labels,
-              vectorize_all = FALSE), 
-            levels = unique(pop.labels), 
-            ordered = TRUE
-          )
-        )
-    }
-  } else { # Make population ready with the strata provided
+  # population levels and strata------------------------------------------------
+  if (!is.null(strata)) {
     if (is.vector(strata)) {
-      strata.df <- read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-        rename(POP_ID = STRATA)
+      # message("strata file: yes")
+      number.columns.strata <- max(utils::count.fields(strata, sep = "\t"))
+      col.types <- stringi::stri_join(rep("c", number.columns.strata), collapse = "")
+      suppressMessages(strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = col.types) %>% 
+                         dplyr::rename(POP_ID = STRATA))
     } else {
+      # message("strata object: yes")
+      colnames(strata) <- stringi::stri_replace_all_fixed(
+        str = colnames(strata), 
+        pattern = "STRATA", 
+        replacement = "POP_ID", 
+        vectorize_all = FALSE
+      )
       strata.df <- strata
     }
-    # change sep in individual name
-    strata.df$INDIVIDUALS <- stri_replace_all_fixed(
+    
+    # Remove potential whitespace in pop_id
+    strata.df$POP_ID <- stringi::stri_replace_all_fixed(strata.df$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
+    
+    strata.df$INDIVIDUALS <- stringi::stri_replace_all_fixed(
       str = strata.df$INDIVIDUALS, 
       pattern = c("_", ":"), 
       replacement = c("-", "-"),
       vectorize_all = FALSE
     )
     
-    # remove space in POP_ID
-    strata.df$POP_ID <- stri_replace_all_fixed(strata.df$POP_ID, 
-                                               pattern = " ", 
-                                               replacement = "_", 
-                                               vectorize_all = FALSE)
-    
-    
-    if(is.null(pop.levels)) { # no pop.levels
-      input <- input %>%
-        select(-POP_ID) %>% 
-        mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-        left_join(strata.df, by = "INDIVIDUALS") %>% 
-        mutate(POP_ID = factor(POP_ID))
-    } else { # with pop.levels
-      input <- input %>%
-        select(-POP_ID) %>% 
-        mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-        left_join(strata.df, by = "INDIVIDUALS") %>%
-        mutate(
-          POP_ID = factor(
-            stri_replace_all_regex(
-              POP_ID, 
-              stri_paste("^", pop.levels, "$", sep = ""), 
-              pop.labels, 
-              vectorize_all = FALSE
-            ),
-            levels = unique(pop.labels), ordered = TRUE
-          )
-        )
-    }
+    input <- dplyr::select(.data = input, -POP_ID) %>% 
+      dplyr::left_join(strata.df, by = "INDIVIDUALS")
   }
+  
+  # using pop.levels and pop.labels info if present
+  input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
+  
   
   # write gsi_sim file ---------------------------------------------------------
   
@@ -233,26 +176,25 @@ write_gsi_sim <- function (
   filename.connection <- file(filename, "w") 
   
   # Line 1: number of individuals and the number of markers
-  writeLines(text = stri_join(n.individuals, n.markers, sep = " "), con = filename.connection, sep = "\n")
+  writeLines(text = stringi::stri_join(n.individuals, n.markers, sep = " "), con = filename.connection, sep = "\n")
   
   # Line 2 and + : List of markers
-  writeLines(text = stri_paste(list.markers, sep = "\n"), con = filename.connection, sep = "\n")
+  writeLines(text = stringi::stri_join(list.markers, sep = "\n"), con = filename.connection, sep = "\n")
   
   # close the connection to the file
   close(filename.connection) # close the connection
   
   # remaining lines, individuals and genotypes
   pop <- input$POP_ID  # Create a vector with the population
-  input <- suppressWarnings(input %>% select(-POP_ID))  # remove pop id
+  input <- suppressWarnings(dplyr::select(.data = input, -POP_ID))  # remove pop id
   gsi_sim.split <- split(input, pop)  # split gsi_sim by populations
   
   for (k in levels(pop)) {
-    write_delim(x = as.data.frame(stri_join("pop", k, sep = " ")), path = filename, delim = "\n", append = TRUE, col_names = FALSE)
-    write_delim(x = gsi_sim.split[[k]], path = filename, delim = " ", append = TRUE, col_names = FALSE)
+    readr::write_delim(x = as.data.frame(stringi::stri_join("pop", k, sep = " ")), path = filename, delim = "\n", append = TRUE, col_names = FALSE)
+    readr::write_delim(x = gsi_sim.split[[k]], path = filename, delim = " ", append = TRUE, col_names = FALSE)
   }
   
-  gsi_sim.split<- NULL
-  input <- NULL
+  gsi_sim.split <- input <- NULL
   return(filename)
 } # End write_gsi function
 
