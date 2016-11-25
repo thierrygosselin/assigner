@@ -208,7 +208,7 @@
 #' @importFrom parallel mclapply detectCores
 #' @importFrom stringi stri_join stri_sub stri_replace_all_fixed stri_detect_fixed stri_replace_na
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs sample_n sample_frac mutate_each summarise_each_
-#' @importFrom stackr tidy_genomic_data change_pop_names stackr_imputations_module write_genind snp_ld keep_common_markers stackr_maf_module
+#' @importFrom stackr tidy_genomic_data change_pop_names stackr_imputations_module write_genind snp_ld keep_common_markers stackr_maf_module detect_genomic_format
 #' @importFrom stats var median quantile
 #' @importFrom purrr map flatten keep discard
 #' @importFrom data.table fread dcast.data.table as.data.table
@@ -435,7 +435,7 @@ assignment_ngs <- function(
   }
   
   # File type detection --------------------------------------------------------
-  data.type <- detect_genomic_format(data)
+  data.type <- stackr::detect_genomic_format(data)
   
   if (data.type == "haplo.file") {
     message("With stacks haplotype file the maf.approach is automatically set to: haplotype")

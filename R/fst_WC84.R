@@ -169,7 +169,7 @@
 #' @importFrom stackr read_long_tidy_wide discard_monomorphic_markers keep_common_markers change_pop_names detect_biallelic_markers
 #' @importFrom tidyr separate gather spread unite
 #' @importFrom purrr map flatten
-#' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n bind_rows bind_cols
+#' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n bind_rows bind_cols ntile desc n
 #' @importFrom stats quantile
 #' @importFrom utils count.fields combn
 #' @importFrom SNPRelate snpgdsOpen snpgdsClose snpgdsFst snpgdsCreateGeno
@@ -409,8 +409,8 @@ fst_WC84 <- function(
     
     count.locus <- dplyr::group_by(.data = x, MARKERS) %>%
       dplyr::summarise(
-        NPL = n_distinct(POP_ID),# number of populations per locus
-        NIL = n() # number of individuals per locus
+        NPL = dplyr::n_distinct(POP_ID),# number of populations per locus
+        NIL = dplyr::n() # number of individuals per locus
       )
     
     count.locus.pop <- dplyr::group_by(.data = x, POP_ID, MARKERS) %>%
@@ -565,11 +565,11 @@ fst_WC84 <- function(
     
     # Ranked fst   -------------------------------------------------------------
     fst.ranked <- fst.markers %>%
-      dplyr::arrange(desc(FST)) %>%
+      dplyr::arrange(dplyr::desc(FST)) %>%
       dplyr::select(MARKERS, FST) %>%
       dplyr::mutate(
-        RANKING = seq(from = 1, to = n()),
-        QUARTILE = ntile(FST,10)
+        RANKING = seq(from = 1, to = dplyr::n()),
+        QUARTILE = dplyr::ntile(FST,10)
       )
     
     # Fst overall  -------------------------------------------------------------
@@ -702,7 +702,7 @@ fst_WC84 <- function(
         FIS = round(tsigb/(tsigb + tsigw), digits)
       ) %>% 
       dplyr::mutate(
-        ITERATIONS = rep(x, n()),
+        ITERATIONS = rep(x, dplyr::n()),
         FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0)
       )
     return(fst.fis.overall.iterations)

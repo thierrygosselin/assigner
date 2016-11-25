@@ -4,8 +4,9 @@
 \alias{dlr}
 \title{Genotype likelihood ratio distance (Dlr)}
 \usage{
-dlr(data, l.skip, number.individuals, number.pop, pop.id.start, pop.id.end,
-  pop.levels, pop.labels, strata, filename)
+dlr(data, l.skip, number.individuals, number.pop, pop.id.start = NULL,
+  pop.id.end = NULL, pop.levels = NULL, pop.labels = NULL,
+  strata = NULL, filename = NULL)
 }
 \arguments{
 \item{data}{The output assignment file (home likelihood or
@@ -30,16 +31,31 @@ in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
 then, \code{pop.id.end} = 7. If you didn't name your individuals
 with the pop id in it, use the \code{strata} argument.}
 
-\item{pop.levels}{A character string with your sampling sites or populations 
-in the order you prefer (for tables and figure).}
+\item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
+case, the id of the pop.
+Use this argument to have the pop ordered your way instead of the default 
+alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
+instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
+Default: \code{pop.levels = NULL}.}
 
-\item{pop.labels}{(optional) A character string for your populations labels.
-If you need to rename sampling sites in \code{pop.levels} or combined sites/pop
-into a different names, here is the place.}
+\item{pop.labels}{(optional, string) Use this argument to rename/relabel
+your pop or combine your pop. e.g. To combine \code{"QUE"} and \code{"ONT"} 
+into a new pop called \code{"NEW"}:
+(1) First, define the levels for your pop with \code{pop.levels} argument: 
+\code{pop.levels = c("QUE", "ONT", "ALB")}. 
+(2) then, use \code{pop.labels} argument: 
+\code{pop.levels = c("NEW", "NEW", "ALB")}.#' 
+To rename \code{"QUE"} to \code{"TAS"}:
+\code{pop.labels = c("TAS", "ONT", "ALB")}.
+Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
+\code{strata} argument that can do the same thing, see below.}
 
 \item{strata}{(optional) A tab delimited file with 2 columns with header:
-\code{INDIVIDUALS} and \code{STRATA}. Default: \code{strata = NULL}.
-The \code{STRATA} column is used here as the populations id of your sample.}
+\code{INDIVIDUALS} and \code{STRATA}.
+If a \code{strata} file is specified, the strata file will have
+precedence over any grouping found input file (\code{data}). 
+The \code{STRATA} column can be any hierarchical grouping.
+Default: \code{strata = NULL}.}
 
 \item{filename}{(optional) Name of the file prefix for
 the matrix and the table written in the working directory.}

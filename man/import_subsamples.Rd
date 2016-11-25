@@ -4,7 +4,7 @@
 \alias{import_subsamples}
 \title{Import individual's assignment results of different subsample folder.}
 \usage{
-import_subsamples(dir.path, imputations)
+import_subsamples(dir.path, imputations = FALSE)
 }
 \arguments{
 \item{dir.path}{The path to the directory containing the subsample folders.}
