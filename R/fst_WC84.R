@@ -164,8 +164,8 @@
 
 #' @export
 #' @rdname fst_WC84
-#' @importFrom stringi stri_replace_all_regex stri_join stri_replace_na stri_sub
 #' @import parallel
+#' @import ggplot2
 #' @importFrom stackr read_long_tidy_wide discard_monomorphic_markers keep_common_markers
 #' @importFrom tidyr separate gather spread unite
 #' @importFrom purrr map flatten
@@ -174,7 +174,8 @@
 #' @importFrom utils count.fields combn
 #' @importFrom SNPRelate snpgdsOpen snpgdsClose snpgdsFst snpgdsCreateGeno
 #' @importFrom tibble data_frame column_to_rownames has_name as_data_frame
-
+#' @importFrom stringi stri_replace_all_regex stri_join stri_replace_na stri_sub
+#' @importFrom readr read_tsv
 
 #' @examples
 #' \dontrun{
