@@ -72,7 +72,7 @@ restriction-site-associated DNA sequencing (RADseq)) produce huge numbers of mar
 
 ####Independent modules:
 
-* assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement). See the [vignettes for this below](https://github.com/thierrygosselin/assigner#examples-and-vignettes)
+* **Fst**: assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement). See the [vignettes for this below].(https://github.com/thierrygosselin/assigner#examples-and-vignettes)
 * **AMOVA:** Analysis of Molecular Variance that run fast and works with missing values.
 * **Dlr:** Compute the genotype likelihood ratio distance metric (Paetkau's et al. 1997, 2004).
 
@@ -273,3 +273,5 @@ Shriver MD, Smith MW, Jin L et al. (1997) Ethnic-affiliation estimation by use o
 Weir BS, Cockerham CC (1984) Estimating F-Statistics for the Analysis of Population Structure. Evolution, 38, 1358–1370.
 
 Whitlock MC, Lotterhos KE (2015) Reliable Detection of Loci Responsible for Local Adaptation: Inference of a Null Model through Trimming the Distribution of FST*. The American Naturalist, S000–S000.
+
+Zheng X, Levine D, Shen J, Gogarten SM, Laurie C, Weir BS. A high-performance computing toolset for relatedness and principal component analysis of SNP data. Bioinformatics. 2012;28: 3326-3328. doi:10.1093/bioinformatics/bts606
