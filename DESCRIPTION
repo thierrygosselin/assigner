@@ -16,7 +16,6 @@ Depends:
     adegenet
 Imports:
     data.table,
-    plyr,
     dplyr (>= 0.5.0),
     gdsfmt,
     ggplot2,
@@ -38,7 +37,6 @@ Imports:
     stats
 Suggests:
     devtools,
-    hierfstat,
     knitr,
     rmarkdown
 Remotes:
