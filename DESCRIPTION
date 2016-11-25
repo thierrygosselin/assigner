@@ -34,9 +34,8 @@ Imports:
     tibble,
     modelr,
     magrittr,
-    survival (>= 2.40-1),
-    Hmisc,
-    SNPRelate
+    SNPRelate,
+    stats
 Suggests:
     devtools,
     hierfstat,
