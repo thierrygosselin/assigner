@@ -3,6 +3,10 @@
 \name{dlr}
 \alias{dlr}
 \title{Genotype likelihood ratio distance (Dlr)}
+\usage{
+dlr(data, l.skip, number.individuals, number.pop, pop.id.start, pop.id.end,
+  pop.levels, pop.labels, strata, filename)
+}
 \arguments{
 \item{data}{The output assignment file (home likelihood or
 likelihood ratio statistics) from GENODIVE.}
@@ -26,16 +30,16 @@ in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
 then, \code{pop.id.end} = 7. If you didn't name your individuals
 with the pop id in it, use the \code{strata} argument.}
 
-\item{strata}{(optional) A tab delimited file with 2 columns with header:
-\code{INDIVIDUALS} and \code{STRATA}. Default: \code{strata = NULL}.
-The \code{STRATA} column is used here as the populations id of your sample.}
-
 \item{pop.levels}{A character string with your sampling sites or populations 
 in the order you prefer (for tables and figure).}
 
 \item{pop.labels}{(optional) A character string for your populations labels.
 If you need to rename sampling sites in \code{pop.levels} or combined sites/pop
 into a different names, here is the place.}
+
+\item{strata}{(optional) A tab delimited file with 2 columns with header:
+\code{INDIVIDUALS} and \code{STRATA}. Default: \code{strata = NULL}.
+The \code{STRATA} column is used here as the populations id of your sample.}
 
 \item{filename}{(optional) Name of the file prefix for
 the matrix and the table written in the working directory.}
