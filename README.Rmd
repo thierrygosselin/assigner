@@ -93,21 +93,13 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
   to run **assigner**. The R GUI is unstable with functions using parallel.
   * **Windows users**:  1. Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/). 2. To have *assigner* run in parallel, use [parallelsugar](https://github.com/nathanvan/parallelsugar).
   Easy to install and use ([instructions](https://github.com/nathanvan/parallelsugar#installation)).
-**Dependencies:**
-  * **Imports:** adegenet, data.table, ggplot2, lazyeval, parallel, purrr, randomForestSRC, readr, stringi, stringr, tidyr, utils, plyr, dplyr (>= 0.5.0), stackr (>= 0.2.9)
-  * **Suggests:** devtools, knitr, rmarkdown
-  * **Remotes:** github::thierrygosselin/stackr
 
 A quick way to install/load required packages and start using my packages (copy/paste the whole block):
 ```r
 if (!require("pacman")) install.packages("pacman")
-library("pacman")
-pacman::p_load(devtools, tidyverse, data.table, parallel, lazyeval, randomForestSRC)
 pacman::p_load(devtools, tidyverse, data.table, parallel, lazyeval, randomForestSRC)
 devtools::install_github("thierrygosselin/stackr", build_vignettes = TRUE)
-library("stackr")
 devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)
-library("assigner")
 assigner::install_gsi_sim(fromSource = TRUE) 
 }
 ```
@@ -172,7 +164,7 @@ For previous news:
     * [installation problems](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
     * [parallel computing during imputations](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd) 
     * [Pairwise and overall Fst with confidence intervals + building phylogenetic tree](https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_confidence_intervals.Rmd)
-    * Why use assigner to compute Fst of W&C (1984) in R ? [(Rmd Notebook)](https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_comparisons.Rmd) and [(html vignette)](https://www.dropbox.com/s/fl4s30enh6nnxiy/fst_comparisons.nb.html?dl=0)
+    * Why use assigner to compute Fst of W&C (1984) in R ? [(Rmd Notebook)](https://www.dropbox.com/s/djxvudh2amx2ayw/fst_comparisons.Rmd?dl=0) and [(html vignette)](https://www.dropbox.com/s/fl4s30enh6nnxiy/fst_comparisons.nb.html?dl=0)
     * How to run several whitelists of markers in `assigner::assignment_ngs`[(html vignette)](https://www.dropbox.com/s/btt2oqx2qec601x/assignment.whitelists.Rmd?dl=0)
     * **github** : [link](https://github.com/thierrygosselin/assigner/tree/master/vignettes)
 
