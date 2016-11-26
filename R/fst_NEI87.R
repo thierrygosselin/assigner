@@ -43,7 +43,7 @@
 #' @param data A file in the working directory or object in the global environment 
 #' in wide or long (tidy) formats. To import, the function uses internally
 #' \href{https://github.com/thierrygosselin/stackr}{stackr} 
-#' \code{\link[stackr]{read_long_tidy_wide}}. See details for more info.
+#' \code{\link[stackr]{tidy_wide}}. See details for more info.
 #' 
 #' \emph{How to get a tidy data frame ?}
 #' \href{https://github.com/thierrygosselin/stackr}{stackr} 
@@ -129,7 +129,7 @@
 #' @details \strong{Input data:}
 #'  
 #' To discriminate the long from the wide format, 
-#' the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
+#' the function \pkg{stackr} \code{\link[stackr]{tidy_wide}} searches 
 #' for \code{MARKERS or LOCUS} in column names (TRUE = long format).
 #' The data frame is tab delimitted.
 
@@ -158,7 +158,7 @@
 #' @rdname fst_NEI87
 #' @import parallel
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs summarise_if mutate_if count bind_rows bind_cols ntile desc n
-#' @importFrom stackr read_long_tidy_wide change_pop_names
+#' @importFrom stackr tidy_wide change_pop_names
 #' @importFrom tidyr spread gather unite separate complete nesting
 #' @importFrom stringi stri_replace_all_regex stri_sub stri_join
 #' @importFrom purrr map
@@ -256,7 +256,7 @@ fst_NEI87 <- function(
   
   # Import data ---------------------------------------------------------------
   if (verbose) message("Importing data")
-  input <- stackr::read_long_tidy_wide(data = data)
+  input <- stackr::tidy_wide(data = data)
   
   # Change individuals names containing special character
   input$INDIVIDUALS <- stringi::stri_replace_all_fixed(

@@ -239,6 +239,10 @@ Danecek P, Auton A, Abecasis G et al. (2011) The variant call format and VCFtool
 
 Foll M, Gaggiotti O (2008) A Genome-Scan Method to Identify Selected Loci Appropriate for Both Dominant and Codominant Markers: A Bayesian Perspective. Genetics, 180, 977–993.
 
+Goudet J.hierfstat, a package for r to compute and test hierarchical F-statistics.
+Molecular Ecology Notes.2005; 5: 184-186. doi:10.1111/j.1471-8286.2004.00828.x
+
+
 Ishwaran H. and Kogalur U.B. (2015). Random Forests for Survival, Regression and Classification (RF-SRC), R package version 1.6.1.
 
 Jombart T (2008) adegenet: a R package for the multivariate analysis of genetic markers. Bioinformatics, 24, 1403–1405.

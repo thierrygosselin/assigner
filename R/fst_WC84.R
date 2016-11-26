@@ -41,7 +41,7 @@
 #' @param data A file in the working directory or object in the global environment 
 #' in wide or long (tidy) formats. To import, the function uses internally
 #' \href{https://github.com/thierrygosselin/stackr}{stackr} 
-#' \code{\link[stackr]{read_long_tidy_wide}}. See details for more info.
+#' \code{\link[stackr]{tidy_wide}}. See details for more info.
 #' 
 #' \emph{How to get a tidy data frame ?}
 #' \href{https://github.com/thierrygosselin/stackr}{stackr} 
@@ -137,7 +137,7 @@
 #' @details \strong{Input data:}
 #'  
 #' To discriminate the long from the wide format, 
-#' the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
+#' the function \pkg{stackr} \code{\link[stackr]{tidy_wide}} searches 
 #' for \code{MARKERS or LOCUS} in column names (TRUE = long format).
 #' The data frame is tab delimitted.
 
@@ -166,7 +166,7 @@
 #' @rdname fst_WC84
 #' @import parallel
 #' @import ggplot2
-#' @importFrom stackr read_long_tidy_wide discard_monomorphic_markers keep_common_markers change_pop_names detect_biallelic_markers
+#' @importFrom stackr tidy_wide discard_monomorphic_markers keep_common_markers change_pop_names detect_biallelic_markers
 #' @importFrom tidyr separate gather spread unite
 #' @importFrom purrr map flatten
 #' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n bind_rows bind_cols ntile desc n
@@ -291,7 +291,7 @@ fst_WC84 <- function(
   
   # Import data ---------------------------------------------------------------
   if (verbose) message("Importing data")
-  input <- stackr::read_long_tidy_wide(data = data, import.metadata = TRUE)
+  input <- stackr::tidy_wide(data = data, import.metadata = TRUE)
   
   # For long tidy format, switch LOCUS to MARKERS column name, if found MARKERS not found
   if (tibble::has_name(input, "LOCUS") && !tibble::has_name(input, "MARKERS")) {
