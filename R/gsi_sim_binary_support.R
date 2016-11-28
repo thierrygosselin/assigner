@@ -59,7 +59,7 @@ from within R by invoking the function \"install_gsi_sim()\"")
 #' If FALSE, then it will download a precompiled binary, if available.  If a 
 #' binary is not available, then it will attempt to download the source.  
 #' @export
-#' @keywords internal
+# @keywords internal
 #' @importFrom utils download.file
 #' 
 install_gsi_sim <- function(commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a", fromSource = FALSE) {

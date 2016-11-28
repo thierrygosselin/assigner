@@ -13,7 +13,7 @@ fst_NEI87(data, pop.levels = NULL, pop.labels = NULL, strata = NULL,
 \item{data}{A file in the working directory or object in the global environment 
 in wide or long (tidy) formats. To import, the function uses internally
 \href{https://github.com/thierrygosselin/stackr}{stackr} 
-\code{\link[stackr]{read_long_tidy_wide}}. See details for more info.
+\code{\link[stackr]{tidy_wide}}. See details for more info.
 
 \emph{How to get a tidy data frame ?}
 \href{https://github.com/thierrygosselin/stackr}{stackr} 
@@ -127,7 +127,7 @@ involves more than 2 populations that evolved more by neutral processes
 \strong{Input data:}
  
 To discriminate the long from the wide format, 
-the function \pkg{stackr} \code{\link[stackr]{read_long_tidy_wide}} searches 
+the function \pkg{stackr} \code{\link[stackr]{tidy_wide}} searches 
 for \code{MARKERS or LOCUS} in column names (TRUE = long format).
 The data frame is tab delimitted.
 \strong{Wide format:}

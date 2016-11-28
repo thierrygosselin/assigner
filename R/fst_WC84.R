@@ -164,7 +164,6 @@
 
 #' @export
 #' @rdname fst_WC84
-#' @import parallel
 #' @import ggplot2
 #' @importFrom stackr tidy_wide discard_monomorphic_markers keep_common_markers change_pop_names detect_biallelic_markers
 #' @importFrom tidyr separate gather spread unite
@@ -176,6 +175,7 @@
 #' @importFrom tibble data_frame column_to_rownames has_name as_data_frame
 #' @importFrom stringi stri_replace_all_regex stri_join stri_replace_na stri_sub
 #' @importFrom readr read_tsv
+#' @importFrom parallel detectCores
 
 #' @examples
 #' \dontrun{
@@ -410,7 +410,7 @@ fst_WC84 <- function(
     count.locus <- dplyr::group_by(.data = x, MARKERS) %>%
       dplyr::summarise(
         NPL = dplyr::n_distinct(POP_ID),# number of populations per locus
-        NIL = dplyr::n() # number of individuals per locus
+        NIL = n() # number of individuals per locus
       )
     
     count.locus.pop <- dplyr::group_by(.data = x, POP_ID, MARKERS) %>%
@@ -568,7 +568,7 @@ fst_WC84 <- function(
       dplyr::arrange(dplyr::desc(FST)) %>%
       dplyr::select(MARKERS, FST) %>%
       dplyr::mutate(
-        RANKING = seq(from = 1, to = dplyr::n()),
+        RANKING = seq(from = 1, to = n()),
         QUARTILE = dplyr::ntile(FST,10)
       )
     
@@ -702,7 +702,7 @@ fst_WC84 <- function(
         FIS = round(tsigb/(tsigb + tsigw), digits)
       ) %>% 
       dplyr::mutate(
-        ITERATIONS = rep(x, dplyr::n()),
+        ITERATIONS = rep(x, n()),
         FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0)
       )
     return(fst.fis.overall.iterations)
@@ -814,7 +814,8 @@ fst_WC84 <- function(
       # Fst for all pairwise populations
       list.pair <- 1:length(pop.pairwise)
       # list.pair <- 5 #  test
-      fst.all.pop <- mclapply(
+      fst.all.pop <- .assigner_parallel(
+        # fst.all.pop <- mclapply(
         X = list.pair, 
         FUN = pairwise_fst, 
         mc.preschedule = FALSE, 

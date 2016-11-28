@@ -205,7 +205,7 @@
 
 #' @export
 #' @rdname assignment_ngs
-#' @importFrom parallel mclapply detectCores
+#' @importFrom parallel detectCores
 #' @importFrom stringi stri_join stri_sub stri_replace_all_fixed stri_detect_fixed stri_replace_na
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs sample_n sample_frac mutate_each summarise_each_
 #' @importFrom stackr tidy_genomic_data change_pop_names stackr_imputations_module write_genind snp_ld keep_common_markers stackr_maf_module detect_genomic_format
@@ -481,7 +481,7 @@ assignment_ngs <- function(
   # need to remove space in POP_ID name to work in gsi_sim
   input$POP_ID <- stringi::stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
-  input <- stackr::change_pop_names(data = input)
+  input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
   
   # create a strata.df
   strata.df <- input %>% 
@@ -538,7 +538,7 @@ assignment_ngs <- function(
     message("Subsampling: not selected")
   } else {
     message("Subsampling: selected")
-    subsampling.individuals <- bind_rows(subsample.list)
+    subsampling.individuals <- dplyr::bind_rows(subsample.list)
     readr::write_tsv(
       x = subsampling.individuals, 
       path = paste0(directory, "subsampling_individuals.tsv"), 
@@ -549,8 +549,7 @@ assignment_ngs <- function(
   } # End subsampling
   
   # unused objects
-  subsampling.individuals <- NULL
-  ind.pop.df <- NULL
+  subsampling.individuals <- ind.pop.df <- NULL
   
   # assignment analysis --------------------------------------------------------
   # Function:
@@ -573,7 +572,7 @@ assignment_ngs <- function(
     
     # Keep only the subsample
     input <- input %>%
-      semi_join(subsampling.individuals, by = c("POP_ID", "INDIVIDUALS"))
+      dplyr::semi_join(subsampling.individuals, by = c("POP_ID", "INDIVIDUALS"))
     
     # unused object
     subsampling.individuals <- data <- NULL
@@ -661,14 +660,21 @@ assignment_ngs <- function(
     # Functions ----------------------------------------------------------------
     # Assignment with gsi_sim
     assignment_gsi_sim <- function(
-      data, select.markers, 
-      markers.names, missing.data, i, m, holdout, filename, ...) {
+      data = NULL,
+      select.markers = NULL,
+      markers.names = NULL,
+      missing.data = NULL,
+      i = NULL,
+      m = NULL,
+      holdout = NULL,
+      filename = NULL,
+      ...
+    ) {
       # data <- input #test
       # missing.data <- "no.imputation" #test
       
       data.select <- suppressWarnings(
-        data %>%
-          dplyr::semi_join(select.markers, by = "MARKERS") %>%
+        dplyr::semi_join(data, select.markers, by = "MARKERS") %>%
           dplyr::arrange(POP_ID, INDIVIDUALS, MARKERS)
       )
       
@@ -687,7 +693,7 @@ assignment_ngs <- function(
       system(paste(gsi_sim_binary(), "-b", input.gsi, "--self-assign > ", output.gsi))
       
       # Option remove the input file from directory to save space
-      if (keep.gsi.files == FALSE) file.remove(input.gsi)
+      if (!keep.gsi.files) file.remove(input.gsi)
       
       # Get Assignment results -------------------------------------------------
       # Keep track of the holdout individual
@@ -704,7 +710,7 @@ assignment_ngs <- function(
       n.locus <- m
       
       assignment <- suppressWarnings(
-        readr::read_delim(output.gsi, col_names = "ID", delim = "\t") %>%
+        suppressMessages(readr::read_delim(output.gsi, col_names = "ID", delim = "\t")) %>%
           tidyr::separate(ID, c("KEEPER", "ASSIGN"), sep = ":/", extra = "warn") %>%
           dplyr::filter(KEEPER == "SELF_ASSIGN_A_LA_GC_CSV") %>%
           tidyr::separate(ASSIGN, c("INDIVIDUALS", "ASSIGN"), sep = ";", extra = "merge") %>%
@@ -712,8 +718,7 @@ assignment_ngs <- function(
           tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
           tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
           tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss")
-      )
-      
+      )      
       assignment <- suppressWarnings(
         assignment %>%
           dplyr::mutate(INDIVIDUALS = as.character(INDIVIDUALS)) %>% 
@@ -750,7 +755,7 @@ assignment_ngs <- function(
       }
       
       # Option remove the output file from directory to save space
-      if (keep.gsi.files == FALSE) file.remove(output.gsi)
+      if (!keep.gsi.files) file.remove(output.gsi)
       
       # saving preliminary results
       if (sampling.method == "ranked") {
@@ -772,9 +777,19 @@ assignment_ngs <- function(
     
     # Assignment with adegenet
     assignment_adegenet <- function(
-      data, select.markers, 
-      adegenet.dapc.opt, adegenet.n.rep, adegenet.training, 
-      parallel.core, markers.names, missing.data, i, m, holdout, ...) {
+      data = NULL,
+      select.markers = NULL, 
+      adegenet.dapc.opt = "optim.a.score",
+      adegenet.n.rep = 30,
+      adegenet.training = 0.9, 
+      parallel.core = parallel.core,
+      markers.names = NULL,
+      missing.data = NULL,
+      i = NULL,
+      m = NULL,
+      holdout = NULL,
+      ...
+    ) {
       # data <- genind.object #test
       # missing.data <- "no.imputation" #test
       data.select <- data[loc = select.markers$MARKERS]
@@ -790,7 +805,7 @@ assignment_ngs <- function(
           dapc.best.optim.a.score <- adegenet::optim.a.score(
             adegenet::dapc(data.select, 
                            n.da = length(levels(pop.data)), 
-                           n.pca = round((length(indNames(data.select))/3) - 1, 0)), 
+                           n.pca = round((length(adegenet::indNames(data.select))/3) - 1, 0)), 
             pop = pop.data, 
             plot = FALSE
           )$best
@@ -827,18 +842,18 @@ assignment_ngs <- function(
       if (sampling.method == "ranked") {
         
         # Alpha-Score DAPC training data
-        training.data <- data.select[!indNames(data.select) %in% holdout$INDIVIDUALS] # training dataset
+        training.data <- data.select[!adegenet::indNames(data.select) %in% holdout$INDIVIDUALS] # training dataset
         pop.training <- training.data@pop
         pop.training <- droplevels(pop.training)
         
-        dapc.best.optim.a.score <- adegenet::optim.a.score(dapc(training.data, n.da = length(levels(pop.training)), n.pca = round(((length(indNames(training.data))/3) - 1), 0)), pop = pop.training, plot = FALSE)$best
+        dapc.best.optim.a.score <- adegenet::optim.a.score(dapc(training.data, n.da = length(levels(pop.training)), n.pca = round(((length(adegenet::indNames(training.data))/3) - 1), 0)), pop = pop.training, plot = FALSE)$best
         message(stringi::stri_join("a-score optimisation for iteration:", i, sep = " "))
         
         dapc.training <- adegenet::dapc(training.data, n.da = length(levels(pop.training)), n.pca = dapc.best.optim.a.score, pop = pop.training)
         message(stringi::stri_join("DAPC of training data set for iteration:", i, sep = " "))
         
         # DAPC holdout individuals
-        holdout.data <- data.select[indNames(data.select) %in% holdout$INDIVIDUALS] # holdout dataset
+        holdout.data <- data.select[adegenet::indNames(data.select) %in% holdout$INDIVIDUALS] # holdout dataset
         pop.holdout <- holdout.data@pop
         pop.holdout <- droplevels(pop.holdout)
         assignment.levels <- levels(pop.holdout) # for figure
@@ -869,7 +884,7 @@ assignment_ngs <- function(
           dplyr::select(POP_ID, ASSIGNMENT_PERC)
       }        
       if (sampling.method == "ranked") {
-        assignment <- data.frame(INDIVIDUALS = indNames(holdout.data), POP_ID = pop.holdout, ASSIGN = dapc.predict.holdout$assign, dapc.predict.holdout$posterior) %>% 
+        assignment <- data.frame(INDIVIDUALS = adegenet::indNames(holdout.data), POP_ID = pop.holdout, ASSIGN = dapc.predict.holdout$assign, dapc.predict.holdout$posterior) %>% 
           dplyr::rename(CURRENT = POP_ID, INFERRED = ASSIGN) %>%
           dplyr::mutate(
             CURRENT = factor(CURRENT, levels = rev.assignment.levels, ordered = TRUE),
@@ -951,12 +966,11 @@ assignment_ngs <- function(
       
       message("Starting parallel computations for the assignment analysis: random markers")
       message("For progress: monitor activity in the folder...")
-      mrl <- NULL
-      holdout <- NULL
+      mrl <- holdout <- NULL
       assignment.random <- list()
       assignment_random <- function(marker.random.list, ...) {
-        mrl <- data.frame(marker.random.list)                      # marker random list
-        # mrl <- marker.random.list[1] # test
+        mrl <- data.frame(marker.random.list)       # marker random list
+        # mrl <- marker.random.list[[1]] # test
         i <- as.numeric(unique(mrl$ITERATIONS))     # iteration
         m <- as.numeric(unique(mrl$MARKER_NUMBER))  # number of marker selected
         
@@ -1059,8 +1073,7 @@ assignment_ngs <- function(
           }
           
           # unused objects
-          select.markers <- NULL
-          markers.names <- NULL
+          select.markers <- markers.names <- NULL
         } # End with imputations
         
         # Compile assignment results each marker number for the iteration
@@ -1075,7 +1088,9 @@ assignment_ngs <- function(
       } # End of iterations for both with and without imputations
       
       assignment.res <- NULL
-      assignment.res <- parallel::mclapply(
+      
+      # assignment.res <- parallel::mclapply(
+      assignment.res <- .assigner_parallel(
         X = marker.random.list, 
         FUN = assignment_random, 
         mc.preschedule = TRUE, 
@@ -1322,7 +1337,7 @@ assignment_ngs <- function(
         } else {
           set.seed(random.seed)
         }
-
+        
         
         # Create x (iterations) list of y (thl) proportion of individuals per pop.
         if (stringi::stri_detect_fixed(thl, ".") & thl < 1) {
@@ -1461,9 +1476,6 @@ assignment_ngs <- function(
         assignment_marker_loop <- function(m, ...) {
           message("Marker number: ", m)
           # m <- 100 # test
-          # m <- 150 # test
-          # m <- 200 # test
-          # m <- 400 # test
           m <- as.numeric(m)
           RANKING <- NULL
           select.markers <- dplyr::filter(.data = fst.ranked, RANKING <= m) %>%
@@ -1564,16 +1576,13 @@ assignment_ngs <- function(
             }
             
             # unused objects
-            select.markers <- NULL
-            markers.names <- NULL
-            RANKING <- NULL
+            select.markers <- markers.names <- RANKING <- NULL
           } # End with imputations
           
           #compile assignment results each marker number for the iteration
           if (is.null(imputation.method)) {# with imputations
             assignment <- assignment.no.imp
-            fst.ranked.imp <- NULL
-            input.imp <- NULL
+            fst.ranked.imp <- input.imp <- NULL
           } else {
             assignment <- dplyr::bind_rows(assignment.no.imp, assignment.imp)
           }
@@ -1619,7 +1628,8 @@ assignment_ngs <- function(
       
       # using mclapply
       assignment.res <- list()
-      assignment.res <- parallel::mclapply(
+      # assignment.res <- parallel::mclapply(
+      assignment.res <- .assigner_parallel(
         X = iterations.list, 
         FUN = assignment_ranking, 
         mc.preschedule = TRUE, 
@@ -1866,8 +1876,7 @@ assignment_ngs <- function(
   
   # Summary of the subsampling iterations
   if (iteration.subsample > 1) {
-    res.pop <- res %>%
-      dplyr::filter(CURRENT != "OVERALL") %>%
+    res.pop <- dplyr::filter(.data = res, CURRENT != "OVERALL") %>%
       dplyr::group_by(CURRENT, MARKER_NUMBER, MISSING_DATA, METHOD) %>%
       dplyr::rename(ASSIGNMENT_PERC = MEAN) %>%
       dplyr::summarise(

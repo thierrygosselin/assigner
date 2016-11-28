@@ -102,7 +102,7 @@
 
 #' @param parallel.core (optional) The number of core for parallel computation 
 #' of pairwise Fst. 
-#' If not selected \code{detectCores()-1} is used as default.
+#' If not selected \code{detectCores() - 1} is used as default.
 
 #' @param verbose (logical, optional) \code{verbose = TRUE} to be chatty 
 #' during execution. 
@@ -156,7 +156,6 @@
 
 #' @export
 #' @rdname fst_NEI87
-#' @import parallel
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs summarise_if mutate_if count bind_rows bind_cols ntile desc n
 #' @importFrom stackr tidy_wide change_pop_names
 #' @importFrom tidyr spread gather unite separate complete nesting
@@ -167,6 +166,7 @@
 #' @importFrom readr read_tsv
 #' @importFrom utils count.fields combn
 #' @importFrom stats quantile
+#' @importFrom parallel detectCores
 
 #' @examples
 #' \dontrun{
@@ -360,7 +360,7 @@ fst_NEI87 <- function(
       dplyr::ungroup(.) %>%
       dplyr::mutate_if(is.numeric, funs( round(x = ., digits = digits))) %>%
       dplyr::select(HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D) %>% 
-      dplyr::mutate(ITERATIONS = rep(x, dplyr::n()))
+      dplyr::mutate(ITERATIONS = rep(x, n()))
     return(fst.data.overall.iterations)
   } # End boot_ci function
   
@@ -557,7 +557,7 @@ fst_NEI87 <- function(
     fst.ranked <- fst.markers %>%
       dplyr::arrange(dplyr::desc(NEI_FST)) %>%
       dplyr::mutate(
-        RANKING = seq(from = 1, to = dplyr::n()),
+        RANKING = seq(from = 1, to = n()),
         QUARTILE = dplyr::ntile(NEI_FST,10)
       )
     
@@ -647,7 +647,8 @@ fst_NEI87 <- function(
     # Fst for all pairwise populations
     list.pair <- 1:length(pop.pairwise)
     # list.pair <- 5 #  test
-    fst.all.pop <- mclapply(
+    
+    fst.all.pop <- .assigner_parallel(
       X = list.pair, 
       FUN = pairwise_fst, 
       mc.preschedule = FALSE, 

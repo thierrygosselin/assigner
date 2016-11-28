@@ -1,6 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-[![packageversion](https://img.shields.io/badge/Package%20version-0.3.8-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--11--25-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.3.9-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--11--28-brightgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ Next-generation sequencing techniques that reduce the size of the genome (e.g. g
 </tr>
 <tr class="odd">
 <td align="left"><strong>Parallel</strong></td>
-<td align="left">Codes designed and optimized for fast computations running imputations, iterations, etc. in parallel</td>
+<td align="left">Codes designed and optimized for fast computations running imputations, iterations, etc. in parallel. Works with all OS: Linux, Mac and PC.</td>
 </tr>
 </tbody>
 </table>
@@ -153,7 +153,7 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 
 -   **Problems during installation:** see this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
 -   I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) to run **assigner**. The R GUI is unstable with functions using parallel.
--   **Windows users**: 1. Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/). 2. To have *assigner* run in parallel, use [parallelsugar](https://github.com/nathanvan/parallelsugar). Easy to install and use ([instructions](https://github.com/nathanvan/parallelsugar#installation)).
+-   **Windows users**: Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
 
 A quick way to install/load required packages and start using my packages (copy/paste the whole block):
 
@@ -183,6 +183,11 @@ New features
 ------------
 
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
+
+**v.0.3.9**
+
+-   I'm pleased to announce that `assigner` now works in parallel with **Windows**
+-   bug fix introduce in last commit in `write_gsi_sim` where the file was not created properly from an internal module.
 
 **v.0.3.8**
 

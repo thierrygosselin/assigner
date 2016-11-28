@@ -51,7 +51,7 @@ restriction-site-associated DNA sequencing (RADseq)) produce huge numbers of mar
 |**Imputations**|**Map-independent** imputations of missing genotypes.<br>Using **Random Forest** or the most frequent category.<br> Imputations can be conducted **overall samples** or **by populations**.|
 |**Filters**| Whitelist and blacklist arguments provide the way to select/filter(include/exclude):<br>genotypes, markers, individuals and populations.<br><br>See the dedicated filtering arguments on the next table below.|
 |**[ggplot2](http://ggplot2.org)-based plotting**|View assignment results and create publication-ready figures|
-|**Parallel**|Codes designed and optimized for fast computations running imputations, iterations, etc. in parallel|
+|**Parallel**|Codes designed and optimized for fast computations running imputations, iterations, etc. in parallel. Works with all OS: Linux, Mac and PC.|
 
 
 ####Specialized filtering arguments tailored for RADseq data and assignment analysis:
@@ -101,8 +101,7 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
   [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
   * I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) 
   to run **assigner**. The R GUI is unstable with functions using parallel.
-  * **Windows users**:  1. Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/). 2. To have *assigner* run in parallel, use [parallelsugar](https://github.com/nathanvan/parallelsugar).
-  Easy to install and use ([instructions](https://github.com/nathanvan/parallelsugar#installation)).
+  * **Windows users**:  Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
 
 A quick way to install/load required packages and start using my packages (copy/paste the whole block):
 ```r
@@ -138,6 +137,12 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 ## New features
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
+
+**v.0.3.9**
+
+* I'm pleased to announce that `assigner` now works in parallel with **Windows**
+* bug fix introduce in last commit in `write_gsi_sim` where the file was not
+created properly from an internal module.
 
 
 **v.0.3.8**

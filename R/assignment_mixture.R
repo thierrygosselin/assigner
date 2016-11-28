@@ -160,7 +160,7 @@
 
 #' @export
 #' @rdname assignment_mixture
-#' @importFrom parallel mclapply detectCores
+#' @importFrom parallel detectCores
 #' @importFrom stringi stri_join stri_sub stri_replace_all_fixed stri_detect_fixed stri_replace_na
 #' @importFrom adegenet optim.a.score predict.dapc dapc indNames
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs sample_n sample_frac mutate_each summarise_each_ intersect
@@ -1048,7 +1048,7 @@ assignment_mixture <- function(
       } # End of iterations for both with and without imputations
       
       assignment.res <- NULL
-      assignment.res <- parallel::mclapply(
+      assignment.res <- .assigner_parallel(
         X = marker.random.list, 
         FUN = assignment_random, 
         mc.preschedule = FALSE, 
@@ -1293,7 +1293,7 @@ assignment_mixture <- function(
       
       # using mclapply
       assignment.res <- list()
-      assignment.res <- parallel::mclapply(
+      assignment.res <- .assigner_parallel(
         X = marker.number, 
         FUN = assignment_marker_loop,
         mc.preschedule = FALSE, 

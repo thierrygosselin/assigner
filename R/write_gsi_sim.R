@@ -51,7 +51,7 @@
 #' @importFrom data.table fread dcast.data.table as.data.table
 #' @importFrom tibble as_data_frame
 #' @importFrom tidyr separate gather unite 
-#' @importFrom dplyr n_distinct rename mutate select left_join
+#' @importFrom dplyr n_distinct rename mutate select left_join arrange
 #' @importFrom readr read_tsv write_delim
 #' @importFrom stringi stri_replace_all_regex stri_paste stri_replace_all_fixed
 
@@ -89,8 +89,11 @@ write_gsi_sim <- function(
   if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
   
   # Import data
-  input <- data
-  
+  if (is.vector(data)) {
+    input <- stackr::tidy_wide(data = data, import.metadata = FALSE)
+  } else {
+    input <- data
+  }  
   colnames(input) <- stringi::stri_replace_all_fixed(
     str = colnames(input), 
     pattern = "GENOTYPE", 
@@ -111,7 +114,7 @@ write_gsi_sim <- function(
   list.markers <- unique(input$MARKERS)           # list of markers
   
   # Spread/dcast in wide format ------------------------------------------------------
-  input <- input %>%
+  input <- dplyr::select(input, MARKERS, POP_ID, INDIVIDUALS, GT) %>%
     tidyr::separate(data = ., col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
     tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>% 
     dplyr::arrange(MARKERS) %>%
