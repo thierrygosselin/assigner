@@ -72,7 +72,7 @@ Default: \code{digits = 9}.}
 
 \item{parallel.core}{(optional) The number of core for parallel computation 
 of pairwise Fst. 
-If not selected \code{detectCores()-1} is used as default.}
+If not selected \code{detectCores() - 1} is used as default.}
 
 \item{verbose}{(logical, optional) \code{verbose = TRUE} to be chatty 
 during execution. 
