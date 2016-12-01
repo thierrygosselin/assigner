@@ -42,7 +42,6 @@ Suggests:
 Remotes:
     github::thierrygosselin/stackr,
     github::hadley/multidplyr,
-    bioc::biocLite,
     github::zhengxwen/gdsfmt,
     github::zhengxwen/SNPRelate
 License: GPL (>=2)
