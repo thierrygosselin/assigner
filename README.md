@@ -134,10 +134,12 @@ Installation
 
 To try out the dev version of **assigner**, follow the 3 steps below:
 
-**Step 1:** Install or load the package **devtools**
+**Step 1:** Install or load the package **devtools** and **bioconductor** (for SNPRelate)
 
 ``` r
 if (!require("devtools")) install.packages("devtools") # to install
+source("https://bioconductor.org/biocLite.R")
+biocLite()
 ```
 
 **Step 2:** Install **assigner** and install [gsi\_sim](https://github.com/eriqande/gsi_sim) from source
