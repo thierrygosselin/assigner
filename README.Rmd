@@ -92,8 +92,7 @@ devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # 
 assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 ```
 
-**Step 3 (optional): Parallel computing** Install an OpenMP enabled [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) package to do imputation in parallel. Follow the steps in this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.
-
+**Step 3 (optional): Parallel computing** Install an OpenMP enabled [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) and [data.table](https://github.com/Rdatatable/data.table) packages (e.g. to do imputations in parallel). Follow the steps in this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.
 
 **Notes**
 
@@ -102,16 +101,6 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
   * I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) 
   to run **assigner**. The R GUI is unstable with functions using parallel.
   * **Windows users**:  Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
-
-A quick way to install/load required packages and start using my packages (copy/paste the whole block):
-```r
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load(devtools, tidyverse, data.table, parallel, lazyeval, randomForestSRC)
-devtools::install_github("thierrygosselin/stackr", build_vignettes = TRUE)
-devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)
-assigner::install_gsi_sim(fromSource = TRUE) 
-}
-```
 
 ## Parallel computation and Cloud Computing
 

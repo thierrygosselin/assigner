@@ -1,6 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-[![packageversion](https://img.shields.io/badge/Package%20version-0.3.9-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--11--29-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.3.9-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--12--01-brightgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -147,24 +147,13 @@ devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # 
 assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 ```
 
-**Step 3 (optional): Parallel computing** Install an OpenMP enabled [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) package to do imputation in parallel. Follow the steps in this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.
+**Step 3 (optional): Parallel computing** Install an OpenMP enabled [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) and [data.table](https://github.com/Rdatatable/data.table) packages (e.g. to do imputations in parallel). Follow the steps in this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.
 
 **Notes**
 
 -   **Problems during installation:** see this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
 -   I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) to run **assigner**. The R GUI is unstable with functions using parallel.
 -   **Windows users**: Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
-
-A quick way to install/load required packages and start using my packages (copy/paste the whole block):
-
-``` r
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load(devtools, tidyverse, data.table, parallel, lazyeval, randomForestSRC)
-devtools::install_github("thierrygosselin/stackr", build_vignettes = TRUE)
-devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)
-assigner::install_gsi_sim(fromSource = TRUE) 
-}
-```
 
 Parallel computation and Cloud Computing
 ----------------------------------------
