@@ -6,7 +6,7 @@ if (getRversion() >= "2.15.1") {
       "ERASE", "GT", "MARKERS", "QQ", "PQ", "N", "MAF_GLOBAL", "MAF_LOCAL",
       "ALLELES", "POP_ID", "GT", "INDIVIDUALS", "MARKERS", "POP_ID",
       "ALLELES_GROUP", "ALLELES", "N_IND_GENE", "P", "N",
-      "het", "dum",
+      "het", "dum", "RANKING",
       "dum1", "SSG", "SSP", "SSi", "MSI", "sigw", "MSP",
       "siga", "sigb", "lsiga", "lsigb", "lsigw", "FST", "MARKERS",
       "MARKERS_ALLELES", "ALLELES", "POP_ID", "INDIVIDUALS", "filename",
