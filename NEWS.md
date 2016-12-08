@@ -1,9 +1,12 @@
+# assigner v.0.4.0
+
+* `assignment_ngs` and `assignment_mixture` code cleaning to prep for CRAN and
+make them easier to debug.
+
 # assigner v.0.3.9
 * I'm pleased to announce that `assigner` now works in parallel with **Windows**
 * bug fix introduce in last commit in `write_gsi_sim` where the file was not
 created properly from an internal module.
-
-
 
 # assigner v.0.3.8
 * `assigner::fst_WC84` can now use [SNPRelate](https://github.com/zhengxwen/SNPRelate)
