@@ -350,7 +350,7 @@ fst_WC84 <- function(
   if (snprelate) {
     # if holdout set, removes individuals
     if (!is.null(holdout.samples)) {
-      message("removing holdout individuals")
+      message("Removing holdout individuals\nFst computation...")
       input <- dplyr::filter(.data = input, !INDIVIDUALS %in% holdout.samples)
     }
     
@@ -365,7 +365,7 @@ fst_WC84 <- function(
     
     # if holdout set, removes individuals
     if (!is.null(holdout.samples)) {
-      message("removing holdout individuals")
+      message("Removing holdout individuals\nFst computation...")
       data.genotyped <- dplyr::filter(.data = data.genotyped, !INDIVIDUALS %in% holdout.samples)
     }
     
