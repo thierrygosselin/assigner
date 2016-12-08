@@ -107,8 +107,10 @@ write_gsi_sim <- function(
   # Info for gsi_sim input -----------------------------------------------------
   n.individuals <- dplyr::n_distinct(input$INDIVIDUALS)  # number of individuals
   
-  # switch LOCUS to MARKERS if found
-  if ("LOCUS" %in% colnames(input)) input <- dplyr::rename(.data = input, MARKERS = LOCUS)
+  # necessary steps to make sure we work with unique markers and not duplicated LOCUS
+  if (tibble::has_name(input, "LOCUS") && !tibble::has_name(input, "MARKERS")) {
+    input <- dplyr::rename(.data = input, MARKERS = LOCUS)
+  }
   
   n.markers <- dplyr::n_distinct(input$MARKERS)          # number of markers
   list.markers <- unique(input$MARKERS)           # list of markers
