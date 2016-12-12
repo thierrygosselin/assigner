@@ -52,7 +52,7 @@
 #' @return A list with 3 objects of class: table ($dlr.table), dist (a lower
 #' diagonal matrix, $dlr.dist), data.frame (a mirrored matrix, $dlr.matrix).
 
-#' @importFrom dplyr mutate select filter group_by ungroup filter_ mutate_ summarise ungroup add_rownames left_join
+#' @importFrom dplyr mutate select filter group_by ungroup filter_ mutate_ summarise ungroup add_rownames left_join rename
 #' @importFrom readr read_tsv read_delim write_tsv
 #' @importFrom lazyeval interp
 #' @importFrom stringi stri_dup stri_join stri_replace_all_fixed stri_sub
@@ -111,9 +111,9 @@ dlr <- function(
     col_types = stringi::stri_join("cccddd", stringi::stri_dup("d", times = number.pop), sep = "")) %>% 
     dplyr::select(-c(Current, Inferred, Lik_max, Lik_home, Lik_ratio))
   
-  if (is.null(strata)){
+  if (is.null(strata)) {
     header <- names(assignment)
-    header.sites <- header[2:(1+number.pop)]
+    header.sites <- header[2:(1 + number.pop)]
     header.sites.clean <- stringi::stri_sub(header.sites, pop.id.start, pop.id.end)
     header.pop <- stringi::stri_replace_all_fixed(header.sites.clean, pop.levels, pop.labels, vectorize_all = FALSE)
     new.header <- c("INDIVIDUALS", header.pop)
@@ -126,9 +126,9 @@ dlr <- function(
         POP_ID = droplevels(POP_ID),
         INDIVIDUALS =  as.character(INDIVIDUALS)
       )
-  } else { # strata provided
+  } else {# strata provided
     strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-      rename(POP_ID = STRATA)
+      dplyr::rename(POP_ID = STRATA)
     
     header.pop <- as.character(unique(strata.df$POP_ID))
     new.header <- c("INDIVIDUALS", header.pop)
@@ -137,7 +137,7 @@ dlr <- function(
     assignment <- assignment %>%
       dplyr::mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
       dplyr::left_join(strata.df, by = "INDIVIDUALS") %>% 
-      dplyr::mutate(POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered =TRUE))
+      dplyr::mutate(POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered = TRUE))
   }
   # Dlr relative for one combination of pop-------------------------------------
   dlr.relative <- function(pop1, pop2){
@@ -166,7 +166,7 @@ dlr <- function(
   
   # Dlr for all pairwise populations--------------------------------------------
   dlr.all.pop <- as.numeric()
-  for(i in 1:ncol(pop.pairwise)){
+  for (i in 1:ncol(pop.pairwise)) {
     dlr.all.pop[i] <- dlr.relative(pop1 = pop.pairwise[1,i], 
                                    pop2 = pop.pairwise[2,i])
   }
@@ -188,7 +188,7 @@ dlr <- function(
   dlr.dist.matrix <- stats::as.dist(dlr.dist.matrix)
   
   dlr.matrix <- as.data.frame(as.matrix(dlr.dist.matrix)) %>%
-    dplyr::add_rownames(var = "POP")
+    dplyr::add_rownames(df = ., var = "POP")
   cat("############################### RESULTS ###############################\n")
   # Results---------------------------------------------------------------------
   dlr.results.list <- list()
@@ -210,7 +210,7 @@ dlr <- function(
     message("Writing files to directory: yes")
     message(paste0("Filenames : ", "\n", filename.table, "\n", filename.matrix))
   }
-  cat("#######################################################################\n")
+  cat("############################## completed ##############################\n")
   
   return(dlr.results.list)  
 }
