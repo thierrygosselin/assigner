@@ -135,7 +135,6 @@ Change log, version, new features and bug history now lives in the [NEWS.md file
 * code cleaning to prep for CRAN
 
 
-
 **v.0.4.0**
 
 * `assignment_ngs` and `assignment_mixture` code cleaning to prep for CRAN and
