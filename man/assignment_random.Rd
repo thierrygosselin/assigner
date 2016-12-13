@@ -9,14 +9,14 @@ assignment_random(x, assignment.analysis = "gsi_sim", input = NULL,
   imputations.group = "populations", directory.subsample = NULL,
   keep.gsi.files = FALSE, sampling.method = "random", pop.labels = NULL,
   subsample.id = NULL, filename = NULL, adegenet.n.rep = 30,
-  adegenet.training = 0.9, holdout = NULL, ...)
+  adegenet.training = 0.9, holdout = NULL)
 
 assignment_random(x, assignment.analysis = "gsi_sim", input = NULL,
   genind.object = NULL, strata.df = NULL, imputation.method = NULL,
   imputations.group = "populations", directory.subsample = NULL,
   keep.gsi.files = FALSE, sampling.method = "random", pop.labels = NULL,
   subsample.id = NULL, filename = NULL, adegenet.n.rep = 30,
-  adegenet.training = 0.9, holdout = NULL, ...)
+  adegenet.training = 0.9, holdout = NULL)
 }
 \description{
 assignment_random

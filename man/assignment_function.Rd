@@ -17,7 +17,7 @@ assignment_function(x, input = NULL, subsample = NULL,
   parallel.core = parallel::detectCores() - 1, manage.all = NULL,
   random.seed = NULL, base.filename = NULL, res.list = NULL, thl = 1,
   adegenet.dapc.opt = NULL, adegenet.n.rep = NULL,
-  adegenet.training = NULL, ...)
+  adegenet.training = NULL)
 
 assignment_function(x, input = NULL, subsample = NULL,
   assignment.analysis = "gsi_sim", snp.ld = NULL, common.markers = TRUE,
@@ -32,7 +32,7 @@ assignment_function(x, input = NULL, subsample = NULL,
   parallel.core = parallel::detectCores() - 1, manage.all = NULL,
   random.seed = NULL, base.filename = NULL, res.list = NULL, thl = 1,
   adegenet.dapc.opt = NULL, adegenet.n.rep = NULL,
-  adegenet.training = NULL, ...)
+  adegenet.training = NULL)
 }
 \description{
 assignment_function

@@ -9,14 +9,14 @@ assignment_adegenet(data = NULL, select.markers = NULL,
   adegenet.dapc.opt = "optim.a.score", adegenet.n.rep = 30,
   adegenet.training = 0.9, i = NULL, m = NULL, holdout = NULL,
   sampling.method = "random", thl = 1, subsample.id = NULL,
-  parallel.core = parallel::detectCores() - 1, ...)
+  parallel.core = parallel::detectCores() - 1)
 
 assignment_adegenet(data = NULL, select.markers = NULL,
   markers.names = NULL, missing.data = NULL,
   adegenet.dapc.opt = "optim.a.score", adegenet.n.rep = 30,
   adegenet.training = 0.9, i = NULL, m = NULL, holdout = NULL,
   sampling.method = "random", thl = 1, subsample.id = NULL,
-  parallel.core = parallel::detectCores() - 1, ...)
+  parallel.core = parallel::detectCores() - 1)
 }
 \description{
 assignment with adegenet

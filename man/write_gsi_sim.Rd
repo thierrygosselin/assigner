@@ -5,7 +5,7 @@
 \title{Write a gsi_sim file from a data frame (wide or long/tidy).}
 \usage{
 write_gsi_sim(data, pop.levels = NULL, pop.labels = NULL, strata = NULL,
-  filename = "gsi_sim.unname.txt", ...)
+  filename = "gsi_sim.unname.txt")
 }
 \arguments{
 \item{data}{A tidy genomic data set in the working directory tidy formats.
@@ -39,8 +39,6 @@ the populations id with the new \code{STRATA} column.
 The \code{STRATA} column can be any hierarchical grouping.}
 
 \item{filename}{The name of the file written to the working directory.}
-
-\item{...}{other parameters passed to the function.}
 }
 \value{
 A gsi_sim input file is saved to the working directory.

@@ -6,23 +6,21 @@
 \usage{
 assignment_marker_loop(x, assignment.analysis = "gsi_sim",
   fst.ranked = NULL, i = NULL, input = NULL, genind.object = NULL,
-  strata.df = NULL, pop.levels = NULL, pop.labels = NULL,
-  sampling.method = NULL, iteration.method = NULL, subsample.id = NULL,
-  holdout = NULL, thl = 1, adegenet.dapc.opt = NULL,
-  adegenet.n.rep = NULL, adegenet.training = NULL,
-  imputation.method = NULL, imputations.group = NULL,
-  directory.subsample = NULL, filename = NULL, keep.gsi.files = FALSE,
-  parallel.core = parallel::detectCores() - 1, ...)
+  strata.df = NULL, pop.labels = NULL, sampling.method = NULL,
+  subsample.id = NULL, holdout = NULL, thl = 1,
+  adegenet.dapc.opt = NULL, adegenet.n.rep = NULL,
+  adegenet.training = NULL, imputation.method = NULL,
+  imputations.group = NULL, directory.subsample = NULL, filename = NULL,
+  keep.gsi.files = FALSE)
 
 assignment_marker_loop(x, assignment.analysis = "gsi_sim",
   fst.ranked = NULL, i = NULL, input = NULL, genind.object = NULL,
-  strata.df = NULL, pop.levels = NULL, pop.labels = NULL,
-  sampling.method = NULL, iteration.method = NULL, subsample.id = NULL,
-  holdout = NULL, thl = 1, adegenet.dapc.opt = NULL,
-  adegenet.n.rep = NULL, adegenet.training = NULL,
-  imputation.method = NULL, imputations.group = NULL,
-  directory.subsample = NULL, filename = NULL, keep.gsi.files = FALSE,
-  parallel.core = parallel::detectCores() - 1, ...)
+  strata.df = NULL, pop.labels = NULL, sampling.method = NULL,
+  subsample.id = NULL, holdout = NULL, thl = 1,
+  adegenet.dapc.opt = NULL, adegenet.n.rep = NULL,
+  adegenet.training = NULL, imputation.method = NULL,
+  imputations.group = NULL, directory.subsample = NULL, filename = NULL,
+  keep.gsi.files = FALSE)
 }
 \description{
 assignment_marker_loop

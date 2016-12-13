@@ -315,18 +315,16 @@ assignment_mixture <- function(
   if (assignment.analysis == "adegenet") message("Assignment analysis with adegenet")
   
   # Correct iteration.method default if using only "all" in marker.number
-  if (length(marker.number) == 1) {
-    if (marker.number == "all") {
-      iteration.method <- 1
-    }
+  if (length(marker.number) == 1 && marker.number == "all" && sampling.method == "random") {
+    iteration.method <- 1
   }
   
-  if ("all" %in% marker.number) {
+  if ("all" %in% marker.number && sampling.method == "random") {
     manage.all <- TRUE
   } else {
     manage.all <- FALSE
   }
-  
+ 
   # POP_ID in gsi_sim does not like spaces, we need to remove space in everything touching POP_ID...
   # pop.levels, pop.labels, pop.select, strata, etc
   if (!is.null(pop.levels) & is.null(pop.labels)) {
@@ -791,9 +789,6 @@ assignment_gsi_sim <- function(
   }
   
   # Get Assignment results -------------------------------------------------
-  # Number of markers
-  n.locus <- m
-  
   assignment <- suppressWarnings(suppressMessages(
     readr::read_delim(output.gsi, col_names = "ID", delim = "\t") %>%
       tidyr::separate(ID, c("KEEPER", "ASSIGN"), sep = ":/", extra = "warn") %>%
@@ -821,7 +816,7 @@ assignment_gsi_sim <- function(
         SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
         SCORE = round(SCORE, 2),
         SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
-        MARKER_NUMBER = as.numeric(rep(n.locus, n())),
+        MARKER_NUMBER = as.numeric(rep(m, n())),
         METHOD = rep(sampling.method, n()),
         MISSING_DATA = rep(missing.data, n())
       ) %>%
@@ -904,10 +899,20 @@ assignment_adegenet <- function(
   pop.training <- training.data@pop
   pop.training <- droplevels(pop.training)
   
-  dapc.best.optim.a.score <- adegenet::optim.a.score(adegenet::dapc(training.data, n.da = length(levels(pop.training)), n.pca = round(((length(adegenet::indNames(training.data))/3) - 1), 0)), pop = pop.training, plot = FALSE)$best
+  dapc.best.optim.a.score <- adegenet::optim.a.score(
+    adegenet::dapc(
+      training.data, 
+      n.da = length(levels(pop.training)),
+      n.pca = round(((length(adegenet::indNames(training.data))/3) - 1), 0)
+    ),
+    pop = pop.training, plot = FALSE)$best
   message(stringi::stri_join("a-score optimisation for iteration:", i, sep = " "))
   
-  dapc.training <- adegenet::dapc(training.data, n.da = length(levels(pop.training)), n.pca = dapc.best.optim.a.score, pop = pop.training)
+  dapc.training <- adegenet::dapc(
+    training.data,
+    n.da = length(levels(pop.training)), 
+    n.pca = dapc.best.optim.a.score, 
+    pop = pop.training)
   message(stringi::stri_join("DAPC of training data set for iteration:", i, sep = " "))
   
   # DAPC holdout individuals
@@ -926,10 +931,6 @@ assignment_adegenet <- function(
   
   
   # Get Assignment results -----------------------------------------------
-  
-  # Number of markers
-  n.locus <- m
-  
   if (sampling.method == "ranked") {
     i <- "not available with sampling.method = ranked"
   }
@@ -938,7 +939,7 @@ assignment_adegenet <- function(
     dplyr::rename(CURRENT = POP_ID, INFERRED = ASSIGN) %>%
     dplyr::mutate(
       ANALYSIS = rep("mixture", n()),
-      MARKER_NUMBER = as.numeric(rep(n.locus, n())),
+      MARKER_NUMBER = as.numeric(rep(m, n())),
       METHOD = rep(sampling.method, n()),
       MISSING_DATA = rep(missing.data, n()),
       SUBSAMPLE = rep(subsample.id, n()),
@@ -1353,18 +1354,16 @@ assignment_function <- function(
     } # end adegenet
   } # end imputations
   
-  # Sampling of markers---------------------------------------------------------
+  # Sampling of markers ------------------------------------------------------
   # unique list of markers after all the filtering
-  # if "all" is present in the list, change to the maximum number of markers
   unique.markers <- dplyr::distinct(.data = input, MARKERS)
   
+  # if "all" is present in the list, change to the maximum number of markers
   marker.number <- as.numeric(
-    stringi::stri_replace_all_fixed(
-      str = marker.number, 
-      pattern = "all", 
-      replacement = nrow(unique.markers), 
-      vectorize_all = TRUE
-    )
+    stringi::stri_replace_all_fixed(str = marker.number, 
+                                    pattern = "all", 
+                                    replacement = nrow(unique.markers), 
+                                    vectorize_all = TRUE)
   )
   
   # In marker.number, remove marker group higher than the max number of markers
@@ -1375,8 +1374,8 @@ assignment_function <- function(
       "Removing marker.number higher than the max number of markers: ", 
       stringi::stri_join(removing.marker, collapse = ", ")
     )
+    marker.number <- purrr::discard(.x = marker.number, .p = marker.number > nrow(unique.markers))
   }
-  marker.number <- purrr::discard(.x = marker.number, .p = marker.number > nrow(unique.markers))
   
   # Random method --------------------------------------------------------------
   if (sampling.method == "random") {
@@ -1556,7 +1555,7 @@ assignment_function <- function(
     # List of all individuals
     # ind.pop.df <- dplyr::ungroup(input) %>% dplyr::distinct(POP_ID, INDIVIDUALS)
     
-    message("Using thl method, ranking Fst with training samples...")
+    message("Ranking Fst with training samples...")
     holdout.individuals <- mixture.df
     
     readr::write_tsv(
@@ -1660,11 +1659,12 @@ assignment_function <- function(
           directory.subsample = directory.subsample,
           subsample.id = subsample.id
         )
-        assignment.res <- suppressWarnings(
+        assignment.res.summary <- suppressWarnings(
           dplyr::bind_rows(assignment.res.imp) %>% 
             dplyr::bind_rows(assignment.res)
         )
       }
+      assignment.res.summary <- assignment.res
     } else {
       assignment.res <- assignment_marker_loop(
         x = marker.number,
@@ -1708,29 +1708,34 @@ assignment_function <- function(
           directory.subsample = directory.subsample,
           subsample.id = subsample.id
         )
-        assignment.res <- suppressWarnings(
+        assignment.res.summary <- suppressWarnings(
           dplyr::bind_rows(assignment.res, assignment.res.imp)
           )
-        assignment.res.imp <- NULL
       }
+      assignment.res.summary <- assignment.res
     }
+    assignment.res.imp <- assignment.res <- NULL
     
     # Compiling the results
     message("Compiling results")
-    assignment.res <- dplyr::mutate(
-      .data = assignment.res,
+    assignment.res.summary <- dplyr::mutate(
+      .data = assignment.res.summary,
       SUBSAMPLE = rep(subsample.id, n())
     ) %>% 
       dplyr::arrange(INDIVIDUALS, MARKER_NUMBER, MISSING_DATA)
     
     # Write to the directory assignment results
     if (is.null(imputation.method)) {
-      filename.assignment.res <- stringi::stri_join("assignment.mixture", "no.imputation", sampling.method, "tsv", sep = ".")
+      filename.assignment.res <- stringi::stri_join(
+        "assignment.mixture", "no.imputation", sampling.method, "tsv", sep = ".")
     } else {# with imputations
-      filename.assignment.res <- stringi::stri_join("assignment.mixture", "imputed", sampling.method, "tsv", sep = ".")
+      filename.assignment.res <- stringi::stri_join(
+        "assignment.mixture", "imputed", sampling.method, "tsv", sep = ".")
     }
-    readr::write_tsv(x = assignment.res, path = paste0(directory.subsample, filename.assignment.res), col_names = TRUE, append = FALSE)
+    readr::write_tsv(x = assignment.res.summary,
+                     path = paste0(directory.subsample, filename.assignment.res),
+                     col_names = TRUE, append = FALSE)
   } # End of ranked thl method
   
-  return(assignment.res)
+  return(assignment.res.summary)
 } # End assignment_function

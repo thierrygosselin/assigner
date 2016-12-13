@@ -1,3 +1,9 @@
+# assigner v.0.4.1
+
+* debug code to work in parallel with Windows
+* code cleaning to prep for CRAN
+
+
 # assigner v.0.4.0
 
 * `assignment_ngs` and `assignment_mixture` code cleaning to prep for CRAN and

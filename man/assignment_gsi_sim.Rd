@@ -8,13 +8,13 @@ assignment_gsi_sim(data = NULL, strata.df = NULL, select.markers = NULL,
   markers.names = NULL, missing.data = NULL, i = NULL, m = NULL,
   holdout = NULL, filename = NULL, directory.subsample = NULL,
   keep.gsi.files = FALSE, pop.labels = NULL, sampling.method = "random",
-  thl = 1, ...)
+  thl = 1)
 
 assignment_gsi_sim(data = NULL, strata.df = NULL, select.markers = NULL,
   markers.names = NULL, missing.data = NULL, i = NULL, m = NULL,
   holdout = NULL, filename = NULL, directory.subsample = NULL,
   keep.gsi.files = FALSE, pop.labels = NULL, sampling.method = "random",
-  thl = 1, ...)
+  thl = 1)
 }
 \description{
 assignment with gsi_sim

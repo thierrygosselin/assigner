@@ -75,7 +75,7 @@ the analysis will be repeated with all the indiviuals in the data set
 If a proportion is used e.g. \code{thl = 0.15}, 15 percent of individuals in each
 populations are chosen randomly as holdout individuals.
 With \code{thl = "all"} all individuals are used for ranking (not good) and
-\code{iteration.method} argument below is set to \code{1} by default.
+the argument \code{iteration.method = 1} is set by default.
 For the other thl values, you can create different holdout individuals lists
 with the \code{iteration.method} argument below (bootstrap).}
 

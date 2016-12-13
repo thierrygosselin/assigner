@@ -129,6 +129,13 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
+**v.0.4.1**
+
+* debug code to work in parallel with Windows
+* code cleaning to prep for CRAN
+
+
+
 **v.0.4.0**
 
 * `assignment_ngs` and `assignment_mixture` code cleaning to prep for CRAN and

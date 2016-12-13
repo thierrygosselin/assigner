@@ -5,14 +5,13 @@
 \title{assignment_ranking}
 \usage{
 assignment_ranking(iterations.list = NULL, thl = NULL, input = NULL,
-  pop.labels = NULL, input.imp = NULL, holdout.individuals.list = NULL,
+  pop.labels = NULL, input.imp = NULL, holdout.individuals = NULL,
   imputation.method = NULL, imputations.group = NULL,
   directory.subsample = NULL, marker.number = NULL,
   assignment.analysis = NULL, genind.object = NULL,
   genind.object.imp = NULL, strata.df = NULL, sampling.method = NULL,
-  iteration.method = NULL, subsample.id = NULL, adegenet.dapc.opt = NULL,
-  adegenet.n.rep = NULL, adegenet.training = NULL, filename = NULL,
-  keep.gsi.files = NULL, parallel.core = parallel::detectCores() - 1, ...)
+  subsample.id = NULL, adegenet.dapc.opt = NULL, adegenet.n.rep = NULL,
+  adegenet.training = NULL, filename = NULL, keep.gsi.files = NULL)
 }
 \description{
 assignment_ranking

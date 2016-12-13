@@ -40,7 +40,7 @@
 
 #' @param filename The name of the file written to the working directory.
 
-#' @param ... other parameters passed to the function.
+# @param ... other parameters passed to the function.
 
 #' @return A gsi_sim input file is saved to the working directory. 
 #' @export
@@ -52,8 +52,8 @@
 #' @importFrom tibble as_data_frame
 #' @importFrom tidyr separate gather unite 
 #' @importFrom dplyr n_distinct rename mutate select left_join arrange
-#' @importFrom readr read_tsv write_delim
 #' @importFrom stringi stri_replace_all_regex stri_paste stri_replace_all_fixed
+#' @importFrom utils write.table count.fields
 
 
 #' @references Anderson, Eric C., Robin S. Waples, and Steven T. Kalinowski. (2008)
@@ -71,8 +71,8 @@ write_gsi_sim <- function(
   pop.levels = NULL, 
   pop.labels = NULL, 
   strata = NULL,
-  filename = "gsi_sim.unname.txt", 
-  ...) {
+  filename = "gsi_sim.unname.txt"
+  ) {
   
   # Checking for missing and/or default arguments ******************************
   if (missing(data)) stop("Input file necessary to write the gsi_sim file is missing")
@@ -103,7 +103,6 @@ write_gsi_sim <- function(
   # remove space in POP_ID
   input$POP_ID <- stringi::stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
-  
   # Info for gsi_sim input -----------------------------------------------------
   n.individuals <- dplyr::n_distinct(input$INDIVIDUALS)  # number of individuals
   
@@ -112,8 +111,10 @@ write_gsi_sim <- function(
     input <- dplyr::rename(.data = input, MARKERS = LOCUS)
   }
   
+  # n.pop <- dplyr::n_distinct(input$POP_ID)
   n.markers <- dplyr::n_distinct(input$MARKERS)          # number of markers
-  list.markers <- unique(input$MARKERS)           # list of markers
+  list.markers <- unique(input$MARKERS)                  # list of markers
+  
   
   # Spread/dcast in wide format ------------------------------------------------------
   input <- dplyr::select(input, MARKERS, POP_ID, INDIVIDUALS, GT) %>%
@@ -121,13 +122,11 @@ write_gsi_sim <- function(
     tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>% 
     dplyr::arrange(MARKERS) %>%
     tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
-    dplyr::arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES)
-  
-  input <- data.table::dcast.data.table(
-    data.table::as.data.table(input), 
-    formula = POP_ID + INDIVIDUALS ~ MARKERS_ALLELES, 
-    value.var = "GT"
-  ) %>% 
+    dplyr::arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES) %>%
+    data.table::as.data.table(x = .) %>% 
+    data.table::dcast.data.table(data = .,
+                                 formula = POP_ID + INDIVIDUALS ~ MARKERS_ALLELES, 
+                                 value.var = "GT") %>% 
     tibble::as_data_frame(.)
   
   # change sep in individual name
@@ -144,8 +143,12 @@ write_gsi_sim <- function(
       # message("strata file: yes")
       number.columns.strata <- max(utils::count.fields(strata, sep = "\t"))
       col.types <- stringi::stri_join(rep("c", number.columns.strata), collapse = "")
-      suppressMessages(strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = col.types) %>% 
-                         dplyr::rename(POP_ID = STRATA))
+      suppressMessages(strata.df <- readr::read_tsv(
+        file = strata,
+        col_names = TRUE,
+        col_types = col.types
+      ) %>% 
+        dplyr::rename(POP_ID = STRATA))
     } else {
       # message("strata object: yes")
       colnames(strata) <- stringi::stri_replace_all_fixed(
@@ -158,7 +161,9 @@ write_gsi_sim <- function(
     }
     
     # Remove potential whitespace in pop_id
-    strata.df$POP_ID <- stringi::stri_replace_all_fixed(strata.df$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
+    strata.df$POP_ID <- stringi::stri_replace_all_fixed(
+      strata.df$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE
+    )
     
     strata.df$INDIVIDUALS <- stringi::stri_replace_all_fixed(
       str = strata.df$INDIVIDUALS, 
@@ -172,8 +177,11 @@ write_gsi_sim <- function(
   }
   
   # using pop.levels and pop.labels info if present
-  input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
+  input <- stackr::change_pop_names(data = input,
+                                    pop.levels = pop.levels,
+                                    pop.labels = pop.labels)
   
+  input <- dplyr::arrange(.data = input, POP_ID, INDIVIDUALS)
   
   # write gsi_sim file ---------------------------------------------------------
   
@@ -194,9 +202,11 @@ write_gsi_sim <- function(
   input <- suppressWarnings(dplyr::select(.data = input, -POP_ID))  # remove pop id
   gsi_sim.split <- split(input, pop)  # split gsi_sim by populations
   
-  for (k in levels(pop)) {
-    readr::write_delim(x = as.data.frame(stringi::stri_join("pop", k, sep = " ")), path = filename, delim = "\n", append = TRUE, col_names = FALSE)
-    readr::write_delim(x = gsi_sim.split[[k]], path = filename, delim = " ", append = TRUE, col_names = FALSE)
+  for (k in seq_along(levels(pop))) {
+    utils::write.table(x = as.data.frame(stringi::stri_join("pop", k, sep = " ")), file = filename, append = TRUE, quote = FALSE, sep = "\n", row.names = FALSE, col.names = FALSE)
+    # readr::write_delim(x = as.data.frame(stringi::stri_join("pop", k, sep = " ")), path = filename, delim = "\n", append = TRUE, col_names = FALSE)
+    # readr::write_delim(x = gsi_sim.split[[k]], path = filename, delim = " ", append = TRUE, col_names = FALSE)
+    utils::write.table(x = gsi_sim.split[[k]], file = filename, append = TRUE, quote = FALSE, sep = " ", row.names = FALSE, col.names = FALSE)
   }
   
   gsi_sim.split <- input <- NULL

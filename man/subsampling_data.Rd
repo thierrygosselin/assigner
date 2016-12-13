@@ -5,10 +5,10 @@
 \title{subsampling data}
 \usage{
 subsampling_data(iteration.subsample = 1, ind.pop.df = NULL,
-  subsample = NULL, random.seed = NULL, ...)
+  subsample = NULL, random.seed = NULL)
 
 subsampling_data(iteration.subsample = 1, ind.pop.df = NULL,
-  subsample = NULL, random.seed = NULL, ...)
+  subsample = NULL, random.seed = NULL)
 }
 \description{
 subsampling data
