@@ -11,4 +11,3 @@ This version checks to make sure it is there and throws an
 error with a suggestion of how to get it if it is not there.
 }
 \keyword{internal}
-

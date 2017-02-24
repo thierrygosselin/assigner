@@ -1,6 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-[![packageversion](https://img.shields.io/badge/Package%20version-0.4.1-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--12--13-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.4.2-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2017--02--23-brightgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -175,6 +175,12 @@ New features
 
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
+**v.0.4.2**
+
+-   until `SNPRelate` [bias issue](https://github.com/zhengxwen/SNPRelate/issues/21) is resolved the option is unavailable
+-   better use of `pbmcapply` for Windows
+-   **imputations** is being reworked and will be buggy until the next update. The codes are being completely re-written and arguments will change (for the better).
+
 **v.0.4.1**
 
 -   debug code to work in parallel with Windows
@@ -188,20 +194,6 @@ Change log, version, new features and bug history now lives in the [NEWS.md file
 
 -   I'm pleased to announce that `assigner` now works in parallel with **Windows**
 -   bug fix introduce in last commit in `write_gsi_sim` where the file was not created properly from an internal module.
-
-**v.0.3.8**
-
--   `assigner::fst_WC84` can now use [SNPRelate](https://github.com/zhengxwen/SNPRelate) to compute Fst. The confidence intervals are not implemented, yet. The speed increase left me speechless, dataset with 30K snp are computed in less than 15 sec!
-
-**v.0.3.7**
-
--   `assigner::fst_WC84` is 40% faster!
-
-**v.0.3.6**
-
--   bug fix `assignment_ngs` during imputations, the imputation module could not recognise that REF/ALT alleles are not necessary or usefull for assignment analysis. \*enhancement to `assignment_ngs` and `assignment_mixture` so that when `marker.number` include `"all"` the `iteration.method` is set automatically to `1` when conducting the assignment with all the markers. Iterations at this point is useless and a waist of time.
--   random seed number is now stored in the appropriate files.
--   `assignment_mixture`: with `assignment.analysis = "gsi_sim` the unknown/mixture samples are compared with baseline populations using common markers between the pair. Now, the tables include the number of markers used. The summary provides the mean number of markers. This number will change each time randomness is used.
 
 For previous news: [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 

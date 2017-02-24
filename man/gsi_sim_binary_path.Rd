@@ -10,4 +10,3 @@ gsi_sim_binary_path()
 return the path where gsi_sim should be in the R system paths
 }
 \keyword{internal}
-

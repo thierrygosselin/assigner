@@ -103,9 +103,9 @@
 
 #' @param impute.mixture (Logical) Imputations of mixture samples.
 #' Default: \code{impute.mixture = FALSE}. For no imputation. 
-#' For \code{impute.mixture = TRUE} the imputations.group (see below)
+#' For \code{impute.mixture = TRUE} the hierarchical.levels (see below)
 #' for the mixture samples is automatically set to 
-#' \code{imputations.group = "global"}. Warning: bias could be introduced by imputing
+#' \code{hierarchical.levels = "global"}. Warning: bias could be introduced by imputing
 #' missing genotype in the mixture samples.
 
 #' @details
@@ -209,11 +209,7 @@
 #' pop.levels = c("BAJ", "IND", "mixture"),
 #' imputation.method = "rf", 
 #' impute.mixture = TRUE, 
-#' impute = "genotype", 
-#' imputations.group = "populations", 
-#' num.tree = 100, 
-#' iteration.rf = 10, 
-#' split.number = 100, 
+#' hierarchical.levels = "populations", 
 #' verbose = FALSE,
 #' parallel.core = 12
 #' )
@@ -285,11 +281,7 @@ assignment_mixture <- function(
   pop.select = NULL,
   imputation.method = NULL,
   impute.mixture = FALSE,
-  impute = "genotype",
-  imputations.group = "populations",
-  num.tree = 100,
-  iteration.rf = 10,
-  split.number = 100,
+  hierarchical.levels = "populations",
   verbose = FALSE,
   folder = NULL,
   filename = "assignment_data.txt",
@@ -385,7 +377,7 @@ assignment_mixture <- function(
       dir.create(file.path(directory))
     } else {
       message("Map-imputation: yes")
-      directory <- stringi::stri_join(getwd(),"/","assignment_mixture_analysis", "_imputations_", imputation.method,"_", imputations.group, "_", file.date, "/", sep = "")
+      directory <- stringi::stri_join(getwd(),"/","assignment_mixture_analysis", "_imputations_", imputation.method,"_", hierarchical.levels, "_", file.date, "/", sep = "")
       dir.create(file.path(directory))
     }
     message(stringi::stri_join("Folder: ", directory))
@@ -504,11 +496,7 @@ assignment_mixture <- function(
     keep.gsi.files = keep.gsi.files,
     imputation.method = imputation.method,
     impute.mixture = impute.mixture,
-    impute = impute,
-    imputations.group = imputations.group,
-    num.tree = num.tree,
-    iteration.rf = iteration.rf,
-    split.number = split.number,
+    hierarchical.levels = hierarchical.levels,
     verbose = verbose,
     parallel.core = parallel.core,
     manage.all = manage.all,
@@ -627,7 +615,7 @@ assignment_mixture <- function(
   return(res.list)
 } # End assignment_mixture
 
-# Internal Functions -----------------------------------------------------------
+# Internal Nested Functions -----------------------------------------------------------
 
 # subsampling_data --------------------------------------------------------------
 #' @title subsampling data
@@ -998,7 +986,7 @@ assignment_random <- function(
   genind.object = NULL,
   strata.df = NULL,
   imputation.method = NULL,
-  imputations.group = "populations",
+  hierarchical.levels = "populations",
   directory.subsample = NULL,
   keep.gsi.files = FALSE,
   sampling.method = "random",
@@ -1026,13 +1014,13 @@ assignment_random <- function(
     filename.imp <- "imputed.txt"
     
     if (imputation.method == "rf") {
-      if (imputations.group == "populations") {
+      if (hierarchical.levels == "populations") {
         missing.data <- "imputed RF populations"
       } else {
         missing.data <- "imputed RF global"
       }
     } else {
-      if (imputations.group == "populations") {
+      if (hierarchical.levels == "populations") {
         missing.data <- "imputed max populations"
       } else {
         missing.data <- "imputed max global"
@@ -1109,7 +1097,7 @@ assignment_marker_loop <- function(
   base.filename = NULL,
   keep.gsi.files = FALSE,
   imputation.method = NULL,
-  imputations.group = NULL,
+  hierarchical.levels = NULL,
   parallel.core = parallel::detectCores() - 1,
   directory.subsample = NULL,
   subsample.id = NULL,
@@ -1133,13 +1121,13 @@ assignment_marker_loop <- function(
     filename.imp <- "imputed.txt"
     
     if (imputation.method == "rf") {
-      if (imputations.group == "populations") {
+      if (hierarchical.levels == "populations") {
         missing.data <- "imputed RF populations"
       } else {
         missing.data <- "imputed RF global"
       }
     } else {
-      if (imputations.group == "populations") {
+      if (hierarchical.levels == "populations") {
         missing.data <- "imputed max populations"
       } else {
         missing.data <- "imputed max global"
@@ -1222,11 +1210,7 @@ assignment_function <- function(
   keep.gsi.files = FALSE,
   imputation.method = NULL,
   impute.mixture = FALSE,
-  impute = "genotype",
-  imputations.group = "populations",
-  num.tree = 100,
-  iteration.rf = 10,
-  split.number = 100,
+  hierarchical.levels = "populations",
   verbose = FALSE,
   parallel.core = parallel::detectCores() - 1,
   manage.all = NULL, random.seed = NULL, base.filename = NULL,
@@ -1310,11 +1294,7 @@ assignment_function <- function(
     input.baseline.imp <- stackr::stackr_imputations_module(
       data = input.baseline, 
       imputation.method = imputation.method, 
-      impute = impute, 
-      imputations.group = imputations.group, 
-      num.tree = num.tree, 
-      iteration.rf = iteration.rf, 
-      split.number = split.number, 
+      hierarchical.levels = hierarchical.levels, 
       verbose = verbose, 
       parallel.core = parallel.core, 
       filename = NULL
@@ -1331,11 +1311,7 @@ assignment_function <- function(
       input.imp <- stackr::stackr_imputations_module(
         data = input.imp, 
         imputation.method = imputation.method, 
-        impute = impute, 
-        imputations.group = "global", 
-        num.tree = num.tree, 
-        iteration.rf = iteration.rf, 
-        split.number = split.number, 
+        hierarchical.levels = "global", 
         verbose = verbose, 
         parallel.core = parallel.core, 
         filename = NULL
@@ -1447,7 +1423,7 @@ assignment_function <- function(
         genind.object = genind.object,
         strata.df = strata.df,
         imputation.method = NULL,
-        imputations.group = NULL,
+        hierarchical.levels = NULL,
         directory.subsample = directory.subsample,
         keep.gsi.files = keep.gsi.files,
         sampling.method = sampling.method,
@@ -1474,7 +1450,7 @@ assignment_function <- function(
           genind.object = genind.object.imp,
           strata.df = strata.df,
           imputation.method = imputation.method,
-          imputations.group = imputations.group,
+          hierarchical.levels = hierarchical.levels,
           directory.subsample = directory.subsample,
           keep.gsi.files = keep.gsi.files,
           sampling.method = sampling.method,
@@ -1622,7 +1598,7 @@ assignment_function <- function(
         base.filename = base.filename,
         keep.gsi.files = keep.gsi.files,
         imputation.method = NULL,
-        imputations.group = NULL,
+        hierarchical.levels = NULL,
         parallel.core = parallel.core,
         directory.subsample = directory.subsample,
         subsample.id = subsample.id
@@ -1654,7 +1630,7 @@ assignment_function <- function(
           base.filename = base.filename,
           keep.gsi.files = keep.gsi.files,
           imputation.method = imputation.method,
-          imputations.group = imputations.group,
+          hierarchical.levels = hierarchical.levels,
           parallel.core = parallel.core,
           directory.subsample = directory.subsample,
           subsample.id = subsample.id
@@ -1681,7 +1657,7 @@ assignment_function <- function(
         base.filename = base.filename,
         keep.gsi.files = keep.gsi.files,
         imputation.method = NULL,
-        imputations.group = NULL,
+        hierarchical.levels = NULL,
         parallel.core = parallel.core,
         directory.subsample = directory.subsample,
         subsample.id = subsample.id
@@ -1703,7 +1679,7 @@ assignment_function <- function(
           base.filename = base.filename,
           keep.gsi.files = keep.gsi.files,
           imputation.method = imputation.method,
-          imputations.group = imputations.group,
+          hierarchical.levels = hierarchical.levels,
           parallel.core = parallel.core,
           directory.subsample = directory.subsample,
           subsample.id = subsample.id

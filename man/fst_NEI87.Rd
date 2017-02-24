@@ -187,9 +187,6 @@ To get the pairwise fst and ci matrix in a data frame:
 pairwise.fst.ci.df <- data.frame(pairwise.fst.ci.matrix) \%>\% add_rownames("POP")
 }
 }
-\author{
-Thierry Gosselin \email{thierrygosselin@icloud.com}
-}
 \references{
 Nei M. (1987) Molecular Evolutionary Genetics.
 Columbia University Press
@@ -223,4 +220,6 @@ see \code{mmod} \code{\link[mmod]{diff_test}}.
 \code{\link[stackr]{tidy_genomic_data}} to transform numerous genomic data 
 format in tidy data frames.
 }
-
+\author{
+Thierry Gosselin \email{thierrygosselin@icloud.com}
+}

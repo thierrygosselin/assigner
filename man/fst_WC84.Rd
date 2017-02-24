@@ -122,6 +122,8 @@ For an R implementation, \code{\link{fst_WC84}} is very fast.
 The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
 \pkg{data.table}, \pkg{parallel} and \pkg{SNPRelate}.
 
+Note: Until the bias observed with SNPRelate is resolved the option will remain unavailable.
+
 \emph{Special concerns for genome-wide estimate and filtering bias}
 
 During computation, the function first starts by keeping only the polymorphic 
@@ -195,9 +197,6 @@ To get the pairwise fst and ci matrix in a data frame:
 pairwise.fst.ci.df <- data.frame(pairwise.fst.ci.matrix) \%>\% add_rownames("POP")
 }
 }
-\author{
-Thierry Gosselin \email{thierrygosselin@icloud.com}
-}
 \references{
 Excoffier L, Smouse PE, Quattro JM. 
 Analysis of molecular variance inferred from metric distances among 
@@ -250,4 +249,6 @@ see \code{mmod} \code{\link[mmod]{diff_test}}.
 \code{\link[stackr]{tidy_genomic_data}} to transform numerous genomic data 
 format in tidy data frames.
 }
-
+\author{
+Thierry Gosselin \email{thierrygosselin@icloud.com}
+}

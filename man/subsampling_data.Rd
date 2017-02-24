@@ -2,6 +2,7 @@
 % Please edit documentation in R/assignment_mixture.R, R/assignment_ngs.R
 \name{subsampling_data}
 \alias{subsampling_data}
+\alias{subsampling_data}
 \title{subsampling data}
 \usage{
 subsampling_data(iteration.subsample = 1, ind.pop.df = NULL,
@@ -16,4 +17,3 @@ subsampling data
 subsampling data
 }
 \keyword{internal}
-

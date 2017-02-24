@@ -2,6 +2,7 @@
 % Please edit documentation in R/assignment_mixture.R, R/assignment_ngs.R
 \name{assignment_gsi_sim}
 \alias{assignment_gsi_sim}
+\alias{assignment_gsi_sim}
 \title{assignment with gsi_sim}
 \usage{
 assignment_gsi_sim(data = NULL, strata.df = NULL, select.markers = NULL,
@@ -22,4 +23,3 @@ assignment with gsi_sim
 assignment with gsi_sim
 }
 \keyword{internal}
-

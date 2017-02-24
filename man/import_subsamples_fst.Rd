@@ -27,4 +27,3 @@ dir.path = "assignment_analysis_method_ranked_no_imputations_20160425@2321"
 \author{
 Thierry Gosselin \email{thierrygosselin@icloud.com}
 }
-

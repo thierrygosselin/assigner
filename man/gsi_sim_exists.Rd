@@ -10,4 +10,3 @@ gsi_sim_exists()
 return TRUE if gsi_sim exists where it should be
 }
 \keyword{internal}
-

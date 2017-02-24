@@ -48,9 +48,6 @@ Write a gsi_sim file from a data frame (wide or long/tidy).
 Used internally in \href{https://github.com/thierrygosselin/assigner}{assigner}
 and might be of interest for users.
 }
-\author{
-Thierry Gosselin \email{thierrygosselin@icloud.com}
-}
 \references{
 Anderson, Eric C., Robin S. Waples, and Steven T. Kalinowski. (2008)
 An improved method for predicting the accuracy of genetic stock identification.
@@ -60,4 +57,6 @@ Anderson, E. C. (2010) Assessing the power of informative subsets of
 loci for population assignment: standard methods are upwardly biased.
 Molecular ecology resources 10, 4:701-710.
 }
-
+\author{
+Thierry Gosselin \email{thierrygosselin@icloud.com}
+}

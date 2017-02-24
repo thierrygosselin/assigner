@@ -96,12 +96,15 @@ mclapply_win <- function(
 #' @return For mclapply, a list of the same length as X and named by X.
 # @importFrom parallel detectCores makeCluster clusterExport mclapply parLapply stopCluster
 #' @rdname assigner_parallel
+#' @importFrom pbmcapply pbmclapply
 #' @keywords internal
 #' @export
 .assigner_parallel <- switch(
   Sys.info()[['sysname']],
   Windows = {mclapply_win},
-  Linux   = {parallel::mclapply},
-  Darwin  = {parallel::mclapply}
+  # Linux   = {parallel::mclapply},
+  # Darwin  = {parallel::mclapply},
+  Linux   = {pbmcapply::pbmclapply},
+  Darwin  = {pbmcapply::pbmclapply}
 )
 

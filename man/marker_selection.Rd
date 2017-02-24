@@ -2,6 +2,7 @@
 % Please edit documentation in R/assignment_mixture.R, R/assignment_ngs.R
 \name{marker_selection}
 \alias{marker_selection}
+\alias{marker_selection}
 \title{marker_selection}
 \usage{
 marker_selection(iteration.method, m = NULL, random.seed = NULL,
@@ -16,4 +17,3 @@ Random selection of marker function + iteration.method
 Random selection of marker function + iteration.method
 }
 \keyword{internal}
-

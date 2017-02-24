@@ -13,9 +13,8 @@ assignment_ngs(data, assignment.analysis, sampling.method,
   common.markers = TRUE, maf.thresholds = NULL, maf.pop.num.threshold = 1,
   maf.approach = "SNP", maf.operator = "OR", max.marker = NULL,
   strata = NULL, pop.levels = NULL, pop.labels = NULL,
-  pop.select = NULL, imputation.method = NULL, impute = "genotype",
-  imputations.group = "populations", num.tree = 100, iteration.rf = 10,
-  split.number = 100, verbose = FALSE, folder = NULL,
+  pop.select = NULL, imputation.method = NULL,
+  hierarchical.levels = "populations", verbose = FALSE, folder = NULL,
   filename = "assignment_data.txt", keep.gsi.files = FALSE,
   random.seed = NULL, parallel.core = parallel::detectCores() - 1)
 }
@@ -186,11 +185,11 @@ When filtering over LOCUS or SNP, do you want the local \code{"AND"}
 global MAF to pass the thresholds, or ... you want the local \code{"OR"}
 global MAF to pass the thresholds, to keep the marker?}
 
-\item{max.marker}{An optional integer useful to subsample marker number in 
-large PLINK file. e.g. if the data set 
-contains 200 000 markers and \code{max.marker = 10000} 10000 markers are
-subsampled randomly from the 200000 markers. Use \code{whitelist.markers} to
-keep specific markers.
+\item{max.marker}{(integer, optional) For large PLINK files,
+useful to subsample marker number. e.g. if the data set 
+contains 200 000 markers and \code{max.marker = 10000}, 10000 markers are
+subsampled randomly from the 200000 markers. If you need specific markers,
+use \code{whitelist.markers} argument.
 Default: \code{max.marker = NULL}.}
 
 \item{strata}{(optional/required) Required for VCF and haplotypes files, 
@@ -237,29 +236,19 @@ Default: \code{pop.select = NULL}}
 
 \item{imputation.method}{(character, optional) 
 Methods available for map-independent imputations of missing genotype: 
-(1) \code{"max"} to use the most frequent category for imputations.
-(2) \code{"rf"} using Random Forest algorithm. 
-Default: no imputation \code{imputation.method = NULL}.}
+(1) \code{imputation.method = "max"} to use the most frequent category for 
+the imputations.
+(2) \code{imputation.method = "rf"} for using Random Forests algorithm.
+(3) \code{imputation.method = "boost"} for using extreme gradient boosting trees.
+\code{imputation.method = NULL} will return the original dataset, without
+imputation.
+Default: \code{imputation.method = "rf"}.}
 
-\item{impute}{(character, optional) Imputation on missing genotype 
-\code{impute = "genotype"} or alleles \code{impute = "allele"}.
-Default: \code{"genotype"}.}
-
-\item{imputations.group}{(character, optional) \code{"global"} or \code{"populations"}.
-Should the imputations be computed globally or by populations. If you choose
-global, turn the verbose to \code{TRUE}, to see progress.
-Default = \code{"populations"}.}
-
-\item{num.tree}{(integer, optional) The number of trees to grow in Random Forest. 
-Default: \code{num.tree = 100}.}
-
-\item{iteration.rf}{(integer, optional) The number of iterations of missing data algorithm
-in Random Forest. 
-Default: \code{iteration.rf = 10}.}
-
-\item{split.number}{(integer, optional) Non-negative integer value used to specify
-random splitting in Random Forest. 
-Default: \code{split.number = 100}.}
+\item{hierarchical.levels}{(character, optional) \code{c("global", "populations")}.
+Should the imputations be computed globally or by populations. Note that
+imputing genotype globally can create huge bias for example by
+introducing foreign genotypes in some populations (see note for more info).
+Default: \code{hierarchical.levels = "populations"}.}
 
 \item{verbose}{(optional, logical) When \code{verbose = TRUE} 
 the function is a little more chatty during execution.
@@ -286,10 +275,10 @@ that will be used inside function that requires randomness. With default,
 a random number is generated and printed in the appropriate output.
 Default: \code{random.seed = NULL}.}
 
-\item{parallel.core}{(optional) The number of core for OpenMP shared-memory parallel
-programming of Random Forest imputations. For more info on how to install the
-OpenMP version see \code{\link[randomForestSRC]{randomForestSRC-package}}.
-If not selected \code{detectCores()-1} is used as default.}
+\item{parallel.core}{(optional) The number of core used for parallel
+execution when \code{imputation.method = "rf"}.
+Markers are imputed in parallel, populations are processed sequentially.
+Default: \code{parallel::detectCores() - 1}.}
 }
 \value{
 Depending on arguments selected, several files are written to the your
@@ -413,9 +402,6 @@ scale_y_continuous(limits = c(0,100))
 figure # this one should be ok with custom naming in the facets.
 }
 }
-\author{
-Thierry Gosselin \email{thierrygosselin@icloud.com} and Eric C. Anderson
-}
 \references{
 Anderson, Eric C., Robin S. Waples, and Steven T. Kalinowski. (2008)
 An improved method for predicting the accuracy of genetic stock identification.
@@ -479,4 +465,6 @@ doi:10.1111/j.1471-8286.2007.01931.x
 \seealso{
 \code{gsi_sim} development page is available here: \url{https://github.com/eriqande/gsi_sim}
 }
-
+\author{
+Thierry Gosselin \email{thierrygosselin@icloud.com} and Eric C. Anderson
+}

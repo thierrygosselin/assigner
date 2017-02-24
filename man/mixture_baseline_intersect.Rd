@@ -11,4 +11,3 @@ mixture_baseline_intersect(mixture.id, inferred.baseline,
 mixture_baseline_intersect
 }
 \keyword{internal}
-

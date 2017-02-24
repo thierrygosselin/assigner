@@ -68,9 +68,6 @@ diagonal matrix, $dlr.dist), data.frame (a mirrored matrix, $dlr.matrix).
 The function computes Paetkau's et al. (1997) genotype likelihood
 ratio distance (Dlr).
 }
-\author{
-Thierry Gosselin \email{thierrygosselin@icloud.com}
-}
 \references{
 Paetkau D, Slade R, Burden M, Estoup A (2004) 
 Genetic assignment methods for the direct, real-time estimation of 
@@ -85,4 +82,6 @@ Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
 two programs for the analysis of genetic diversity of asexual organisms. 
 Molecular Ecology Notes, 4, 792-794.
 }
-
+\author{
+Thierry Gosselin \email{thierrygosselin@icloud.com}
+}

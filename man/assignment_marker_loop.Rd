@@ -2,6 +2,7 @@
 % Please edit documentation in R/assignment_mixture.R, R/assignment_ngs.R
 \name{assignment_marker_loop}
 \alias{assignment_marker_loop}
+\alias{assignment_marker_loop}
 \title{assignment_marker_loop}
 \usage{
 assignment_marker_loop(x, assignment.analysis = "gsi_sim",
@@ -10,7 +11,7 @@ assignment_marker_loop(x, assignment.analysis = "gsi_sim",
   subsample.id = NULL, holdout = NULL, thl = 1,
   adegenet.dapc.opt = NULL, adegenet.n.rep = NULL,
   adegenet.training = NULL, imputation.method = NULL,
-  imputations.group = NULL, directory.subsample = NULL, filename = NULL,
+  hierarchical.levels = NULL, directory.subsample = NULL, filename = NULL,
   keep.gsi.files = FALSE)
 
 assignment_marker_loop(x, assignment.analysis = "gsi_sim",
@@ -19,7 +20,7 @@ assignment_marker_loop(x, assignment.analysis = "gsi_sim",
   subsample.id = NULL, holdout = NULL, thl = 1,
   adegenet.dapc.opt = NULL, adegenet.n.rep = NULL,
   adegenet.training = NULL, imputation.method = NULL,
-  imputations.group = NULL, directory.subsample = NULL, filename = NULL,
+  hierarchical.levels = NULL, directory.subsample = NULL, filename = NULL,
   keep.gsi.files = FALSE)
 }
 \description{
@@ -28,4 +29,3 @@ assignment_marker_loop
 assignment_marker_loop
 }
 \keyword{internal}
-

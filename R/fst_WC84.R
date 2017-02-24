@@ -18,6 +18,8 @@
 #' The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
 #' \pkg{data.table}, \pkg{parallel} and \pkg{SNPRelate}.
 #' 
+#' Note: Until the bias observed with SNPRelate is resolved the option will remain unavailable.
+#' 
 #' \emph{Special concerns for genome-wide estimate and filtering bias}
 #' 
 #' During computation, the function first starts by keeping only the polymorphic 
@@ -171,7 +173,7 @@
 #' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n bind_rows bind_cols ntile desc n
 #' @importFrom stats quantile
 #' @importFrom utils count.fields combn
-#' @importFrom SNPRelate snpgdsOpen snpgdsClose snpgdsFst snpgdsCreateGeno
+# @importFrom SNPRelate snpgdsOpen snpgdsClose snpgdsFst snpgdsCreateGeno
 #' @importFrom tibble data_frame column_to_rownames has_name as_data_frame
 #' @importFrom stringi stri_replace_all_regex stri_join stri_replace_na stri_sub
 #' @importFrom readr read_tsv
@@ -266,7 +268,8 @@ fst_WC84 <- function(
   parallel.core = parallel::detectCores() - 1,
   verbose = FALSE,
   ...) {
-  
+  fst.snprelate <- NULL # remove after bias test
+  gds.file.connection <- NULL
   if (verbose) {
     cat("#######################################################################\n")
     cat("######################### assigner::fst_WC84 ##########################\n")
@@ -275,11 +278,18 @@ fst_WC84 <- function(
   }
   
   if (snprelate) {
-    message("Fst computations with SNPRelate")
-    if (ci) {
-      message("Confidence Intervals are not implemented with SNPRelate, for now...")
-      ci <- FALSE
-    }
+    # Check that snprelate is installed
+    # if (!"SNPRelate" %in% utils::installed.packages()[,"Package"]) {
+    #   stop("Please install SNPRelate for this option:\n  
+    #        github::zhengxwen/SNPRelate")
+    # }
+    snprelate <- FALSE
+    stop("Until the bias observed with SNPRelate is resolved, the option will remain unavailable.")
+    # message("Fst computations with SNPRelate")
+    # if (ci) {
+    #   message("Confidence Intervals are not implemented with SNPRelate, for now...")
+    #   ci <- FALSE
+    # }
   } else {
     message("Fst computations with assigner built-in function")
   }
@@ -661,19 +671,20 @@ fst_WC84 <- function(
     common.set <- dplyr::intersect(set1, set2) %>% 
       dplyr::arrange(MARKERS)
     
-    fst.snprelate <- SNPRelate::snpgdsFst(
-      gdsobj = data,
-      population = strata.df$POP_ID, # factors required
-      sample.id = strata.df$INDIVIDUALS,
-      snp.id = common.set$MARKERS,
-      method = "W&C84",
-      remove.monosnp = TRUE,
-      maf = NaN,
-      missing.rate = NaN,
-      autosome.only = FALSE,
-      with.id = FALSE,
-      verbose = FALSE
-    )
+    fst.snprelate <- NULL
+    # fst.snprelate <- SNPRelate::snpgdsFst(
+    #   gdsobj = data,
+    #   population = strata.df$POP_ID, # factors required
+    #   sample.id = strata.df$INDIVIDUALS,
+    #   snp.id = common.set$MARKERS,
+    #   method = "W&C84",
+    #   remove.monosnp = TRUE,
+    #   maf = NaN,
+    #   missing.rate = NaN,
+    #   autosome.only = FALSE,
+    #   with.id = FALSE,
+    #   verbose = FALSE
+    # )
     return(fst.snprelate)
   }
   
@@ -731,37 +742,37 @@ fst_WC84 <- function(
     )  
     
     gds.data <- NULL
-    gds.data <- SNPRelate::snpgdsCreateGeno(
-      gds.fn = "assigner.gds",
-      genmat = gds.genotypes,
-      sample.id = strata.df$INDIVIDUALS,
-      snp.id = snp.id,
-      snp.rs.id = NULL,
-      snp.chromosome = NULL,
-      snp.position = NULL,
-      snp.allele = NULL,
-      snpfirstdim = TRUE,
-      compress.annotation = "ZIP_RA.max",
-      compress.geno = "",
-      other.vars = NULL
-    )
+    # gds.data <- SNPRelate::snpgdsCreateGeno(
+    #   gds.fn = "assigner.gds",
+    #   genmat = gds.genotypes,
+    #   sample.id = strata.df$INDIVIDUALS,
+    #   snp.id = snp.id,
+    #   snp.rs.id = NULL,
+    #   snp.chromosome = NULL,
+    #   snp.position = NULL,
+    #   snp.allele = NULL,
+    #   snpfirstdim = TRUE,
+    #   compress.annotation = "ZIP_RA.max",
+    #   compress.geno = "",
+    #   other.vars = NULL
+    # )
     
     # Compute the global Fst
     if (verbose) message("Computing global fst")
-    gds.file.connection <- SNPRelate::snpgdsOpen("assigner.gds")
-    fst.snprelate <- SNPRelate::snpgdsFst(
-      gdsobj = gds.file.connection,
-      population = strata.df$POP_ID,
-      sample.id = strata.df$INDIVIDUALS,
-      snp.id = NULL,
-      method = "W&C84",
-      remove.monosnp = TRUE,
-      maf = NaN,
-      missing.rate = NaN,
-      autosome.only = FALSE,
-      with.id = FALSE,
-      verbose = FALSE
-    )$Fst
+    # gds.file.connection <- SNPRelate::snpgdsOpen("assigner.gds")
+    # fst.snprelate <- SNPRelate::snpgdsFst(
+    #   gdsobj = gds.file.connection,
+    #   population = strata.df$POP_ID,
+    #   sample.id = strata.df$INDIVIDUALS,
+    #   snp.id = NULL,
+    #   method = "W&C84",
+    #   remove.monosnp = TRUE,
+    #   maf = NaN,
+    #   missing.rate = NaN,
+    #   autosome.only = FALSE,
+    #   with.id = FALSE,
+    #   verbose = FALSE
+    # )$Fst
     
     fst.overall <- tibble::data_frame(FST = round(fst.snprelate, digits)) %>% 
       dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
@@ -770,7 +781,7 @@ fst_WC84 <- function(
     
     # close SNPRelate connection if no more computation with SNPRelate
     if (!pairwise) {
-      SNPRelate::snpgdsClose(gds.file.connection)
+      # SNPRelate::snpgdsClose(gds.file.connection)
     }
     
     
@@ -808,7 +819,7 @@ fst_WC84 <- function(
         )
       
       # close SNPRelate connection
-      SNPRelate::snpgdsClose(gds.file.connection)
+      # SNPRelate::snpgdsClose(gds.file.connection)
       
     } else {
       # Fst for all pairwise populations

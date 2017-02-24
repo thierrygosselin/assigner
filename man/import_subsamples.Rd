@@ -30,4 +30,3 @@ imputations = TRUE
 \author{
 Thierry Gosselin \email{thierrygosselin@icloud.com}
 }
-

@@ -2,6 +2,7 @@
 % Please edit documentation in R/assignment_mixture.R, R/assignment_ngs.R
 \name{assignment_function}
 \alias{assignment_function}
+\alias{assignment_function}
 \title{assignment_function}
 \usage{
 assignment_function(x, input = NULL, subsample = NULL,
@@ -11,13 +12,11 @@ assignment_function(x, input = NULL, subsample = NULL,
   pop.labels = NULL, sampling.method = "random", iteration.method = 10,
   filename = "assignment_data.txt", directory = NULL,
   keep.gsi.files = FALSE, imputation.method = NULL,
-  impute.mixture = FALSE, impute = "genotype",
-  imputations.group = "populations", num.tree = 100, iteration.rf = 10,
-  split.number = 100, verbose = FALSE,
-  parallel.core = parallel::detectCores() - 1, manage.all = NULL,
-  random.seed = NULL, base.filename = NULL, res.list = NULL, thl = 1,
-  adegenet.dapc.opt = NULL, adegenet.n.rep = NULL,
-  adegenet.training = NULL)
+  impute.mixture = FALSE, hierarchical.levels = "populations",
+  verbose = FALSE, parallel.core = parallel::detectCores() - 1,
+  manage.all = NULL, random.seed = NULL, base.filename = NULL,
+  res.list = NULL, thl = 1, adegenet.dapc.opt = NULL,
+  adegenet.n.rep = NULL, adegenet.training = NULL)
 
 assignment_function(x, input = NULL, subsample = NULL,
   assignment.analysis = "gsi_sim", snp.ld = NULL, common.markers = TRUE,
@@ -26,13 +25,11 @@ assignment_function(x, input = NULL, subsample = NULL,
   pop.labels = NULL, sampling.method = "random", iteration.method = 10,
   filename = "assignment_data.txt", directory = NULL,
   keep.gsi.files = FALSE, imputation.method = NULL,
-  impute.mixture = FALSE, impute = "genotype",
-  imputations.group = "populations", num.tree = 100, iteration.rf = 10,
-  split.number = 100, verbose = FALSE,
-  parallel.core = parallel::detectCores() - 1, manage.all = NULL,
-  random.seed = NULL, base.filename = NULL, res.list = NULL, thl = 1,
-  adegenet.dapc.opt = NULL, adegenet.n.rep = NULL,
-  adegenet.training = NULL)
+  impute.mixture = FALSE, hierarchical.levels = "populations",
+  verbose = FALSE, parallel.core = parallel::detectCores() - 1,
+  manage.all = NULL, random.seed = NULL, base.filename = NULL,
+  res.list = NULL, thl = 1, adegenet.dapc.opt = NULL,
+  adegenet.n.rep = NULL, adegenet.training = NULL)
 }
 \description{
 assignment_function
@@ -40,4 +37,3 @@ assignment_function
 assignment_function
 }
 \keyword{internal}
-

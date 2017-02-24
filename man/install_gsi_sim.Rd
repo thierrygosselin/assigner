@@ -28,4 +28,3 @@ going to GITHUB_URL and compiling it yourself and naming the
 executable gsi_sim and putting it at the location specified by the
 function \code{\link{gsi_sim_binary_path}}.
 }
-

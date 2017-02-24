@@ -6,7 +6,7 @@
 \usage{
 assignment_ranking(iterations.list = NULL, thl = NULL, input = NULL,
   pop.labels = NULL, input.imp = NULL, holdout.individuals = NULL,
-  imputation.method = NULL, imputations.group = NULL,
+  imputation.method = NULL, hierarchical.levels = NULL,
   directory.subsample = NULL, marker.number = NULL,
   assignment.analysis = NULL, genind.object = NULL,
   genind.object.imp = NULL, strata.df = NULL, sampling.method = NULL,
@@ -17,4 +17,3 @@ assignment_ranking(iterations.list = NULL, thl = NULL, input = NULL,
 assignment_ranking
 }
 \keyword{internal}
-
