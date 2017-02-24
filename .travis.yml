@@ -4,6 +4,7 @@ language: r
 cache: packages
 warnings_are_errors: false
 sudo: required
+dist: trusty
 
 notifications:
   email:
@@ -13,12 +14,13 @@ notifications:
 apt_packages:
   - libgsl0-dev
 
+before_install:
+  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
+  - chmod 755 ./travis-tool.sh
+
+install:
+  - ./travis-tool.sh install_deps
+
 r_github_packages:
   - thierrygosselin/stackr
 
-use_bioc: true
-bioc_required: true
-
-# Install packages from github
-r_github_packages:
-  - zhengxwen/gdsfmt
