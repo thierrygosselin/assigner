@@ -28,4 +28,5 @@ bioc_required: true
 r_github_packages:
   - thierrygosselin/stackr
   - zhengxwen/gdsfmt
+  - zhengxwen/SNPRelate
 
