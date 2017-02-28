@@ -32,14 +32,16 @@ Imports:
     modelr,
     magrittr,
     stats,
-    pbmcapply
+    pbmcapply,
+    SNPRelate
 Suggests:
     devtools,
     knitr,
     rmarkdown
 Remotes:
     github::thierrygosselin/stackr,
-    github::hadley/multidplyr
+    github::hadley/multidplyr,
+    github::zhengxwen/SNPRelate
 License: GPL (>=2)
 LazyLoad: yes
 VignetteBuilder: knitr

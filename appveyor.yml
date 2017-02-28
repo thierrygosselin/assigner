@@ -8,16 +8,15 @@ init:
         Import-Module '..\appveyor-tool.ps1'
 
 install:
-  ps: Bootstrap
+  ps: |
+        Bootstrap
+        InstallRtools
 
 # Adapt as necessary starting from here
 
-
 build_script:
-  - travis-tool.sh install_deps
+  - travis-tool.sh install_deps install_bioc_deps install_github gdsfmt SNPRelate install_r R.oo R.utils
   - travis-tool.sh github_package thierrygosselin/stackr
-  - travis-tool.sh install_bioc_deps
-  - travis-tool.sh install_github zhengxwen/gdsfmt
 
 test_script:
   - travis-tool.sh run_tests
