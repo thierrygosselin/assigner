@@ -1,6 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-[![packageversion](https://img.shields.io/badge/Package%20version-0.4.2-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2017--02--23-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.4.2-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2017--02--28-brightgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -138,8 +138,8 @@ To try out the dev version of **assigner**, follow the 3 steps below:
 
 ``` r
 if (!require("devtools")) install.packages("devtools") # to install
-source("https://bioconductor.org/biocLite.R")
-biocLite()
+source("https://bioconductor.org/biocLite.R") # for bioconductor dependencies
+biocLite() # for bioconductor dependencies
 ```
 
 **Step 2:** Install **assigner** and install [gsi\_sim](https://github.com/eriqande/gsi_sim) from source
