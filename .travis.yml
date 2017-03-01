@@ -20,4 +20,5 @@ bioc_required: true
 r_github_packages:
   - thierrygosselin/stackr
   - zhengxwen/SNPRelate
+  - hadley/multidplyr
 
