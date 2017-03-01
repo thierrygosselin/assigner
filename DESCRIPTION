@@ -33,6 +33,7 @@ Imports:
     magrittr,
     stats,
     pbmcapply,
+    ranger,
     SNPRelate
 Suggests:
     devtools,
