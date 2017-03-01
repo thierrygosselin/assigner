@@ -10,8 +10,3 @@ notifications:
     on_success: change
     on_failure: change
 
-before_install:
-  - sudo apt-get update -q
-
-apt_packages:
-  - libgsl0-dev
