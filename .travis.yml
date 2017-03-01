@@ -11,7 +11,7 @@ notifications:
     on_failure: change
 
 before_install:
-  - sudo apt-get -qq update
+  - sudo apt-get update -q
   - sudo apt-get install gcc-4.8 -y
 
 apt_packages:
