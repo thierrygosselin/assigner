@@ -14,26 +14,19 @@ Description: Set of tools for assignment analysis, tailored for GBS/RADseq data.
 Depends:
     R (>= 3.2.3)
 Imports:
+    tidyverse,
     adegenet,
     data.table,
-    dplyr (>= 0.5.0),
-    ggplot2,
     lazyeval,
     multidplyr,
     parallel,
-    purrr,
-    readr,
     stackr,
     stringi,
-    tidyr,
     utils,
-    tidyverse,
-    tibble,
     modelr,
     magrittr,
     stats,
     pbmcapply,
-    ranger,
     SNPRelate
 Suggests:
     devtools,
