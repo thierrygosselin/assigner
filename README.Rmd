@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# assigner<img src="assigner_logo.png" align="right"/>
+# assigner<img src="assigner_logo.png" align="right" width="1" height="1.5"/>
 
 
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) 
