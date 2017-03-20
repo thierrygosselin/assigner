@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 ```
 
 
-# assigner<img src="assigner_logo.png" align="right" fig.height = "0.65" fig.width = "0.8"/>
+# assigner<img src="assigner_logo.png" align="right" fig.height = "0.4" fig.width = "0.5"/>
 
 ---
 
