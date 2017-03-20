@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 ```
 
 
-# assigner<img src="assigner_logo.png" align="right" fig.height = "1.4" fig.width = "1.5"/>
+# assigner<img src="assigner_logo.png" align="right"/>
 
 ---
 
@@ -34,7 +34,7 @@ version <- gsub(" ", "", gsub("Version:", "", grep("Version:", description, valu
 ```
 [![packageversion](https://img.shields.io/badge/Package%20version-`r version`-orange.svg)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-brightgreen.svg)](/commits/master)
----
+
 This is the development page of the **assigner** package for the R software. The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*. It's first use in french dates back to XIIIe.
 
 Next-generation sequencing techniques that reduce the size of the genome (e.g. genotype-by-sequencing (GBS) and
