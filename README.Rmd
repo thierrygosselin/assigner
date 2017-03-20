@@ -1,11 +1,11 @@
 ---
-output:
-  md_document:
-    variant: markdown_github
+output: github_document
 ---
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, echo = FALSE}
+
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -13,9 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-
-# assigner<img src="assigner_logo.png" align="right" fig.height = 2/>
----
+# assigner<img src="assigner_logo.png" align="right"/>
 
 
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) 
