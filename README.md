@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-assigner<img src="vignettes/assigner_logo.png" align="right"/>
-==============================================================
+assigner<img src="README_assigner_logo.png" align="right"/>
+===========================================================
 
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
@@ -43,4 +43,4 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 -   I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) to run **assigner**. The R GUI is unstable with functions using parallel.
 -   **Windows users**: Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
 
-### [For assigner's features, documentation and vignettes](https://github.com/thierrygosselin/assigner/blob/master/vignettes/assigner_features.md)
+### [For assigner's features, documentation and vignettes](https://github.com/thierrygosselin/assigner/blob/master/vignettes/assigner_features.Rmd)

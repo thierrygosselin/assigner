@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# assigner<img src="vignettes/assigner_logo.png" align="right"/>
+# assigner<img src="README_assigner_logo.png" align="right"/>
 
 
 
