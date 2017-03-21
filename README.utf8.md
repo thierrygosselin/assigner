@@ -5,13 +5,7 @@ output: github_document
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-"
-)
-```
+
 
 # assigner<img src="README_assigner_logo.png" align="right"/>
 
@@ -26,16 +20,10 @@ knitr::opts_chunk$set(
 
 
 
-```{r, echo = FALSE}
-description <- readLines("DESCRIPTION")
-rvers <- stringr::str_match(grep("R \\(", description, value = TRUE), "[0-9]{1,4}\\.[0-9]{1,4}\\.[0-9]{1,4}")[1,1]
-```
-```{r, echo = FALSE}
-description <- readLines("DESCRIPTION")
-version <- gsub(" ", "", gsub("Version:", "", grep("Version:", description, value = TRUE)))
-```
-[![packageversion](https://img.shields.io/badge/Package%20version-`r version`-orange.svg)](commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-brightgreen.svg)](/commits/master)
+
+
+[![packageversion](https://img.shields.io/badge/Package%20version-0.4.2-orange.svg)](commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2017--03--21-brightgreen.svg)](/commits/master)
 
 
 ---
