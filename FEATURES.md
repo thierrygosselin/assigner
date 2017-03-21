@@ -1,4 +1,4 @@
-## Features:
+## Features
 
 | Caracteristics | Description |
 |:-------------------|:--------------------------------------------------------|
@@ -13,7 +13,7 @@
 |**Parallel**|Codes designed and optimized for fast computations running imputations, iterations, etc. in parallel. Works with all OS: Linux, Mac and PC.|
 
 
-## Specialized filtering arguments tailored for RADseq data and assignment analysis:
+## Specialized filtering arguments tailored for RADseq data and assignment analysis
 
 | Filters | Description |
 |:---------------|:------------------------------------|
@@ -29,7 +29,7 @@
 |**`More filters?`**|For more info on how to filter RADseq data, see [stackr](https://github.com/thierrygosselin/stackr)|
 
 
-## Independent modules:
+## Independent modules
 
 * **Fst**: assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement). See the [vignettes for this below].(https://github.com/thierrygosselin/assigner#examples-and-vignettes)
 * **AMOVA:** Analysis of Molecular Variance that run fast and works with missing values.
@@ -111,7 +111,7 @@ vignette("visualize_individual_assignment_results")
 
 Vignettes are in development, check periodically for updates.
 
-## Roadmap of future developments:
+## Roadmap of future developments
 
 * The ability to provide the ranking of markers based on other statistics, something else than the Fst (Weir and Cockerham, 1984) currently used in the function. e.g. Informativeness for Assignment Measure (In, Rosenberg et al. 2003), the Absolute Allele Frequency Differences (delta, δ, Shriver et al., 1997).
 * Provide ranking from other software: e.g. Toolbox for Ranking and Evaluation of SNPs [TRES](http://mlkd.csd.auth.gr/bio/tres/), [BayeScan](http://cmpg.unibe.ch/software/BayeScan/) and [OutFLANK](https://github.com/whitlock/OutFLANK).
@@ -121,7 +121,7 @@ Vignettes are in development, check periodically for updates.
 * ...suggestions ?
 
 
-## Contributions:
+## Contributions
 
 This package has been developed in the open, and it wouldn’t be nearly as good without your contributions. There are a number of ways you can help me make this package even better:  
 
@@ -136,7 +136,7 @@ New to pull request on github ? The process is very easy:
 * Submit a pull request and include a brief description of your changes. 
 * “Fixing typos” is perfectly adequate.
 
-## Citation:
+## Citation
 To get the citation for **assigner**, inside R:
 ```r
 citation("assigner")
