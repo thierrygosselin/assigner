@@ -238,9 +238,8 @@ Default: \code{pop.select = NULL}}
 \item{imputation.method}{(character, optional) 
 Methods available for map-independent imputations of missing genotype:
 
-(1) \code{imputation.method = "max"} the most frequently occurring
-non-missing value (ties are broken at random) is used. Also called Strawman
-imputation.
+(1) \code{imputation.method = "max"} for Strawman imputation,
+the most frequently observed genotypes (ties are broken at random) is used.
 
 (2) \code{imputation.method = "rf"} Random Forests algorithm is used.
 
@@ -258,7 +257,7 @@ Default: \code{hierarchical.levels = "populations"}.}
 
 \item{verbose}{(optional, logical) When \code{verbose = TRUE} 
 the function is a little more chatty during execution.
-Default: \code{verbose = FALSE}.}
+Default: \code{verbose = TRUE}.}
 
 \item{folder}{(optional) The name of the folder created in the working 
 directory to save the files/results. Default: \code{folder = NULL} will create
@@ -282,8 +281,7 @@ a random number is generated and printed in the appropriate output.
 Default: \code{random.seed = NULL}.}
 
 \item{parallel.core}{(optional) The number of core used for parallel
-execution when \code{imputation.method = "rf"}.
-Markers are imputed in parallel, populations are processed sequentially.
+execution during vcf import.
 Default: \code{parallel::detectCores() - 1}.}
 }
 \value{
