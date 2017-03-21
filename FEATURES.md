@@ -1,9 +1,4 @@
----
-output: github_document
----
-
-
-###Features:
+## Features:
 
 | Caracteristics | Description |
 |:-------------------|:--------------------------------------------------------|
@@ -18,7 +13,7 @@ output: github_document
 |**Parallel**|Codes designed and optimized for fast computations running imputations, iterations, etc. in parallel. Works with all OS: Linux, Mac and PC.|
 
 
-####Specialized filtering arguments tailored for RADseq data and assignment analysis:
+## Specialized filtering arguments tailored for RADseq data and assignment analysis:
 
 | Filters | Description |
 |:---------------|:------------------------------------|
@@ -34,7 +29,7 @@ output: github_document
 |**`More filters?`**|For more info on how to filter RADseq data, see [stackr](https://github.com/thierrygosselin/stackr)|
 
 
-####Independent modules:
+## Independent modules:
 
 * **Fst**: assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement). See the [vignettes for this below].(https://github.com/thierrygosselin/assigner#examples-and-vignettes)
 * **AMOVA:** Analysis of Molecular Variance that run fast and works with missing values.
