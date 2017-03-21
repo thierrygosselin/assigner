@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# assigner<img src="assigner_logo.png" align="right"/>
+# assigner<img src="vignettes/assigner_logo.png" align="right"/>
 
 
 
@@ -73,5 +73,4 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
   * **Windows users**:  Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
 
 
-## New features
-Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
+### [For assigner's features, documentation and vignettes](https://github.com/thierrygosselin/assigner/blob/master/vignettes/assigner_features.md)
