@@ -17,6 +17,10 @@ Genomic datasets produced by next-generation sequencing techniques that reduce t
 
 **assigner** was tailored to make it easy to conduct population assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like [R Notebook](http://rmarkdown.rstudio.com/r_notebooks.html), [RStudio](https://www.rstudio.com) and [GitHub](https://github.com) will make effortless documenting your workflows and pipelines.
 
+The **keywords** here to remember: 3 differents algorithms implemented with frequentist, likelihood and the latest machine learning methods, marker selection, cross-validation techniques (classic Leave-One-Out and Training, Holdout, Leave-one-out), resampling/bootstrap/subsampling, imputations, filters, ggplot2-based plotting, fast!
+
+### [For details about assigner's features, documentation and vignettes](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md)
+
 Installation
 ------------
 
@@ -43,5 +47,3 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 -   **Windows users**: Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
 -   I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) to run **assigner**. The R GUI is unstable with functions using parallel.
 -   **Optimize speed by enabling parallel computing with OpenMP inside R** [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) and [data.table](https://github.com/Rdatatable/data.table) packages (e.g. to do imputations in parallel). Follow the steps in this [vignette](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.
-
-### [For assigner's features, documentation and vignettes](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md)
