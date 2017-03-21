@@ -43,4 +43,4 @@ assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 -   I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) to run **assigner**. The R GUI is unstable with functions using parallel.
 -   **Windows users**: Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
 
-### [For assigner's features, documentation and vignettes](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.Rmd)
+### [For assigner's features, documentation and vignettes](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md)
