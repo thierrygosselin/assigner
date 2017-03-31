@@ -198,12 +198,15 @@ Default: \code{pop.select = NULL}}
 \item{imputation.method}{(character, optional) 
 Methods available for map-independent imputations of missing genotype:
 
-(1) \code{imputation.method = "max"} for Strawman imputation,
-the most frequently observed genotypes (ties are broken at random) is used.
+(1) \code{imputation.method = "max"} Strawman imputation,
+the most frequently observed genotypes (ties are broken at random).
 
-(2) \code{imputation.method = "rf"} Random Forests algorithm is used.
+(2) \code{imputation.method = "rf"} On-the-fly-imputations using
+Random Forests algorithm.
 
-(3) \code{imputation.method = "boost"} extreme gradient boosting trees is used.
+(3) \code{imputation.method = "boost"} extreme gradient boosting trees.
+
+(4) \code{imputation.method = "mca"} Multiple Correspondence Analysis.
 
 \code{imputation.method = NULL} will return the original dataset, without
 imputation.
@@ -218,7 +221,8 @@ missing genotype in the mixture samples.}
 
 \item{hierarchical.levels}{(character, optional) \code{c("global", "populations")}.
 Should the imputations be computed globally or by populations. Note that
-imputing genotype globally can create huge bias for example by
+imputing genotype globally in conjunction with \code{imputation.method = "max"}
+can create huge bias for example by
 introducing foreign genotypes in some populations (see note for more info).
 Default: \code{hierarchical.levels = "populations"}.}
 

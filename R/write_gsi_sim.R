@@ -198,18 +198,18 @@ write_gsi_sim <- function(
   close(filename.connection) # close the connection
   
   # remaining lines, individuals and genotypes
-  pop <- input$POP_ID  # Create a vector with the population
+  pop <- input$POP_ID # Create a vector with the population
   input <- suppressWarnings(dplyr::select(.data = input, -POP_ID))  # remove pop id
   gsi_sim.split <- split(input, pop)  # split gsi_sim by populations
-  
-  for (k in seq_along(levels(pop))) {
+  pop.string <- as.character(unique(pop))
+  for (k in pop.string) {
     utils::write.table(x = as.data.frame(stringi::stri_join("pop", k, sep = " ")), file = filename, append = TRUE, quote = FALSE, sep = "\n", row.names = FALSE, col.names = FALSE)
     # readr::write_delim(x = as.data.frame(stringi::stri_join("pop", k, sep = " ")), path = filename, delim = "\n", append = TRUE, col_names = FALSE)
     # readr::write_delim(x = gsi_sim.split[[k]], path = filename, delim = " ", append = TRUE, col_names = FALSE)
     utils::write.table(x = gsi_sim.split[[k]], file = filename, append = TRUE, quote = FALSE, sep = " ", row.names = FALSE, col.names = FALSE)
   }
   
-  gsi_sim.split <- input <- NULL
+  gsi_sim.split <- input <-pop <- pop.string <- NULL
   return(filename)
 } # End write_gsi function
 

@@ -366,6 +366,7 @@ assignment_ngs <- function(
   cat("#######################################################################\n")
   timing <- proc.time()
   res.list <- list() # results to keep stored in this list
+  
   # Checking for missing and/or default arguments ------------------------------
   if (missing(data)) stop("Input file missing")
   if (missing(assignment.analysis)) stop("assignment.analysis argument missing")
@@ -420,11 +421,11 @@ assignment_ngs <- function(
     file.date <- stringi::stri_sub(file.date, from = 1, to = 13)
     
     if (is.null(imputation.method)) {
-      message("Map-imputation: no")
+      message("Map-independent imputations: no")
       directory <- stringi::stri_join(getwd(),"/", "assignment_analysis_", "method_", sampling.method, "_no_imputations_", file.date, "/", sep = "")
       dir.create(file.path(directory))
     } else {
-      message("Map-imputation: yes")
+      message("Map-independent imputations: yes")
       directory <- stringi::stri_join(getwd(),"/","assignment_analysis_", "method_", sampling.method, "_imputations_", imputation.method,"_", hierarchical.levels, "_", file.date, "/", sep = "")
       dir.create(file.path(directory))
     }
@@ -791,7 +792,7 @@ assignment_gsi_sim <- function(
       tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
       tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
       tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss")
-  )      
+  )
   assignment <- suppressWarnings(
     dplyr::mutate(.data = assignment, INDIVIDUALS = as.character(INDIVIDUALS)) %>% 
       dplyr::left_join(strata.df, by = "INDIVIDUALS") %>%
