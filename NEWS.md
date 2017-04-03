@@ -1,3 +1,19 @@
+# assigner v.0.4.3 2017-04-02
+
+* it's now official, `assigner` as a logo
+* faster `fst_NEI87`
+* unbalanced design impact on estimates can be tested with `subsample` and
+`iteration.subsample` in `fst_NEI87` and `fst_WC84`
+
+# assigner v.0.4.2
+
+* until `SNPRelate` [bias issue](https://github.com/zhengxwen/SNPRelate/issues/21)
+is resolved the option is unavailable
+* better use of `pbmcapply` for Windows
+* **imputations** is being reworked and will be buggy until the next update. The
+codes are being completely re-written and arguments will change (for the better).
+
+
 # assigner v.0.4.1
 
 * debug code to work in parallel with Windows

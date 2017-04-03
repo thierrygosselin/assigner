@@ -7,7 +7,8 @@
 \usage{
 fst_WC84(data, snprelate = FALSE, pop.levels = NULL, pop.labels = NULL,
   strata = NULL, holdout.samples = NULL, pairwise = FALSE, ci = FALSE,
-  iteration.ci = 100, quantiles.ci = c(0.025, 0.975), digits = 9,
+  iteration.ci = 100, quantiles.ci = c(0.025, 0.975), subsample = NULL,
+  iteration.subsample = 1, digits = 9,
   parallel.core = parallel::detectCores() - 1, verbose = FALSE, ...)
 }
 \arguments{
@@ -73,6 +74,18 @@ Default: \code{iteration.ci = 100}.}
 The quantiles for the bootstrapped confidence intervals. 
 Default: \code{quantiles.ci = c(0.025,0.975)}.}
 
+\item{subsample}{(Integer or character) 
+With \code{subsample = 36}, 36 individuals in each populations are chosen
+randomly to represent the dataset. With \code{subsample = "min"}, the 
+minimum number of individual/population found in the data is used automatically.
+Default is no subsampling, \code{subsample = NULL}.}
+
+\item{iteration.subsample}{(Integer) The number of iterations to repeat 
+subsampling.
+With \code{subsample = 20} and \code{iteration.subsample = 10},
+20 individuals/populations will be randomly chosen 10 times.
+Default: \code{iteration.subsample = 1}.}
+
 \item{digits}{(optional, integer) The number of decimal places to be used in 
 results.
 Default: \code{digits = 9}.}
@@ -88,10 +101,11 @@ Default: \code{verbose = FALSE}.}
 \item{...}{other parameters passed to the function.}
 }
 \value{
-With pairwise comparison computed, the function returns a list with 
-11 objects:
+The function returns a list with several objects.
+When sumsample is selected the objects end with \code{.subsample}.
 \itemize{
-  \item \code{$sigma.loc}: the variance components per locus 
+ \item \code{$subsampling.individuals}: the combinations of individuals and subsamples,
+ \item \code{$sigma.loc}: the variance components per locus, with
       (\code{lsiga}: among populations, 
       \code{lsigb}: among individuals within populations,
       \code{lsigw}: within individuals)
@@ -106,10 +120,13 @@ With pairwise comparison computed, the function returns a list with
  \item \code{$pairwise.fst.full.matrix}: the pairwise fst matrix (duplicated upper and lower triangle),
  \item \code{$pairwise.fst.ci.matrix}: matrix with pairwise fst in the upper triangle
  and the confidence intervals in the lower triangle.
+ \item when subsample is selected \code{$pairwise.fst.subsample.mean} is a summary
+ of all pairwise comparisons subsample. The mean is calculated accross summary
+ statistics.
 }
 }
 \description{
-The function computes Weir and Cockerham (1984) 
+The function calculates Weir and Cockerham (1984) 
 Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
 confidence intervals based on bootstrap of markers (resampling with replacement). 
 The function gives identical results \emph{at the 9th decimal} when tested 
@@ -121,6 +138,8 @@ but it doesn't compute confidence intervals, for now.
 For an R implementation, \code{\link{fst_WC84}} is very fast. 
 The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
 \pkg{data.table}, \pkg{parallel} and \pkg{SNPRelate}.
+The impact of unbalanced design on estimates can be tested by using the 
+subsample argument.
 
 Note: Until the bias observed with SNPRelate is resolved the option will remain unavailable.
 

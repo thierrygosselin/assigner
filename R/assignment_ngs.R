@@ -484,14 +484,18 @@ assignment_ngs <- function(
   # need to remove space in POP_ID name to work in gsi_sim
   input$POP_ID <- stringi::stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
-  input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
+  # input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
+  pop.levels <- levels(input$POP_ID)
+  pop.labels <- pop.levels
+  
+  input <- stackr::change_pop_names(data = input, pop.levels = pop.labels, pop.labels = pop.labels)
   
   # create a strata.df
   # strata.df <- input %>% 
   #   dplyr::select(INDIVIDUALS, POP_ID) %>% 
   #   dplyr::distinct(INDIVIDUALS, .keep_all = TRUE)
-  pop.levels <- levels(input$POP_ID)
-  pop.labels <- pop.levels
+  # pop.levels <- levels(input$POP_ID)
+  # pop.labels <- pop.levels
   
   # subsampling data------------------------------------------------------------
   # create the subsampling list
@@ -535,8 +539,10 @@ assignment_ngs <- function(
     maf.approach = maf.approach,
     maf.operator = maf.operator,
     marker.number = marker.number,
-    pop.levels = unique(pop.labels),
-    pop.labels = unique(pop.labels),
+    # pop.levels = unique(pop.labels),
+    # pop.labels = unique(pop.labels),
+    pop.levels = pop.levels,
+    pop.labels = pop.levels,
     sampling.method = sampling.method,
     iteration.method = iteration.method,
     filename = filename,
@@ -684,54 +690,6 @@ assignment_ngs <- function(
 } # End assignment_ngs
 
 # Internal Nested Functions -----------------------------------------------------------
-# subsampling_data --------------------------------------------------------------
-#' @title subsampling data
-#' @description subsampling data
-#' @rdname subsampling_data
-#' @export
-#' @keywords internal
-
-subsampling_data <- function(
-  iteration.subsample = 1,
-  ind.pop.df = NULL,
-  subsample = NULL,
-  random.seed = NULL
-) {
-  # message(paste0("Creating data subsample: ", iteration.subsample))
-  if (is.null(subsample)) {
-    subsample.select <- ind.pop.df %>% 
-      dplyr::mutate(SUBSAMPLE = rep(iteration.subsample, n()))
-  } else {
-    
-    # Set seed for sampling reproducibility
-    if (is.null(random.seed)) {
-      random.seed <- sample(x = 1:1000000, size = 1)
-      set.seed(random.seed)
-    } else {
-      set.seed(random.seed)
-    }
-    
-    if (subsample > 1) {# integer
-      subsample.select <- ind.pop.df %>%
-        dplyr::group_by(POP_ID) %>%
-        dplyr::sample_n(tbl = ., size = subsample, replace = FALSE)# sampling individuals for each pop
-    }
-    if (subsample < 1) { # proportion
-      subsample.select <- ind.pop.df %>%
-        dplyr::group_by(POP_ID) %>%
-        dplyr::sample_frac(tbl = ., size = subsample, replace = FALSE)# sampling individuals for each pop
-    }
-    subsample.select <- subsample.select %>% 
-      dplyr::mutate(
-        SUBSAMPLE = rep(iteration.subsample, n()),
-        RANDOM_SEED_NUMBER = rep(random.seed, n())
-      ) %>%
-      dplyr::arrange(POP_ID, INDIVIDUALS) %>% 
-      dplyr::ungroup(.)
-  }
-  return(subsample.select)
-} # End subsampling function
-
 
 # assignment_gsi_sim------------------------------------------------------------
 #' @title assignment with gsi_sim

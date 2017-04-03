@@ -6,7 +6,8 @@
 \usage{
 fst_NEI87(data, pop.levels = NULL, pop.labels = NULL, strata = NULL,
   holdout.samples = NULL, pairwise = FALSE, ci = FALSE,
-  iteration.ci = 100, quantiles.ci = c(0.025, 0.975), digits = 9,
+  iteration.ci = 100, quantiles.ci = c(0.025, 0.975), subsample = NULL,
+  iteration.subsample = 1, digits = 9,
   parallel.core = parallel::detectCores() - 1, verbose = FALSE, ...)
 }
 \arguments{
@@ -66,6 +67,18 @@ Default: \code{iteration.ci = 100}.}
 The quantiles for the bootstrapped confidence intervals. 
 Default: \code{quantiles.ci = c(0.025,0.975)}.}
 
+\item{subsample}{(Integer or character) 
+With \code{subsample = 36}, 36 individuals in each populations are chosen
+randomly to represent the dataset. With \code{subsample = "min"}, the 
+minimum number of individual/population found in the data is used automatically.
+Default is no subsampling, \code{subsample = NULL}.}
+
+\item{iteration.subsample}{(Integer) The number of iterations to repeat 
+subsampling.
+With \code{subsample = 20} and \code{iteration.subsample = 10},
+20 individuals/populations will be randomly chosen 10 times.
+Default: \code{iteration.subsample = 1}.}
+
 \item{digits}{(optional, integer) The number of decimal places to be used in 
 results.
 Default: \code{digits = 9}.}
@@ -81,9 +94,10 @@ Default: \code{verbose = FALSE}.}
 \item{...}{other parameters passed to the function.}
 }
 \value{
-With pairwise comparison computed, the function returns a list with 
-10 objects:
+The function returns a list with several objects.
+When sumsample is selected the objects end with \code{.subsample}.
 \itemize{
+ \item \code{$subsampling.individuals}: the combinations of individuals and subsamples,
  \item \code{$fst.markers}: Nei's Gst, Nei's G'st and Jost's D by markers,
  \item \code{$fst.ranked}: Nei's Gst, Nei's G'st and Jost's D by markers ranked by Nei's Gst,
  \item \code{$fst.overall}: the overall Nei's Gst, Nei's G'st and Jost's D by markers with confidence intervals.
@@ -95,13 +109,17 @@ With pairwise comparison computed, the function returns a list with
  \item \code{$pairwise.fst.full.matrix}: the pairwise fst prime matrix (duplicated upper and lower triangle),
  \item \code{$pairwise.fst.ci.matrix}: matrix with pairwise fst prime in the upper triangle
  and the confidence intervals in the lower triangle.
+ \item when subsample is selected \code{$pairwise.fst.subsample.mean} is a summary
+ of all pairwise comparisons subsample. The mean is calculated accross summary
+ statistics.
 }
 }
 \description{
-The function computes Nei's 1987 Fst for diploid genomes. 
-2 version are offered: the classic Nei's Gst and Nei's G'st (prime), 
-that comes with a correction for the bias that stems from sampling a limited 
-number of populations.
+The function calculates for diploid genomes the classic Nei's Gst (1987), 
+Nei's G'st (prime), that comes with a correction for the bias that stems 
+from sampling a limited number of populations. Also calculated is Jost's D,
+an index of population differentiation that is independent of the amount of
+within-population diversity (Jost, 2008). 
 Both overall and pairwise Fst can be estimated with 
 confidence intervals based on bootstrap of markers (resampling with replacement). 
 The function should give identical results \emph{at the 4th decimal} when tested 
@@ -110,9 +128,11 @@ the Fst computed in \code{Calculate Distances} or
 \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}.
 The fastest computation is still 
 \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-but here, the R solution computes confidence intervals and is very fast. 
+but here, the R solution computes confidence intervals and it's very fast. 
 The computations takes advantage of \pkg{tidyverse} packages, 
 \pkg{data.table} and \pkg{parallel}.
+The impact of unbalanced design on estimates can be tested by using the 
+subsample argument.
 
 \emph{Special concerns for genome-wide estimate and filtering bias}
 
@@ -198,6 +218,10 @@ Molecular Ecology Notes, 4, 792-794.
 Roesti M, Salzburger W, Berner D. (2012)
 Uninformative polymorphisms bias genome scans for signatures of selection. 
 BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x
+
+Jost L. (2008)
+G(ST) and its relatives do not measure differentiation.
+Molecular Ecology. 17: 4015-4026.
 }
 \seealso{
 From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive} manual:

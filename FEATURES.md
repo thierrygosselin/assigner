@@ -61,6 +61,12 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
+**v.0.4.3 2017-04-02**
+
+* it's now official, `assigner` as a logo
+* faster `fst_NEI87`
+* unbalanced design impact on estimates can be tested with `subsample` and
+`iteration.subsample` in `fst_NEI87` and `fst_WC84`
 
 **v.0.4.2**
 

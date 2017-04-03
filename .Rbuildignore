@@ -8,3 +8,4 @@
 ^README-.*\.png$
 ^FEATURES\.md$
 ^README_assigner_logo\.png$
+^vignettes/*\.Rmd
