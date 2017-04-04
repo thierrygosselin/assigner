@@ -49,7 +49,7 @@ restriction-site-associated DNA sequencing (RADseq)) have a huge numbers of mark
 **assigner** was tailored to make it easy to conduct population assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like [R Notebook](http://rmarkdown.rstudio.com/r_notebooks.html), [RStudio](https://www.rstudio.com) and [GitHub](https://github.com) will make effortless documenting your workflows and pipelines.
 
 The **keywords** here to remember: 3 differents algorithms implemented with 
-frequentist, likelihood and the latest machine learning methods, marker selection,
+frequentist, likelihood and the latest machine learning methods, marker selection (with very Fst WC84),
 cross-validation techniques (classic Leave-One-Out and Training, Holdout, Leave-one-out), resampling/bootstrap/subsampling, imputations, filters,
 ggplot2-based plotting, fast! 
 

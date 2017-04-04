@@ -17,7 +17,7 @@ Genomic datasets produced by next-generation sequencing techniques that reduce t
 
 **assigner** was tailored to make it easy to conduct population assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like [R Notebook](http://rmarkdown.rstudio.com/r_notebooks.html), [RStudio](https://www.rstudio.com) and [GitHub](https://github.com) will make effortless documenting your workflows and pipelines.
 
-The **keywords** here to remember: 3 differents algorithms implemented with frequentist, likelihood and the latest machine learning methods, marker selection, cross-validation techniques (classic Leave-One-Out and Training, Holdout, Leave-one-out), resampling/bootstrap/subsampling, imputations, filters, ggplot2-based plotting, fast!
+The **keywords** here to remember: 3 differents algorithms implemented with frequentist, likelihood and the latest machine learning methods, marker selection (with very Fst WC84), cross-validation techniques (classic Leave-One-Out and Training, Holdout, Leave-one-out), resampling/bootstrap/subsampling, imputations, filters, ggplot2-based plotting, fast!
 
 ### [For details about assigner's features, documentation and vignettes](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md)
 
