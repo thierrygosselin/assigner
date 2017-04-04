@@ -31,7 +31,7 @@
 
 ## Independent modules
 
-* **Fst**: assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement). See the [vignettes for this below].(https://github.com/thierrygosselin/assigner#examples-and-vignettes)
+* **Fst**: assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement). See the [vignettes for this below](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md#examples-and-vignettes).
 * **AMOVA:** Analysis of Molecular Variance that run fast and works with missing values.
 * **Dlr:** Compute the genotype likelihood ratio distance metric (Paetkau's et al. 1997, 2004).
 

@@ -49,8 +49,10 @@
 #' 
 #' \emph{How to get a tidy data frame ?}
 #' \href{https://github.com/thierrygosselin/stackr}{stackr} 
-#' \code{\link[stackr]{tidy_genomic_data}} can transform 6 genomic data formats 
-#' in a tidy data frame. You can also use this function to filter your dataset using
+#' \code{\link[stackr]{tidy_genomic_data}} can transform 11 genomic data formats 
+#' in a tidy data frame (VCF, PLINK, genind, genlight, gtypes, genepop,
+#' stacks haplotype file, hierfstat, ...). 
+#' You can also use this function to filter your dataset using
 #' whitelist of markers, blacklist of individuals and genotypes.
 
 #' @param snprelate (logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
