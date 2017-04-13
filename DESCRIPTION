@@ -1,7 +1,7 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with GBS/RADseq Data using R
-Version: 0.4.
+Version: 0.4.4
 Date: 2017-04-12
 Encoding: UTF-8
 Authors@R: c(

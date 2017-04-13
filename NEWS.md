@@ -1,7 +1,7 @@
 # assigner v.0.4.4 2017-04-12
 
 * bug fix in `assignment_ngs` introduced in last commit that was suppose to be
-fix. Problem introduced by stackr::change_pop_names.
+fix. Problem introduced by `stackr::change_pop_names`.
 
 # assigner v.0.4.3 2017-04-02
 
