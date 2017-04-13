@@ -429,12 +429,12 @@ assignment_ngs <- function(
       directory <- stringi::stri_join(getwd(),"/","assignment_analysis_", "method_", sampling.method, "_imputations_", imputation.method,"_", hierarchical.levels, "_", file.date, "/", sep = "")
       dir.create(file.path(directory))
     }
-    message(stringi::stri_join("Folder: ", directory))
+    message("Folder: ", directory)
     file.date <- NULL #unused object
   } else {
     directory <- stringi::stri_join(getwd(), "/", folder, "/", sep = "")
     dir.create(file.path(directory))
-    message(stringi::stri_join("Folder: ", directory))
+    message("Folder: ", directory)
   }
   
   # File type detection --------------------------------------------------------
@@ -478,24 +478,17 @@ assignment_ngs <- function(
     pop.levels = pop.levels, 
     pop.labels = pop.labels, 
     pop.select = pop.select,
-    filename = NULL
+    filename = NULL,
+    verbose = FALSE
   )
   
   # need to remove space in POP_ID name to work in gsi_sim
   input$POP_ID <- stringi::stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
   # input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
+  input <- stackr::change_pop_names(data = input, pop.levels = pop.labels, pop.labels = pop.labels)
   pop.levels <- levels(input$POP_ID)
   pop.labels <- pop.levels
-  
-  input <- stackr::change_pop_names(data = input, pop.levels = pop.labels, pop.labels = pop.labels)
-  
-  # create a strata.df
-  # strata.df <- input %>% 
-  #   dplyr::select(INDIVIDUALS, POP_ID) %>% 
-  #   dplyr::distinct(INDIVIDUALS, .keep_all = TRUE)
-  # pop.levels <- levels(input$POP_ID)
-  # pop.labels <- pop.levels
   
   # subsampling data------------------------------------------------------------
   # create the subsampling list
@@ -684,7 +677,7 @@ assignment_ngs <- function(
   res.list$assignment <- res
   res.list$plot.assignment <- plot.assignment
   timing <- proc.time() - timing
-  message(stringi::stri_join("Computation time: ", round(timing[[3]]), " sec"))
+  message("Computation time: ", round(timing[[3]]), " sec")
   cat("############################## completed ##############################\n")
   return(res.list)
 } # End assignment_ngs
@@ -843,12 +836,12 @@ assignment_adegenet <- function(
         pop = pop.data, 
         plot = FALSE
       )$best
-      message(stringi::stri_join("a-score optimisation for iteration:", i, sep = " ")) # message not working in parallel...
+      message("a-score optimisation for iteration: ", i) # message not working in parallel...
       
       # DAPC
       dapc.assignment <- adegenet::dapc(data.select, n.da = length(levels(pop.data)), n.pca = dapc.best.optim.a.score, pop = pop.data)
-      message(stringi::stri_join("DAPC iteration:", i, sep = " "))
-      message(stringi::stri_join("DAPC marker group:", m, sep = " "))
+      message("DAPC iteration: ", i)
+      message("DAPC marker group: ", m)
     }
     
     # DAPC with Cross-Validation
@@ -868,8 +861,8 @@ assignment_adegenet <- function(
         ncpus = parallel.core
       )$DAPC
       
-      message(stringi::stri_join("DAPC iteration:", i, sep = " "))
-      message(stringi::stri_join("DAPC marker group:", m, sep = " "))
+      message("DAPC iteration: ", i)
+      message("DAPC marker group: ", m)
     }
   }
   
@@ -887,13 +880,13 @@ assignment_adegenet <- function(
       pop = pop.training,
       plot = FALSE
     )$best
-    message(stringi::stri_join("a-score optimisation for iteration:", i, sep = " "))
+    message("a-score optimisation for iteration: ", i)
     
     dapc.training <- adegenet::dapc(training.data,
                                     n.da = length(levels(pop.training)),
                                     n.pca = dapc.best.optim.a.score,
                                     pop = pop.training)
-    message(stringi::stri_join("DAPC of training data set for iteration:", i, sep = " "))
+    message("DAPC of training data set for iteration: ", i)
     
     # DAPC holdout individuals
     holdout.data <- data.select[adegenet::indNames(data.select) %in% holdout$INDIVIDUALS] # holdout dataset
@@ -903,7 +896,7 @@ assignment_adegenet <- function(
     rev.assignment.levels <- rev(assignment.levels)  # for figure 
     
     dapc.predict.holdout <- adegenet::predict.dapc(dapc.training, newdata = holdout.data)
-    message(stringi::stri_join("Assigning holdout data for iteration:", i, sep = " "))
+    message("Assigning holdout data for iteration: ", i)
   }
   
   
@@ -997,7 +990,7 @@ assignment_random <- function(
 ) {
   x <- tibble::as_data_frame(x)
   # x <- marker.random.list[[1]]
-  i <- as.numeric(unique(x$ITERATIONS))      # iteration
+  i <- as.integer(unique(x$ITERATIONS))      # iteration
   m <- as.numeric(unique(x$MARKER_NUMBER))   # number of marker selected
   
   select.markers <- dplyr::ungroup(x) %>% 
@@ -1427,7 +1420,7 @@ assignment_function <- function(
   subsample.id <- unique(x$SUBSAMPLE)
   
   if (!is.null(subsample)) {
-    message(paste("Analyzing subsample: ", subsample.id))
+    message("Analyzing subsample: ", subsample.id)
   }
   
   # Updating directories for subsampling
