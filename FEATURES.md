@@ -61,31 +61,19 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
+
+**v.0.4.4 2017-04-12**
+
+* bug fix in `assignment_ngs` introduced in last commit that was suppose to be
+fix. Problem introduced by stackr::change_pop_names.
+
+
 **v.0.4.3 2017-04-02**
 
 * it's now official, `assigner` as a logo
 * faster `fst_NEI87`
 * unbalanced design impact on estimates can be tested with `subsample` and
 `iteration.subsample` in `fst_NEI87` and `fst_WC84`
-
-**v.0.4.2**
-
-* until `SNPRelate` [bias issue](https://github.com/zhengxwen/SNPRelate/issues/21)
-is resolved the option is unavailable
-* better use of `pbmcapply` for Windows
-* **imputations** is being reworked and will be buggy until the next update. The
-codes are being completely re-written and arguments will change (for the better).
-
-**v.0.4.1**
-
-* debug code to work in parallel with Windows
-* code cleaning to prep for CRAN
-
-
-**v.0.4.0**
-
-* `assignment_ngs` and `assignment_mixture` code cleaning to prep for CRAN and
-make them easier to debug.
 
 For previous news:
 [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
