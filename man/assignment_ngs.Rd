@@ -236,7 +236,7 @@ the analysis. e.g. \code{pop.select = c("QUE", "ONT")} to select \code{QUE}
 and \code{ONT} population samples (out of 20 pops).
 Default: \code{pop.select = NULL}}
 
-\item{imputation.method}{(character, optional) 
+\item{imputation.method}{(character, optional)
 Methods available for map-independent imputations of missing genotype:
 
 (1) \code{imputation.method = "max"} Strawman imputation,

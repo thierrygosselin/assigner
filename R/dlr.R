@@ -52,12 +52,13 @@
 #' @return A list with 3 objects of class: table ($dlr.table), dist (a lower
 #' diagonal matrix, $dlr.dist), data.frame (a mirrored matrix, $dlr.matrix).
 
-#' @importFrom dplyr mutate select filter group_by ungroup filter_ mutate_ summarise ungroup add_rownames left_join rename
+#' @importFrom dplyr mutate select filter group_by ungroup filter_ mutate_ summarise ungroup left_join rename
 #' @importFrom readr read_tsv read_delim write_tsv
 #' @importFrom lazyeval interp
 #' @importFrom stringi stri_dup stri_join stri_replace_all_fixed stri_sub
 #' @importFrom stats as.dist dist
 #' @importFrom utils combn
+#' @importFrom tibble rownames_to_column data_frame
 
 #' @export 
 #' @rdname dlr
@@ -140,7 +141,7 @@ dlr <- function(
       dplyr::mutate(POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered = TRUE))
   }
   # Dlr relative for one combination of pop-------------------------------------
-  dlr.relative <- function(pop1, pop2){
+  dlr_relative <- function(pop1, pop2){
     
     dlr <- suppressWarnings(
       assignment %>%
@@ -158,7 +159,7 @@ dlr <- function(
         dplyr::summarise(DLR_RELATIVE = sum(DLR_RELATIVE)/2)
     )
     return(dlr)
-  }
+  }#End dlr_relative
   
   # All combination of populations----------------------------------------------
   pop.pairwise <- utils::combn(unique(pop.labels), 2)
@@ -167,7 +168,7 @@ dlr <- function(
   # Dlr for all pairwise populations--------------------------------------------
   dlr.all.pop <- as.numeric()
   for (i in 1:ncol(pop.pairwise)) {
-    dlr.all.pop[i] <- dlr.relative(pop1 = pop.pairwise[1,i], 
+    dlr.all.pop[i] <- dlr_relative(pop1 = pop.pairwise[1,i], 
                                    pop2 = pop.pairwise[2,i])
   }
   dlr.all.pop <- as.numeric(dlr.all.pop)
@@ -188,13 +189,11 @@ dlr <- function(
   dlr.dist.matrix <- stats::as.dist(dlr.dist.matrix)
   
   dlr.matrix <- as.data.frame(as.matrix(dlr.dist.matrix)) %>%
-    dplyr::add_rownames(df = ., var = "POP")
+    tibble::rownames_to_column(df = ., var = "POP")
   cat("############################### RESULTS ###############################\n")
   # Results---------------------------------------------------------------------
-  dlr.results.list <- list()
-  dlr.results.list$dlr.table <- dlr.table
-  dlr.results.list$dlr.dist <- dlr.dist.matrix
-  dlr.results.list$dlr.matrix <- dlr.matrix
+  dlr.results.list <- list(
+    dlr.table = dlr.table, dlr.dist = dlr.dist.matrix, dlr.matrix = dlr.matrix)
   
   # Write file to working directory --------------------------------------------
   if (is.null(filename)) {
