@@ -4,48 +4,9 @@
 #' ratio distance (Dlr).
 #' @param data The output assignment file (home likelihood or
 #' likelihood ratio statistics) from GENODIVE.
-#' @param l.skip (integer) The number of lines to skip before the individuals info
-#' in GenoDive assignment results (see Vignette).
-#' @param number.individuals (integer) The number of individuals analysed.
-
-#' @param number.pop (integer) The number of populations analysed.
-#' @param pop.id.start (Optional) The start of your population id
-#' in the name of your individual sample. Your individuals are identified 
-#' in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
-#' then, \code{pop.id.start} = 5. If you didn't name your individuals
-#' with the pop id in it, use the \code{strata} argument. 
-#' @param pop.id.end (Optional) The end of your population id
-#' in the name of your individual sample. Your individuals are identified 
-#' in this form : SPECIES-POPULATION-MATURITY-YEAR-ID = CHI-QUE-ADU-2014-020,
-#' then, \code{pop.id.end} = 7. If you didn't name your individuals
-#' with the pop id in it, use the \code{strata} argument.
-
-#' @param pop.levels (optional, string) This refers to the levels in a factor. In this 
-#' case, the id of the pop.
-#' Use this argument to have the pop ordered your way instead of the default 
-#' alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
-#' instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
-#' Default: \code{pop.levels = NULL}.
-
-#' @param pop.labels (optional, string) Use this argument to rename/relabel
-#' your pop or combine your pop. e.g. To combine \code{"QUE"} and \code{"ONT"} 
-#' into a new pop called \code{"NEW"}:
-#' (1) First, define the levels for your pop with \code{pop.levels} argument: 
-#' \code{pop.levels = c("QUE", "ONT", "ALB")}. 
-#' (2) then, use \code{pop.labels} argument: 
-#' \code{pop.levels = c("NEW", "NEW", "ALB")}.#' 
-#' To rename \code{"QUE"} to \code{"TAS"}:
-#' \code{pop.labels = c("TAS", "ONT", "ALB")}.
-#' Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
-#' \code{strata} argument that can do the same thing, see below.
-
-#' @param strata (optional) A tab delimited file with 2 columns with header:
+#' @param strata A tab delimited file with 2 columns with header:
 #' \code{INDIVIDUALS} and \code{STRATA}.
-#' If a \code{strata} file is specified, the strata file will have
-#' precedence over any grouping found input file (\code{data}). 
-#' The \code{STRATA} column can be any hierarchical grouping.
-#' Default: \code{strata = NULL}.
-
+#' The \code{STRATA} column is used here as the populations id of your sample. 
 
 #' @param filename (optional) Name of the file prefix for
 #' the matrix and the table written in the working directory. 
@@ -53,12 +14,13 @@
 #' diagonal matrix, $dlr.dist), data.frame (a mirrored matrix, $dlr.matrix).
 
 #' @importFrom dplyr mutate select filter group_by ungroup filter_ mutate_ summarise ungroup left_join rename
-#' @importFrom readr read_tsv read_delim write_tsv
+#' @importFrom readr read_delim write_tsv read_table read_tsv
 #' @importFrom lazyeval interp
 #' @importFrom stringi stri_dup stri_join stri_replace_all_fixed stri_sub
 #' @importFrom stats as.dist dist
 #' @importFrom utils combn
 #' @importFrom tibble rownames_to_column data_frame
+#' @importFrom purrr discard flatten_dbl
 
 #' @export 
 #' @rdname dlr
@@ -76,70 +38,72 @@
 
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
-dlr <- function(
-  data, 
-  l.skip, 
-  number.individuals, 
-  number.pop, 
-  pop.id.start = NULL, 
-  pop.id.end = NULL, 
-  pop.levels = NULL, 
-  pop.labels = NULL, 
-  strata = NULL,
-  filename = NULL
-) {
+dlr <- function(data, strata, filename = NULL) {
   cat("#######################################################################\n")
   cat("########################### assigner::Dlr #############################\n")
   cat("#######################################################################\n")
+  timing <- proc.time()
   
   if (missing(data)) stop("GenoDive file missing")
-  if (is.null(strata) & is.null(pop.id.start) & is.null(pop.id.end)) {
-    stop("pop.id.start and pop.id.end or strata arguments are required to 
-         identify your populations")
-  }
-  if (!is.null(pop.levels) & is.null(pop.labels)) pop.labels <- pop.levels
-  if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
-  
+  if (missing(strata)) stop("Strata file missing")
   
   # import and modify the assignment file form GenoDive-------------------------
-  assignment <- readr::read_delim(
-    data,
-    delim = "\t",
-    skip = l.skip,
-    n_max = number.individuals,
-    col_names = TRUE,
-    progress = interactive(),
-    col_types = stringi::stri_join("cccddd", stringi::stri_dup("d", times = number.pop), sep = "")) %>% 
-    dplyr::select(-c(Current, Inferred, Lik_max, Lik_home, Lik_ratio))
+  message("Importing GenoDive assignment results")
+  temp.file <- suppressWarnings(suppressMessages(readr::read_table(file = data)))
+  max.lines = nrow(temp.file) - 1
+  skip.number <- which(stringi::stri_detect_fixed(str = temp.file$X1,
+                                                  pattern = "membership")) + 2
+  assignment <- suppressMessages(
+    suppressWarnings(
+      readr::read_delim(
+        data,
+        delim = "\t",
+        skip = skip.number,
+        n_max = max.lines,
+        col_names = TRUE,
+        progress = interactive())) %>% 
+      dplyr::filter(!is.na(Current)) %>%
+      dplyr::rename(
+        INDIVIDUALS = Individual, POP_ID = Current, INFERRED = Inferred,
+        LIK_MAX = Lik_max, LIK_HOME = Lik_home, LIK_RATIO = Lik_ratio))
   
-  if (is.null(strata)) {
-    header <- names(assignment)
-    header.sites <- header[2:(1 + number.pop)]
-    header.sites.clean <- stringi::stri_sub(header.sites, pop.id.start, pop.id.end)
-    header.pop <- stringi::stri_replace_all_fixed(header.sites.clean, pop.levels, pop.labels, vectorize_all = FALSE)
-    new.header <- c("INDIVIDUALS", header.pop)
-    colnames(assignment) <- new.header
-    
-    assignment <- assignment %>%
-      dplyr::mutate(
-        POP_ID = stringi::stri_sub(INDIVIDUALS, pop.id.start, pop.id.end),
-        POP_ID = factor(stringi::stri_replace_all_fixed(POP_ID, pop.levels, pop.labels, vectorize_all = FALSE), levels = unique(pop.labels), ordered = TRUE),
-        POP_ID = droplevels(POP_ID),
-        INDIVIDUALS =  as.character(INDIVIDUALS)
-      )
-  } else {# strata provided
-    strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
-      dplyr::rename(POP_ID = STRATA)
-    
-    header.pop <- as.character(unique(strata.df$POP_ID))
-    new.header <- c("INDIVIDUALS", header.pop)
-    colnames(assignment) <- new.header
-    
-    assignment <- assignment %>%
-      dplyr::mutate(INDIVIDUALS =  as.character(INDIVIDUALS)) %>% 
-      dplyr::left_join(strata.df, by = "INDIVIDUALS") %>% 
-      dplyr::mutate(POP_ID = factor(POP_ID, levels = unique(pop.labels), ordered = TRUE))
+  temp.file <- skip.number <- NULL
+  
+  message("Importing strata file")
+  strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>% 
+    dplyr::rename(POP_ID = STRATA)
+  
+  # check that same number of individuals and pop...
+  if (!identical(sort(assignment$INDIVIDUALS), sort(strata.df$INDIVIDUALS))) {
+    stop("Assignment file and strata don't have the same individuals")
   }
+  
+  assignment.pop <- ncol(assignment) - 6
+  strata.pop <- dplyr::n_distinct(strata.df$POP_ID)
+  if (assignment.pop != strata.pop) stop("Assignment file and strata don't have the same number of populations")
+  
+  fixed.header <- c("INDIVIDUALS", "POP_ID", "INFERRED", "LIK_MAX", "LIK_HOME", "LIK_RATIO")
+  header.pop <- purrr::discard(.x = colnames(assignment), .p = colnames(assignment) %in% fixed.header)
+  
+  get.pop <- strata.df %>% 
+    dplyr::filter(INDIVIDUALS %in% header.pop)
+  
+  strata.df <- NULL
+  
+  # Change header for the real pop names
+  colnames(assignment) <- stringi::stri_replace_all_fixed(
+    str = colnames(assignment), pattern = get.pop$INDIVIDUALS, replacement = get.pop$POP_ID, vectorize_all = FALSE)
+  
+  # Change POP_ID and inferred for the real pop name
+  assignment <- assignment %>% 
+    dplyr::mutate(
+      POP_ID = stringi::stri_replace_all_fixed(
+        str = POP_ID, pattern = get.pop$INDIVIDUALS, replacement = get.pop$POP_ID, vectorize_all = FALSE),
+      INFERRED = stringi::stri_replace_all_fixed(
+        str = INFERRED, pattern = get.pop$INDIVIDUALS, replacement = get.pop$POP_ID, vectorize_all = FALSE)
+    )
+  
+  
   # Dlr relative for one combination of pop-------------------------------------
   dlr_relative <- function(pop1, pop2){
     
@@ -162,8 +126,9 @@ dlr <- function(
   }#End dlr_relative
   
   # All combination of populations----------------------------------------------
-  pop.pairwise <- utils::combn(unique(pop.labels), 2)
-  pop.pairwise <- matrix(pop.pairwise,nrow = 2)
+  message("Calculating Dlr...")
+  pop.pairwise <- utils::combn(unique(get.pop$POP_ID), 2)
+  pop.pairwise <- matrix(pop.pairwise, nrow = 2)
   
   # Dlr for all pairwise populations--------------------------------------------
   dlr.all.pop <- as.numeric()
@@ -172,28 +137,35 @@ dlr <- function(
                                    pop2 = pop.pairwise[2,i])
   }
   dlr.all.pop <- as.numeric(dlr.all.pop)
+  pop.pairwise <- NULL
   
   # Table with Dlr--------------------------------------------------------------
-  names.pairwise <- utils::combn(unique(pop.labels), 2, paste, collapse = '-')
+  names.pairwise <- utils::combn(unique(get.pop$POP_ID), 2, paste, collapse = '-')
   
   dlr.table <- tibble::data_frame(PAIRWISE_POP = names.pairwise, DLR = dlr.all.pop) %>%
     dplyr::mutate(DLR = round(as.numeric(DLR), 2))
   
   
   # Dist and Matrix-------------------------------------------------------------
-  dlr.dist <- stats::dist(1:length(unique(pop.labels)))
+  dlr.dist <- stats::dist(1:length(unique(get.pop$POP_ID)))
   dlr.dist.matrix <- dlr.all.pop
   attributes(dlr.dist.matrix) <- attributes(dlr.dist)
   dlr.dist.matrix <- as.matrix(dlr.dist.matrix)
-  colnames(dlr.dist.matrix) <- rownames(dlr.dist.matrix) <- unique(pop.labels)
+  colnames(dlr.dist.matrix) <- rownames(dlr.dist.matrix) <- unique(get.pop$POP_ID)
   dlr.dist.matrix <- stats::as.dist(dlr.dist.matrix)
   
   dlr.matrix <- as.data.frame(as.matrix(dlr.dist.matrix)) %>%
     tibble::rownames_to_column(df = ., var = "POP")
+  
+  get.pop <- NULL
   cat("############################### RESULTS ###############################\n")
   # Results---------------------------------------------------------------------
-  dlr.results.list <- list(
-    dlr.table = dlr.table, dlr.dist = dlr.dist.matrix, dlr.matrix = dlr.matrix)
+  res <- list(
+    assignment = assignment,
+    dlr.table = dlr.table,
+    dlr.dist = dlr.dist.matrix,
+    dlr.matrix = dlr.matrix
+    )
   
   # Write file to working directory --------------------------------------------
   if (is.null(filename)) {
@@ -207,11 +179,12 @@ dlr <- function(
     filename.matrix <- stringi::stri_join(filename, "matrix.tsv", sep = ".") 
     readr::write_tsv(dlr.matrix, filename.matrix)
     message("Writing files to directory: yes")
-    message(paste0("Filenames : ", "\n", filename.table, "\n", filename.matrix))
+    message("Filenames : ", "\n", filename.table, "\n", filename.matrix)
   }
+  timing <- proc.time() - timing
+  message("Computation time: ", round(timing[[3]]), " sec")
   cat("############################## completed ##############################\n")
-  
-  return(dlr.results.list)  
+  return(res)
 }
 
 # Dlr absolute

@@ -35,7 +35,7 @@ if (getRversion() >= "2.15.1") {
       "MEAN_MARKERS_COMMON", "FREQ_AL", "FREQ_APL", "MHOM", "NAPL", "NC", "NIL",
       "NIPL", "NIPL_SQ", "NIPL_SQ_SUM", "NPL", "V1", "V2", "Fst", "GT_BIN",
       "Current", "DLR", "DLR_RELATIVE", "Inferred", "Lik_home", "Lik_max",
-      "Lik_ratio", "RATIO"
+      "Lik_ratio", "RATIO", "Individual", "Populations"
     )
   )
 }

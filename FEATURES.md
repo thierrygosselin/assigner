@@ -61,19 +61,16 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
+**v.0.4.5 2017-04-25**
+
+* `dlr`: simplified arguments and faster
+* `plot_dlr`: new function to easily plot dlr from 2 selected pop
 
 **v.0.4.4 2017-04-12**
 
 * bug fix in `assignment_ngs` introduced in last commit that was suppose to be
 fix. Problem introduced by `stackr::change_pop_names`.
 
-
-**v.0.4.3 2017-04-02**
-
-* it's now official, `assigner` as a logo
-* faster `fst_NEI87`
-* unbalanced design impact on estimates can be tested with `subsample` and
-`iteration.subsample` in `fst_NEI87` and `fst_WC84`
 
 For previous news:
 [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
@@ -100,8 +97,6 @@ vignette("top_markers_assignment")
 # To visualize individual's assignment results:
 vignette("visualize_individual_assignment_results")
 ```
-
-
 
 Vignettes are in development, check periodically for updates.
 

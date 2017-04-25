@@ -1,3 +1,9 @@
+# assigner v.0.4.5 2017-04-25
+
+* `dlr`: simplified arguments and faster
+* `plot_dlr`: new function to easily plot dlr from 2 selected pop
+
+
 # assigner v.0.4.4 2017-04-12
 
 * bug fix in `assignment_ngs` introduced in last commit that was suppose to be
