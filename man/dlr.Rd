@@ -26,12 +26,28 @@ the matrix and the table written in the working directory.}
 Default: \code{parallel.core = parallel::detectCores() - 1}.}
 }
 \value{
-A list with 3 objects of class: table ($dlr.table), dist (a lower
-diagonal matrix, $dlr.dist), data.frame (a mirrored matrix, $dlr.matrix).
+A list with 5 objects:
+\enumerate{
+\item the assignment results ($assignment),
+\item the dlr pairwise table ($dlr.table),
+\item the lower diagonal dlr distance matrix ($dlr.dist),
+\item a data.frame with the dlr distance mirrored ($dlr.matrix),
+\item the list of dlr plots ($dlr.plots)
+}
 }
 \description{
 The function computes Paetkau's et al. (1997) genotype likelihood
 ratio distance (Dlr).
+}
+\examples{
+\dontrun{
+dlr <- assigner::dlr(
+data = "assignment.gdv", strata = "my.strata.tsv", plots = TRUE)
+
+# to get the plots list:
+plot.list <- dlr$dlr.plots
+# access and isolate in different object a plot with $
+}
 }
 \references{
 Paetkau D, Slade R, Burden M, Estoup A (2004) 
