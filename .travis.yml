@@ -11,6 +11,3 @@ notifications:
   email:
     on_success: change
     on_failure: change
-
-use_bioc: true
-bioc_required: true
