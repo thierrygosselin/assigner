@@ -9,7 +9,8 @@
 #' The \code{STRATA} column is used here as the populations id of your sample. 
 
 #' @param plots (optional) Generate Dlr plots for all the pairwise populations
-#' in the dataset. Default: \code{plots = FALSE}.
+#' in the dataset. The plots are \code{ggplot2} objects that can be modified with
+#' the proper \code{ggplot2} syntax. Default: \code{plots = FALSE}.
 #' @param filename (optional) Name of the file prefix for
 #' the matrix and the table written in the working directory. 
 #' @return A list with 3 objects of class: table ($dlr.table), dist (a lower

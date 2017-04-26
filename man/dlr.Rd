@@ -16,7 +16,8 @@ likelihood ratio statistics) from GENODIVE.}
 The \code{STRATA} column is used here as the populations id of your sample.}
 
 \item{plots}{(optional) Generate Dlr plots for all the pairwise populations
-in the dataset. Default: \code{plots = FALSE}.}
+in the dataset. The plots are \code{ggplot2} objects that can be modified with
+the proper \code{ggplot2} syntax. Default: \code{plots = FALSE}.}
 
 \item{filename}{(optional) Name of the file prefix for
 the matrix and the table written in the working directory.}
