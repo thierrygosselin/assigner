@@ -5,7 +5,7 @@ assigner<img src="README_assigner_logo.png" align="right"/>
 
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-[![packageversion](https://img.shields.io/badge/Package%20version-0.4.5-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2017--04--25-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.4.5-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2017--04--26-brightgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -24,19 +24,10 @@ The **keywords** here to remember: 3 differents algorithms implemented with freq
 Installation
 ------------
 
-To try out the dev version of **assigner** 2 simple steps:
-
-**Step 1:** Install process dependencies:
+To try out the dev version of **assigner**:
 
 ``` r
 if (!require("devtools")) install.packages("devtools") # to install
-source("https://bioconductor.org/biocLite.R") # for bioconductor dependencies
-biocLite() # for bioconductor dependencies
-```
-
-**Step 2:** Install **assigner** and install [gsi\_sim](https://github.com/eriqande/gsi_sim) from source
-
-``` r
 devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
 assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 ```

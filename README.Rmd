@@ -56,17 +56,10 @@ ggplot2-based plotting, fast!
 ### [For details about assigner's features, documentation and vignettes](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md)
 
 ## Installation
-To try out the dev version of **assigner** 2 simple steps:
+To try out the dev version of **assigner**:
 
-**Step 1:** Install process dependencies:
 ```r
 if (!require("devtools")) install.packages("devtools") # to install
-source("https://bioconductor.org/biocLite.R") # for bioconductor dependencies
-biocLite() # for bioconductor dependencies
-```
-
-**Step 2:** Install **assigner** and install [gsi_sim](https://github.com/eriqande/gsi_sim) from source
-```r
 devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
 assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
 ```

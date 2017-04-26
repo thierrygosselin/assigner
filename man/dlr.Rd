@@ -4,7 +4,8 @@
 \alias{dlr}
 \title{Genotype likelihood ratio distance (Dlr)}
 \usage{
-dlr(data, strata, filename = NULL)
+dlr(data, strata, plots = FALSE, filename = NULL,
+  parallel.core = parallel::detectCores() - 1)
 }
 \arguments{
 \item{data}{The output assignment file (home likelihood or
@@ -14,8 +15,14 @@ likelihood ratio statistics) from GENODIVE.}
 \code{INDIVIDUALS} and \code{STRATA}.
 The \code{STRATA} column is used here as the populations id of your sample.}
 
+\item{plots}{(optional) Generate Dlr plots for all the pairwise populations
+in the dataset. Default: \code{plots = FALSE}.}
+
 \item{filename}{(optional) Name of the file prefix for
 the matrix and the table written in the working directory.}
+
+\item{parallel.core}{(optional) The number of core for parallel computation.
+Default: \code{parallel.core = parallel::detectCores() - 1}.}
 }
 \value{
 A list with 3 objects of class: table ($dlr.table), dist (a lower

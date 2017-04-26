@@ -63,8 +63,9 @@ Change log, version, new features and bug history now lives in the [NEWS.md file
 
 **v.0.4.5 2017-04-25**
 
-* `dlr`: simplified arguments and faster
-* `plot_dlr`: new function to easily plot dlr from 2 selected pop
+* `dlr`: simplified arguments, faster function and now creates the Dlr plots
+* dependencies to package `SNPRelate` are removed until the bugs with Fst
+calculation are resolved.
 
 **v.0.4.4 2017-04-12**
 
