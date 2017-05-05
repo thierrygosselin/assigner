@@ -5,7 +5,7 @@
 | **Analysis** | [gsi_sim](https://github.com/eriqande/gsi_sim) (Anderson et al., 2008; Anderson, 2010) or [adegenet](https://github.com/thibautjombart/adegenet) (Jombart, 2008; Jombart and Ahmed, 2011)<br><br>Conducted on: samples of **known origin (population)** or **unknown/mixture**|
 | **Input files** | [VCF](https://samtools.github.io/hts-specs/) (Danecek et al., 2011), [PLINK tped/tfam](http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#tr) (Purcell et al., 2007), [adegenet genind and genlight](https://github.com/thibautjombart/adegenet) (Jombart et al., 2010; Jombart and Ahmed, 2011), [strataG gtypes](https://github.com/EricArcher/strataG), [Genepop](http://genepop.curtin.edu.au) (Raymond and Rousset, 1995; Rousset, 2008), [STACKS haplotype file](http://catchenlab.life.illinois.edu/stacks/) (Catchen et al., 2011, 2013), dataframes of genotypes in wide or long/tidy format |
 |**Markers selections**|Random or ranked based on W&C's Fst (Weir and Cockerham, 1984) or Nei's Gst (Nei, 1987)|
-|**Cross-Validations**|**classic LOO** (Leave-One-Out) or **THL** (Training, Holdout, Leave-one-out) (see Anderson, 2010)|
+|**Cross-Validations**|Avoid high-grading bias, use **classic LOO** (Leave-One-Out) or **THL** (Training, Holdout, Leave-one-out) (see Anderson, 2010)|
 |**Resampling/Bootstrap/Subsampling**|markers and individuals|
 |**Imputations**|**Map-independent** imputations of missing genotypes.<br>Using **Random Forest** or the most frequent category.<br> Imputations can be conducted **overall samples** or **by populations**.|
 |**Filters**| Whitelist and blacklist arguments provide the way to select/filter(include/exclude):<br>genotypes, markers, individuals and populations.<br><br>See the dedicated filtering arguments on the next table below.|
