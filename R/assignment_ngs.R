@@ -486,7 +486,7 @@ assignment_ngs <- function(
   input$POP_ID <- stringi::stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
   # input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
-  input <- stackr::change_pop_names(data = input, pop.levels = pop.labels, pop.labels = pop.labels)
+  input <- stackr::change_pop_names(data = input, pop.levels = unique(pop.labels), pop.labels = unique(pop.labels))
   pop.levels <- levels(input$POP_ID)
   pop.labels <- pop.levels
   
