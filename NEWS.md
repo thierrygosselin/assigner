@@ -1,3 +1,7 @@
+# assigner v.0.4.6 2017-06-17
+
+* **assigner** works with `dplyr v.0.7.0`
+
 # assigner v.0.4.5 2017-04-25
 
 * `dlr`: simplified arguments, faster function and now creates the Dlr plots

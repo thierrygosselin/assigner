@@ -1,8 +1,8 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with GBS/RADseq Data using R
-Version: 0.4.5
-Date: 2017-04-27
+Version: 0.4.6
+Date: 2017-06-17
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
@@ -14,7 +14,7 @@ Description: Set of tools for assignment analysis, tailored for GBS/RADseq data.
 Depends:
     R (>= 3.2.3)
 Imports:
-    dplyr (>= 0.5.0),
+    dplyr (>= 0.7.0),
     purrr,
     readr,
     tibble,
@@ -22,7 +22,6 @@ Imports:
     ggplot2,
     adegenet,
     data.table,
-    lazyeval,
     multidplyr,
     parallel,
     stackr,
@@ -31,14 +30,14 @@ Imports:
     modelr,
     magrittr,
     stats,
-    pbmcapply
+    pbmcapply,
+    rlang
 Suggests:
     devtools,
     knitr,
     rmarkdown
 Remotes:
-    github::thierrygosselin/stackr,
-    github::hadley/multidplyr
+    github::thierrygosselin/stackr
 License: GPL (>=2)
 LazyLoad: yes
 VignetteBuilder: knitr

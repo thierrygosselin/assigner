@@ -41,13 +41,6 @@ rm(list=ls())
 
 1. Load the required libraries
 ```r
-if (!require("pacman")) install.packages("pacman")
-library("pacman")
-pacman::p_load(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, readr, purrr, data.table, ape, adegenet, parallel, lazyeval, randomForestSRC)
-if (!require("stackr")){
-  install_github("thierrygosselin/stackr", build_vignettes = TRUE)
-  library("stackr")
-}
 if (!require("assigner")) {
   install_github("thierrygosselin/assigner", build_vignettes = TRUE)
   # if assigner was re-installed, uncomment and run the next line to install gsi_sim:

@@ -9,7 +9,7 @@ plot_dlr(data, pop.pairwise, dlr = NULL, x.dlr = NULL, y.dlr = NULL,
   plot.width = NULL, plot.height = NULL, plot.dpi = NULL)
 }
 \arguments{
-\item{data}{The assigment object from 
+\item{data}{The assigment object from
 \code{\link[assigner]{dlr}} output.}
 
 \item{pop.pairwise}{List of pairwise populations to generate the Dlr plot.}
@@ -48,8 +48,8 @@ Genetic assignment methods for the direct, real-time estimation of migration
 rate: a simulation-based exploration of accuracy and power.
 Molecular Ecology, 13, 55-65.
 
-Meirmans PG, Van Tienderen PH (2004) genotype and genodive: 
-two programs for the analysis of genetic diversity of asexual organisms. 
+Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
+two programs for the analysis of genetic diversity of asexual organisms.
 Molecular Ecology Notes, 4, 792-794.
 }
 \author{

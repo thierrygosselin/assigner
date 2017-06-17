@@ -50,17 +50,17 @@ plot.list <- dlr$dlr.plots
 }
 }
 \references{
-Paetkau D, Slade R, Burden M, Estoup A (2004) 
-Genetic assignment methods for the direct, real-time estimation of 
-migration rate: a simulation-based exploration of accuracy and power. 
+Paetkau D, Slade R, Burden M, Estoup A (2004)
+Genetic assignment methods for the direct, real-time estimation of
+migration rate: a simulation-based exploration of accuracy and power.
 Molecular Ecology, 13, 55-65.
 
 Paetkau D, Waits LP, Clarkson PL, Craighead L, Strobeck C (1997)
  An empirical evaluation of genetic distance statistics using microsatellite
   data from bear (Ursidae) populations. Genetics, 147, 1943-1957.
 
-Meirmans PG, Van Tienderen PH (2004) genotype and genodive: 
-two programs for the analysis of genetic diversity of asexual organisms. 
+Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
+two programs for the analysis of genetic diversity of asexual organisms.
 Molecular Ecology Notes, 4, 792-794.
 }
 \author{
