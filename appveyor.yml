@@ -14,8 +14,12 @@ install:
 
 # Adapt as necessary starting from here
 
+environment:
+  global:
+    USE_RTOOLS: true
+
 build_script:
-  - travis-tool.sh install_deps install_github install_r R.oo R.utils
+  - travis-tool.sh install_bioc_deps install_deps install_github install_r R.oo R.utils
   - travis-tool.sh github_package thierrygosselin/stackr
 
 test_script:
