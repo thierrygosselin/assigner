@@ -22,7 +22,6 @@ Imports:
     ggplot2,
     adegenet,
     data.table,
-    multidplyr,
     parallel,
     stackr,
     stringi,
