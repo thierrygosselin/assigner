@@ -30,6 +30,7 @@ To try out the dev version of **assigner**:
 if (!require("devtools")) install.packages("devtools") # to install
 devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)  # to install WITH vignettes
 assigner::install_gsi_sim(fromSource = TRUE) # to install gsi_sim from source
+library(assigner)
 ```
 
 **Notes**
