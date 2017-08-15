@@ -102,9 +102,9 @@ mclapply_win <- function(
 .assigner_parallel <- switch(
   Sys.info()[['sysname']],
   Windows = {mclapply_win},
-  # Linux   = {parallel::mclapply},
-  # Darwin  = {parallel::mclapply},
-  Linux   = {pbmcapply::pbmclapply},
-  Darwin  = {pbmcapply::pbmclapply}
+  Linux   = {parallel::mclapply},
+  Darwin  = {parallel::mclapply}
+  # Linux   = {pbmcapply::pbmclapply},
+  # Darwin  = {pbmcapply::pbmclapply}
 )
 

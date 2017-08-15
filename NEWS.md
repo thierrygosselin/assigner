@@ -1,3 +1,8 @@
+
+# assigner v.0.4.7 2017-08-15
+
+* bug fix: removed the progress bar when using parallel computing. This is temporary, while waiting for a fix with `pbmcapply` package.
+
 # assigner v.0.4.6 2017-06-17
 
 * **assigner** works with `dplyr v.0.7.0`
