@@ -1,7 +1,7 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with GBS/RADseq Data using R
-Version: 0.4.7
+Version: 0.4.8
 Date: 2017-08-15
 Encoding: UTF-8
 Authors@R: c(
@@ -37,7 +37,8 @@ Suggests:
     rmarkdown
 biocViews:
 Remotes:
-    github::thierrygosselin/stackr
+    github::thierrygosselin/stackr,
+    github::kvnkuang/pbmcapply
 License: GPL (>=2)
 LazyLoad: yes
 VignetteBuilder: knitr

@@ -1,3 +1,8 @@
+# assigner v.0.4.8 2017-08-15
+
+* restored progress bar when using parallel computing by installing the new dev
+version of `pbmcapply` package.
+
 
 # assigner v.0.4.7 2017-08-15
 
