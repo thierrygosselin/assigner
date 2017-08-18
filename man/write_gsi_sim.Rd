@@ -10,7 +10,7 @@ write_gsi_sim(data, pop.levels = NULL, pop.labels = NULL, strata = NULL,
 \arguments{
 \item{data}{A tidy genomic data set in the working directory tidy formats.
 \emph{How to get a tidy data frame ?}
-Look for \pkg{stackr} \code{\link{tidy_genomic_data}}.}
+Look for \pkg{radiator} \code{\link{tidy_genomic_data}}.}
 
 \item{pop.levels}{(option, string) This refers to the levels in a factor. In this 
 case, the id of the pop.

@@ -10,7 +10,7 @@
 
 #' @param data A tidy genomic data set in the working directory tidy formats.
 #' \emph{How to get a tidy data frame ?}
-#' Look for \pkg{stackr} \code{\link{tidy_genomic_data}}.
+#' Look for \pkg{radiator} \code{\link{tidy_genomic_data}}.
 
 #' @param pop.levels (option, string) This refers to the levels in a factor. In this 
 #' case, the id of the pop.
@@ -46,7 +46,7 @@
 #' @export
 #' @rdname write_gsi_sim
 
-#' @importFrom stackr change_pop_names
+#' @importFrom radiator change_pop_names
 
 #' @importFrom data.table fread dcast.data.table as.data.table
 #' @importFrom tibble as_data_frame
@@ -90,7 +90,7 @@ write_gsi_sim <- function(
   
   # Import data
   if (is.vector(data)) {
-    input <- stackr::tidy_wide(data = data, import.metadata = FALSE)
+    input <- radiator::tidy_wide(data = data, import.metadata = FALSE)
   } else {
     input <- data
   }  
@@ -177,7 +177,7 @@ write_gsi_sim <- function(
   }
   
   # using pop.levels and pop.labels info if present
-  input <- stackr::change_pop_names(data = input,
+  input <- radiator::change_pop_names(data = input,
                                     pop.levels = pop.levels,
                                     pop.labels = pop.labels)
   

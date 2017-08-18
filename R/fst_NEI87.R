@@ -45,12 +45,12 @@
 
 #' @param data A file in the working directory or object in the global environment 
 #' in wide or long (tidy) formats. To import, the function uses internally
-#' \href{https://github.com/thierrygosselin/stackr}{stackr} 
-#' \code{\link[stackr]{tidy_wide}}. See details for more info.
+#' \href{https://github.com/thierrygosselin/radiator}{radiator} 
+#' \code{\link[radiator]{tidy_wide}}. See details for more info.
 #' 
 #' \emph{How to get a tidy data frame ?}
-#' \href{https://github.com/thierrygosselin/stackr}{stackr} 
-#' \code{\link[stackr]{tidy_genomic_data}} can transform 11 genomic data formats 
+#' \href{https://github.com/thierrygosselin/radiator}{radiator} 
+#' \code{\link[radiator]{tidy_genomic_data}} can transform 11 genomic data formats 
 #' in a tidy data frame (VCF, PLINK, genind, genlight, gtypes, genepop,
 #' stacks haplotype file, hierfstat, ...). 
 #' You can also use this function to filter your dataset using
@@ -150,7 +150,7 @@
 #' @details \strong{Input data:}
 #'  
 #' To discriminate the long from the wide format, 
-#' the function \pkg{stackr} \code{\link[stackr]{tidy_wide}} searches 
+#' the function \pkg{radiator} \code{\link[radiator]{tidy_wide}} searches 
 #' for \code{MARKERS or LOCUS} in column names (TRUE = long format).
 #' The data frame is tab delimitted.
 
@@ -162,7 +162,7 @@
 #' 
 #' \strong{Long/Tidy format:}
 #' The long format is considered to be a tidy data frame and can store metadata info. 
-#' (e.g. from a VCF see \pkg{stackr} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
+#' (e.g. from a VCF see \pkg{radiator} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
 #' are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
 #' \code{MARKERS or LOCUS} and \code{GENOTYPE or GT}. The rest are considered metata info.
 #' 
@@ -172,13 +172,13 @@
 #' The separator can be any of these: \code{"/", ":", "_", "-", "."}.
 #' 
 #' \emph{How to get a tidy data frame ?}
-#' \pkg{stackr} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+#' \pkg{radiator} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
 #' in a tidy data frame.
 
 #' @export
 #' @rdname fst_NEI87
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs summarise_if mutate_if count bind_rows bind_cols ntile desc n
-#' @importFrom stackr tidy_wide change_pop_names
+#' @importFrom radiator tidy_wide change_pop_names
 #' @importFrom tidyr spread gather unite separate complete nesting
 #' @importFrom stringi stri_replace_all_regex stri_sub stri_join
 #' @importFrom purrr map flatten flatten_int
@@ -245,7 +245,7 @@
 #' For Fisher's exact test and p-values per markers 
 #' see \code{mmod} \code{\link[mmod]{diff_test}}.
 #' 
-#' \code{\link[stackr]{tidy_genomic_data}} to transform numerous genomic data 
+#' \code{\link[radiator]{tidy_genomic_data}} to transform numerous genomic data 
 #' format in tidy data frames.
 
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
@@ -287,7 +287,7 @@ fst_NEI87 <- function(
   
   # Import data ---------------------------------------------------------------
   if (verbose) message("Importing data")
-  input <- stackr::tidy_wide(data = data)
+  input <- radiator::tidy_wide(data = data)
   
   # Change individuals names containing special character
   input$INDIVIDUALS <- stringi::stri_replace_all_fixed(
@@ -334,7 +334,7 @@ fst_NEI87 <- function(
   }
   
   # using pop.levels and pop.labels info if present
-  input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
+  input <- radiator::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
   
   # subsampling data------------------------------------------------------------
   # create the subsampling list
@@ -647,10 +647,10 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
   # x = data.genotyped # test
   
   # Markers in common between all populations-----------------------------------
-  x <- stackr::keep_common_markers(data = x)
+  x <- radiator::keep_common_markers(data = x)
   
   # Removing monomorphic markers------------------------------------------------
-  x <- stackr::discard_monomorphic_markers(data = x)$input
+  x <- radiator::discard_monomorphic_markers(data = x)$input
   
   # number of marker used for computation 
   n.markers <- dplyr::n_distinct(x$MARKERS)

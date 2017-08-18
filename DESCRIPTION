@@ -1,8 +1,8 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with GBS/RADseq Data using R
-Version: 0.4.8
-Date: 2017-08-15
+Version: 0.4.9
+Date: 2017-08-18
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
@@ -23,7 +23,7 @@ Imports:
     adegenet,
     data.table,
     parallel,
-    stackr,
+    radiator,
     stringi,
     utils,
     modelr,
@@ -37,7 +37,7 @@ Suggests:
     rmarkdown
 biocViews:
 Remotes:
-    github::thierrygosselin/stackr,
+    github::thierrygosselin/radiator,
     github::kvnkuang/pbmcapply
 License: GPL (>=2)
 LazyLoad: yes

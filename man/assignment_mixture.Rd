@@ -38,7 +38,7 @@ data frame of genotypes the strata is the INDIVIDUALS and POP_ID columns, with
 PLINK files, the \code{tfam} first 2 columns are used. 
 If a \code{strata} file is specified, the strata file will have
 precedence. The \code{STRATA} column can be any hierarchical grouping. 
-To create a strata file see \code{\link[stackr]{individuals2strata}}.
+To create a strata file see \code{\link[radiator]{individuals2strata}}.
 If you have already run 
 \href{http://catchenlab.life.illinois.edu/stacks/}{stacks} on your data, 
 the strata file is similar to a stacks `population map file`, make sure you 
@@ -299,7 +299,7 @@ an R package developed by Thibaul Jombart
   }
 
 \strong{Input files:}
-\strong{Input files:} see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}
+\strong{Input files:} see \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}
 for detailed information about supported file format.
 
 \strong{Imputations:}
@@ -311,7 +311,7 @@ the species used. e.g. with a low polymorphic taxa, and a data set
 containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
 will require 15 min. This is using multiple CPUs. To have your computer ready
 for parallel computing during imputations follow the steps in the
-\href{https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd}{vignette}
+\href{https://github.com/thierrygosselin/radiator/blob/master/vignettes/vignette_imputations_parallel.Rmd}{vignette}
 (~10 min)
 
 \strong{THL, Ranking and Fst:}

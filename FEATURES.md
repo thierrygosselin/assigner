@@ -26,7 +26,7 @@
 |**`monomorphic.out`**|Discard monomorphic markers|
 |**`snp.ld`**|Prune markers based on short-distance linkage disequilibrium|
 |**`marker.number`**|Test different groupings of marker numbers automatically (selected randomly or based on the ranking method described in the table above)|
-|**`More filters?`**|For more info on how to filter RADseq data, see [stackr](https://github.com/thierrygosselin/stackr)|
+|**`More filters?`**|For more info on how to filter RADseq data, see [radiator](https://github.com/thierrygosselin/radiator)|
 
 
 ## Independent modules
@@ -84,8 +84,8 @@ For previous news:
 ## Examples and Vignettes
 
 * **From a browser:**
-    * [installation problems](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_installation_problems.Rmd)
-    * [parallel computing during imputations](https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd) 
+    * [installation problems](https://github.com/thierrygosselin/radiator/blob/master/vignettes/vignette_installation_problems.Rmd)
+    * [parallel computing during imputations](https://github.com/thierrygosselin/radiator/blob/master/vignettes/vignette_imputations_parallel.Rmd) 
     * [Pairwise and overall Fst with confidence intervals + building phylogenetic tree](https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_confidence_intervals.Rmd)
     * Why use assigner to compute Fst of W&C (1984) in R ? [(Rmd Notebook)](https://www.dropbox.com/s/djxvudh2amx2ayw/fst_comparisons.Rmd?dl=0) and [(html vignette)](https://www.dropbox.com/s/fl4s30enh6nnxiy/fst_comparisons.nb.html?dl=0)
     * How to run several whitelists of markers in `assigner::assignment_ngs`[(html vignette)](https://www.dropbox.com/s/btt2oqx2qec601x/assignment.whitelists.Rmd?dl=0)

@@ -1,3 +1,8 @@
+# assigner v.0.4.9 2017-08-18
+
+* migration of `assigner` from using `stackr` -> `radiator`
+
+
 # assigner v.0.4.8 2017-08-15
 
 * restored progress bar when using parallel computing by installing the new dev

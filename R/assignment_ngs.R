@@ -30,8 +30,8 @@
 #'   \item \strong{Results:} Assignment results in raw or processed tables and figures
 #' }
 
-#' @inheritParams stackr::tidy_genomic_data 
-#' @inheritParams stackr::stackr_imputations_module
+#' @inheritParams radiator::tidy_genomic_data 
+#' @inheritParams radiator::radiator_imputations_module
 
 #' @param strata (optional/required) Required for VCF and haplotypes files, 
 #' optional for the other file formats supported. 
@@ -42,7 +42,7 @@
 #' PLINK files, the \code{tfam} first 2 columns are used. 
 #' If a \code{strata} file is specified, the strata file will have
 #' precedence. The \code{STRATA} column can be any hierarchical grouping. 
-#' To create a strata file see \code{\link[stackr]{individuals2strata}}.
+#' To create a strata file see \code{\link[radiator]{individuals2strata}}.
 #' If you have already run 
 #' \href{http://catchenlab.life.illinois.edu/stacks/}{stacks} on your data, 
 #' the strata file is similar to a stacks `population map file`, make sure you 
@@ -163,7 +163,7 @@
 
 
 #' @details 
-#' \strong{Input files:} see \pkg{stackr} \code{\link[stackr]{tidy_genomic_data}}
+#' \strong{Input files:} see \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}
 #' for detailed information about supported file format.
 #' 
 #' \strong{Imputations:}
@@ -175,7 +175,7 @@
 #' containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
 #' will require 15 min. This is using multiple CPUs. To have your computer ready
 #' for parallel computing during imputations follow the steps in the
-# \href{https://github.com/thierrygosselin/stackr/blob/master/vignettes/vignette_imputations_parallel.Rmd}{vignette}
+# \href{https://github.com/thierrygosselin/radiator/blob/master/vignettes/vignette_imputations_parallel.Rmd}{vignette}
 #' (~10 min)
 #' 
 #' \strong{THL, Ranking and Fst:}
@@ -208,7 +208,7 @@
 #' @importFrom parallel detectCores
 #' @importFrom stringi stri_join stri_sub stri_replace_all_fixed stri_detect_fixed stri_replace_na
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs sample_n sample_frac mutate_each summarise_each_
-#' @importFrom stackr tidy_genomic_data change_pop_names stackr_imputations_module write_genind snp_ld keep_common_markers stackr_maf_module detect_genomic_format
+#' @importFrom radiator tidy_genomic_data change_pop_names radiator_imputations_module write_genind snp_ld keep_common_markers radiator_maf_module detect_genomic_format
 #' @importFrom stats var median quantile
 #' @importFrom purrr map flatten keep discard
 #' @importFrom data.table fread dcast.data.table as.data.table
@@ -438,7 +438,7 @@ assignment_ngs <- function(
   }
   
   # File type detection --------------------------------------------------------
-  data.type <- stackr::detect_genomic_format(data)
+  data.type <- radiator::detect_genomic_format(data)
   
   if (data.type == "haplo.file") {
     message("With stacks haplotype file the maf.approach is automatically set to: haplotype")
@@ -460,7 +460,7 @@ assignment_ngs <- function(
   }
   
   # Import input ---------------------------------------------------------------
-  input <- stackr::tidy_genomic_data(
+  input <- radiator::tidy_genomic_data(
     data = data, 
     vcf.metadata = FALSE,
     blacklist.id = blacklist.id, 
@@ -485,8 +485,8 @@ assignment_ngs <- function(
   # need to remove space in POP_ID name to work in gsi_sim
   input$POP_ID <- stringi::stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
-  # input <- stackr::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
-  input <- stackr::change_pop_names(data = input, pop.levels = unique(pop.labels), pop.labels = unique(pop.labels))
+  # input <- radiator::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
+  input <- radiator::change_pop_names(data = input, pop.levels = unique(pop.labels), pop.labels = unique(pop.labels))
   pop.levels <- levels(input$POP_ID)
   pop.labels <- pop.levels
   
@@ -1439,18 +1439,18 @@ assignment_function <- function(
   
   # LD control... keep only 1 SNP per haplotypes/reads (optional) ------------
   if (!is.null(snp.ld)) {
-    input <- stackr::snp_ld(data = input, snp.ld = snp.ld)
+    input <- radiator::snp_ld(data = input, snp.ld = snp.ld)
   } # End of snp.ld control
   
   # Markers in common between all populations (optional) ---------------------
   if (common.markers) { # keep only markers present in all pop
-    input <- stackr::keep_common_markers(data = input)
+    input <- radiator::keep_common_markers(data = input)
   } # End common markers
   
   # Minor Allele Frequency filter --------------------------------------------
   if (!is.null(maf.thresholds)) {
     # maf.thresholds <- c(0.05, 0.05) # test
-    input <- stackr::stackr_maf_module(
+    input <- radiator::radiator_maf_module(
       data = input,
       maf.thresholds = maf.thresholds,
       maf.pop.num.threshold = maf.pop.num.threshold,
@@ -1465,7 +1465,7 @@ assignment_function <- function(
   # Adegenet no imputations --------------------------------------------------
   if (assignment.analysis == "adegenet") {
     message("Creating genind object")
-    genind.object <- stackr::write_genind(data = input)
+    genind.object <- radiator::write_genind(data = input)
   } else {
     genind.object <- NULL
   }
@@ -1473,7 +1473,7 @@ assignment_function <- function(
   # Imputations --------------------------------------------------------------
   if (!is.null(imputation.method)) {
     message("Preparing the data for imputations")
-    input.imp <- stackr::stackr_imputations_module(
+    input.imp <- radiator::radiator_imputations_module(
       data = input, 
       imputation.method = imputation.method, 
       hierarchical.levels = hierarchical.levels, 
@@ -1487,7 +1487,7 @@ assignment_function <- function(
     
     # adegenet
     if (assignment.analysis == "adegenet") {
-      genind.object.imp <- stackr::write_genind(data = input.imp)
+      genind.object.imp <- radiator::write_genind(data = input.imp)
     } else {
       genind.object.imp <- NULL
     } # end adegenet
