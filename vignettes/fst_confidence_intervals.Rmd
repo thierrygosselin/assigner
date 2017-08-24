@@ -55,28 +55,20 @@ rm(list=ls())
 
 1. Automatically install/load the required libraries
 ```r
-if (!require("pacman")) install.packages("pacman")
-library("pacman")
-pacman::p_load(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, readr, purrr, data.table, ape)
-if (!require("stackr")){
-  install_github("thierrygosselin/stackr", build_vignettes = TRUE)
-  library("stackr")
-}
 if (!require("assigner")) {
-  install_github("thierrygosselin/assigner", build_vignettes = TRUE)
-  #install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run
+  devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)
   library("assigner")
 }
 ```
 
 1. Get the data:
 ```r
-data.fst <- read_tsv(file = "https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz")
+data.fst <- readr::read_tsv(file = "https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz")
 ```
 
 1. `fst_WC84` first run:  overall and pairwise, but without boostrap (i.e. no confidence intervals)
 ```r
-fst <- fst_WC84(data = data.fst, 
+fst <- assigner::fst_WC84(data = data.fst, 
 pop.levels = c("pop1", "pop2", "pop3", "pop4", "pop5", "pop6", "pop7", "pop8", "pop9", "pop10", "pop11"),
 holdout.samples = NULL,
 pairwise = TRUE,
@@ -145,9 +137,10 @@ df <- fst$pairwise.fst
 
 10. The matrix with fst values:
 ```r
+# in you want a data frame
+fst.matrix <- data.frame(fst$pairwise.fst.full.matrix) %>% tibble::rownames_to_column("POP")
+# keep matrix
 fst.matrix <- fst$pairwise.fst.full.matrix
-# as a data frame
-fst.matrix <- data.frame(fst$pairwise.fst.full.matrix) %>% add_rownames("POP")
 ```
 1. If you try to get the `pairwise.fst.ci.matrix`:
 ```r
@@ -177,11 +170,11 @@ fst.ci$pairwise.fst.ci.matrix
 
 1. To have this in a handy table for publication, we will create a new object `pairwise.fst.ci.df`:
 ```r
-pairwise.fst.ci.df <- data.frame(fst.ci$pairwise.fst.ci.matrix) %>% add_rownames("POP")
+pairwise.fst.ci.df <- data.frame(fst.ci$pairwise.fst.ci.matrix) %>% tibble::rownames_to_column("POP")
 # if you have numeric pop_id identifier you might have to do this to get proper column names:
 colnames(pairwise.fst.ci.df) <- colnames(fst.ci$pairwise.fst.ci.matrix)
 # to save:
-write_tsv(x = pairwise.fst.ci.df, path = "pairwise.fst.ci.df.tsv")
+readr::write_tsv(x = pairwise.fst.ci.df, path = "pairwise.fst.ci.df.tsv")
 ```
 
 ## Phylogenetic tree
@@ -190,9 +183,9 @@ For the next steps, we need the full distance matrix created in step 10.
 1. For a Neighbor joining tree:
 ```r
 # build the tree:
-tree <- nj(X = fst.matrix)
+tree <- ape::nj(X = fst.matrix) # fst.matrix as a matrix
 # for annotating bootstraps values on the tree:
-bootstrap.value <- boot.phylo(phy = tree, x = fst.matrix, FUN = function (x) nj(x), block = 1, B = 10000, trees = FALSE, rooted = FALSE)
+bootstrap.value <- ape::boot.phylo(phy = tree, x = fst.matrix, FUN = function(x) ape::nj(x), block = 1, B = 10000, trees = FALSE, rooted = FALSE)
  # to get percentage values
 bootstrap.value <- round((bootstrap.value/10000)*100, 0)
 bootstrap.value
@@ -202,8 +195,8 @@ tree$node.label <- bootstrap.value
 
 1. For a UPGMA tree:
 ```r
-tree <- as.phylo(hclust(dist(fst.matrix), method = "average"))
-bootstrap.value <- boot.phylo(phy = tree, x = fst.matrix, FUN = function (xx) as.phylo(hclust(dist(xx), method = "average")) , block = 1, B = 10000, trees = FALSE, rooted = TRUE) 
+tree <- ape::as.phylo(stats::hclust(stats::dist(fst.matrix), method = "average"))
+bootstrap.value <- ape::boot.phylo(phy = tree, x = fst.matrix, FUN = function(xx) ape::as.phylo(stats::hclust(stats::dist(xx), method = "average")) , block = 1, B = 10000, trees = FALSE, rooted = TRUE) 
 bootstrap.value <- round((bootstrap.value/10000)*100, 0)
 bootstrap.value
 tree$node.label <- bootstrap.value
@@ -231,14 +224,14 @@ biocLite()
 1. Build a very basic tree figure:
 ```r
 library(ggtree)
-tree.figure <- ggplot(tree, aes(x, y), ladderize = TRUE) + 
-geom_tree() + 
+tree.figure <- ggplot2::ggplot(tree, ggplot2::aes(x, y), ladderize = TRUE) + 
+ggtree::geom_tree() + 
 # geom_tiplab(size = 3, hjust = -0.05, vjust = 0.5)+ # for just the tip label
-geom_text(aes(label = label), size = 3, hjust = -0.05, vjust = 0.5) + # for both tips and nodes
-theme_tree() + 
-xlim(0, 0.16) # to allocate more space for tip labels (trial/error)
+ggplot2::geom_text(ggplot2::aes(label = label), size = 3, hjust = -0.05, vjust = 0.5) + # for both tips and nodes
+ggtree::theme_tree() + 
+ggplot2::xlim(0, 0.16) # to allocate more space for tip labels (trial/error)
 tree.figure
-ggsave(filename = "assigner.fst.tree.example.pdf", width = 15, height = 15, dpi = 600, units = "cm", useDingbats = F)
+ggplot2::ggsave(filename = "assigner.fst.tree.example.pdf", width = 15, height = 15, dpi = 600, units = "cm", useDingbats = FALSE)
 ```
 
 1. Several vignettes are available to get to know [ggtree](http://guangchuangyu.github.io/ggtree/)

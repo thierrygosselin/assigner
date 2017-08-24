@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Thierry Gosselin" />
 
-<meta name="date" content="2016-06-10" />
+<meta name="date" content="2017-08-24" />
 
 <title>Pairwise and overall Fst with confidence intervals + building phylogenetic tree</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Pairwise and overall Fst with confidence intervals + building phylogenetic tree</h1>
 <h4 class="author"><em>Thierry Gosselin</em></h4>
-<h4 class="date"><em>2016-06-10</em></h4>
+<h4 class="date"><em>2017-08-24</em></h4>
 
 
 
@@ -99,22 +99,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><p>Clean your desk and remove the clutter in the global environment</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>())</code></pre></div></li>
 <li><p>Automatically install/load the required libraries</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">if (!<span class="kw">require</span>(<span class="st">&quot;pacman&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;pacman&quot;</span>)
-<span class="kw">library</span>(<span class="st">&quot;pacman&quot;</span>)
-pacman::<span class="kw">p_load</span>(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, readr, purrr, data.table, ape)
-if (!<span class="kw">require</span>(<span class="st">&quot;stackr&quot;</span>)){
-  <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/stackr&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
-  <span class="kw">library</span>(<span class="st">&quot;stackr&quot;</span>)
-}
-if (!<span class="kw">require</span>(<span class="st">&quot;assigner&quot;</span>)) {
-  <span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/assigner&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
-  <span class="co">#install_gsi_sim(fromSource = TRUE) # if assigner was re-installed, uncomment and run</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">if (!<span class="kw">require</span>(<span class="st">&quot;assigner&quot;</span>)) {
+  devtools::<span class="kw">install_github</span>(<span class="st">&quot;thierrygosselin/assigner&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
   <span class="kw">library</span>(<span class="st">&quot;assigner&quot;</span>)
 }</code></pre></div></li>
 <li><p>Get the data:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data.fst &lt;-<span class="st"> </span><span class="kw">read_tsv</span>(<span class="dt">file =</span> <span class="st">&quot;https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz&quot;</span>)</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data.fst &lt;-<span class="st"> </span>readr::<span class="kw">read_tsv</span>(<span class="dt">file =</span> <span class="st">&quot;https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz&quot;</span>)</code></pre></div></li>
 <li><p><code>fst_WC84</code> first run: overall and pairwise, but without boostrap (i.e. no confidence intervals)</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst &lt;-<span class="st"> </span><span class="kw">fst_WC84</span>(<span class="dt">data =</span> data.fst, 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst &lt;-<span class="st"> </span>assigner::<span class="kw">fst_WC84</span>(<span class="dt">data =</span> data.fst, 
 <span class="dt">pop.levels =</span> <span class="kw">c</span>(<span class="st">&quot;pop1&quot;</span>, <span class="st">&quot;pop2&quot;</span>, <span class="st">&quot;pop3&quot;</span>, <span class="st">&quot;pop4&quot;</span>, <span class="st">&quot;pop5&quot;</span>, <span class="st">&quot;pop6&quot;</span>, <span class="st">&quot;pop7&quot;</span>, <span class="st">&quot;pop8&quot;</span>, <span class="st">&quot;pop9&quot;</span>, <span class="st">&quot;pop10&quot;</span>, <span class="st">&quot;pop11&quot;</span>),
 <span class="dt">holdout.samples =</span> <span class="ot">NULL</span>,
 <span class="dt">pairwise =</span> <span class="ot">TRUE</span>,
@@ -226,9 +218,10 @@ Computing paiwise fst
 </table>
 <ol start="10" style="list-style-type: decimal">
 <li><p>The matrix with fst values:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst.matrix &lt;-<span class="st"> </span>fst$pairwise.fst.full.matrix
-<span class="co"># as a data frame</span>
-fst.matrix &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst$pairwise.fst.full.matrix) %&gt;%<span class="st"> </span><span class="kw">add_rownames</span>(<span class="st">&quot;POP&quot;</span>)</code></pre></div></li>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># in you want a data frame</span>
+fst.matrix &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst$pairwise.fst.full.matrix) %&gt;%<span class="st"> </span>tibble::<span class="kw">rownames_to_column</span>(<span class="st">&quot;POP&quot;</span>)
+<span class="co"># keep matrix</span>
+fst.matrix &lt;-<span class="st"> </span>fst$pairwise.fst.full.matrix</code></pre></div></li>
 <li><p>If you try to get the <code>pairwise.fst.ci.matrix</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst$pairwise.fst.ci.matrix <span class="co"># you will get this:</span>
 [<span class="dv">1</span>] <span class="st">&quot;pairwise fst not selected&quot;</span></code></pre></div></li>
@@ -247,11 +240,11 @@ fst.matrix &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst$
 <li><p>Try again to get the matrix with fst and ci:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst.ci$pairwise.fst.ci.matrix</code></pre></div></li>
 <li><p>To have this in a handy table for publication, we will create a new object <code>pairwise.fst.ci.df</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pairwise.fst.ci.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst.ci$pairwise.fst.ci.matrix) %&gt;%<span class="st"> </span><span class="kw">add_rownames</span>(<span class="st">&quot;POP&quot;</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pairwise.fst.ci.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst.ci$pairwise.fst.ci.matrix) %&gt;%<span class="st"> </span>tibble::<span class="kw">rownames_to_column</span>(<span class="st">&quot;POP&quot;</span>)
 <span class="co"># if you have numeric pop_id identifier you might have to do this to get proper column names:</span>
 <span class="kw">colnames</span>(pairwise.fst.ci.df) &lt;-<span class="st"> </span><span class="kw">colnames</span>(fst.ci$pairwise.fst.ci.matrix)
 <span class="co"># to save:</span>
-<span class="kw">write_tsv</span>(<span class="dt">x =</span> pairwise.fst.ci.df, <span class="dt">path =</span> <span class="st">&quot;pairwise.fst.ci.df.tsv&quot;</span>)</code></pre></div></li>
+readr::<span class="kw">write_tsv</span>(<span class="dt">x =</span> pairwise.fst.ci.df, <span class="dt">path =</span> <span class="st">&quot;pairwise.fst.ci.df.tsv&quot;</span>)</code></pre></div></li>
 </ol>
 </div>
 <div id="phylogenetic-tree" class="section level2">
@@ -260,17 +253,17 @@ fst.matrix &lt;-<span class="st"> </span><span class="kw">data.frame</span>(fst$
 <ol style="list-style-type: decimal">
 <li><p>For a Neighbor joining tree:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># build the tree:</span>
-tree &lt;-<span class="st"> </span><span class="kw">nj</span>(<span class="dt">X =</span> fst.matrix)
+tree &lt;-<span class="st"> </span>ape::<span class="kw">nj</span>(<span class="dt">X =</span> fst.matrix) <span class="co"># fst.matrix as a matrix</span>
 <span class="co"># for annotating bootstraps values on the tree:</span>
-bootstrap.value &lt;-<span class="st"> </span><span class="kw">boot.phylo</span>(<span class="dt">phy =</span> tree, <span class="dt">x =</span> fst.matrix, <span class="dt">FUN =</span> function (x) <span class="kw">nj</span>(x), <span class="dt">block =</span> <span class="dv">1</span>, <span class="dt">B =</span> <span class="dv">10000</span>, <span class="dt">trees =</span> <span class="ot">FALSE</span>, <span class="dt">rooted =</span> <span class="ot">FALSE</span>)
+bootstrap.value &lt;-<span class="st"> </span>ape::<span class="kw">boot.phylo</span>(<span class="dt">phy =</span> tree, <span class="dt">x =</span> fst.matrix, <span class="dt">FUN =</span> function(x) ape::<span class="kw">nj</span>(x), <span class="dt">block =</span> <span class="dv">1</span>, <span class="dt">B =</span> <span class="dv">10000</span>, <span class="dt">trees =</span> <span class="ot">FALSE</span>, <span class="dt">rooted =</span> <span class="ot">FALSE</span>)
  <span class="co"># to get percentage values</span>
 bootstrap.value &lt;-<span class="st"> </span><span class="kw">round</span>((bootstrap.value/<span class="dv">10000</span>)*<span class="dv">100</span>, <span class="dv">0</span>)
 bootstrap.value
 <span class="co"># to include in the tree</span>
 tree$node.label &lt;-<span class="st"> </span>bootstrap.value </code></pre></div></li>
 <li><p>For a UPGMA tree:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tree &lt;-<span class="st"> </span><span class="kw">as.phylo</span>(<span class="kw">hclust</span>(<span class="kw">dist</span>(fst.matrix), <span class="dt">method =</span> <span class="st">&quot;average&quot;</span>))
-bootstrap.value &lt;-<span class="st"> </span><span class="kw">boot.phylo</span>(<span class="dt">phy =</span> tree, <span class="dt">x =</span> fst.matrix, <span class="dt">FUN =</span> function (xx) <span class="kw">as.phylo</span>(<span class="kw">hclust</span>(<span class="kw">dist</span>(xx), <span class="dt">method =</span> <span class="st">&quot;average&quot;</span>)) , <span class="dt">block =</span> <span class="dv">1</span>, <span class="dt">B =</span> <span class="dv">10000</span>, <span class="dt">trees =</span> <span class="ot">FALSE</span>, <span class="dt">rooted =</span> <span class="ot">TRUE</span>) 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tree &lt;-<span class="st"> </span>ape::<span class="kw">as.phylo</span>(stats::<span class="kw">hclust</span>(stats::<span class="kw">dist</span>(fst.matrix), <span class="dt">method =</span> <span class="st">&quot;average&quot;</span>))
+bootstrap.value &lt;-<span class="st"> </span>ape::<span class="kw">boot.phylo</span>(<span class="dt">phy =</span> tree, <span class="dt">x =</span> fst.matrix, <span class="dt">FUN =</span> function(xx) ape::<span class="kw">as.phylo</span>(stats::<span class="kw">hclust</span>(stats::<span class="kw">dist</span>(xx), <span class="dt">method =</span> <span class="st">&quot;average&quot;</span>)) , <span class="dt">block =</span> <span class="dv">1</span>, <span class="dt">B =</span> <span class="dv">10000</span>, <span class="dt">trees =</span> <span class="ot">FALSE</span>, <span class="dt">rooted =</span> <span class="ot">TRUE</span>) 
 bootstrap.value &lt;-<span class="st"> </span><span class="kw">round</span>((bootstrap.value/<span class="dv">10000</span>)*<span class="dv">100</span>, <span class="dv">0</span>)
 bootstrap.value
 tree$node.label &lt;-<span class="st"> </span>bootstrap.value</code></pre></div></li>
@@ -288,14 +281,14 @@ if (!<span class="kw">require</span>(<span class="st">&quot;ggtree&quot;</span>)
 <span class="kw">biocLite</span>()</code></pre></div></li>
 <li><p>Build a very basic tree figure:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggtree)
-tree.figure &lt;-<span class="st"> </span><span class="kw">ggplot</span>(tree, <span class="kw">aes</span>(x, y), <span class="dt">ladderize =</span> <span class="ot">TRUE</span>) +<span class="st"> </span>
-<span class="kw">geom_tree</span>() +<span class="st"> </span>
+tree.figure &lt;-<span class="st"> </span>ggplot2::<span class="kw">ggplot</span>(tree, ggplot2::<span class="kw">aes</span>(x, y), <span class="dt">ladderize =</span> <span class="ot">TRUE</span>) +<span class="st"> </span>
+ggtree::<span class="kw">geom_tree</span>() +<span class="st"> </span>
 <span class="co"># geom_tiplab(size = 3, hjust = -0.05, vjust = 0.5)+ # for just the tip label</span>
-<span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">label =</span> label), <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">hjust =</span> -<span class="fl">0.05</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>) +<span class="st"> </span><span class="co"># for both tips and nodes</span>
-<span class="kw">theme_tree</span>() +<span class="st"> </span>
-<span class="kw">xlim</span>(<span class="dv">0</span>, <span class="fl">0.16</span>) <span class="co"># to allocate more space for tip labels (trial/error)</span>
+ggplot2::<span class="kw">geom_text</span>(ggplot2::<span class="kw">aes</span>(<span class="dt">label =</span> label), <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">hjust =</span> -<span class="fl">0.05</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>) +<span class="st"> </span><span class="co"># for both tips and nodes</span>
+ggtree::<span class="kw">theme_tree</span>() +<span class="st"> </span>
+ggplot2::<span class="kw">xlim</span>(<span class="dv">0</span>, <span class="fl">0.16</span>) <span class="co"># to allocate more space for tip labels (trial/error)</span>
 tree.figure
-<span class="kw">ggsave</span>(<span class="dt">filename =</span> <span class="st">&quot;assigner.fst.tree.example.pdf&quot;</span>, <span class="dt">width =</span> <span class="dv">15</span>, <span class="dt">height =</span> <span class="dv">15</span>, <span class="dt">dpi =</span> <span class="dv">600</span>, <span class="dt">units =</span> <span class="st">&quot;cm&quot;</span>, <span class="dt">useDingbats =</span> F)</code></pre></div></li>
+ggplot2::<span class="kw">ggsave</span>(<span class="dt">filename =</span> <span class="st">&quot;assigner.fst.tree.example.pdf&quot;</span>, <span class="dt">width =</span> <span class="dv">15</span>, <span class="dt">height =</span> <span class="dv">15</span>, <span class="dt">dpi =</span> <span class="dv">600</span>, <span class="dt">units =</span> <span class="st">&quot;cm&quot;</span>, <span class="dt">useDingbats =</span> <span class="ot">FALSE</span>)</code></pre></div></li>
 <li><p>Several vignettes are available to get to know <a href="http://guangchuangyu.github.io/ggtree/">ggtree</a></p></li>
 </ol>
 </div>
@@ -316,7 +309,7 @@ tree.figure
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
