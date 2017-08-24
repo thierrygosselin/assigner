@@ -55,7 +55,7 @@
 #' You can also use this function to filter your dataset using
 #' whitelist of markers, blacklist of individuals and genotypes.
 
-#' @param snprelate (logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
+#' @param snprelate (optional, logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
 #' to compute the Fst. Testing as shown an upward bias with \code{SNPRelate::snpgdsFst} function.
 #' The values are 0.99 correlated with my built in codes and with \code{Hierfstat}.
 #' But it's the fastest computation I've seen so far!
@@ -298,8 +298,9 @@ fst_WC84 <- function(
     cat("######################### assigner::fst_WC84 ##########################\n")
     cat("#######################################################################\n")
   }
-  timing <- proc.time()
-  
+  opt.change <- getOption("width")
+  options(width = 70)
+  timing <- proc.time()  
   # results stored in this list:
   res <- list()
   
@@ -445,8 +446,8 @@ fst_WC84 <- function(
     res$fis.overall <- subsample.fst$fis.overall
     res$fst.plot <- subsample.fst$fst.plot
     res$pairwise.fst <- subsample.fst$pairwise.fst
-    res$pairwise.fst.upper.matrix <- subsample.fst$upper.mat.fst
-    res$pairwise.fst.full.matrix <- subsample.fst$full.mat.fst
+    res$pairwise.fst.upper.matrix <- subsample.fst$pairwise.fst.upper.mat
+    res$pairwise.fst.full.matrix <- subsample.fst$pairwise.fst.full.mat
     res$pairwise.fst.ci.matrix <- subsample.fst$pairwise.fst.ci.matrix
   } else {
     # test <- subsample.fst[1]
@@ -961,18 +962,18 @@ fst_subsample <- function(
   #     dplyr::distinct(MARKERS, POP_ID)
   #   
   # } else {
-    # genotyped data and holdout sample
-    data.genotyped <- dplyr::select(.data = input, MARKERS, POP_ID, INDIVIDUALS, GT) %>% 
-      dplyr::filter(GT != "000000")
-    
-    # if holdout set, removes individuals
-    if (!is.null(holdout.samples)) {
-      message("Removing holdout individuals\nFst computation...")
-      data.genotyped <- dplyr::filter(.data = data.genotyped, !INDIVIDUALS %in% holdout.samples)
-    }
-    
-    unique.markers.pop <- dplyr::distinct(.data = data.genotyped, MARKERS, POP_ID)
-    
+  # genotyped data and holdout sample
+  data.genotyped <- dplyr::select(.data = input, MARKERS, POP_ID, INDIVIDUALS, GT) %>% 
+    dplyr::filter(GT != "000000")
+  
+  # if holdout set, removes individuals
+  if (!is.null(holdout.samples)) {
+    message("Removing holdout individuals\nFst computation...")
+    data.genotyped <- dplyr::filter(.data = data.genotyped, !INDIVIDUALS %in% holdout.samples)
+  }
+  
+  unique.markers.pop <- dplyr::distinct(.data = data.genotyped, MARKERS, POP_ID)
+  
   # }
   
   
@@ -1040,18 +1041,19 @@ fst_subsample <- function(
   #   if (!pairwise) {
   #     SNPRelate::snpgdsClose(gds.file.connection)
   #   }
-    
-    
+  
+  
   # } else {
-    if (verbose) message("Global fst calculation")
-    global.res <- compute_fst(x = data.genotyped, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci, digits = digits)
-    res$sigma.loc <- global.res$sigma.loc
-    res$fst.markers <- global.res$fst.markers
-    res$fst.ranked <- global.res$fst.ranked
-    res$fst.overall <- global.res$fst.overall
-    res$fis.markers <- global.res$fis.markers
-    res$fis.overall <- global.res$fis.overall
-    res$fst.plot <- global.res$fst.plot
+  if (verbose) message("Global fst calculation")
+  global.res <- compute_fst(x = data.genotyped, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci, digits = digits)
+  res$sigma.loc <- global.res$sigma.loc
+  res$fst.markers <- global.res$fst.markers
+  res$fst.ranked <- global.res$fst.ranked
+  res$fst.overall <- global.res$fst.overall
+  res$fis.markers <- global.res$fis.markers
+  res$fis.overall <- global.res$fis.overall
+  res$fst.plot <- global.res$fst.plot
+  global.res <- NULL # unsused object
   # }
   
   # Compute pairwise Fst -------------------------------------------------------
@@ -1084,29 +1086,29 @@ fst_subsample <- function(
     #   
     #   # close SNPRelate connection
     #   SNPRelate::snpgdsClose(gds.file.connection)
-      
+    
     # } else {
-      # Fst for all pairwise populations
-      list.pair <- 1:length(pop.pairwise)
-      # list.pair <- 5 #  test
-      fst.all.pop <- .assigner_parallel(
-        # fst.all.pop <- mclapply(
-        X = list.pair, 
-        FUN = pairwise_fst, 
-        mc.preschedule = FALSE, 
-        mc.silent = FALSE, 
-        mc.cores = parallel.core,
-        pop.pairwise = pop.pairwise,
-        unique.markers.pop = unique.markers.pop,
-        data.genotyped = data.genotyped,
-        ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci
+    # Fst for all pairwise populations
+    list.pair <- 1:length(pop.pairwise)
+    # list.pair <- 5 #  test
+    fst.all.pop <- .assigner_parallel(
+      # fst.all.pop <- mclapply(
+      X = list.pair, 
+      FUN = pairwise_fst, 
+      mc.preschedule = FALSE, 
+      mc.silent = FALSE, 
+      mc.cores = parallel.core,
+      pop.pairwise = pop.pairwise,
+      unique.markers.pop = unique.markers.pop,
+      data.genotyped = data.genotyped,
+      ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci
+    )
+    # Table with Fst
+    pairwise.fst <- dplyr::bind_rows(fst.all.pop) %>% 
+      dplyr::mutate(
+        POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
+        POP2 = factor(POP2, levels = pop.list, ordered = TRUE)
       )
-      # Table with Fst
-      pairwise.fst <- dplyr::bind_rows(fst.all.pop) %>% 
-        dplyr::mutate(
-          POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
-          POP2 = factor(POP2, levels = pop.list, ordered = TRUE)
-        )
     # }#End pairwise Fst
     
     # Matrix--------------------------------------------------------------------

@@ -25,7 +25,7 @@ stacks haplotype file, hierfstat, ...).
 You can also use this function to filter your dataset using
 whitelist of markers, blacklist of individuals and genotypes.}
 
-\item{snprelate}{(logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
+\item{snprelate}{(optional, logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
 to compute the Fst. Testing as shown an upward bias with \code{SNPRelate::snpgdsFst} function.
 The values are 0.99 correlated with my built in codes and with \code{Hierfstat}.
 But it's the fastest computation I've seen so far!
