@@ -86,8 +86,8 @@ For previous news:
 * **From a browser:**
     * [installation problems](https://github.com/thierrygosselin/radiator/blob/master/vignettes/vignette_installation_problems.Rmd)
     * [parallel computing during imputations](https://github.com/thierrygosselin/radiator/blob/master/vignettes/vignette_imputations_parallel.Rmd) 
-    * [Pairwise and overall Fst with confidence intervals + building phylogenetic tree](https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_confidence_intervals.Rmd)
-    * Why use assigner to compute Fst of W&C (1984) in R ? [(Rmd Notebook)](https://www.dropbox.com/s/d18kx1q2za8epl6/fst_confidence_intervals.Rmd?dl=0) and [(html vignette)](https://www.dropbox.com/s/ehy6g755rpl2go6/fst_confidence_intervals.html?dl=0)
+    * Pairwise and overall Fst with confidence intervals + building phylogenetic tree [(Rmd Notebook)](https://www.dropbox.com/s/ohi9yc3uidnu7p6/fst_confidence_intervals.Rmd?dl=0) and [(html vignette)](https://www.dropbox.com/s/auw74pmys7nonbp/fst_confidence_intervals.html?dl=0)
+    * Why use assigner to compute Fst of W&C (1984) in R ? [(Rmd Notebook)](https://www.dropbox.com/s/djxvudh2amx2ayw/fst_comparisons.Rmd?dl=0) and [(html vignette)](https://www.dropbox.com/s/fl4s30enh6nnxiy/fst_comparisons.nb.html?dl=0)
     * How to run several whitelists of markers in `assigner::assignment_ngs`[(html vignette)](https://www.dropbox.com/s/btt2oqx2qec601x/assignment.whitelists.Rmd?dl=0)
     * **github** : [link](https://github.com/thierrygosselin/assigner/tree/master/vignettes)
 
