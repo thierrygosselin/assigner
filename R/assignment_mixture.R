@@ -1246,7 +1246,7 @@ assignment_function <- function(
   
   # Markers in common between all populations (optional) ---------------------
   if (common.markers) { # keep only markers present in all pop
-    input <- radiator::keep_common_markers(data = input)
+    input <- radiator::keep_common_markers(data = input)$input
   } # End common markers
   
   # Minor Allele Frequency filter --------------------------------------------

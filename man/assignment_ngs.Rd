@@ -19,12 +19,12 @@ assignment_ngs(data, assignment.analysis, sampling.method,
   random.seed = NULL, parallel.core = parallel::detectCores() - 1)
 }
 \arguments{
-\item{data}{11 options: VCF (SNPs or Haplotypes,
+\item{data}{12 options: VCF (SNPs or Haplotypes,
 to make the vcf population ready, see details below),
 plink, stacks haplotype file, genind (library(adegenet)),
-genlight (library(adegenet)), gtypes (library(strataG)), genepop,
+genlight (library(adegenet)), gtypes (library(strataG)), genepop, DArT,
 and a data frame in long/tidy or wide format.
-\emph{See details} of \code{\link{tidy_genomic_data}}.}
+\emph{See details} of \code{\link[radiator]{tidy_genomic_data}}.}
 
 \item{assignment.analysis}{(character) Assignment analysis conducted with 
 \code{assignment.analysis = "gsi_sim"} or 
@@ -148,7 +148,7 @@ Default \code{whitelist.markers = NULL} for no whitelist of markers.}
 markers present in the dataset be filtered out ?
 Default: \code{monomorphic.out = TRUE}.}
 
-\item{snp.ld}{(optional) \strong{For VCF file only}.
+\item{snp.ld}{(optional) \strong{For data with locus and SNP info, like VCF and DArT file}.
 SNP short distance linkage disequilibrium pruning. With anonymous markers from
 RADseq/GBS de novo discovery, you can minimize linkage disequilibrium (LD) by
 choosing among these 3 options: \code{"random"} selection, \code{"first"} or
@@ -249,9 +249,8 @@ Random Forests algorithm.
 
 (4) \code{imputation.method = "mca"} Multiple Correspondence Analysis.
 
-\code{imputation.method = NULL} will return the original dataset, without
-imputation.
-Default: \code{imputation.method = "rf"}.}
+\code{imputation.method = NULL} the function will stop.
+Default: \code{imputation.method = NULL}.}
 
 \item{hierarchical.levels}{(character, optional) \code{c("global", "populations")}.
 Should the imputations be computed globally or by populations. Note that
@@ -388,15 +387,15 @@ assignment <- assignment.treefrog$assignment.
 
 To plot the assignment using ggplot2 and facet 
 (with subsample by current pop):
-assignment.treefrog$plot.assignment + facet_grid(SUBSAMPLE~CURRENT).
+assignment.treefrog$plot.assignment + ggplot2::facet_grid(SUBSAMPLE~CURRENT).
 
 To view the full range of y values = Assignment success(\%): 
 assignment.treefrog$plot.assignment + 
-facet_grid(SUBSAMPLE~CURRENT) + 
-scale_y_continuous(limits = c(0,100)) 
+ggplot2::facet_grid(SUBSAMPLE~CURRENT) + 
+ggplot2::scale_y_continuous(limits = c(0,100)) 
 To save the plot:
-ggsave("assignment.treefrog.THL.subsample.pdf", height = 35, 
-width = 60,dpi = 600, units = "cm", useDingbats = F)
+ggplot2::ggsave("assignment.pdf", height = 35, width = 60,dpi = 600,
+units = "cm", useDingbats = FALSE)
 
 # If you want to remove underscore in population names that contained white space:
 facet_names <- c(
@@ -406,8 +405,8 @@ facet_names <- c(
 
 # use the labeller in the facet_grid or facet_wrap call:
 assignment.treefrog$plot.assignment + 
-facet_grid(~CURRENT, labeller = as_labeller(facet_names)) + 
-scale_y_continuous(limits = c(0,100)) 
+ggplot2::facet_grid(~CURRENT, ggplot2::labeller = ggplot2::as_labeller(facet_names)) + 
+ggplot2::scale_y_continuous(limits = c(0,100)) 
 figure # this one should be ok with custom naming in the facets.
 }
 }

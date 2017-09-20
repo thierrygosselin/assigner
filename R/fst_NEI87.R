@@ -647,7 +647,7 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
   # x = data.genotyped # test
   
   # Markers in common between all populations-----------------------------------
-  x <- radiator::keep_common_markers(data = x)
+  x <- radiator::keep_common_markers(data = x)$input
   
   # Removing monomorphic markers------------------------------------------------
   x <- radiator::discard_monomorphic_markers(data = x)$input

@@ -250,15 +250,15 @@
 #' 
 #' To plot the assignment using ggplot2 and facet 
 #' (with subsample by current pop):
-#' assignment.treefrog$plot.assignment + facet_grid(SUBSAMPLE~CURRENT).
+#' assignment.treefrog$plot.assignment + ggplot2::facet_grid(SUBSAMPLE~CURRENT).
 #' 
 #' To view the full range of y values = Assignment success(%): 
 #' assignment.treefrog$plot.assignment + 
-#' facet_grid(SUBSAMPLE~CURRENT) + 
-#' scale_y_continuous(limits = c(0,100)) 
+#' ggplot2::facet_grid(SUBSAMPLE~CURRENT) + 
+#' ggplot2::scale_y_continuous(limits = c(0,100)) 
 #' To save the plot:
-#' ggsave("assignment.treefrog.THL.subsample.pdf", height = 35, 
-#' width = 60,dpi = 600, units = "cm", useDingbats = F)
+#' ggplot2::ggsave("assignment.pdf", height = 35, width = 60,dpi = 600,
+#' units = "cm", useDingbats = FALSE)
 #' 
 #' # If you want to remove underscore in population names that contained white space:
 #' facet_names <- c(
@@ -268,8 +268,8 @@
 #' 
 #' # use the labeller in the facet_grid or facet_wrap call:
 #' assignment.treefrog$plot.assignment + 
-#' facet_grid(~CURRENT, labeller = as_labeller(facet_names)) + 
-#' scale_y_continuous(limits = c(0,100)) 
+#' ggplot2::facet_grid(~CURRENT, ggplot2::labeller = ggplot2::as_labeller(facet_names)) + 
+#' ggplot2::scale_y_continuous(limits = c(0,100)) 
 #' figure # this one should be ok with custom naming in the facets.
 #' }
 
@@ -521,7 +521,8 @@ assignment_ngs <- function(
   
   # assignment analysis --------------------------------------------------------
   res <- purrr::map(
-    .x = subsample.list, .f = assignment_function,
+    .x = subsample.list,
+    .f = assignment_function,
     input = input,
     subsample = subsample,
     assignment.analysis = assignment.analysis,
@@ -1444,7 +1445,7 @@ assignment_function <- function(
   
   # Markers in common between all populations (optional) ---------------------
   if (common.markers) { # keep only markers present in all pop
-    input <- radiator::keep_common_markers(data = input)
+    input <- radiator::keep_common_markers(data = input)$input
   } # End common markers
   
   # Minor Allele Frequency filter --------------------------------------------
@@ -1461,7 +1462,7 @@ assignment_function <- function(
   
   # Keep a new strata df -------------------------------------------------------
   strata.df <- dplyr::distinct(.data = input, INDIVIDUALS, POP_ID)
-  
+
   # Adegenet no imputations --------------------------------------------------
   if (assignment.analysis == "adegenet") {
     message("Creating genind object")

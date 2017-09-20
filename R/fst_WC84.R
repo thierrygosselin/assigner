@@ -526,6 +526,7 @@ fst_WC84 <- function(
     # pairwise.fst
     res$pairwise.fst.subsample <- subsample.fst.transposed[["pairwise.fst"]]
     
+    # pairwise.fst.mean
     res$pairwise.fst.subsample.mean <- dplyr::bind_rows(res$pairwise.fst.subsample) %>% 
       dplyr::group_by(POP1, POP2) %>% 
       dplyr::summarise_all(.tbl = ., .funs = dplyr::funs(mean)) %>% 
@@ -534,11 +535,44 @@ fst_WC84 <- function(
     # pairwise.fst.upper.matrix
     res$pairwise.fst.upper.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.upper.matrix"]]
     
+    # pairwise.fst.upper.matrix.mean
+    res$pairwise.fst.upper.matrix.subsample.mean <- res$pairwise.fst.subsample.mean %>% 
+      dplyr::select(POP1, POP2, FST) %>% 
+      tidyr::spread(data = ., POP2, FST, fill = "", drop = FALSE) %>% 
+      dplyr::rename(POP = POP1)
+    rn <- res$pairwise.fst.upper.matrix.subsample.mean$POP # rownames
+    res$pairwise.fst.upper.matrix.subsample.mean <- as.matrix(res$pairwise.fst.upper.matrix.subsample.mean[,-1])# make matrix without first column
+    rownames(res$pairwise.fst.upper.matrix.subsample.mean) <- rn
+    
     # pairwise.fst.full.matrix
     res$pairwise.fst.full.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.full.matrix"]]
     
+    # pairwise.fst.full.matrix.mean
+    res$pairwise.fst.full.matrix.subsample.mean <- res$pairwise.fst.upper.matrix.subsample.mean # bk of upper.mat.fst
+    lower.mat.fst <- t(res$pairwise.fst.full.matrix.subsample.mean) # transpose
+    # merge upper and lower matrix
+    res$pairwise.fst.full.matrix.subsample.mean[lower.tri(res$pairwise.fst.full.matrix.subsample.mean)] <- lower.mat.fst[lower.tri(lower.mat.fst)] 
+    diag(res$pairwise.fst.full.matrix.subsample.mean) <- "0"
+    
     # pairwise.fst.ci.matrix
     res$pairwise.fst.ci.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.ci.matrix"]]
+    
+    # pairwise.fst.ci.matrix.mean
+    lower.mat.ci.sub <- res$pairwise.fst.subsample.mean %>% 
+      dplyr::select(POP1, POP2, CI_LOW, CI_HIGH) %>% 
+      tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>% 
+      tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>% 
+      dplyr::rename(POP = POP1)
+    
+    cn <- colnames(lower.mat.ci.sub) # bk of colnames
+    lower.mat.ci.sub <- t(lower.mat.ci.sub[,-1]) # transpose
+    colnames(lower.mat.ci.sub) <- cn[-1] # colnames - POP
+    lower.mat.ci.sub = as.matrix(lower.mat.ci.sub) # matrix
+    
+    # merge upper and lower matrix
+    pairwise.fst.ci.matrix.sub <- res$pairwise.fst.upper.matrix.subsample.mean # bk upper.mat.fst
+    pairwise.fst.ci.matrix.sub[lower.tri(pairwise.fst.ci.matrix.sub)] <- lower.mat.ci.sub[lower.tri(lower.mat.ci.sub)]
+    res$pairwise.fst.ci.matrix.subsample.mean <- pairwise.fst.ci.matrix.sub
   }
   
   # End -------------------------------------------------------------------
@@ -802,7 +836,7 @@ pairwise_fst <- function(
   
   pop.select <- stringi::stri_join(purrr::flatten(pop.pairwise[list.pair]))
   
-  # data.select <- radiator::keep_common_markers(data = data.select) # longer than below
+  # data.select <- radiator::keep_common_markers(data = data.select)$input # longer than below
   # common markers
   set1 <- unique.markers.pop %>%
     dplyr::filter(POP_ID == pop.select[1]) %>%
@@ -981,7 +1015,7 @@ fst_subsample <- function(
   # if (snprelate) {
   #   if (verbose) message("Generating GDS format...")
   #   # keep markers in common
-  #   gds.genotypes <- suppressMessages(radiator::keep_common_markers(data = input))
+  #   gds.genotypes <- suppressMessages(radiator::keep_common_markers(data = input)$input)
   #   
   #   strata.df <- dplyr::distinct(gds.genotypes, POP_ID, INDIVIDUALS) %>%
   #     dplyr::mutate(POP_ID = factor(POP_ID))
