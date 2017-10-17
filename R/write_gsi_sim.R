@@ -48,7 +48,6 @@
 
 #' @importFrom radiator change_pop_names
 
-#' @importFrom data.table fread dcast.data.table as.data.table
 #' @importFrom tibble as_data_frame
 #' @importFrom tidyr separate gather unite 
 #' @importFrom dplyr n_distinct rename mutate select left_join arrange
@@ -123,11 +122,9 @@ write_gsi_sim <- function(
     dplyr::arrange(MARKERS) %>%
     tidyr::unite(col = MARKERS_ALLELES, MARKERS , ALLELES, sep = "_") %>%
     dplyr::arrange(POP_ID, INDIVIDUALS, MARKERS_ALLELES) %>%
-    data.table::as.data.table(x = .) %>% 
-    data.table::dcast.data.table(data = .,
-                                 formula = POP_ID + INDIVIDUALS ~ MARKERS_ALLELES, 
-                                 value.var = "GT") %>% 
-    tibble::as_data_frame(.)
+    dplyr::group_by(POP_ID, INDIVIDUALS) %>% 
+    tidyr::spread(data = ., key = MARKERS_ALLELES, value = GT) %>% 
+    dplyr::ungroup(.)
   
   # change sep in individual name
   input$INDIVIDUALS <- stringi::stri_replace_all_fixed(

@@ -131,8 +131,7 @@ the Fst computed in \code{Calculate Distances} or
 The fastest computation is still 
 \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
 but here, the R solution computes confidence intervals and it's very fast. 
-The computations takes advantage of \pkg{tidyverse} packages, 
-\pkg{data.table} and \pkg{parallel}.
+The computations takes advantage of \pkg{tidyverse} packages and \pkg{parallel}.
 The impact of unbalanced design on estimates can be tested by using the 
 subsample argument.
 

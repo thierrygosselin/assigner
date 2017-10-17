@@ -5,7 +5,7 @@ assigner<img src="README_assigner_logo.png" align="right"/>
 
 [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-[![packageversion](https://img.shields.io/badge/Package%20version-0.4.9-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2017--09--20-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.4.9-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2017--10--16-brightgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -38,4 +38,4 @@ library(assigner)
 -   **Problems during installation:** see this [vignette](https://github.com/thierrygosselin/radiator/blob/master/vignettes/vignette_installation_problems.Rmd)
 -   **Windows users**: Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
 -   I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) to run **assigner**. The R GUI is unstable with functions using parallel.
--   **Optimize speed by enabling parallel computing with OpenMP inside R** [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) and [data.table](https://github.com/Rdatatable/data.table) packages (e.g. to do imputations in parallel). Follow the steps in this [vignette](https://github.com/thierrygosselin/radiator/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.
+-   **Optimize speed by enabling parallel computing with OpenMP inside R** [randomForestSRC](http://www.ccs.miami.edu/~hishwaran/rfsrc.html) (e.g. to do imputations in parallel). Follow the steps in this [vignette](https://github.com/thierrygosselin/radiator/blob/master/vignettes/vignette_imputations_parallel.Rmd). You don't need to do this when updating **assigner**.

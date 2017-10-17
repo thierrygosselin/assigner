@@ -211,12 +211,11 @@
 #' @importFrom radiator tidy_genomic_data change_pop_names radiator_imputations_module write_genind snp_ld keep_common_markers radiator_maf_module detect_genomic_format
 #' @importFrom stats var median quantile
 #' @importFrom purrr map flatten keep discard
-#' @importFrom data.table fread dcast.data.table as.data.table
 #' @importFrom adegenet genind
 #' @importFrom readr read_delim read_tsv
 #' @importFrom adegenet optim.a.score dapc xvalDapc indNames pop predict.dapc
 #' @importFrom tibble as_data_frame data_frame
-#' @importFrom tidyr spread gather unite separate
+#' @importFrom tidyr separate
 #' @importFrom ggplot2 ggplot aes geom_violin geom_boxplot stat_summary labs theme element_blank element_text geom_jitter scale_colour_manual scale_y_reverse theme_light geom_bar facet_grid
 
 

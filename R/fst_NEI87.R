@@ -19,8 +19,7 @@
 #' The fastest computation is still 
 #' \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
 #' but here, the R solution computes confidence intervals and it's very fast. 
-#' The computations takes advantage of \pkg{tidyverse} packages, 
-#' \pkg{data.table} and \pkg{parallel}.
+#' The computations takes advantage of \pkg{tidyverse} packages and \pkg{parallel}.
 #' The impact of unbalanced design on estimates can be tested by using the 
 #' subsample argument.
 #' 
@@ -182,7 +181,6 @@
 #' @importFrom tidyr spread gather unite separate complete nesting
 #' @importFrom stringi stri_replace_all_regex stri_sub stri_join
 #' @importFrom purrr map flatten flatten_int
-#' @importFrom data.table fread melt.data.table as.data.table
 #' @importFrom tibble as_data_frame data_frame
 #' @importFrom readr read_tsv
 #' @importFrom utils count.fields combn
@@ -661,17 +659,8 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
       A1 = stringi::stri_sub(GT, 1, 3),
       A2 = stringi::stri_sub(GT, 4,6)
     ) %>% 
-    dplyr::select(-GT) %>% 
-    data.table::as.data.table() %>% 
-    data.table::melt.data.table(
-      data = ., 
-      id.vars = c("MARKERS", "INDIVIDUALS", "POP_ID"), 
-      variable.name = "ALLELES",
-      variable.factor = FALSE,
-      value.name = "GT"
-    ) %>% 
-    tibble::as_data_frame()
-  
+    dplyr::select(-GT) %>%
+    tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID))
   
   # frequency per markers, alleles, pop
   p <- x %>%

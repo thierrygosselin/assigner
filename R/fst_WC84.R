@@ -16,7 +16,7 @@
 #' but it doesn't compute confidence intervals, for now. 
 #' For an R implementation, \code{\link{fst_WC84}} is very fast. 
 #' The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
-#' \pkg{data.table}, \pkg{parallel} and \pkg{SNPRelate}.
+#' \pkg{parallel} and \pkg{SNPRelate}.
 #' The impact of unbalanced design on estimates can be tested by using the 
 #' subsample argument.
 #' 

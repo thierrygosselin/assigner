@@ -7,7 +7,7 @@ Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
   person("Eric C.", "Anderson", role = "aut"),
-  person("Ian", "Bradbury", role = "aut"),
+  person("Ian", "Bradbury", role = "ctb"),
   person("Nick", "Jeffery", role = "ctb"))
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
 Description: Set of tools for assignment analysis, tailored for GBS/RADseq data.
@@ -21,7 +21,6 @@ Imports:
     tidyr,
     ggplot2,
     adegenet,
-    data.table,
     parallel,
     radiator,
     stringi,
@@ -35,7 +34,6 @@ Suggests:
     devtools,
     knitr,
     rmarkdown
-biocViews:
 Remotes:
     github::thierrygosselin/radiator,
     github::kvnkuang/pbmcapply
