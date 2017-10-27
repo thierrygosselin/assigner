@@ -428,7 +428,7 @@ fst_NEI87 <- function(
         QUANTILE75 = stats::quantile(NEI_FST, 0.75),
         ITERATIONS = length(NEI_FST)
       ) %>% 
-      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = round, digits = digits)
     
     res$nei.fst.p.markers.subsample <- dplyr::select(fst.markers.subsample, MARKERS, NEI_FST_P) %>%
       dplyr::group_by(MARKERS) %>% 
@@ -442,7 +442,7 @@ fst_NEI87 <- function(
         QUANTILE75 = stats::quantile(NEI_FST_P, 0.75),
         ITERATIONS = length(NEI_FST_P)
       ) %>% 
-      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = round, digits = digits)
     
     res$jost.d.markers.subsample <- dplyr::select(fst.markers.subsample, MARKERS, JOST_D) %>%
       dplyr::group_by(MARKERS) %>% 
@@ -456,7 +456,7 @@ fst_NEI87 <- function(
         QUANTILE75 = stats::quantile(JOST_D, 0.75),
         ITERATIONS = length(JOST_D)
       ) %>% 
-      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = round, digits = digits)
     
     # fst.ranked
     res$fst.ranked.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fst.ranked"]])
@@ -476,7 +476,7 @@ fst_NEI87 <- function(
         ITERATIONS = length(NEI_FST),
         N_MARKERS_MEAN = mean(N_MARKERS)
       ) %>% 
-      dplyr::mutate_all(.tbl = ., .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_all(.tbl = ., .funs = round, digits = digits)
     
     res$nei.fst.p.overall.subsample <- dplyr::select(fst.overall.subsample, NEI_FST_P, N_MARKERS) %>%
       dplyr::summarise(
@@ -490,7 +490,7 @@ fst_NEI87 <- function(
         ITERATIONS = length(NEI_FST_P),
         N_MARKERS_MEAN = mean(N_MARKERS)
       ) %>% 
-      dplyr::mutate_all(.tbl = ., .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_all(.tbl = ., .funs = round, digits = digits)
 
     res$jost.d.overall.subsample <- dplyr::select(fst.overall.subsample, JOST_D, N_MARKERS) %>%
       dplyr::summarise(
@@ -504,7 +504,7 @@ fst_NEI87 <- function(
         ITERATIONS = length(JOST_D),
         N_MARKERS_MEAN = mean(N_MARKERS)
       ) %>% 
-      dplyr::mutate_all(.tbl = ., .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_all(.tbl = ., .funs = round, digits = digits)
     
     # fis.markers
     res$fis.markers.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fis.markers"]]) %>% 
@@ -519,7 +519,7 @@ fst_NEI87 <- function(
         QUANTILE75 = stats::quantile(FIS, 0.75),
         ITERATIONS = length(FIS)
       ) %>% 
-      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = round, digits = digits)
     
     # fis.overall
     res$fis.overall.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fis.overall"]]) %>%
@@ -534,7 +534,7 @@ fst_NEI87 <- function(
         ITERATIONS = length(FIS),
         N_MARKERS_MEAN = mean(N_MARKERS)
       ) %>% 
-      dplyr::mutate_all(.tbl = ., .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_all(.tbl = ., .funs = round, digits = digits)
     
     # fst.plot
     res$fst.plot.subsample <- subsample.fst.transposed[["fst.plot"]]
@@ -628,7 +628,7 @@ boot_ci_nei <- function(x = NULL, fst.data = NULL, digits = 9){
       JOST_D = DST_P / (1 - HS)
     ) %>% 
     dplyr::ungroup(.) %>%
-    dplyr::mutate_if(is.numeric, dplyr::funs(round(x = ., digits = digits))) %>%
+    dplyr::mutate_if(.tbl = ., .predicate = is.numeric, .funs = round, digits = digits) %>%
     dplyr::select(HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D) %>% 
     dplyr::mutate(ITERATIONS = rep(x, n()))
   return(fst.data.overall.iterations)
@@ -752,7 +752,7 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
       JOST_D = DST_P / (1 - HS)
     ) %>% 
     dplyr::ungroup(.) %>%
-    dplyr::mutate_if(is.numeric, dplyr::funs(round(x = ., digits = digits))) %>%
+    dplyr::mutate_if(.tbl = ., .predicate = is.numeric, .funs = round, digits = digits) %>%
     dplyr::select(MARKERS, HO, HS, HT, DST, HT_P, DST_P, NEI_FST, NEI_FST_P, FIS, JOST_D)
   # add new column with number of markers
   
@@ -778,7 +778,7 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
         JOST_D_CI_LOW = stats::quantile(JOST_D, probs = quantiles.ci[1], na.rm = TRUE),
         JOST_D_CI_HIGH = stats::quantile(JOST_D, probs = quantiles.ci[2], na.rm = TRUE)
       ) %>% 
-      dplyr::mutate_if(is.numeric, dplyr::funs( round(x = ., digits = digits)))
+      dplyr::mutate_if(.tbl = ., .predicate = is.numeric, .funs = round, digits = digits)
     fst.data <- NULL
   } else {
     fst.data <- NULL

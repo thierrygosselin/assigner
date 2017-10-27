@@ -41,17 +41,10 @@
 #' Confidence intervals provided with the \emph{F}-statistics 
 #' enables more reliable conclusions about the biological trends in the data.
 
-
-#' @param data A file in the working directory or object in the global environment 
-#' in wide or long (tidy) formats. To import, the function uses internally
-#' \href{https://github.com/thierrygosselin/radiator}{radiator} 
-#' \code{\link[radiator]{tidy_wide}}. See details for more info.
-#' 
+#' @param data A tidy data frame object in the global environment or
+#' a tidy data frame in wide or long format in the working directory.
 #' \emph{How to get a tidy data frame ?}
-#' \href{https://github.com/thierrygosselin/radiator}{radiator} 
-#' \code{\link[radiator]{tidy_genomic_data}} can transform 11 genomic data formats 
-#' in a tidy data frame (VCF, PLINK, genind, genlight, gtypes, genepop,
-#' stacks haplotype file, hierfstat, ...). 
+#' Look into \pkg{radiator} \code{\link{tidy_genomic_data}}.
 #' You can also use this function to filter your dataset using
 #' whitelist of markers, blacklist of individuals and genotypes.
 
@@ -89,6 +82,7 @@
 
 #' @param holdout.samples (optional, data frame) Samples that don't participate in the Fst 
 #' computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
+#' This argument is used inside assignment analysis.
 #' Default: \code{holdout.samples = NULL}.
 
 #' @param pairwise (optional, logical) With \code{pairwise = TRUE}, the 
@@ -130,7 +124,7 @@
 #' during execution. 
 #' Default: \code{verbose = FALSE}.
 
-#' @param ... other parameters passed to the function.
+# @param ... other parameters passed to the function.
 
 #' @return The function returns a list with several objects.
 #' When sumsample is selected the objects end with \code{.subsample}.
@@ -156,40 +150,12 @@
 #'  statistics.
 #' }
 
-#' @details \strong{Input data:}
-#'  
-#' To discriminate the long from the wide format, 
-#' the function \pkg{radiator} \code{\link[radiator]{tidy_wide}} searches 
-#' for \code{MARKERS or LOCUS} in column names (TRUE = long format).
-#' The data frame is tab delimitted.
-
-#' \strong{Wide format:}
-#' The wide format cannot store metadata info.
-#' The wide format starts with these 2 id columns: 
-#' \code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
-#' the remaining columns are the markers in separate columns storing genotypes.
-#' 
-#' \strong{Long/Tidy format:}
-#' The long format is considered to be a tidy data frame and can store metadata info. 
-#' (e.g. from a VCF see \pkg{radiator} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
-#' are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
-#' \code{MARKERS or LOCUS} and \code{GENOTYPE or GT}. The rest are considered metata info.
-#' 
-#' \strong{2 genotypes formats are available:}
-#' 6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
-#' 6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
-#' The separator can be any of these: \code{"/", ":", "_", "-", "."}.
-#' 
-#' \emph{How to get a tidy data frame ?}
-#' \pkg{radiator} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
-#' in a tidy data frame.
-
 #' @export
 #' @rdname fst_WC84
 #' @importFrom radiator tidy_wide discard_monomorphic_markers keep_common_markers change_pop_names detect_biallelic_markers
 #' @importFrom tidyr separate gather spread unite
 #' @importFrom purrr map flatten transpose flatten_int
-#' @importFrom dplyr mutate summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n bind_rows bind_cols ntile desc n
+#' @importFrom dplyr mutate mutate_if mutate_all summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n bind_rows bind_cols ntile desc n
 #' @importFrom stats quantile
 #' @importFrom utils count.fields combn
 # @importFrom SNPRelate snpgdsOpen snpgdsClose snpgdsFst snpgdsCreateGeno
@@ -289,8 +255,7 @@ fst_WC84 <- function(
   iteration.subsample = 1,
   digits = 9,
   parallel.core = parallel::detectCores() - 1,
-  verbose = FALSE,
-  ...) {
+  verbose = FALSE) {
   # fst.snprelate <- NULL # remove after bias test
   # gds.file.connection <- NULL
   if (verbose) {
@@ -338,34 +303,28 @@ fst_WC84 <- function(
   # population levels and strata------------------------------------------------
   if (!is.null(strata)) {
     if (is.vector(strata)) {
-      # message("strata file: yes")
-      number.columns.strata <- max(utils::count.fields(strata, sep = "\t"))
-      col.types <- stringi::stri_join(rep("c", number.columns.strata), collapse = "")
-      suppressMessages(strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = col.types) %>% 
-                         dplyr::rename(POP_ID = STRATA))
+      suppressMessages(
+        strata.df <- readr::read_tsv(
+          file = strata, col_names = TRUE,
+          col_types = readr::cols(.default = readr::col_character())
+        ) %>%
+          dplyr::rename(POP_ID = STRATA))
     } else {
       # message("strata object: yes")
       colnames(strata) <- stringi::stri_replace_all_fixed(
-        str = colnames(strata), 
-        pattern = "STRATA", 
-        replacement = "POP_ID", 
+        str = colnames(strata),
+        pattern = "STRATA",
+        replacement = "POP_ID",
         vectorize_all = FALSE
       )
       strata.df <- strata
     }
-    
+  
     # Remove potential whitespace in pop_id
-    strata.df$POP_ID <- stringi::stri_replace_all_fixed(strata.df$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
+    strata.df$POP_ID <- radiator::clean_pop_names(strata.df$POP_ID)
+    strata.df$INDIVIDUALS <- radiator::clean_ind_names(strata.df$INDIVIDUALS)
     
-    strata.df$INDIVIDUALS <- stringi::stri_replace_all_fixed(
-      str = strata.df$INDIVIDUALS, 
-      pattern = c("_", ":"), 
-      replacement = c("-", "-"),
-      vectorize_all = FALSE
-    )
-    
-    input <- input %>%
-      dplyr::select(-POP_ID) %>% 
+    input <- dplyr::select(input, -POP_ID) %>% 
       dplyr::left_join(strata.df, by = "INDIVIDUALS")
   }
   
@@ -470,7 +429,7 @@ fst_WC84 <- function(
         QUANTILE75 = stats::quantile(FST, 0.75),
         ITERATIONS = length(FST)
       ) %>% 
-      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = round, digits = digits)
     
     # fst.ranked
     res$fst.ranked.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fst.ranked"]])
@@ -488,7 +447,7 @@ fst_WC84 <- function(
         ITERATIONS = length(FST),
         N_MARKERS_MEAN = mean(N_MARKERS)
       ) %>% 
-      dplyr::mutate_all(.tbl = ., .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_all(.tbl = ., .funs = round, digits = digits)
     
     # fis.markers
     res$fis.markers.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fis.markers"]]) %>% 
@@ -503,7 +462,7 @@ fst_WC84 <- function(
         QUANTILE75 = stats::quantile(FIS, 0.75),
         ITERATIONS = length(FIS)
       ) %>% 
-      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = round, digits = digits)
     
     # fis.overall
     res$fis.overall.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fis.overall"]]) %>%
@@ -518,7 +477,7 @@ fst_WC84 <- function(
         ITERATIONS = length(FIS),
         N_MARKERS_MEAN = mean(N_MARKERS)
       ) %>% 
-      dplyr::mutate_all(.tbl = ., .funs = dplyr::funs(round(x = ., digits = digits)))
+      dplyr::mutate_all(.tbl = ., .funs = round, digits = digits)
     
     # fst.plot
     res$fst.plot.subsample <- subsample.fst.transposed[["fst.plot"]]

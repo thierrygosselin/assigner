@@ -163,7 +163,7 @@
 #' @importFrom parallel detectCores
 #' @importFrom stringi stri_join stri_sub stri_replace_all_fixed stri_detect_fixed stri_replace_na
 #' @importFrom adegenet optim.a.score predict.dapc dapc indNames
-#' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs sample_n sample_frac mutate_each summarise_each_ intersect
+#' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join funs sample_n sample_frac intersect
 #' @importFrom stats var median quantile
 #' @importFrom purrr map map2 flatten flatten_df keep discard
 #' @importFrom radiator tidy_genomic_data radiator_imputations_module write_genind snp_ld keep_common_markers radiator_maf_module detect_genomic_format

@@ -9,19 +9,13 @@ fst_WC84(data, snprelate = FALSE, pop.levels = NULL, pop.labels = NULL,
   strata = NULL, holdout.samples = NULL, pairwise = FALSE, ci = FALSE,
   iteration.ci = 100, quantiles.ci = c(0.025, 0.975), subsample = NULL,
   iteration.subsample = 1, digits = 9,
-  parallel.core = parallel::detectCores() - 1, verbose = FALSE, ...)
+  parallel.core = parallel::detectCores() - 1, verbose = FALSE)
 }
 \arguments{
-\item{data}{A file in the working directory or object in the global environment 
-in wide or long (tidy) formats. To import, the function uses internally
-\href{https://github.com/thierrygosselin/radiator}{radiator} 
-\code{\link[radiator]{tidy_wide}}. See details for more info.
-
+\item{data}{A tidy data frame object in the global environment or
+a tidy data frame in wide or long format in the working directory.
 \emph{How to get a tidy data frame ?}
-\href{https://github.com/thierrygosselin/radiator}{radiator} 
-\code{\link[radiator]{tidy_genomic_data}} can transform 11 genomic data formats 
-in a tidy data frame (VCF, PLINK, genind, genlight, gtypes, genepop,
-stacks haplotype file, hierfstat, ...). 
+Look into \pkg{radiator} \code{\link{tidy_genomic_data}}.
 You can also use this function to filter your dataset using
 whitelist of markers, blacklist of individuals and genotypes.}
 
@@ -59,6 +53,7 @@ Default: \code{strata = NULL}.}
 
 \item{holdout.samples}{(optional, data frame) Samples that don't participate in the Fst 
 computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
+This argument is used inside assignment analysis.
 Default: \code{holdout.samples = NULL}.}
 
 \item{pairwise}{(optional, logical) With \code{pairwise = TRUE}, the 
@@ -99,8 +94,6 @@ Default: \code{parallel.core = parallel::detectCores() - 1}.}
 \item{verbose}{(optional, logical) \code{verbose = TRUE} to be chatty 
 during execution. 
 Default: \code{verbose = FALSE}.}
-
-\item{...}{other parameters passed to the function.}
 }
 \value{
 The function returns a list with several objects.
@@ -153,34 +146,6 @@ your markers to use this function characteristic strategically to get
 better genome-wide estimate. This is even more important when your project 
 involves more than 2 populations that evolved more by neutral processes 
 (e.g. genetic drift) than by natural selection (see the vignette for more details).
-}
-\details{
-\strong{Input data:}
- 
-To discriminate the long from the wide format, 
-the function \pkg{radiator} \code{\link[radiator]{tidy_wide}} searches 
-for \code{MARKERS or LOCUS} in column names (TRUE = long format).
-The data frame is tab delimitted.
-\strong{Wide format:}
-The wide format cannot store metadata info.
-The wide format starts with these 2 id columns: 
-\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
-the remaining columns are the markers in separate columns storing genotypes.
-
-\strong{Long/Tidy format:}
-The long format is considered to be a tidy data frame and can store metadata info. 
-(e.g. from a VCF see \pkg{radiator} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
-are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
-\code{MARKERS or LOCUS} and \code{GENOTYPE or GT}. The rest are considered metata info.
-
-\strong{2 genotypes formats are available:}
-6 characters no separator: e.g. \code{001002 of 111333} (for heterozygote individual).
-6 characters WITH separator: e.g. \code{001/002 of 111/333} (for heterozygote individual).
-The separator can be any of these: \code{"/", ":", "_", "-", "."}.
-
-\emph{How to get a tidy data frame ?}
-\pkg{radiator} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
-in a tidy data frame.
 }
 \note{
 \strong{Negative Fst} are technical artifact of the computation 
