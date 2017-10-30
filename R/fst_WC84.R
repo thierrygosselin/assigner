@@ -488,7 +488,7 @@ fst_WC84 <- function(
     # pairwise.fst.mean
     res$pairwise.fst.subsample.mean <- dplyr::bind_rows(res$pairwise.fst.subsample) %>% 
       dplyr::group_by(POP1, POP2) %>% 
-      dplyr::summarise_all(.tbl = ., .funs = dplyr::funs(mean)) %>% 
+      dplyr::summarise_all(.tbl = ., .funs = mean, na.rm = TRUE) %>% 
       dplyr::mutate(ITERATIONS = rep(iteration.subsample, n()))
     
     # pairwise.fst.upper.matrix
