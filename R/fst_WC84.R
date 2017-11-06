@@ -1051,7 +1051,7 @@ fst_subsample <- function(
   
   # Compute pairwise Fst -------------------------------------------------------
   if (pairwise) {
-    if (verbose) message("Paiwise fst calculation")
+    if (verbose) message("Pairwise fst calculation")
     
     pop.list <- levels(input$POP_ID) # pop list
     # all combination of populations
