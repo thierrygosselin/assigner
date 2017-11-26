@@ -162,7 +162,6 @@ enables more reliable conclusions about the biological trends in the data.
 \dontrun{
 wombat.fst.pairwise <- fst_WC84(
 data = "wombat.filtered.tidy.tsv", 
-sep = "/", 
 pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
 holdout.samples = NULL,
 pairwise = TRUE,
@@ -175,12 +174,9 @@ verbose = TRUE
 To get the overall Fst estimate:
 wombat.fst.pairwise$fst.overall
 To get the Fst plot:
-wombat.fst.pairwise$fst.plots
+wombat.fst.pairwise$fst.plot
 To get the pairwise Fst values with confidence intervals in a data frame:
-wombat.fst.pairwise$pairwise.fst
-To get the pairwise fst and ci matrix in a data frame:
-# rename, data frame, put rownames in column
-pairwise.fst.ci.df <- data.frame(pairwise.fst.ci.matrix) \%>\% add_rownames("POP")
+df <- wombat.fst.pairwise$pairwise.fst
 }
 }
 \references{

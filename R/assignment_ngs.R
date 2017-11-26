@@ -47,8 +47,10 @@
 #' \href{http://catchenlab.life.illinois.edu/stacks/}{stacks} on your data, 
 #' the strata file is similar to a stacks `population map file`, make sure you 
 #' have the required column names (\code{INDIVIDUALS} and \code{STRATA}).
+#' The strata column is cleaned of a white spaces that interfere with some
+#' packages or codes: space is changed to an underscore \code{_}.
 #' Default: \code{strata = NULL}.
-#' 
+
 
 #' @param assignment.analysis (character) Assignment analysis conducted with 
 #' \code{assignment.analysis = "gsi_sim"} or 
@@ -415,9 +417,7 @@ assignment_ngs <- function(
   # Create a folder based on filename to save the output files -----------------
   if (is.null(folder)) {
     # Get date and time to have unique filenaming
-    file.date <- stringi::stri_replace_all_fixed(Sys.time(), pattern = " EDT", replacement = "")
-    file.date <- stringi::stri_replace_all_fixed(file.date, pattern = c("-", " ", ":"), replacement = c("", "@", ""), vectorize_all = FALSE)
-    file.date <- stringi::stri_sub(file.date, from = 1, to = 13)
+    file.date <- format(Sys.time(), "%Y%m%d@%H%M")
     
     if (is.null(imputation.method)) {
       message("Map-independent imputations: no")
