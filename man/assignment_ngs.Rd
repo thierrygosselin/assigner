@@ -119,7 +119,8 @@ Default = \code{marker.number = "all"}.}
 \item{blacklist.id}{(optional) A blacklist with individual ID and
 a column header 'INDIVIDUALS'. The blacklist is an object in your
 global environment or a file in the working directory
-(e.g. "blacklist.txt").
+(e.g. "blacklist.txt"). \code{_} and \code{:} in individual's names
+are changed to a dash \code{-}.
 Default: \code{blacklist.id = NULL}.}
 
 \item{blacklist.genotype}{(optional) Useful to erase genotype with below
@@ -227,6 +228,8 @@ If you have already run
 \href{http://catchenlab.life.illinois.edu/stacks/}{stacks} on your data, 
 the strata file is similar to a stacks `population map file`, make sure you 
 have the required column names (\code{INDIVIDUALS} and \code{STRATA}).
+The strata column is cleaned of a white spaces that interfere with some
+packages or codes: space is changed to an underscore \code{_}.
 Default: \code{strata = NULL}.}
 
 \item{pop.levels}{(optional, string) This refers to the levels in a factor. In this

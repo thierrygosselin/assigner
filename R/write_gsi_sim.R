@@ -89,34 +89,32 @@ write_gsi_sim <- function(
   
   # Import data
   if (is.vector(data)) {
-    input <- radiator::tidy_wide(data = data, import.metadata = FALSE)
-  } else {
-    input <- data
-  }  
-  colnames(input) <- stringi::stri_replace_all_fixed(
-    str = colnames(input), 
+    data <- radiator::tidy_wide(data = data, import.metadata = FALSE)
+  } 
+  colnames(data) <- stringi::stri_replace_all_fixed(
+    str = colnames(data), 
     pattern = "GENOTYPE", 
     replacement = "GT", 
     vectorize_all = FALSE)
   
   # remove space in POP_ID
-  input$POP_ID <- stringi::stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
+  data$POP_ID <- stringi::stri_replace_all_fixed(data$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
   # Info for gsi_sim input -----------------------------------------------------
-  n.individuals <- dplyr::n_distinct(input$INDIVIDUALS)  # number of individuals
+  n.individuals <- dplyr::n_distinct(data$INDIVIDUALS)  # number of individuals
   
   # necessary steps to make sure we work with unique markers and not duplicated LOCUS
-  if (tibble::has_name(input, "LOCUS") && !tibble::has_name(input, "MARKERS")) {
-    input <- dplyr::rename(.data = input, MARKERS = LOCUS)
+  if (tibble::has_name(data, "LOCUS") && !tibble::has_name(data, "MARKERS")) {
+    data <- dplyr::rename(.data = data, MARKERS = LOCUS)
   }
   
-  # n.pop <- dplyr::n_distinct(input$POP_ID)
-  n.markers <- dplyr::n_distinct(input$MARKERS)          # number of markers
-  list.markers <- unique(input$MARKERS)                  # list of markers
+  # n.pop <- dplyr::n_distinct(data$POP_ID)
+  n.markers <- dplyr::n_distinct(data$MARKERS)          # number of markers
+  list.markers <- unique(data$MARKERS)                  # list of markers
   
   
   # Spread/dcast in wide format ------------------------------------------------------
-  input <- dplyr::select(input, MARKERS, POP_ID, INDIVIDUALS, GT) %>%
+  data <- dplyr::select(data, MARKERS, POP_ID, INDIVIDUALS, GT) %>%
     tidyr::separate(data = ., col = GT, into = c("A1", "A2"), sep = 3, remove = TRUE) %>% 
     tidyr::gather(data = ., key = ALLELES, value = GT, -c(MARKERS, INDIVIDUALS, POP_ID)) %>% 
     dplyr::arrange(MARKERS) %>%
@@ -127,8 +125,8 @@ write_gsi_sim <- function(
     dplyr::ungroup(.)
   
   # change sep in individual name
-  input$INDIVIDUALS <- stringi::stri_replace_all_fixed(
-    str = input$INDIVIDUALS, 
+  data$INDIVIDUALS <- stringi::stri_replace_all_fixed(
+    str = data$INDIVIDUALS, 
     pattern = c("_", ":"), 
     replacement = c("-", "-"),
     vectorize_all = FALSE
@@ -169,16 +167,16 @@ write_gsi_sim <- function(
       vectorize_all = FALSE
     )
     
-    input <- dplyr::select(.data = input, -POP_ID) %>% 
+    data <- dplyr::select(.data = data, -POP_ID) %>% 
       dplyr::left_join(strata.df, by = "INDIVIDUALS")
   }
   
   # using pop.levels and pop.labels info if present
-  input <- radiator::change_pop_names(data = input,
+  data <- radiator::change_pop_names(data = data,
                                     pop.levels = pop.levels,
                                     pop.labels = pop.labels)
   
-  input <- dplyr::arrange(.data = input, POP_ID, INDIVIDUALS)
+  data <- dplyr::arrange(.data = data, POP_ID, INDIVIDUALS)
   
   # write gsi_sim file ---------------------------------------------------------
   
@@ -195,9 +193,9 @@ write_gsi_sim <- function(
   close(filename.connection) # close the connection
   
   # remaining lines, individuals and genotypes
-  pop <- input$POP_ID # Create a vector with the population
-  input <- suppressWarnings(dplyr::select(.data = input, -POP_ID))  # remove pop id
-  gsi_sim.split <- split(input, pop)  # split gsi_sim by populations
+  pop <- data$POP_ID # Create a vector with the population
+  data <- suppressWarnings(dplyr::select(.data = data, -POP_ID))  # remove pop id
+  gsi_sim.split <- split(data, pop)  # split gsi_sim by populations
   pop.string <- as.character(unique(pop))
   for (k in pop.string) {
     utils::write.table(x = as.data.frame(stringi::stri_join("pop", k, sep = " ")), file = filename, append = TRUE, quote = FALSE, sep = "\n", row.names = FALSE, col.names = FALSE)
@@ -206,7 +204,7 @@ write_gsi_sim <- function(
     utils::write.table(x = gsi_sim.split[[k]], file = filename, append = TRUE, quote = FALSE, sep = " ", row.names = FALSE, col.names = FALSE)
   }
   
-  gsi_sim.split <- input <-pop <- pop.string <- NULL
+  gsi_sim.split <- data <-pop <- pop.string <- NULL
   return(filename)
 } # End write_gsi function
 
