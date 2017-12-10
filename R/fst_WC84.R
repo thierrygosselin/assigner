@@ -509,25 +509,30 @@ fst_WC84 <- function(
     res$pairwise.fst.full.matrix.subsample.mean[lower.tri(res$pairwise.fst.full.matrix.subsample.mean)] <- lower.mat.fst[lower.tri(lower.mat.fst)] 
     diag(res$pairwise.fst.full.matrix.subsample.mean) <- "0"
     
-    # pairwise.fst.ci.matrix
-    res$pairwise.fst.ci.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.ci.matrix"]]
-    
-    # pairwise.fst.ci.matrix.mean
-    lower.mat.ci.sub <- res$pairwise.fst.subsample.mean %>% 
-      dplyr::select(POP1, POP2, CI_LOW, CI_HIGH) %>% 
-      tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>% 
-      tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>% 
-      dplyr::rename(POP = POP1)
-    
-    cn <- colnames(lower.mat.ci.sub) # bk of colnames
-    lower.mat.ci.sub <- t(lower.mat.ci.sub[,-1]) # transpose
-    colnames(lower.mat.ci.sub) <- cn[-1] # colnames - POP
-    lower.mat.ci.sub = as.matrix(lower.mat.ci.sub) # matrix
-    
-    # merge upper and lower matrix
-    pairwise.fst.ci.matrix.sub <- res$pairwise.fst.upper.matrix.subsample.mean # bk upper.mat.fst
-    pairwise.fst.ci.matrix.sub[lower.tri(pairwise.fst.ci.matrix.sub)] <- lower.mat.ci.sub[lower.tri(lower.mat.ci.sub)]
-    res$pairwise.fst.ci.matrix.subsample.mean <- pairwise.fst.ci.matrix.sub
+    if (ci) {
+      # pairwise.fst.ci.matrix
+      res$pairwise.fst.ci.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.ci.matrix"]]
+      
+      # pairwise.fst.ci.matrix.mean
+      lower.mat.ci.sub <- res$pairwise.fst.subsample.mean %>% 
+        dplyr::select(POP1, POP2, CI_LOW, CI_HIGH) %>% 
+        tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>% 
+        tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>% 
+        dplyr::rename(POP = POP1)
+      
+      cn <- colnames(lower.mat.ci.sub) # bk of colnames
+      lower.mat.ci.sub <- t(lower.mat.ci.sub[,-1]) # transpose
+      colnames(lower.mat.ci.sub) <- cn[-1] # colnames - POP
+      lower.mat.ci.sub = as.matrix(lower.mat.ci.sub) # matrix
+      
+      # merge upper and lower matrix
+      pairwise.fst.ci.matrix.sub <- res$pairwise.fst.upper.matrix.subsample.mean # bk upper.mat.fst
+      pairwise.fst.ci.matrix.sub[lower.tri(pairwise.fst.ci.matrix.sub)] <- lower.mat.ci.sub[lower.tri(lower.mat.ci.sub)]
+      res$pairwise.fst.ci.matrix.subsample.mean <- pairwise.fst.ci.matrix.sub
+    } else {
+      res$pairwise.fst.ci.matrix.subsample <- "confidence intervals not selected"
+      res$pairwise.fst.ci.matrix.subsample.mean <- "confidence intervals not selected"
+    }
   }
   
   # End -------------------------------------------------------------------
