@@ -97,11 +97,13 @@ will be repeated for each individuals in the data set for every
 individuals and this process is reapeated the number of times chosen by the
 \code{iteration.method} value.}
 
-\item{subsample}{(Integer or Proportion) Default is no subsampling, \code{subsample = NULL}.
-With a proportion argument \code{subsample = 0.15}, 15 percent of individuals
-in each populations are chosen randomly to represent the dataset.
+\item{subsample}{(Integer or Character, optional) 
 With \code{subsample = 36}, 36 individuals in each populations are chosen
-randomly to represent the dataset.}
+randomly to represent the dataset. This integer as to be smaller than the
+population with min sample size, if higher, the minimum sample size found 
+in the data will be used as default. In doubt, use \code{subsample = "min"},
+the function will use the smallest population sample size found in the data.
+Default: \code{subsample = NULL} (no subsampling).}
 
 \item{iteration.subsample}{(Integer) The number of iterations to repeat 
 subsampling.

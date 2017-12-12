@@ -72,13 +72,14 @@ the number of iteration is automatically set to 1. The remaining groupings
 are unaffected.
 Default: \code{iteration.method = 10}.}
 
-\item{subsample}{(Integer or Proportion) Default is no sumsampling, 
-\code{subsample = NULL}.
-With a proportion argument \code{subsample = 0.15}, 15 percent of 
-\strong{baseline} individuals in each populations are chosen randomly to 
-represent the dataset.
-With \code{subsample = 36}, 36 individuals in each populations are chosen
-randomly to represent the dataset.}
+\item{subsample}{(Integer or Character, optional)
+With \code{subsample = 36}, 36 individuals in the \strong{baseline} of
+each populations are chosen
+randomly to represent the dataset. This integer as to be smaller than the
+population with min sample size, if higher, the minimum sample size found
+in the data will be used as default. In doubt, use \code{subsample = "min"},
+the function will use the smallest population sample size found in the data.
+Default: \code{subsample = NULL} (no subsampling).}
 
 \item{iteration.subsample}{(Integer) The number of iterations to repeat 
 subsampling, default: \code{iteration.subsample = 1}.

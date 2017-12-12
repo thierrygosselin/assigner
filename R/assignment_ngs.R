@@ -123,11 +123,13 @@
 #' individuals and this process is reapeated the number of times chosen by the
 #' \code{iteration.method} value.
 
-#' @param subsample (Integer or Proportion) Default is no subsampling, \code{subsample = NULL}.
-#' With a proportion argument \code{subsample = 0.15}, 15 percent of individuals
-#' in each populations are chosen randomly to represent the dataset.
+#' @param subsample (Integer or Character, optional) 
 #' With \code{subsample = 36}, 36 individuals in each populations are chosen
-#' randomly to represent the dataset.
+#' randomly to represent the dataset. This integer as to be smaller than the
+#' population with min sample size, if higher, the minimum sample size found 
+#' in the data will be used as default. In doubt, use \code{subsample = "min"},
+#' the function will use the smallest population sample size found in the data.
+#' Default: \code{subsample = NULL} (no subsampling).
 
 #' @param iteration.subsample (Integer) The number of iterations to repeat 
 #' subsampling.
@@ -394,7 +396,7 @@ assignment_ngs <- function(
   if (thl == "all") {
     message("Note: with thl == \"all\", automatically setting iteration.method = 1")
     iteration.method <- 1
-    }
+  }
   
   
   # POP_ID in gsi_sim does not like spaces, we need to remove space in everything touching POP_ID...
@@ -492,6 +494,28 @@ assignment_ngs <- function(
   # subsampling data------------------------------------------------------------
   # create the subsampling list
   ind.pop.df <-  dplyr::distinct(.data = input, POP_ID, INDIVIDUALS)
+  
+  if (!is.null(subsample)) {
+    min.pop.n <- min(dplyr::count(x = ind.pop.df, POP_ID, sort = TRUE)$n)
+    # Control the subsample argument, replace if > than min sample size
+    if (rlang::is_bare_numeric(subsample)) {
+      if (subsample <= min.pop.n) {
+        subsample <- subsample
+      } else {
+        message("Warning: value of subsample argument is higher than the min sample size found in the data")
+        message("Replacing subsample value by: ", min.pop.n)
+        subsample <- min.pop.n
+      }
+    } else {
+      # replace min by the min sample size found in the data
+      if (subsample == "min") {
+        subsample <- min.pop.n
+      } else {
+        stop("Wrong subsample value")
+      }
+    }
+  }
+  
   subsample.list <- purrr::map(
     .x = 1:iteration.subsample,
     .f = subsampling_data,
@@ -733,7 +757,7 @@ assignment_gsi_sim <- function(
   if (!keep.gsi.files) file.remove(input.gsi)
   
   # Get Assignment results -------------------------------------------------
-
+  
   assignment <- suppressWarnings(
     suppressMessages(readr::read_delim(output.gsi, col_names = "ID", delim = "\t")) %>%
       tidyr::separate(ID, c("KEEPER", "ASSIGN"), sep = ":/", extra = "warn") %>%
@@ -762,7 +786,7 @@ assignment_gsi_sim <- function(
       dplyr::select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA) %>%
       dplyr::arrange(CURRENT)
   )
-
+  
   if (sampling.method == "random") {
     assignment <- dplyr::mutate(.data = assignment, ITERATIONS = rep(i, n())) %>% 
       dplyr::select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA, ITERATIONS) %>%
@@ -875,8 +899,8 @@ assignment_adegenet <- function(
     
     dapc.best.optim.a.score <- adegenet::optim.a.score(
       adegenet::dapc(training.data, 
-           n.da = length(levels(pop.training)),
-           n.pca = round(((length(adegenet::indNames(training.data))/3) - 1), 0)),
+                     n.da = length(levels(pop.training)),
+                     n.pca = round(((length(adegenet::indNames(training.data))/3) - 1), 0)),
       pop = pop.training,
       plot = FALSE
     )$best
@@ -912,7 +936,7 @@ assignment_adegenet <- function(
       INDIVIDUALS = adegenet::indNames(holdout.data), 
       CURRENT = pop.holdout,
       INFERRED = dapc.predict.holdout$assign, dapc.predict.holdout$posterior
-      ) %>%
+    ) %>%
       dplyr::mutate(
         CURRENT = factor(CURRENT, levels = rev.assignment.levels, ordered = TRUE),
         INFERRED = factor(INFERRED, levels = assignment.levels, ordered = TRUE)
@@ -1032,7 +1056,7 @@ assignment_random <- function(
     )
   )
   
-
+  
   if (assignment.analysis == "gsi_sim") {
     assignment <- assignment_gsi_sim(
       data = input,
@@ -1363,7 +1387,7 @@ assignment_ranking <- function(
   assignment.marker.imp <- assignment.marker <- NULL
   
   message("Summarizing the assignment analysis results by iterations and marker group")
-
+  
   readr::write_tsv(
     x = assignment.res.summary,
     path = stringi::stri_join(directory.subsample,
@@ -1461,7 +1485,7 @@ assignment_function <- function(
   
   # Keep a new strata df -------------------------------------------------------
   strata.df <- dplyr::distinct(.data = input, INDIVIDUALS, POP_ID)
-
+  
   # Adegenet no imputations --------------------------------------------------
   if (assignment.analysis == "adegenet") {
     message("Creating genind object")
@@ -1641,7 +1665,7 @@ assignment_function <- function(
         )
       )
       assignment.res <- suppressWarnings(dplyr::bind_rows(assignment.res.imp) %>%
-        dplyr::bind_rows(assignment.res))
+                                           dplyr::bind_rows(assignment.res))
     }
     # Compiling the results
     message("Compiling results")
@@ -1928,7 +1952,7 @@ loci for population assignment: standard methods are upwardly biased.\nMolecular
       }
       x <- NULL
     } # End tracking holdout individuals
-
+    
     ind.pop.df <- NULL
     
     readr::write_tsv(
@@ -1945,7 +1969,7 @@ loci for population assignment: standard methods are upwardly biased.\nMolecular
     message("For progress: monitor activity in the folder...")
     assignment.res <- list()
     assignment.res <- .assigner_parallel(
-    # assignment.res <- parallel::mclapply(
+      # assignment.res <- parallel::mclapply(
       X = iterations.list, 
       FUN = assignment_ranking, 
       thl = thl,

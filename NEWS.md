@@ -1,3 +1,10 @@
+# assigner v.0.5.0 2017-12-12
+
+* `subsample` argument in `assignment_ngs` and `assignment_mixture` can now 
+automatically detect the smallest sample size in the data's grouping. So you can
+use `subsample = "min"` to let the function decide (if your not sure).
+
+
 # assigner v.0.4.9 2017-08-18
 
 * migration of `assigner` from using `stackr` -> `radiator`

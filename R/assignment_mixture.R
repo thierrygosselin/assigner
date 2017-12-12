@@ -84,14 +84,15 @@
 #' Default \code{filename = assignment_data.txt}.
 #' The number of markers used will be appended to the name of the file.
 
+#' @param subsample (Integer or Character, optional)
+#' With \code{subsample = 36}, 36 individuals in the \strong{baseline} of
+#' each populations are chosen
+#' randomly to represent the dataset. This integer as to be smaller than the
+#' population with min sample size, if higher, the minimum sample size found
+#' in the data will be used as default. In doubt, use \code{subsample = "min"},
+#' the function will use the smallest population sample size found in the data.
+#' Default: \code{subsample = NULL} (no subsampling).
 
-#' @param subsample (Integer or Proportion) Default is no sumsampling, 
-#' \code{subsample = NULL}.
-#' With a proportion argument \code{subsample = 0.15}, 15 percent of 
-#' \strong{baseline} individuals in each populations are chosen randomly to 
-#' represent the dataset.
-#' With \code{subsample = 36}, 36 individuals in each populations are chosen
-#' randomly to represent the dataset.
 
 #' @param iteration.subsample (Integer) The number of iterations to repeat 
 #' subsampling, default: \code{iteration.subsample = 1}.
@@ -447,9 +448,31 @@ assignment_mixture <- function(
   # subsampling data -----------------------------------------------------------
   # create the subsampling list
   ind.pop.df <- dplyr::distinct(.data = input, POP_ID, INDIVIDUALS) %>% dplyr::arrange(POP_ID, INDIVIDUALS)
+  
+  if (!is.null(subsample)) {
+    min.pop.n <- min(dplyr::count(x = dplyr::filter(ind.pop.df, POP_ID != "mixture"), POP_ID, sort = TRUE)$n)
+    # Control the subsample argument, replace if > than min sample size
+    if (rlang::is_bare_numeric(subsample)) {
+      if (subsample <= min.pop.n) {
+        subsample <- subsample
+      } else {
+        message("Warning: value of subsample argument is higher than the min sample size found in the data")
+        message("Replacing subsample value by: ", min.pop.n)
+        subsample <- min.pop.n
+      }
+    } else {
+      # replace min by the min sample size found in the data
+      if (subsample == "min") {
+        subsample <- min.pop.n
+      } else {
+        stop("Wrong subsample value")
+      }
+    }
+  }
+  
   subsample.list <- purrr::map(
     .x = 1:iteration.subsample,
-    .f = subsampling_data,#internal function below
+    .f = subsampling_baseline,#internal function below
     ind.pop.df = ind.pop.df,
     subsample = subsample,
     random.seed = random.seed
@@ -617,13 +640,13 @@ assignment_mixture <- function(
 
 # Internal Nested Functions -----------------------------------------------------------
 
-# subsampling_data --------------------------------------------------------------
-#' @title subsampling data
-#' @description subsampling data
-#' @rdname subsampling_data
+# subsampling_baseline --------------------------------------------------------------
+#' @title subsampling baseline data
+#' @description subsampling baseline data
+#' @rdname subsampling_baseline
 #' @export
 #' @keywords internal
-subsampling_data <- function(
+subsampling_baseline <- function(
   iteration.subsample = 1,
   ind.pop.df = NULL,
   subsample = NULL,
@@ -652,12 +675,7 @@ subsampling_data <- function(
         dplyr::group_by(POP_ID) %>%
         dplyr::sample_n(tbl = ., size = subsample, replace = FALSE)# sampling individuals for each pop
     }
-    if (subsample < 1) {# proportion
-      subsample.select <- ind.pop.df %>%
-        dplyr::filter(POP_ID != "mixture") %>% 
-        dplyr::group_by(POP_ID) %>%
-        dplyr::sample_frac(tbl = ., size = subsample, replace = FALSE)# sampling individuals for each pop
-    }
+    
     # Join baseline and mixture back in 1 dataset
     subsample.select <- dplyr::bind_rows(subsample.select, mixture.select) %>% 
       dplyr::mutate(
