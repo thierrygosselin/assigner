@@ -510,6 +510,7 @@ assignment_ngs <- function(
       # replace min by the min sample size found in the data
       if (subsample == "min") {
         subsample <- min.pop.n
+        message("Using subsample size of: ", subsample)
       } else {
         stop("Wrong subsample value")
       }
