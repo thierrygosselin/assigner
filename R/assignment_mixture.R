@@ -167,7 +167,7 @@
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join funs sample_n sample_frac intersect
 #' @importFrom stats var median quantile
 #' @importFrom purrr map map2 flatten flatten_df keep discard
-#' @importFrom radiator tidy_genomic_data radiator_imputations_module write_genind snp_ld keep_common_markers radiator_maf_module detect_genomic_format
+#' @importFrom radiator tidy_genomic_data radiator_imputations_module write_genind snp_ld keep_common_markers filter_maf detect_genomic_format
 #' @importFrom tibble as_data_frame data_frame
 #' @importFrom tidyr spread gather separate
 
@@ -273,9 +273,6 @@ assignment_mixture <- function(
   snp.ld = NULL,
   common.markers = TRUE,
   maf.thresholds = NULL,
-  maf.pop.num.threshold = 1,
-  maf.approach = "SNP",
-  maf.operator = "OR",
   max.marker = NULL,
   pop.levels = NULL,
   pop.labels = NULL,
@@ -341,22 +338,6 @@ assignment_mixture <- function(
   # File type detection ********************************************************
   data.type <- radiator::detect_genomic_format(data)
   
-  
-  if (data.type == "haplo.file") {
-    message("With stacks haplotype file the maf.approach is automatically set to: haplotype")
-    maf.approach <- "SNP"
-    # confusing, but because the haplotpe file doesn't have snp info, only locus info
-    # it's treated as markers/snp info and filtered the same way as the approach by SNP.
-    # but it's really by haplotype
-  }
-  
-  if (maf.approach == "haplotype") {
-    if (data.type != "vcf.file" | data.type != "haplo.file") {
-      stop("The haplotype approach during MAF filtering is for VCF and
-           stacks haplotypes file, only. Use the snp approach for the other file types")
-    }
-  }
-  
   # Strata argument required for VCF and haplotypes files-----------------------
   if (data.type == "haplo.file" | data.type == "vcf.file") {
     if (is.null(strata)) stop("strata argument is required")
@@ -401,9 +382,6 @@ assignment_mixture <- function(
     snp.ld = snp.ld,
     common.markers = FALSE, 
     maf.thresholds = maf.thresholds,
-    maf.pop.num.threshold = maf.pop.num.threshold,
-    maf.approach = maf.approach,
-    maf.operator = maf.operator,
     strata = strata, 
     pop.levels = pop.levels, 
     pop.labels = pop.labels, 
@@ -506,9 +484,6 @@ assignment_mixture <- function(
     snp.ld = snp.ld,
     common.markers = common.markers,
     maf.thresholds = maf.thresholds,
-    maf.pop.num.threshold = maf.pop.num.threshold,
-    maf.approach = maf.approach,
-    maf.operator = maf.operator,
     marker.number = marker.number,
     pop.levels = pop.levels,
     pop.labels = pop.labels,
@@ -1215,9 +1190,6 @@ assignment_function <- function(
   snp.ld = NULL,
   common.markers = TRUE,
   maf.thresholds = NULL,
-  maf.pop.num.threshold = 1,
-  maf.approach = "SNP",
-  maf.operator = "OR",
   marker.number = NULL,
   pop.levels = NULL,
   pop.labels = NULL,
@@ -1274,14 +1246,12 @@ assignment_function <- function(
     mixture.data <- dplyr::filter(.data = input, POP_ID == "mixture")
     baseline.data <- dplyr::filter(.data = input, POP_ID != "mixture")
     
-    # maf.thresholds <- c(0.05, 0.05) # test
-    baseline.data <- radiator::radiator_maf_module(
-      data = baseline.data,
-      maf.thresholds = maf.thresholds,
-      maf.pop.num.threshold = maf.pop.num.threshold,
-      maf.approach = maf.approach,
-      maf.operator = maf.operator
-    )
+    baseline.data <- radiator::filter_maf(
+    data = baseline.data,
+    interactive.filter = FALSE,
+    maf.thresholds = maf.thresholds,
+    parallel.core = parallel.core,
+    verbose = FALSE)$tidy.filtered.maf
     
     input <- dplyr::bind_rows(mixture.data, baseline.data$input) %>% 
       dplyr::arrange(POP_ID, INDIVIDUALS)

@@ -212,7 +212,7 @@
 #' @importFrom parallel detectCores
 #' @importFrom stringi stri_join stri_sub stri_replace_all_fixed stri_detect_fixed stri_replace_na
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join funs sample_n sample_frac
-#' @importFrom radiator tidy_genomic_data change_pop_names radiator_imputations_module write_genind snp_ld keep_common_markers radiator_maf_module detect_genomic_format
+#' @importFrom radiator tidy_genomic_data change_pop_names radiator_imputations_module write_genind snp_ld keep_common_markers filter_maf detect_genomic_format
 #' @importFrom stats var median quantile
 #' @importFrom purrr map flatten keep discard
 #' @importFrom adegenet genind
@@ -347,9 +347,6 @@ assignment_ngs <- function(
   snp.ld = NULL,
   common.markers = TRUE,
   maf.thresholds = NULL,
-  maf.pop.num.threshold = 1,
-  maf.approach = "SNP",
-  maf.operator = "OR",
   max.marker = NULL,
   strata = NULL,
   pop.levels = NULL,
@@ -441,20 +438,6 @@ assignment_ngs <- function(
   # File type detection --------------------------------------------------------
   data.type <- radiator::detect_genomic_format(data)
   
-  if (data.type == "haplo.file") {
-    message("With stacks haplotype file the maf.approach is automatically set to: haplotype")
-    maf.approach <- "SNP"
-    # confusing, but because the haplotpe file doesn't have snp info, only locus info
-    # it's treated as markers/snp info and filtered the same way as the approach by SNP.
-    # but it's really by haplotype
-  }
-  
-  if (maf.approach == "haplotype") {
-    if (data.type != "vcf.file" | data.type != "haplo.file") {
-      stop("The haplotype approach during MAF filtering is for VCF and
-           stacks haplotypes file, only. Use the snp approach for the other file types")
-    }
-  }
   # Strata argument required for VCF and haplotypes files ----------------------
   if (data.type == "haplo.file" | data.type == "vcf.file") {
     if (is.null(strata)) stop("strata argument is required")
@@ -472,9 +455,6 @@ assignment_ngs <- function(
     snp.ld = snp.ld,
     common.markers = FALSE, 
     maf.thresholds = maf.thresholds,
-    maf.pop.num.threshold = maf.pop.num.threshold,
-    maf.approach = maf.approach,
-    maf.operator = maf.operator,
     strata = strata, 
     pop.levels = pop.levels, 
     pop.labels = pop.labels, 
@@ -553,9 +533,6 @@ assignment_ngs <- function(
     snp.ld = snp.ld,
     common.markers = common.markers,
     maf.thresholds = maf.thresholds,
-    maf.pop.num.threshold = maf.pop.num.threshold,
-    maf.approach = maf.approach,
-    maf.operator = maf.operator,
     marker.number = marker.number,
     # pop.levels = unique(pop.labels),
     # pop.labels = unique(pop.labels),
@@ -1416,9 +1393,6 @@ assignment_function <- function(
   snp.ld = NULL,
   common.markers = TRUE,
   maf.thresholds = NULL,
-  maf.pop.num.threshold = 1,
-  maf.approach = "SNP",
-  maf.operator = "OR",
   marker.number = NULL,
   pop.levels = NULL,
   pop.labels = NULL,
@@ -1474,14 +1448,12 @@ assignment_function <- function(
   
   # Minor Allele Frequency filter --------------------------------------------
   if (!is.null(maf.thresholds)) {
-    # maf.thresholds <- c(0.05, 0.05) # test
-    input <- radiator::radiator_maf_module(
-      data = input,
-      maf.thresholds = maf.thresholds,
-      maf.pop.num.threshold = maf.pop.num.threshold,
-      maf.approach = maf.approach,
-      maf.operator = maf.operator
-    )
+    input <- radiator::filter_maf(
+    data = input,
+    interactive.filter = FALSE,
+    maf.thresholds = maf.thresholds,
+    parallel.core = parallel.core,
+    verbose = FALSE)$tidy.filtered.maf
   } # End of MAF filters
   
   # Keep a new strata df -------------------------------------------------------
