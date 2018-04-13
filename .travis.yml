@@ -17,3 +17,6 @@ apt_packages:
 
 use_bioc: true
 bioc_required: true
+os:
+  - linux
+  - osx

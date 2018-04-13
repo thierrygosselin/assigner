@@ -289,7 +289,7 @@ fst_WC84 <- function(
   
   # Import data ---------------------------------------------------------------
   if (verbose) message("Importing data")
-  input <- radiator::tidy_wide(data = data, import.metadata = TRUE)
+  input <- radiator::tidy_wide(data = data, import.metadata = FALSE)
   
   # For long tidy format, switch LOCUS to MARKERS column name, if found MARKERS not found
   if (tibble::has_name(input, "LOCUS") && !tibble::has_name(input, "MARKERS")) {
