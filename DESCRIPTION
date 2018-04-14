@@ -35,8 +35,7 @@ Suggests:
     knitr,
     rmarkdown
 Remotes:
-    github::thierrygosselin/radiator,
-    github::kvnkuang/pbmcapply
+    github::thierrygosselin/radiator
 License: GPL (>=2)
 LazyLoad: yes
 VignetteBuilder: knitr

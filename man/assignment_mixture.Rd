@@ -142,44 +142,54 @@ Default: \code{monomorphic.out = TRUE}.}
 \item{snp.ld}{(optional) \strong{For data with locus and SNP info, like VCF and DArT file}.
 SNP short distance linkage disequilibrium pruning. With anonymous markers from
 RADseq/GBS de novo discovery, you can minimize linkage disequilibrium (LD) by
-choosing among these 4 options:
-\code{snp.ld = "random"} for a random selection of 1 SNP on the read,
-\code{snp.ld = "first"} for the first one on the read...,
-\code{snp.ld = "last"} for the last SNP on the read and
-\code{snp.ld = "middle"} for locus with > 2 SNPs/read the option to select at random
+choosing among these 5 options:
+\enumerate{
+\item \code{snp.ld = "random"} for a random selection of 1 SNP on the read,
+\item \code{snp.ld = "first"} for the first one on the read...,
+\item \code{snp.ld = "last"} for the last SNP on the read and
+\item \code{snp.ld = "middle"} for locus with > 2 SNPs/read the option to select at random
 one SNP between the first and the last SNP on the read. If the locus as <= 2
 SNPs on the read, the first one is selected. Note that for that last option,
-the numbers are reported. For long distance linkage
-disequilibrium pruning, see details below.
-Default: \code{snp.ld = NULL}.}
+the numbers are reported.
+\item \code{snp.ld = "maf"} will select the SNP on the locus with the maximum global
+Minor Allele Frequency (MAF).
+}
+For long distance linkage disequilibrium pruning, see details below.
+Default: \code{snp.ld = NULL}, for no pruning.}
 
 \item{common.markers}{(optional) Logical. Default: \code{common.markers = TRUE},
 will only keep markers in common (genotyped) between all the populations.}
 
-\item{maf.thresholds}{(optional) Default: \code{maf.thresholds = NULL}. For no
-MAF filtering.
+\item{maf.thresholds}{(optional) Use for minor allele frequency (maf) or count (mac)
+filter. Default: \code{maf.thresholds = NULL}, for no filtering.
 
-String with 5 values
-(e.g. \code{maf.thresholds = c("maf approach", local maf, "OR", global maf, number pop threshold)},
-\code{maf.thresholds = c("SNP", 0.001, "OR", 0.001, 1)}):
+String with 5 values.
+For example using SNP and frequency approach: \code{maf.thresholds = c("SNP", 0.001, "OR", 0.001, 1)}.
+For example using locus and count approach: \code{maf.thresholds = c("locus", 3, "OR", 6, 1)}.
 \enumerate{
 \item maf approach (character: "SNP"/"locus"):
 MAF filtering is conducted by SNPs or locus.
-\code{"SNP"}: will consider all the SNPs on the same locus/read as independent.
+\code{"SNP"}: will consider all the SNPs on the same locus/read as independent
+and will be filtered independently of their locus id.
 \code{"locus"}: looks at the minimum MAF found on the
 read/locus. Using this option will discard all the markers/snp on
 that read based on the thresholds chosen. For the locus approach to work, your dataset
 requires SNP and Locus info (e.g. from a VCF file).
 
-\item local maf (double): The maf threshold at the population level.
+\item local threshold (double or integer): For a frequency threshold use
+a double (e.g. 0.05). For a count threshold, use an integer
+(e.g. 3 for the number of alternate allele required in a population). This
+threshold is applied by population.
 Not sure about the threshold to use, choose the interactive mode argument.
 
-\item maf operator (character: "OR" / "AND"):
-When filtering over LOCUS or SNP, 2 options available to consider the local/global MAF:
-The local \code{"AND"} the global MAF. The local \code{"OR"}
-global MAF.
+\item operator (character: "OR" / "AND"):
+To consider both the local \code{"AND"} the global thresholds, use \code{"AND"}.
+To consider the local \code{"OR"} the global thresholds, use \code{"OR"}.
 
-\item global maf (double): The maf threshold taken at the dataset level.
+\item global threshold (double or integer): For a frequency threshold
+use a double (e.g. 0.02). For a count threshold, use an integer
+(e.g. 6 for the number of alternate allele required). This threshold is
+applied at the dataset level (no population).
 Not sure about the threshold to use, choose the interactive mode argument.
 
 \item maf pop num threshold (integer)
@@ -286,7 +296,7 @@ a random number is generated and printed in the appropriate output.
 Default: \code{random.seed = NULL}.}
 
 \item{parallel.core}{(optional) The number of core used for parallel
-execution during vcf import.
+execution during import.
 Default: \code{parallel::detectCores() - 1}.}
 }
 \value{

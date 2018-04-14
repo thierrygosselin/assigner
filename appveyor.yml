@@ -19,9 +19,10 @@ environment:
     USE_RTOOLS: true
 
 build_script:
-  - travis-tool.sh install_bioc_deps install_deps install_github install_r R.oo R.utils
-  - travis-tool.sh install_github zhengxwen/SNPRelate
+  - set _R_CHECK_FORCE_SUGGESTS_=false
   - travis-tool.sh install_github thierrygosselin/radiator
+  - travis-tool.sh install_deps
+  - travis-tool.sh install_r R.oo R.utils
 
 test_script:
   - travis-tool.sh run_tests
