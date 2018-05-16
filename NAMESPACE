@@ -2,6 +2,7 @@
 
 export("%>%")
 export(.assigner_parallel)
+export(.assigner_parallel_mc)
 export(assignment_adegenet)
 export(assignment_function)
 export(assignment_gsi_sim)

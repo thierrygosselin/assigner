@@ -9,7 +9,7 @@
 #' Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
 #' confidence intervals based on bootstrap of markers (resampling with replacement). 
 #' The function gives identical results \emph{at the 9th decimal} when tested 
-#' against \code{\link[hierfstat]{genet.dist}} in \pkg{hierfstat}. Using the 
+#' against \code{genet.dist} in \code{hierfstat}. Using the 
 #' argument \code{snprelate = TRUE} will compute the Fst with 
 #' \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}. This implementation
 #' gives slightly upward bias values but provided the fastest computations I know,
@@ -124,7 +124,7 @@
 #' during execution. 
 #' Default: \code{verbose = FALSE}.
 
-# @param ... other parameters passed to the function.
+#' @param ... other parameters passed to the function.
 
 #' @return The function returns a list with several objects.
 #' When sumsample is selected the objects end with \code{.subsample}.
@@ -218,8 +218,7 @@
 #' possibly using a hierarchical population structure, (see AMOVA)'}
 #' 
 #' To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
-#' or \code{\link[mmod]{Phi_st_Meirmans}} 
-#' in \code{\link[mmod]{mmod}}.
+#' or \code{Phi_st_Meirmans} in \code{mmod}.
 #' 
 #' \code{hierfstat} is available on 
 #' CRAN \url{http://cran.r-project.org/web/packages/hierfstat/} and 
@@ -228,7 +227,7 @@
 #' Link for \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 #' 
 #' For Fisher's exact test and p-values per markers 
-#' see \code{mmod} \code{\link[mmod]{diff_test}}.
+#' see \code{mmod} \code{diff_test}.
 #' 
 #' \code{\link[radiator]{tidy_genomic_data}} to transform numerous genomic data 
 #' format in tidy data frames.
@@ -251,7 +250,35 @@ fst_WC84 <- function(
   iteration.subsample = 1,
   digits = 9,
   parallel.core = parallel::detectCores() - 1,
-  verbose = FALSE) {
+  verbose = FALSE,
+  ...
+) {
+  
+  # dotslist -------------------------------------------------------------------
+  dotslist <- list(...)
+  want <- c("filename")
+  unknowned_param <- setdiff(names(dotslist), want)
+  
+  if (length(unknowned_param) > 0) {
+    stop("Unknowned \"...\" parameters ",
+         stringi::stri_join(unknowned_param, collapse = " "))
+  }
+  assigner.dots <- dotslist[names(dotslist) %in% want]
+  filename <- assigner.dots[["filename"]]
+  if (is.null(filename)) filename <- NULL
+  # filename -------------------------------------------------------------------
+  if (!is.null(filename)) {
+    file.date <- format(Sys.time(), "%Y%m%d@%H%M")
+    filename <- folder.extension <- stringi::stri_join(
+      filename, "fst_WC84", file.date, sep = "_")
+    working.dir <- getwd()
+    path.folder <- stringi::stri_join(working.dir,"/", folder.extension, sep = "")
+    dir.create(file.path(working.dir, folder.extension))
+    message("\nFolder created: \n", folder.extension)
+  }
+  
+  
+  
   # fst.snprelate <- NULL # remove after bias test
   # gds.file.connection <- NULL
   if (verbose) {
@@ -315,7 +342,7 @@ fst_WC84 <- function(
       )
       strata.df <- strata
     }
-  
+    
     # Remove potential whitespace in pop_id
     strata.df$POP_ID <- radiator::clean_pop_names(strata.df$POP_ID)
     strata.df$INDIVIDUALS <- radiator::clean_ind_names(strata.df$INDIVIDUALS)
@@ -363,6 +390,12 @@ fst_WC84 <- function(
       append = FALSE
     )
     res$subsampling.individuals <- subsampling.individuals
+    
+    if (!is.null(filename)) {
+      readr::write_tsv(
+        x = res$subsampling.individuals, 
+        path = file.path(path.folder, "subsampling.individuals.tsv"))
+    }
   } # End subsampling
   
   # unused objects
@@ -393,24 +426,100 @@ fst_WC84 <- function(
   # Compile subsampling results ------------------------------------------------
   if (is.null(subsample)) {
     subsample.fst <- purrr::flatten(subsample.fst)
+    
+    # sigma.loc
     res$sigma.loc <- subsample.fst$sigma.loc
+    if (!is.null(filename)) { 
+      readr::write_tsv(
+        x = res$sigma.loc, 
+        path = file.path(path.folder, "sigma.loc.tsv"))
+    }
+    
+    # fst.markers
     res$fst.markers <- subsample.fst$fst.markers
+    if (!is.null(filename)) { 
+      readr::write_tsv(
+        x = res$fst.markers, 
+        path = file.path(path.folder, "fst.markers.tsv"))
+    }
+    # fst.ranked
     res$fst.ranked <- subsample.fst$fst.ranked
+    if (!is.null(filename)) { 
+      readr::write_tsv(
+        x = res$fst.ranked, 
+        path = file.path(path.folder, "fst.ranked.tsv"))
+    }
+    
+    # fst.overall
     res$fst.overall <- subsample.fst$fst.overall
+    if (!is.null(filename)) { 
+      readr::write_tsv(
+        x = res$fst.overall, 
+        path = file.path(path.folder, "fst.overall.tsv"))
+    }
+    # fis.markers
     res$fis.markers <- subsample.fst$fis.markers
+    if (!is.null(filename)) {
+      readr::write_tsv(
+        x = res$fis.markers, 
+        path = file.path(path.folder, "fis.markers.tsv"))
+    }
+    # fis.overall
     res$fis.overall <- subsample.fst$fis.overall
+    if (!is.null(filename)) {  
+      readr::write_tsv(
+        x = res$fis.overall, 
+        path = file.path(path.folder, "fis.overall.tsv"))
+    }
+    # fst.plot
     res$fst.plot <- subsample.fst$fst.plot
+    if (!is.null(filename)) {  
+      ggplot2::ggsave(
+        filename = file.path(path.folder, "fst.plot.pdf"), 
+        plot = res$fst.plot,
+        width = 15, height = 10,
+        dpi = 300, units = "cm", device = "pdf", limitsize = FALSE,
+        useDingbats = FALSE)
+    }
+    
+    # pairwise.fst
     res$pairwise.fst <- subsample.fst$pairwise.fst
+    if (!is.null(filename)) {  
+      readr::write_tsv(
+        x = res$pairwise.fst, 
+        path = file.path(path.folder, "pairwise.fst.tsv"))
+    }
+    # pairwise.fst.upper.matrix
     res$pairwise.fst.upper.matrix <- subsample.fst$pairwise.fst.upper.mat
+    if (!is.null(filename)) {
+      obj1 <- res$pairwise.fst.upper.matrix
+      save(obj1, file = file.path(path.folder, "pairwise.fst.upper.matrix.RData"))
+    }
+    # pairwise.fst.full.matrix
     res$pairwise.fst.full.matrix <- subsample.fst$pairwise.fst.full.mat
+    if (!is.null(filename)) {
+      obj1 <- res$pairwise.fst.full.matrix
+      save(obj1, file = file.path(path.folder, "pairwise.fst.full.matrix.RData"))
+    }
+    # pairwise.fst.ci.matrix
     res$pairwise.fst.ci.matrix <- subsample.fst$pairwise.fst.ci.matrix
+    if (!is.null(filename)) { 
+      obj1 <- res$pairwise.fst.ci.matrix
+      save(obj1, file = file.path(path.folder, "pairwise.fst.ci.matrix.RData"))
+    }
   } else {
+    # With SUBSAMPLING --------
     # test <- subsample.fst[1]
     subsample.fst.transposed <- purrr::transpose(subsample.fst)
     # names(subsample.fst.transposed)
     
     # sigma.loc
     res$sigma.loc.subsample <- subsample.fst.transposed[["sigma.loc"]]
+    if (!is.null(filename)) {
+      readr::write_tsv(
+        x = dplyr::bind_rows(res$sigma.loc.subsample), 
+        path = file.path(path.folder, "sigma.loc.tsv"))
+    }
     
     # fst.markers
     res$fst.markers.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fst.markers"]]) %>% 
@@ -427,9 +536,18 @@ fst_WC84 <- function(
       ) %>% 
       dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = round, digits = digits)
     
+    if (!is.null(filename)) {
+      readr::write_tsv(
+        x = res$fst.markers.subsample, 
+        path = file.path(path.folder, "fst.markers.tsv"))
+    }
     # fst.ranked
     res$fst.ranked.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fst.ranked"]])
-    
+    if (!is.null(filename)) {
+      readr::write_tsv(
+        x = res$fst.ranked.subsample, 
+        path = file.path(path.folder, "fst.ranked.tsv"))
+    }
     # fst.overall
     res$fst.overall.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fst.overall"]]) %>%
       dplyr::summarise(
@@ -445,6 +563,11 @@ fst_WC84 <- function(
       ) %>% 
       dplyr::mutate_all(.tbl = ., .funs = round, digits = digits)
     
+    if (!is.null(filename)) {
+      readr::write_tsv(
+        x = res$fst.overall.subsample, 
+        path = file.path(path.folder, "fst.overall.tsv"))
+    }
     # fis.markers
     res$fis.markers.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fis.markers"]]) %>% 
       dplyr::group_by(MARKERS) %>% 
@@ -459,7 +582,11 @@ fst_WC84 <- function(
         ITERATIONS = length(FIS)
       ) %>% 
       dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = round, digits = digits)
-    
+    if (!is.null(filename)) {
+      readr::write_tsv(
+        x = res$fis.markers.subsample, 
+        path = file.path(path.folder, "fis.markers.tsv"))
+    }
     # fis.overall
     res$fis.overall.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fis.overall"]]) %>%
       dplyr::summarise(
@@ -474,6 +601,11 @@ fst_WC84 <- function(
         N_MARKERS_MEAN = mean(N_MARKERS)
       ) %>% 
       dplyr::mutate_all(.tbl = ., .funs = round, digits = digits)
+    if (!is.null(filename)) {
+      readr::write_tsv(
+        x = res$fis.overall.subsample, 
+        path = file.path(path.folder, "fis.overall.tsv"))
+    }
     
     # fst.plot
     res$fst.plot.subsample <- subsample.fst.transposed[["fst.plot"]]
@@ -487,6 +619,11 @@ fst_WC84 <- function(
       dplyr::summarise_all(.tbl = ., .funs = mean, na.rm = TRUE) %>% 
       dplyr::mutate(ITERATIONS = rep(iteration.subsample, n()))
     
+    if (!is.null(filename)) {
+      readr::write_tsv(
+        x = res$pairwise.fst.subsample.mean, 
+        path = file.path(path.folder, "pairwise.fst.tsv"))
+    }
     # pairwise.fst.upper.matrix
     res$pairwise.fst.upper.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.upper.matrix"]]
     
@@ -498,17 +635,26 @@ fst_WC84 <- function(
     rn <- res$pairwise.fst.upper.matrix.subsample.mean$POP # rownames
     res$pairwise.fst.upper.matrix.subsample.mean <- as.matrix(res$pairwise.fst.upper.matrix.subsample.mean[,-1])# make matrix without first column
     rownames(res$pairwise.fst.upper.matrix.subsample.mean) <- rn
-    
+    if (!is.null(filename)) {
+      obj1 <- res$pairwise.fst.upper.matrix.subsample.mean
+      save(obj1, file = file.path(path.folder, "pairwise.fst.upper.matrix.RData"))
+    }
     # pairwise.fst.full.matrix
     res$pairwise.fst.full.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.full.matrix"]]
     
     # pairwise.fst.full.matrix.mean
     res$pairwise.fst.full.matrix.subsample.mean <- res$pairwise.fst.upper.matrix.subsample.mean # bk of upper.mat.fst
     lower.mat.fst <- t(res$pairwise.fst.full.matrix.subsample.mean) # transpose
+    
+    
     # merge upper and lower matrix
     res$pairwise.fst.full.matrix.subsample.mean[lower.tri(res$pairwise.fst.full.matrix.subsample.mean)] <- lower.mat.fst[lower.tri(lower.mat.fst)] 
     diag(res$pairwise.fst.full.matrix.subsample.mean) <- "0"
     
+    if (!is.null(filename)) {
+      obj1 <- res$pairwise.fst.full.matrix.subsample.mean
+      save(obj1, file = file.path(path.folder, "pairwise.fst.full.matrix.RData"))
+    }
     if (ci) {
       # pairwise.fst.ci.matrix
       res$pairwise.fst.ci.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.ci.matrix"]]
@@ -529,6 +675,11 @@ fst_WC84 <- function(
       pairwise.fst.ci.matrix.sub <- res$pairwise.fst.upper.matrix.subsample.mean # bk upper.mat.fst
       pairwise.fst.ci.matrix.sub[lower.tri(pairwise.fst.ci.matrix.sub)] <- lower.mat.ci.sub[lower.tri(lower.mat.ci.sub)]
       res$pairwise.fst.ci.matrix.subsample.mean <- pairwise.fst.ci.matrix.sub
+      if (!is.null(filename)) {
+        obj1 <- res$pairwise.fst.ci.matrix.subsample.mean
+        save(obj1, file = file.path(path.folder, "pairwise.fst.ci.matrix.RData"))
+        obj1 <- NULL
+      }
     } else {
       res$pairwise.fst.ci.matrix.subsample <- "confidence intervals not selected"
       res$pairwise.fst.ci.matrix.subsample.mean <- "confidence intervals not selected"

@@ -9,7 +9,7 @@ fst_WC84(data, snprelate = FALSE, pop.levels = NULL, pop.labels = NULL,
   strata = NULL, holdout.samples = NULL, pairwise = FALSE, ci = FALSE,
   iteration.ci = 100, quantiles.ci = c(0.025, 0.975), subsample = NULL,
   iteration.subsample = 1, digits = 9,
-  parallel.core = parallel::detectCores() - 1, verbose = FALSE)
+  parallel.core = parallel::detectCores() - 1, verbose = FALSE, ...)
 }
 \arguments{
 \item{data}{A tidy data frame object in the global environment or
@@ -94,6 +94,8 @@ Default: \code{parallel.core = parallel::detectCores() - 1}.}
 \item{verbose}{(optional, logical) \code{verbose = TRUE} to be chatty 
 during execution. 
 Default: \code{verbose = FALSE}.}
+
+\item{...}{other parameters passed to the function.}
 }
 \value{
 The function returns a list with several objects.
@@ -125,7 +127,7 @@ The function calculates Weir and Cockerham (1984)
 Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
 confidence intervals based on bootstrap of markers (resampling with replacement). 
 The function gives identical results \emph{at the 9th decimal} when tested 
-against \code{\link[hierfstat]{genet.dist}} in \pkg{hierfstat}. Using the 
+against \code{genet.dist} in \code{hierfstat}. Using the 
 argument \code{snprelate = TRUE} will compute the Fst with 
 \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}. This implementation
 gives slightly upward bias values but provided the fastest computations I know,
@@ -216,8 +218,7 @@ it is adviseable to perform an overall test of population differentiation,
 possibly using a hierarchical population structure, (see AMOVA)'}
 
 To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
-or \code{\link[mmod]{Phi_st_Meirmans}} 
-in \code{\link[mmod]{mmod}}.
+or \code{Phi_st_Meirmans} in \code{mmod}.
 
 \code{hierfstat} is available on 
 CRAN \url{http://cran.r-project.org/web/packages/hierfstat/} and 
@@ -226,7 +227,7 @@ github \url{https://github.com/jgx65/hierfstat/}
 Link for \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 
 For Fisher's exact test and p-values per markers 
-see \code{mmod} \code{\link[mmod]{diff_test}}.
+see \code{mmod} \code{diff_test}.
 
 \code{\link[radiator]{tidy_genomic_data}} to transform numerous genomic data 
 format in tidy data frames.

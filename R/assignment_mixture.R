@@ -474,7 +474,7 @@ assignment_mixture <- function(
   ind.pop.df <- subsampling.individuals <- NULL
   
   # assignment analysis --------------------------------------------------------
-  res <- purrr::map(
+  res <- purrr::map_df(
     .x = subsample.list,
     .f = assignment_function,
     input = input,
@@ -501,10 +501,14 @@ assignment_mixture <- function(
     random.seed = random.seed,
     base.filename = base.filename
   )
-  res <- dplyr::bind_rows(res)
+  # res <- dplyr::bind_rows(res)
   
   if (!is.null(subsample)) {
-    readr::write_tsv(x = res, path = paste0(directory, "assignment.mixture.results.tsv"), col_names = TRUE, append = FALSE)
+    readr::write_tsv(
+      x = res, 
+      path = paste0(directory, "assignment.mixture.results.tsv"),
+      col_names = TRUE, 
+      append = FALSE)
   }
   
   # Summary of the subsampling iterations
@@ -887,14 +891,14 @@ assignment_adegenet <- function(
       n.pca = round(((length(adegenet::indNames(training.data))/3) - 1), 0)
     ),
     pop = pop.training, plot = FALSE)$best
-  message(stringi::stri_join("a-score optimisation for iteration:", i, sep = " "))
+  message("a-score optimisation for iteration:", i, sep = " ")
   
   dapc.training <- adegenet::dapc(
     training.data,
     n.da = length(levels(pop.training)), 
     n.pca = dapc.best.optim.a.score, 
     pop = pop.training)
-  message(stringi::stri_join("DAPC of training data set for iteration:", i, sep = " "))
+  message("DAPC of training data set for iteration:", i, sep = " ")
   
   # DAPC holdout individuals
   holdout.data <- data.select[data.select@strata$POP_ID == "mixture"]
@@ -908,7 +912,7 @@ assignment_adegenet <- function(
   rev.assignment.levels <- rev(assignment.levels)
   
   dapc.predict.holdout <- adegenet::predict.dapc(dapc.training, newdata = holdout.data)
-  message(stringi::stri_join("Assigning holdout data for iteration:", i, sep = " "))
+  message("Assigning holdout data for iteration:", i, sep = " ")
   
   
   # Get Assignment results -----------------------------------------------
@@ -1398,8 +1402,9 @@ assignment_function <- function(
     
     assignment.res <- NULL
     assignment.res <- suppressWarnings(
-      .assigner_parallel(
-        X = marker.random.list, 
+      # .assigner_parallel_mc(
+        parallel::mclapply(
+          X = marker.random.list, 
         FUN = assignment_random, 
         mc.preschedule = FALSE, 
         mc.silent = FALSE,

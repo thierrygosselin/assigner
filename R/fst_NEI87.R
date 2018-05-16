@@ -13,7 +13,7 @@
 #' Both overall and pairwise Fst can be estimated with 
 #' confidence intervals based on bootstrap of markers (resampling with replacement). 
 #' The function should give identical results \emph{at the 4th decimal} when tested 
-#' against \code{\link[hierfstat]{genet.dist}} in \pkg{hierfstat} and with 
+#' against \code{genet.dist} in \code{hierfstat} and with 
 #' the Fst computed in \code{Calculate Distances} or 
 #' \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}.
 #' The fastest computation is still 
@@ -241,7 +241,7 @@
 #' Link for \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 #' 
 #' For Fisher's exact test and p-values per markers 
-#' see \code{mmod} \code{\link[mmod]{diff_test}}.
+#' see \code{mmod} \code{diff_test}.
 #' 
 #' \code{\link[radiator]{tidy_genomic_data}} to transform numerous genomic data 
 #' format in tidy data frames.

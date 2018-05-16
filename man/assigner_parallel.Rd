@@ -3,6 +3,7 @@
 \name{mclapply_win}
 \alias{mclapply_win}
 \alias{.assigner_parallel}
+\alias{.assigner_parallel_mc}
 \title{hack to switch function for parallel computation based on OS}
 \usage{
 mclapply_win(X, FUN, ..., mc.preschedule = TRUE, mc.set.seed = TRUE,
@@ -12,6 +13,10 @@ mclapply_win(X, FUN, ..., mc.preschedule = TRUE, mc.set.seed = TRUE,
 .assigner_parallel(X, FUN, ..., mc.style = "ETA", mc.substyle = NA,
   mc.cores = getOption("mc.cores", 2L),
   ignore.interactive = getOption("ignore.interactive", F))
+
+.assigner_parallel_mc(X, FUN, ..., mc.preschedule = TRUE,
+  mc.set.seed = TRUE, mc.silent = FALSE, mc.cores = getOption("mc.cores",
+  2L), mc.cleanup = TRUE, mc.allow.recursive = TRUE, affinity.list = NULL)
 }
 \arguments{
 \item{X}{see \pkg{parallel} \code{\link{mclapply}}}
@@ -34,6 +39,8 @@ mclapply_win(X, FUN, ..., mc.preschedule = TRUE, mc.set.seed = TRUE,
 }
 \value{
 For mclapply, a list of the same length as X and named by X.
+
+For mclapply, a list of the same length as X and named by X.
 }
 \description{
 \code{parallel::mclapply} doesn't work on Windows,
@@ -45,6 +52,8 @@ The code below was inspired from
 \pkg{parallel} \code{\link{mclapply}}, 
 \href{https://github.com/nathanvan}{Nathan VanHoudnos} and 
 \href{https://github.com/EricArcher/}{Eric Archer}.
+
+functions on Windows.
 
 functions on Windows.
 }
