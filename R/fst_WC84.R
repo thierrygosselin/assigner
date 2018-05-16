@@ -492,20 +492,23 @@ fst_WC84 <- function(
     # pairwise.fst.upper.matrix
     res$pairwise.fst.upper.matrix <- subsample.fst$pairwise.fst.upper.mat
     if (!is.null(filename)) {
-      obj1 <- res$pairwise.fst.upper.matrix
-      save(obj1, file = file.path(path.folder, "pairwise.fst.upper.matrix.RData"))
+      pairwise.fst.upper.matrix <- res$pairwise.fst.upper.matrix
+      save(pairwise.fst.upper.matrix, file = file.path(path.folder, "pairwise.fst.upper.matrix.RData"))
+      pairwise.fst.upper.matrix <- NULL
     }
     # pairwise.fst.full.matrix
     res$pairwise.fst.full.matrix <- subsample.fst$pairwise.fst.full.mat
     if (!is.null(filename)) {
-      obj1 <- res$pairwise.fst.full.matrix
-      save(obj1, file = file.path(path.folder, "pairwise.fst.full.matrix.RData"))
+      pairwise.fst.full.matrix <- res$pairwise.fst.full.matrix
+      save(pairwise.fst.full.matrix, file = file.path(path.folder, "pairwise.fst.full.matrix.RData"))
+      pairwise.fst.full.matrix <- NULL
     }
     # pairwise.fst.ci.matrix
     res$pairwise.fst.ci.matrix <- subsample.fst$pairwise.fst.ci.matrix
     if (!is.null(filename)) { 
-      obj1 <- res$pairwise.fst.ci.matrix
-      save(obj1, file = file.path(path.folder, "pairwise.fst.ci.matrix.RData"))
+      pairwise.fst.ci.matrix <- res$pairwise.fst.ci.matrix
+      save(pairwise.fst.ci.matrix, file = file.path(path.folder, "pairwise.fst.ci.matrix.RData"))
+      pairwise.fst.ci.matrix <- NULL
     }
   } else {
     # With SUBSAMPLING --------
@@ -636,8 +639,9 @@ fst_WC84 <- function(
     res$pairwise.fst.upper.matrix.subsample.mean <- as.matrix(res$pairwise.fst.upper.matrix.subsample.mean[,-1])# make matrix without first column
     rownames(res$pairwise.fst.upper.matrix.subsample.mean) <- rn
     if (!is.null(filename)) {
-      obj1 <- res$pairwise.fst.upper.matrix.subsample.mean
-      save(obj1, file = file.path(path.folder, "pairwise.fst.upper.matrix.RData"))
+      pairwise.fst.upper.matrix.subsample.mean <- res$pairwise.fst.upper.matrix.subsample.mean
+      save(pairwise.fst.upper.matrix.subsample.mean, file = file.path(path.folder, "pairwise.fst.upper.matrix.RData"))
+      pairwise.fst.upper.matrix.subsample.mean <- NULL
     }
     # pairwise.fst.full.matrix
     res$pairwise.fst.full.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.full.matrix"]]
@@ -652,8 +656,9 @@ fst_WC84 <- function(
     diag(res$pairwise.fst.full.matrix.subsample.mean) <- "0"
     
     if (!is.null(filename)) {
-      obj1 <- res$pairwise.fst.full.matrix.subsample.mean
-      save(obj1, file = file.path(path.folder, "pairwise.fst.full.matrix.RData"))
+      pairwise.fst.full.matrix.subsample.mean <- res$pairwise.fst.full.matrix.subsample.mean
+      save(pairwise.fst.full.matrix.subsample.mean, file = file.path(path.folder, "pairwise.fst.full.matrix.RData"))
+      pairwise.fst.full.matrix.subsample.mean <- NULL
     }
     if (ci) {
       # pairwise.fst.ci.matrix
@@ -676,9 +681,9 @@ fst_WC84 <- function(
       pairwise.fst.ci.matrix.sub[lower.tri(pairwise.fst.ci.matrix.sub)] <- lower.mat.ci.sub[lower.tri(lower.mat.ci.sub)]
       res$pairwise.fst.ci.matrix.subsample.mean <- pairwise.fst.ci.matrix.sub
       if (!is.null(filename)) {
-        obj1 <- res$pairwise.fst.ci.matrix.subsample.mean
-        save(obj1, file = file.path(path.folder, "pairwise.fst.ci.matrix.RData"))
-        obj1 <- NULL
+        pairwise.fst.ci.matrix.subsample.mean <- res$pairwise.fst.ci.matrix.subsample.mean
+        save(pairwise.fst.ci.matrix.subsample.mean, file = file.path(path.folder, "pairwise.fst.ci.matrix.RData"))
+        pairwise.fst.ci.matrix.subsample.mean <- NULL
       }
     } else {
       res$pairwise.fst.ci.matrix.subsample <- "confidence intervals not selected"
