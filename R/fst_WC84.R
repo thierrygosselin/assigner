@@ -266,19 +266,6 @@ fst_WC84 <- function(
   assigner.dots <- dotslist[names(dotslist) %in% want]
   filename <- assigner.dots[["filename"]]
   if (is.null(filename)) filename <- NULL
-  # filename -------------------------------------------------------------------
-  if (!is.null(filename)) {
-    file.date <- format(Sys.time(), "%Y%m%d@%H%M")
-    filename <- folder.extension <- stringi::stri_join(
-      filename, "fst_WC84", file.date, sep = "_")
-    working.dir <- getwd()
-    path.folder <- stringi::stri_join(working.dir,"/", folder.extension, sep = "")
-    dir.create(file.path(working.dir, folder.extension))
-    message("\nFolder created: \n", folder.extension)
-  }
-  
-  
-  
   # fst.snprelate <- NULL # remove after bias test
   # gds.file.connection <- NULL
   if (verbose) {
@@ -291,6 +278,17 @@ fst_WC84 <- function(
   timing <- proc.time()  
   # results stored in this list:
   res <- list()
+  
+  # filename -------------------------------------------------------------------
+  if (!is.null(filename)) {
+    file.date <- format(Sys.time(), "%Y%m%d@%H%M")
+    filename <- folder.extension <- stringi::stri_join(
+      filename, "fst_WC84", file.date, sep = "_")
+    working.dir <- getwd()
+    path.folder <- stringi::stri_join(working.dir,"/", folder.extension, sep = "")
+    dir.create(file.path(working.dir, folder.extension))
+    message("\nFolder created: \n", folder.extension)
+  }
   
   # if (snprelate) {
   #   # Check that snprelate is installed
@@ -1210,6 +1208,7 @@ fst_subsample <- function(
   if (pairwise) {
     if (verbose) message("Pairwise fst calculation")
     
+    if (!is.factor(input$POP_ID)) input$POP_ID <- factor(input$POP_ID)
     pop.list <- levels(input$POP_ID) # pop list
     # all combination of populations
     pop.pairwise <- utils::combn(pop.list, 2, simplify = FALSE) 
