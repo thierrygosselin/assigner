@@ -12,7 +12,8 @@ mclapply_win(X, FUN, ..., mc.preschedule = TRUE, mc.set.seed = TRUE,
 
 .assigner_parallel(X, FUN, ..., mc.style = "ETA", mc.substyle = NA,
   mc.cores = getOption("mc.cores", 2L),
-  ignore.interactive = getOption("ignore.interactive", F))
+  ignore.interactive = getOption("ignore.interactive", F),
+  max.vector.size = getOption("max.vector.size", 1024L))
 
 .assigner_parallel_mc(X, FUN, ..., mc.preschedule = TRUE,
   mc.set.seed = TRUE, mc.silent = FALSE, mc.cores = getOption("mc.cores",
