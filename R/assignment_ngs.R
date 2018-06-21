@@ -694,7 +694,7 @@ assignment_ngs <- function(
 #' @keywords internal
 
 assignment_gsi_sim <- function(
-  data = NULL,
+  input = NULL,
   strata.df = NULL,
   select.markers = NULL,
   markers.names = NULL,
@@ -718,7 +718,7 @@ assignment_gsi_sim <- function(
   )
   
   # Write gsi_sim input file to directory
-  input.gsi <- assigner::write_gsi_sim(
+  input.gsi <- radiator::write_gsi_sim(
     data = data.select, 
     pop.levels = unique(pop.labels), 
     pop.labels = unique(pop.labels), 
@@ -1037,7 +1037,7 @@ assignment_random <- function(
   
   if (assignment.analysis == "gsi_sim") {
     assignment <- assignment_gsi_sim(
-      data = input,
+      input = input,
       strata.df = strata.df,
       select.markers = select.markers,
       markers.names = markers.names,
@@ -1146,7 +1146,7 @@ assignment_marker_loop <- function(
   
   if (assignment.analysis == "gsi_sim") {
     assignment <- assignment_gsi_sim(
-      data = input,
+      input = input,
       strata.df = strata.df,
       select.markers = select.markers,
       markers.names = markers.names,

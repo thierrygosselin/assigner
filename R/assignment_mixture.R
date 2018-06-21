@@ -287,6 +287,35 @@ assignment_mixture <- function(
   random.seed = NULL,
   parallel.core = parallel::detectCores() - 1
 ) {
+  
+  ## Testing
+  # strata = NULL
+  # mixture = NULL
+  # iteration.method = 10
+  # subsample = NULL
+  # iteration.subsample = 1
+  # marker.number = "all"
+  # blacklist.id = NULL
+  # blacklist.genotype = NULL
+  # whitelist.markers = NULL
+  # monomorphic.out = TRUE
+  # snp.ld = NULL
+  # common.markers = TRUE
+  # maf.thresholds = NULL
+  # max.marker = NULL
+  # pop.levels = NULL
+  # pop.labels = NULL
+  # pop.select = NULL
+  # imputation.method = NULL
+  # impute.mixture = FALSE
+  # hierarchical.levels = "populations"
+  # verbose = FALSE
+  # folder = NULL
+  # filename = "assignment_data.txt"
+  # keep.gsi.files = FALSE
+  # random.seed = NULL
+  # parallel.core = parallel::detectCores() - 1
+  
   cat("#######################################################################\n")
   cat("#################### assigner::assignment_mixture #####################\n")
   cat("#######################################################################\n")
@@ -297,16 +326,21 @@ assignment_mixture <- function(
   if (missing(assignment.analysis)) stop("assignment.analysis argument missing")
   if (assignment.analysis == "gsi_sim" & !gsi_sim_exists()) {
     stop("Can't find the gsi_sim executable where it was expected at ", gsi_sim_binary_path(), ".  
-          If you have internet access, you can install it
-          from within R by invoking the function \"install_gsi_sim(fromSource = TRUE)\"")
+         If you have internet access, you can install it
+         from within R by invoking the function \"install_gsi_sim(fromSource = TRUE)\"")
   }
   
   if (assignment.analysis == "gsi_sim") message("Assignment analysis with gsi_sim")
   if (assignment.analysis == "adegenet") message("Assignment analysis with adegenet")
   
   # Correct iteration.method default if using only "all" in marker.number
-  if (length(marker.number) == 1 && marker.number == "all" && sampling.method == "random") {
+  if (length(marker.number) == 1 && marker.number == "all") {
+    if (sampling.method == "random") {
     iteration.method <- 1
+    } else {
+      message("\n\n\nNote: using all your markers with sampling.method = 'ranked' is the same 
+as using sampling.method = 'random'\n\n\n")
+    }
   }
   
   if ("all" %in% marker.number && sampling.method == "random") {
@@ -314,63 +348,47 @@ assignment_mixture <- function(
   } else {
     manage.all <- FALSE
   }
- 
-  # POP_ID in gsi_sim does not like spaces, we need to remove space in everything touching POP_ID...
-  # pop.levels, pop.labels, pop.select, strata, etc
-  if (!is.null(pop.levels) & is.null(pop.labels)) {
-    pop.levels <- stringi::stri_replace_all_fixed(pop.levels, pattern = " ", replacement = "_", vectorize_all = FALSE)
-    pop.labels <- pop.levels
-  }
-  if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
   
-  if (!is.null(pop.labels)) {
-    if (length(pop.labels) != length(pop.levels)) stop("pop.labels and pop.levels must have the same length")
-    pop.labels <- stringi::stri_replace_all_fixed(pop.labels, pattern = " ", replacement = "_", vectorize_all = FALSE)
-  }
+  function.call <- match.call() # store function call
   
-  if (!is.null(pop.select)) {
-    pop.select <- stringi::stri_replace_all_fixed(pop.select, pattern = " ", replacement = "_", vectorize_all = FALSE)
-  }
-  
-  # store function call
-  function.call <- match.call()
-  
-  # File type detection ********************************************************
-  data.type <- radiator::detect_genomic_format(data)
-  
-  # Strata argument required for VCF and haplotypes files-----------------------
-  if (data.type == "haplo.file" | data.type == "vcf.file") {
-    if (is.null(strata)) stop("strata argument is required")
-  }
-  
-  # Base filename
-  base.filename <- filename # filename will change from time to time in the function
+  # POP_ID in gsi_sim does not like spaces -------------------------------------
+  # we need to remove space in everything touching POP_ID...
+  check <- radiator::check_pop_levels(
+    pop.levels = pop.levels,
+    pop.labels = pop.labels,
+    pop.select = pop.select) #%>% list2env(x = ., globalenv())
+
+  pop.levels <-  check$pop.levels
+  pop.labels <-  check$pop.labels
+  pop.select <-  check$pop.select
   
   # Create a folder based on filename to save the output files -----------------
   if (is.null(folder)) {
     # Get date and time to have unique filenaming
-    file.date <- stringi::stri_replace_all_fixed(Sys.time(), pattern = " EDT", replacement = "")
-    file.date <- stringi::stri_replace_all_fixed(file.date, pattern = c("-", " ", ":"), replacement = c("", "@", ""), vectorize_all = FALSE)
-    file.date <- stringi::stri_sub(file.date, from = 1, to = 13)
+    file.date <- format(Sys.time(), "%Y%m%d@%H%M")
     
     if (is.null(imputation.method)) {
       message("Map-imputation: no")
-      directory <- stringi::stri_join(getwd(),"/", "assignment_mixture_analysis", "_no_imputations_", file.date, "/", sep = "")
-      dir.create(file.path(directory))
+      directory <- stringi::stri_join("assignment_mixture_analysis_no_imputations_", file.date)
     } else {
       message("Map-imputation: yes")
-      directory <- stringi::stri_join(getwd(),"/","assignment_mixture_analysis", "_imputations_", imputation.method,"_", hierarchical.levels, "_", file.date, "/", sep = "")
-      dir.create(file.path(directory))
+      directory <- stringi::stri_join("assignment_mixture_analysis_imputations", imputation.method, hierarchical.levels, file.date, sep = "_")
     }
-    message(stringi::stri_join("Folder: ", directory))
-    file.date <- NULL #unused object
   } else {
-    directory <- stringi::stri_join(getwd(), "/", folder, "/", sep = "")
-    dir.create(file.path(directory))
-    message(stringi::stri_join("Folder: ", directory))
+    directory <- folder
+  }
+  message(stringi::stri_join("Folder: ", directory))
+  directory <- file.path(getwd(), directory)
+  dir.create(directory)
+  file.date <- NULL #unused object
+  # filename <- file.path(directory, filename) # update filename
+  
+  if (!stringi::stri_detect_fixed(str = filename, pattern = ".txt")) {
+    filename <- stringi::stri_join(filename, ".txt")
   }
   
   # Import input ---------------------------------------------------------------
+  # data.type <- radiator::detect_genomic_format(data)# File type detection
   input <- radiator::tidy_genomic_data(
     data = data, 
     vcf.metadata = FALSE,
@@ -386,22 +404,16 @@ assignment_mixture <- function(
     pop.levels = pop.levels, 
     pop.labels = pop.labels, 
     pop.select = pop.select,
-    filename = NULL
+    filename = NULL,
+    verbose = FALSE
   )
-  
-  # check
-  # levels(input$POP_ID)
-  # dplyr::n_distinct(input$MARKERS)
   
   # change "unknown" to "mixture" for simplicity of pop_id below ---------------
-  input$POP_ID <- stringi::stri_replace_all_fixed(
-    str = input$POP_ID, pattern = "unknnown", replacement = "mixture",
-    vectorize_all = FALSE
-  )
-  # need to remove space in POP_ID name to work in gsi_sim
-  input$POP_ID <- stringi::stri_replace_all_fixed(
-    input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE
-  )
+  if ("unknnown" %in% unique(input$POP_ID)) {
+    input$POP_ID <- stringi::stri_replace_all_fixed(
+      str = input$POP_ID, pattern = "unknnown", replacement = "mixture",
+      vectorize_all = FALSE)
+  }
   
   # mixture data ---------------------------------------------------------------
   if ("mixture" %in% unique(input$POP_ID)) {
@@ -409,13 +421,13 @@ assignment_mixture <- function(
       dplyr::filter(POP_ID == "mixture") %>% 
       dplyr::distinct(INDIVIDUALS)
     
-    message(stringi::stri_join("Number of samples identified as unknown/mixture: ", length(mixture.df$INDIVIDUALS)))
+    message(stringi::stri_join("\nNumber of samples identified as unknown/mixture: ", length(mixture.df$INDIVIDUALS)))
   }
   
   if (!is.null(mixture)) {
     mixture.df <- readr::read_tsv(file = mixture, col_names = TRUE, col_types = "c")
     input <- dplyr::mutate(.data = input, POP_ID = dplyr::if_else(INDIVIDUALS %in% mixture.df$INDIVIDUALS, "mixture", as.character(POP_ID)))
-    message(stringi::stri_join("Number of samples identified as unknown/mixture: ", length(mixture.df$INDIVIDUALS)))
+    message(stringi::stri_join("\nNumber of samples identified as unknown/mixture: ", length(mixture.df$INDIVIDUALS)))
   }
   
   # keep a new pop.levels and pop.labels  --------------------------------------
@@ -425,7 +437,8 @@ assignment_mixture <- function(
   
   # subsampling data -----------------------------------------------------------
   # create the subsampling list
-  ind.pop.df <- dplyr::distinct(.data = input, POP_ID, INDIVIDUALS) %>% dplyr::arrange(POP_ID, INDIVIDUALS)
+  ind.pop.df <- dplyr::distinct(.data = input, POP_ID, INDIVIDUALS) %>% 
+    dplyr::arrange(POP_ID, INDIVIDUALS)
   
   if (!is.null(subsample)) {
     min.pop.n <- min(dplyr::count(x = dplyr::filter(ind.pop.df, POP_ID != "mixture"), POP_ID, sort = TRUE)$n)
@@ -464,7 +477,7 @@ assignment_mixture <- function(
     subsampling.individuals <- dplyr::bind_rows(subsample.list)
     readr::write_tsv(
       x = subsampling.individuals, 
-      path = paste0(directory, "subsampling_individuals.tsv"), 
+      path = file.path(directory, "subsampling_individuals.tsv"), 
       col_names = TRUE, 
       append = FALSE
     )
@@ -474,9 +487,9 @@ assignment_mixture <- function(
   ind.pop.df <- subsampling.individuals <- NULL
   
   # assignment analysis --------------------------------------------------------
-  res <- purrr::map_df(
+  res <- purrr::map_dfr(
     .x = subsample.list,
-    .f = assignment_function,
+    .f = assignment_mix,
     input = input,
     subsample = subsample,
     assignment.analysis = assignment.analysis,
@@ -485,11 +498,9 @@ assignment_mixture <- function(
     common.markers = common.markers,
     maf.thresholds = maf.thresholds,
     marker.number = marker.number,
-    pop.levels = pop.levels,
     pop.labels = pop.labels,
     sampling.method = sampling.method,
     iteration.method = iteration.method,
-    filename = filename,
     directory = directory,
     keep.gsi.files = keep.gsi.files,
     imputation.method = imputation.method,
@@ -499,21 +510,23 @@ assignment_mixture <- function(
     parallel.core = parallel.core,
     manage.all = manage.all,
     random.seed = random.seed,
-    base.filename = base.filename
-  )
-  # res <- dplyr::bind_rows(res)
+    filename = filename
+  ) #%>% dplyr::bind_rows(.)
+  
   
   if (!is.null(subsample)) {
     readr::write_tsv(
       x = res, 
-      path = paste0(directory, "assignment.mixture.results.tsv"),
+      path = file.path(directory, "assignment.mixture.results.tsv"),
       col_names = TRUE, 
       append = FALSE)
   }
   
   # Summary of the subsampling iterations
-  if (sampling.method == "random") {
-    if (assignment.analysis == "gsi_sim") {
+  
+  # gsi_sim
+  if (assignment.analysis == "gsi_sim") {
+    if (sampling.method == "random") {
       assignment.mixture.summary.subsample <- res %>% 
         dplyr::group_by(INDIVIDUALS, ANALYSIS, MARKER_NUMBER, MISSING_DATA, INFERRED, SUBSAMPLE) %>%
         dplyr::summarise(
@@ -535,7 +548,31 @@ assignment_mixture <- function(
         dplyr::arrange(INDIVIDUALS, ANALYSIS, MARKER_NUMBER, MISSING_DATA, SUBSAMPLE) %>% 
         dplyr::ungroup(.)
     }
-    if (assignment.analysis == "adegenet") {
+    if (sampling.method == "ranked") {
+      assignment.mixture.summary.subsample <- res %>% 
+        dplyr::group_by(INDIVIDUALS, ANALYSIS, MARKER_NUMBER, METHOD, MISSING_DATA, INFERRED) %>%
+        dplyr::summarise(
+          MEAN_MARKERS_COMMON = mean(MARKERS_COMMON, na.rm = TRUE),
+          NUMBER_SUBSAMPLE = length(SUBSAMPLE),
+          MEAN_SUBSAMPLE = round((NUMBER_SUBSAMPLE/iteration.subsample)*100, 2),
+          MEAN = round(mean(SCORE), 2),
+          SE = round(sqrt(stats::var(SCORE)/length(SCORE)), 2),
+          MIN = round(min(SCORE), 2),
+          MAX = round(max(SCORE), 2),
+          MEDIAN = round(stats::median(SCORE), 2),
+          QUANTILE25 = round(stats::quantile(SCORE, 0.25), 2),
+          QUANTILE75 = round(stats::quantile(SCORE, 0.75), 2)
+        ) %>% 
+        dplyr::mutate(TOTAL_SUBSAMPLE = rep(iteration.subsample, n())) %>% 
+        dplyr::select(INDIVIDUALS, ANALYSIS, MARKER_NUMBER, MEAN_MARKERS_COMMON, METHOD, MISSING_DATA, INFERRED, NUMBER_SUBSAMPLE, TOTAL_SUBSAMPLE, MEAN_SUBSAMPLE, MEAN, SE, MIN, MAX, MEDIAN, QUANTILE25, QUANTILE75) %>% 
+        dplyr::arrange(INDIVIDUALS, ANALYSIS, MARKER_NUMBER, METHOD, MISSING_DATA) %>% 
+        dplyr::ungroup(.)
+    }
+  }
+  
+  # adegenet
+  if (assignment.analysis == "adegenet") {
+    if (sampling.method == "random") {
       assignment.mixture.summary.subsample <- res %>% 
         # dplyr::select(-X1, -X2) %>% 
         dplyr::ungroup(.) %>%
@@ -559,31 +596,8 @@ assignment_mixture <- function(
         ) %>%
         dplyr::ungroup(.) %>%
         dplyr::arrange(INDIVIDUALS, ANALYSIS, MARKER_NUMBER, MISSING_DATA, CURRENT, INFERRED)
-    }
-  } # end random
-  
-  if (sampling.method == "ranked") {
-    if (assignment.analysis == "gsi_sim") {
-      assignment.mixture.summary.subsample <- res %>% 
-        dplyr::group_by(INDIVIDUALS, ANALYSIS, MARKER_NUMBER, METHOD, MISSING_DATA, INFERRED) %>%
-        dplyr::summarise(
-          MEAN_MARKERS_COMMON = mean(MARKERS_COMMON, na.rm = TRUE),
-          NUMBER_SUBSAMPLE = length(SUBSAMPLE),
-          MEAN_SUBSAMPLE = round((NUMBER_SUBSAMPLE/iteration.subsample)*100, 2),
-          MEAN = round(mean(SCORE), 2),
-          SE = round(sqrt(stats::var(SCORE)/length(SCORE)), 2),
-          MIN = round(min(SCORE), 2),
-          MAX = round(max(SCORE), 2),
-          MEDIAN = round(stats::median(SCORE), 2),
-          QUANTILE25 = round(stats::quantile(SCORE, 0.25), 2),
-          QUANTILE75 = round(stats::quantile(SCORE, 0.75), 2)
-        ) %>% 
-        dplyr::mutate(TOTAL_SUBSAMPLE = rep(iteration.subsample, n())) %>% 
-        dplyr::select(INDIVIDUALS, ANALYSIS, MARKER_NUMBER, MEAN_MARKERS_COMMON, METHOD, MISSING_DATA, INFERRED, NUMBER_SUBSAMPLE, TOTAL_SUBSAMPLE, MEAN_SUBSAMPLE, MEAN, SE, MIN, MAX, MEDIAN, QUANTILE25, QUANTILE75) %>% 
-        dplyr::arrange(INDIVIDUALS, ANALYSIS, MARKER_NUMBER, METHOD, MISSING_DATA) %>% 
-        dplyr::ungroup(.)
-    }
-    if (assignment.analysis == "adegenet") {
+    }# end random
+    if (sampling.method == "ranked") {
       assignment.mixture.summary.subsample <- res %>%
         dplyr::select(-ITERATIONS) %>%
         dplyr::ungroup(.) %>%
@@ -596,9 +610,8 @@ assignment_mixture <- function(
         dplyr::mutate(TOTAL_SUBSAMPLE = rep(iteration.subsample, n())) %>% 
         dplyr::select(INDIVIDUALS, CURRENT, INFERRED, ANALYSIS, MARKER_NUMBER, METHOD, MISSING_DATA, NUMBER_SUBSAMPLE, TOTAL_SUBSAMPLE, MEAN_SUBSAMPLE) %>% 
         dplyr::arrange(INDIVIDUALS, CURRENT, INFERRED, ANALYSIS, MARKER_NUMBER, METHOD, MISSING_DATA)
-    }
-  } # end ranked
-  
+    }# end ranked
+  }
   
   # assignment summary results -------------------------------------------------
   if (is.null(imputation.method)) {
@@ -606,10 +619,15 @@ assignment_mixture <- function(
   } else {# with imputations
     filename.assignment.sum <- stringi::stri_join("assignment.mixture.summary.results", "imputed", sampling.method, "tsv", sep = ".")
   }
-  readr::write_tsv(x = assignment.mixture.summary.subsample, path = paste0(directory,filename.assignment.sum), col_names = TRUE, append = FALSE)
+  readr::write_tsv(x = assignment.mixture.summary.subsample, 
+                   path = file.path(directory,filename.assignment.sum), 
+                   col_names = TRUE, append = FALSE)
   
   # results
-  res.list <- list(call = function.call, assignment = res, assignment.mixture.summary.results = assignment.mixture.summary.subsample)
+  res.list <- list(
+    call = function.call, 
+    assignment = res, 
+    assignment.mixture.summary.results = assignment.mixture.summary.subsample)
   
   timing <- proc.time() - timing
   message(stringi::stri_join("Computation time: ", round(timing[[3]]), " sec"))
@@ -690,20 +708,18 @@ mixture_baseline_intersect <- function(
     dplyr::distinct(MARKERS)
   
   marker.in.common <- nrow(dplyr::intersect(x = mixture.id.data, y = inferred.baseline.data))
-  # diff <- dplyr::setdiff(x = mixture.id.data, y = inferred.baseline.data)
-  # marker.in.common.df <- tibble::data_frame(INDIVIDUALS = mixture.id, INFERRED = inferred.baseline, MARKERS_COMMON = marker.in.common)
   return(marker.in.common)
 }# End mixture_baseline_intersect
 
-# assignment_gsi_sim------------------------------------------------------------
+# assignment_gsi_mix------------------------------------------------------------
 #' @title assignment with gsi_sim
 #' @description assignment with gsi_sim
-#' @rdname assignment_gsi_sim
+#' @rdname assignment_gsi_mix
 #' @export
 #' @keywords internal
 
-assignment_gsi_sim <- function(
-  data = NULL,
+assignment_gsi_mix <- function(
+  input,
   strata.df = NULL,
   select.markers = NULL,
   markers.names = NULL,
@@ -717,29 +733,34 @@ assignment_gsi_sim <- function(
   sampling.method = "random",
   ...
 ) {
-  # data <- input #test
+  # m = x
   # missing.data <- "no.imputation" #test
   data.select <- suppressWarnings(
-    dplyr::semi_join(data, select.markers, by = "MARKERS") %>%
+    dplyr::semi_join(input, select.markers, by = "MARKERS") %>%
       dplyr::arrange(POP_ID, INDIVIDUALS, MARKERS)
   )
+  # input <- NULL
   
   input.baseline <- dplyr::filter(.data = data.select, POP_ID != "mixture")
   input.mixture <- dplyr::filter(.data = data.select, POP_ID == "mixture")
   
   # Baseline filename
-  baseline.filename <- stringi::stri_replace_all_fixed(
-    filename, 
-    pattern = ".txt",
-    replacement = "_baseline.txt", 
-    vectorize_all = FALSE
-  )
-  baseline.input.gsi <- stringi::stri_join(directory.subsample, baseline.filename)
+  if (stringi::stri_detect_fixed(str = filename, pattern = ".txt")) {
+    baseline.filename <- stringi::stri_replace_all_fixed(
+      filename, 
+      pattern = ".txt",
+      replacement = "_baseline.txt", 
+      vectorize_all = FALSE
+    )
+  } else {
+    baseline.filename <- stringi::stri_join(filename, "_baseline.txt")
+  }
+  
+  baseline.input.gsi <- file.path(directory.subsample, baseline.filename)
   
   # save input file to directory
-  assigner::write_gsi_sim(
+  radiator::write_gsi_sim(
     data = input.baseline, 
-    # markers.names = markers.names, 
     filename = baseline.input.gsi
   )
   
@@ -750,20 +771,17 @@ assignment_gsi_sim <- function(
     replacement = "_mixture.txt",
     vectorize_all = FALSE
   )
-  mixture.input.gsi <- stringi::stri_join(directory.subsample, mixture.filename)
+  mixture.input.gsi <- file.path(directory.subsample, mixture.filename)
   
   # save input file to directory
-  assigner::write_gsi_sim(
+  radiator::write_gsi_sim(
     data = input.mixture, 
-    markers.names = markers.names, 
-    # directory.subsample = directory.subsample, 
-    # i = i, 
-    # m = m,
     filename = mixture.input.gsi
   )
   
   # Run gsi_sim ------------------------------------------------------------
   output.gsi <- stringi::stri_replace_all_fixed(mixture.input.gsi, pattern = "txt", replacement = "output.txt")
+  original.dir <- getwd()
   setwd(directory.subsample)
   system(paste("gsi_sim -b ", baseline.input.gsi, "-t ", mixture.input.gsi, " > ", output.gsi))
   
@@ -782,21 +800,17 @@ assignment_gsi_sim <- function(
       tidyr::separate(ASSIGN, c("INFERRED", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
       tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
       tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
-      tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss")
-  ))
-  
-  assignment <- suppressWarnings(
-    assignment %>%
+      tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss") %>% 
       dplyr::mutate(INDIVIDUALS = as.character(INDIVIDUALS)) %>% 
       dplyr::left_join(strata.df, by = "INDIVIDUALS") %>%
       dplyr::rename(CURRENT = POP_ID) %>% 
       dplyr::mutate(
         ANALYSIS = rep("mixture", n()),
         CURRENT = factor(CURRENT, levels = unique(pop.labels), ordered = TRUE),
-        # CURRENT = factor(CURRENT, levels = pop.levels, labels = pop.labels, ordered = TRUE),
         CURRENT = droplevels(CURRENT),
         INFERRED = factor(INFERRED, levels = unique(pop.labels), ordered = TRUE),
         INFERRED = droplevels(INFERRED),
+        INFERRED = as.character(INFERRED),
         SECOND_BEST_POP = factor(SECOND_BEST_POP, levels = unique(pop.labels), ordered = TRUE),
         SECOND_BEST_POP = droplevels(SECOND_BEST_POP),
         SCORE = round(SCORE, 2),
@@ -805,9 +819,11 @@ assignment_gsi_sim <- function(
         METHOD = rep(sampling.method, n()),
         MISSING_DATA = rep(missing.data, n())
       ) %>%
-      dplyr::select(INDIVIDUALS, ANALYSIS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD, MISSING_DATA) %>%
+      dplyr::select(INDIVIDUALS, ANALYSIS, CURRENT, INFERRED, SCORE, 
+                    SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, 
+                    METHOD, MISSING_DATA) %>%
       dplyr::arrange(CURRENT)
-  )
+  ))
   
   if (sampling.method == "random") {
     assignment <- assignment %>% 
@@ -817,7 +833,6 @@ assignment_gsi_sim <- function(
   }
   
   # Markers between mixture and inferred pop -----------------------------------
-  
   mixture.baseline.itersect <- dplyr::ungroup(assignment) %>% 
     dplyr::select(INDIVIDUALS, INFERRED) %>% 
     dplyr::mutate(
@@ -825,9 +840,7 @@ assignment_gsi_sim <- function(
         purrr::map2(
           .x = INDIVIDUALS, .y = INFERRED, .f = mixture_baseline_intersect,
           input.mixture = input.mixture, input.baseline = input.baseline
-        )
-      )
-    )
+        )))
   
   assignment <- assignment %>% 
     dplyr::full_join(mixture.baseline.itersect, by = c("INDIVIDUALS", "INFERRED")) %>% 
@@ -836,8 +849,10 @@ assignment_gsi_sim <- function(
   # Option remove the output file from directory to save space
   if (!keep.gsi.files) file.remove(output.gsi)
   
+  # restore dir
+  setwd(original.dir)
   return(assignment)
-} # End assignment_gsi_sim function
+} # End assignment_gsi_mix function
 
 # assignment_adegenet-----------------------------------------------------------
 #' @title assignment with adegenet
@@ -888,7 +903,7 @@ assignment_adegenet <- function(
     adegenet::dapc(
       training.data, 
       n.da = length(levels(pop.training)),
-      n.pca = round(((length(adegenet::indNames(training.data))/3) - 1), 0)
+      n.pca = round(((length(rownames(training.data))/3) - 1), 0)
     ),
     pop = pop.training, plot = FALSE)$best
   message("a-score optimisation for iteration:", i, sep = " ")
@@ -907,20 +922,25 @@ assignment_adegenet <- function(
   # holdout.data <- data.select[indNames(data.select) %in% holdout$INDIVIDUALS] # holdout dataset
   pop.holdout <- holdout.data@pop
   pop.holdout <- droplevels(pop.holdout)
-  
   assignment.levels <- levels(pop.data)
   rev.assignment.levels <- rev(assignment.levels)
   
+  
+  # Predict --------------------------------------------------------------------
   dapc.predict.holdout <- adegenet::predict.dapc(dapc.training, newdata = holdout.data)
   message("Assigning holdout data for iteration:", i, sep = " ")
   
   
-  # Get Assignment results -----------------------------------------------
+  # Get Assignment results -----------------------------------------------------
   if (sampling.method == "ranked") {
     i <- "not available with sampling.method = ranked"
   }
   
-  assignment <- data.frame(INDIVIDUALS = adegenet::indNames(holdout.data), POP_ID = pop.holdout, ASSIGN = dapc.predict.holdout$assign, dapc.predict.holdout$posterior) %>% 
+  assignment <- tibble::data_frame(
+    INDIVIDUALS = rownames(holdout.data), 
+    POP_ID = pop.holdout,
+    ASSIGN = dapc.predict.holdout$assign) %>% 
+    dplyr::bind_cols(tibble::as_data_frame(dapc.predict.holdout$posterior)) %>% 
     dplyr::rename(CURRENT = POP_ID, INFERRED = ASSIGN) %>%
     dplyr::mutate(
       ANALYSIS = rep("mixture", n()),
@@ -978,7 +998,7 @@ marker_selection <- function(
 assignment_random <- function(
   x, # the list of dataframe with random markers previously marker.random.list
   assignment.analysis = "gsi_sim",
-  base.filename = NULL,
+  filename = NULL,
   input = NULL,
   genind.object = NULL,
   strata.df = NULL,
@@ -1027,7 +1047,7 @@ assignment_random <- function(
   
   # Modify filename
   filename <- stringi::stri_replace_all_fixed(
-    base.filename,
+    filename,
     pattern = ".txt",
     replacement = stringi::stri_join(
       "", "iteration", i, "markers", m, 
@@ -1036,8 +1056,8 @@ assignment_random <- function(
   )
   
   if (assignment.analysis == "gsi_sim") {
-    assignment <- assignment_gsi_sim(
-      data = input,
+    assignment <- assignment_gsi_mix(
+      input = input,
       strata.df = strata.df,
       select.markers = select.markers,
       markers.names = markers.names,
@@ -1072,38 +1092,35 @@ assignment_random <- function(
 } #End assignment_random
 
 
-# assignment_marker_loop--------------------------------------------------------
-#' @title assignment_marker_loop
-#' @description assignment_marker_loop
-#' @rdname assignment_marker_loop
+# assignment_marker_loop_mix--------------------------------------------------------
+#' @title assignment_marker_loop_mix
+#' @description assignment_marker_loop_mix
+#' @rdname assignment_marker_loop_mix
 #' @export
 #' @keywords internal
 
-assignment_marker_loop <- function(
-  x, # marker.number
+assignment_marker_loop_mix <- function(
+  x,
   assignment.analysis = "gsi_sim",
   fst.ranked = NULL,
   i = NULL,
   input = NULL,
   genind.object = NULL,
   strata.df = NULL,
-  pop.levels = NULL,
   pop.labels = NULL,
   sampling.method = NULL,
-  iteration.method = NULL,
-  base.filename = NULL,
+  filename = NULL,
   keep.gsi.files = FALSE,
   imputation.method = NULL,
   hierarchical.levels = NULL,
-  parallel.core = parallel::detectCores() - 1,
   directory.subsample = NULL,
   subsample.id = NULL,
   ...
 ) {
-  message("Marker number: ", x)
   # x <- 200 # test
   # x <- marker.number
   x <- as.numeric(x)
+  message("Marker number: ", x)
   
   select.markers <- dplyr::filter(.data = fst.ranked, RANKING <= x) %>%
     dplyr::select(MARKERS)
@@ -1134,7 +1151,7 @@ assignment_marker_loop <- function(
   
   # Modify filename
   filename <- stringi::stri_replace_all_fixed(
-    base.filename,
+    filename,
     pattern = ".txt",
     replacement = stringi::stri_join(
       "", "markers", x, 
@@ -1143,8 +1160,8 @@ assignment_marker_loop <- function(
   )
   
   if (assignment.analysis == "gsi_sim") {
-    assignment <- assignment_gsi_sim(
-      data = input,
+    assignment <- assignment_gsi_mix(
+      input = input,
       strata.df = strata.df,
       select.markers = select.markers,
       markers.names = markers.names,
@@ -1176,17 +1193,17 @@ assignment_marker_loop <- function(
   filename.imp <- missing.data <- filename <- NULL
   
   return(assignment)
-}#End assignment_marker_loop
+}#End assignment_marker_loop_mix
 
-# assignment_function-----------------------------------------------------------
-#' @title assignment_function
-#' @description assignment_function
-#' @rdname assignment_function
+# assignment_mix-----------------------------------------------------------
+#' @title assignment function mixture
+#' @description assignment function mixture
+#' @rdname assignment_mix
 #' @export
 #' @keywords internal
 
-assignment_function <- function(
-  x,
+assignment_mix <- function(
+  subsample.list,
   input = NULL,
   subsample = NULL,
   assignment.analysis = "gsi_sim",
@@ -1195,11 +1212,9 @@ assignment_function <- function(
   common.markers = TRUE,
   maf.thresholds = NULL,
   marker.number = NULL,
-  pop.levels = NULL,
   pop.labels = NULL,
   sampling.method = "random",
   iteration.method = 10,
-  filename = "assignment_data.txt",
   directory = NULL,
   keep.gsi.files = FALSE,
   imputation.method = NULL,
@@ -1207,23 +1222,24 @@ assignment_function <- function(
   hierarchical.levels = "populations",
   verbose = FALSE,
   parallel.core = parallel::detectCores() - 1,
-  manage.all = NULL, random.seed = NULL, base.filename = NULL,
-  ...
+  manage.all = NULL, 
+  random.seed = NULL, 
+  filename = NULL
 ) {
-  # x <- subsample.list[[1]] # test
-  subsampling.individuals <- x
+  # subsample.list <- subsample.list[[1]] # test
+  subsampling.individuals <- subsample.list
   subsample.id <- unique(subsampling.individuals$SUBSAMPLE)
   
   if (!is.null(subsample)) {
-    message(paste("Analyzing subsample: ", subsample.id))
+    message("\n\nAnalyzing subsample: ", subsample.id)
   }
   
   # Updating directories for subsampling
   if (is.null(subsample)) {
     directory.subsample <- directory
   } else {
-    directory.subsample <- paste0(directory, "subsample_", subsample.id, "/")
-    dir.create(file.path(directory.subsample))
+    directory.subsample <- file.path(directory, paste0("subsample_", subsample.id))
+    dir.create(directory.subsample)
   }
   
   # Keep only the subsample
@@ -1240,7 +1256,7 @@ assignment_function <- function(
   
   # Markers in common between all populations (optional) ---------------------
   if (common.markers) { # keep only markers present in all pop
-    input <- radiator::keep_common_markers(data = input)$input
+    input <- radiator::keep_common_markers(data = input) %$% input
   } # End common markers
   
   # Minor Allele Frequency filter --------------------------------------------
@@ -1251,11 +1267,11 @@ assignment_function <- function(
     baseline.data <- dplyr::filter(.data = input, POP_ID != "mixture")
     
     baseline.data <- radiator::filter_maf(
-    data = baseline.data,
-    interactive.filter = FALSE,
-    maf.thresholds = maf.thresholds,
-    parallel.core = parallel.core,
-    verbose = FALSE)$tidy.filtered.maf
+      data = baseline.data,
+      interactive.filter = FALSE,
+      maf.thresholds = maf.thresholds,
+      parallel.core = parallel.core,
+      verbose = FALSE) %$% tidy.filtered.maf
     
     input <- dplyr::bind_rows(mixture.data, baseline.data$input) %>% 
       dplyr::arrange(POP_ID, INDIVIDUALS)
@@ -1328,14 +1344,17 @@ assignment_function <- function(
   
   # if "all" is present in the list, change to the maximum number of markers
   marker.number <- as.numeric(
-    stringi::stri_replace_all_fixed(str = marker.number, 
-                                    pattern = "all", 
-                                    replacement = nrow(unique.markers), 
-                                    vectorize_all = TRUE)
+    stringi::stri_replace_all_fixed(
+      str = marker.number, 
+      pattern = "all", 
+      replacement = nrow(unique.markers), 
+      vectorize_all = TRUE)
   )
   
   # In marker.number, remove marker group higher than the max number of markers
-  removing.marker <- purrr::keep(.x = marker.number, .p = marker.number > nrow(unique.markers))
+  removing.marker <- purrr::keep(
+    .x = marker.number, 
+    .p = marker.number > nrow(unique.markers))
   
   if (length(removing.marker) > 0) {
     message(
@@ -1393,7 +1412,7 @@ assignment_function <- function(
     # Write the results to the working directory
     readr::write_tsv(
       x = tibble::as_data_frame(dplyr::bind_rows(marker.random.list)),
-      path = paste0(directory.subsample, "markers.random.tsv"),
+      path = file.path(directory.subsample, "markers.random.tsv"),
       col_names = TRUE, append = FALSE
     )
     
@@ -1403,15 +1422,15 @@ assignment_function <- function(
     assignment.res <- NULL
     assignment.res <- suppressWarnings(
       # .assigner_parallel_mc(
-        parallel::mclapply(
-          X = marker.random.list, 
+      parallel::mclapply(
+        X = marker.random.list, 
         FUN = assignment_random, 
         mc.preschedule = FALSE, 
         mc.silent = FALSE,
         mc.cleanup = TRUE,
         mc.cores = parallel.core,
         assignment.analysis = assignment.analysis,
-        base.filename = base.filename,
+        filename = filename,
         input = input,
         genind.object = genind.object,
         strata.df = strata.df,
@@ -1430,7 +1449,7 @@ assignment_function <- function(
     if (!is.null(imputation.method)) {
       assignment.res.imp <- NULL
       assignment.res.imp <- suppressWarnings(
-        .assigner_parallel(
+        parallel::mclapply(
           X = marker.random.list, 
           FUN = assignment_random, 
           mc.preschedule = FALSE, 
@@ -1438,7 +1457,7 @@ assignment_function <- function(
           mc.cleanup = TRUE,
           mc.cores = parallel.core,
           assignment.analysis = assignment.analysis,
-          base.filename = base.filename,
+          filename = filename,
           input = input.imp,
           genind.object = genind.object.imp,
           strata.df = strata.df,
@@ -1469,7 +1488,7 @@ assignment_function <- function(
     } else {# with imputations
       filename.assignment.res <- stringi::stri_join("assignment.mixture", "imputed", sampling.method, "tsv", sep = ".")
     }
-    readr::write_tsv(x = assignment.res, path = paste0(directory.subsample, filename.assignment.res), col_names = TRUE, append = FALSE)
+    readr::write_tsv(x = assignment.res, path = file.path(directory.subsample, filename.assignment.res), col_names = TRUE, append = FALSE)
     
     if (assignment.analysis == "gsi_sim") {
       assignment.mixture.summary.stats <- assignment.res %>% 
@@ -1514,7 +1533,7 @@ assignment_function <- function(
     } else {# with imputations
       filename.assignment.sum <- stringi::stri_join("assignment.mixture.summary.results", "imputed", sampling.method, "tsv", sep = ".")
     }
-    readr::write_tsv(x = assignment.mixture.summary.stats, path = paste0(directory.subsample,filename.assignment.sum), col_names = TRUE, append = FALSE)
+    readr::write_tsv(x = assignment.mixture.summary.stats, path = file.path(directory.subsample, filename.assignment.sum), col_names = TRUE, append = FALSE)
   } # End method random
   
   # Ranked method ------------------------------------------------------------
@@ -1524,118 +1543,111 @@ assignment_function <- function(
     # List of all individuals
     # ind.pop.df <- dplyr::ungroup(input) %>% dplyr::distinct(POP_ID, INDIVIDUALS)
     
-    message("Ranking Fst with training samples...")
+    message("\nRanking Fst with training samples...")
     holdout.individuals <- mixture.df
     
     readr::write_tsv(
       x = holdout.individuals, 
-      path = paste0(directory.subsample,"holdout.individuals.tsv"), 
+      path = file.path(directory.subsample,"holdout.individuals.tsv"), 
       col_names = TRUE, append = FALSE
     )
-    message("Holdout samples = mixture samples: saved in your folder")
+    message("Holdout samples = mixture samples -> saved in your folder")
     
     # Going through the loop of holdout individuals
-    message("Starting parallel computations for the assignment analysis: ranked markers")
-    message("For progress: monitor activity in the folder...")
+    message("\n\nStarting parallel computations for the assignment analysis: ranked markers")
+    message("For progress: monitor activity in the folder...\n")
     
     # Ranking Fst with training dataset (keep holdout individuals out)
-    message("Ranking markers based on Fst with training samples")
+    # message("Ranking markers based on Fst with training samples")
     fst.ranked <- assigner::fst_WC84(
       data = input,
       holdout.samples = holdout.individuals$INDIVIDUALS
-    )$fst.ranked
+    ) %$% fst.ranked %>%
+      readr::write_tsv(
+        x = ., 
+        path = file.path(directory.subsample, "fst_ranked.tsv"), 
+        col_names = TRUE, 
+        append = FALSE
+      )
     
-    readr::write_tsv(
-      x = fst.ranked, 
-      path = paste0(directory.subsample, "fst_ranked.tsv"), 
-      col_names = TRUE, 
-      append = FALSE
-    )
     if (!is.null(imputation.method)) {
       fst.ranked.imp <- assigner::fst_WC84(
         data = input.imp, 
         holdout.samples = holdout.individuals$INDIVIDUALS
-      )$fst.ranked
-      
-      readr::write_tsv(
-        x = fst.ranked.imp, 
-        path = paste0(directory.subsample, "fst_ranked_imputed.tsv"), 
-        col_names = TRUE, 
-        append = FALSE
-      )
+      ) %$% fst.ranked %>% 
+        readr::write_tsv(
+          x = ., 
+          path = file.path(directory.subsample, "fst_ranked_imputed.tsv"), 
+          col_names = TRUE, 
+          append = FALSE
+        )
     }
     
     # Markers numbers loop function
-    message("Going throught the marker.number")
+    # message("Going throught the marker.number")
     
     if (length(marker.number) > 1) {
       # no imputation
-      assignment.res <- list()
-      assignment.res <- .assigner_parallel(
-        X = marker.number, 
-        FUN = assignment_marker_loop,
-        mc.preschedule = FALSE, 
-        mc.silent = FALSE, 
-        mc.cleanup = TRUE,
-        mc.cores = parallel.core,
-        assignment.analysis = assignment.analysis,
-        fst.ranked = fst.ranked,
-        i = NULL,
-        input = input,
-        genind.object = genind.object,
-        strata.df = strata.df,
-        pop.levels = pop.levels,
-        pop.labels = pop.labels,
-        sampling.method = sampling.method,
-        iteration.method = iteration.method,
-        base.filename = base.filename,
-        keep.gsi.files = keep.gsi.files,
-        imputation.method = NULL,
-        hierarchical.levels = NULL,
-        parallel.core = parallel.core,
-        directory.subsample = directory.subsample,
-        subsample.id = subsample.id
-      )
-      assignment.res <- suppressWarnings(dplyr::bind_rows(assignment.res))
-      
-      
-      # with imputations
-      # todo: replace with do.call or purrr::invoke
-      if (!is.null(imputation.method)) {
-        assignment.res.imp <- list()
-        assignment.res.imp <- .assigner_parallel(
+      assignment.res.summary <- assignment.res <- list()
+      assignment.res.summary<- assignment.res <- suppressWarnings(
+        # parallel::mclapply(
+        .assigner_parallel(
           X = marker.number, 
-          FUN = assignment_marker_loop,
+          FUN = assignment_marker_loop_mix,
           mc.preschedule = FALSE, 
           mc.silent = FALSE, 
           mc.cleanup = TRUE,
           mc.cores = parallel.core,
           assignment.analysis = assignment.analysis,
-          fst.ranked = fst.ranked.imp,
+          fst.ranked = fst.ranked,
           i = NULL,
-          input = input.imp,
-          genind.object = genind.object.imp,
+          input = input,
+          genind.object = genind.object,
           strata.df = strata.df,
-          pop.levels = pop.levels,
           pop.labels = pop.labels,
           sampling.method = sampling.method,
-          iteration.method = iteration.method,
-          base.filename = base.filename,
+          filename = filename,
           keep.gsi.files = keep.gsi.files,
-          imputation.method = imputation.method,
-          hierarchical.levels = hierarchical.levels,
-          parallel.core = parallel.core,
+          imputation.method = NULL,
+          hierarchical.levels = NULL,
           directory.subsample = directory.subsample,
-          subsample.id = subsample.id
-        )
+          subsample.id = subsample.id) %>% 
+          dplyr::bind_rows(.)
+      )
+      
+      # with imputations
+      # todo: replace with do.call or purrr::invoke
+      if (!is.null(imputation.method)) {
+        assignment.res.summary <- list()
         assignment.res.summary <- suppressWarnings(
-          dplyr::bind_rows(assignment.res.imp) %>% 
-            dplyr::bind_rows(assignment.res)
+          parallel::mclapply(#.assigner_parallel(
+            X = marker.number, 
+            FUN = assignment_marker_loop_mix,
+            mc.preschedule = FALSE, 
+            mc.silent = FALSE, 
+            mc.cleanup = TRUE,
+            mc.cores = parallel.core,
+            assignment.analysis = assignment.analysis,
+            fst.ranked = fst.ranked.imp,
+            i = NULL,
+            input = input.imp,
+            genind.object = genind.object.imp,
+            strata.df = strata.df,
+            pop.labels = pop.labels,
+            sampling.method = sampling.method,
+            filename = filename,
+            keep.gsi.files = keep.gsi.files,
+            imputation.method = imputation.method,
+            hierarchical.levels = hierarchical.levels,
+            directory.subsample = directory.subsample,
+            subsample.id = subsample.id
+          ) %>% 
+            dplyr::bind_rows(.)
         )
+        assignment.res.summary <- dplyr::bind_rows(assignment.res.summary, assignment.res)
       }
-      assignment.res.summary <- assignment.res
     } else {
-      assignment.res <- assignment_marker_loop(
+      assignment.res.summary <- assignment.res <- assignment_marker_loop_mix(
         x = marker.number,
         assignment.analysis = assignment.analysis,
         fst.ranked = fst.ranked,
@@ -1643,21 +1655,18 @@ assignment_function <- function(
         input = input,
         genind.object = genind.object,
         strata.df = strata.df,
-        pop.levels = pop.levels,
         pop.labels = pop.labels,
         sampling.method = sampling.method,
-        iteration.method = iteration.method,
-        base.filename = base.filename,
+        filename = filename,
         keep.gsi.files = keep.gsi.files,
         imputation.method = NULL,
         hierarchical.levels = NULL,
-        parallel.core = parallel.core,
         directory.subsample = directory.subsample,
         subsample.id = subsample.id
       )
       
       if (!is.null(imputation.method)) {
-        assignment.res.imp <- assignment_marker_loop(
+        assignment.res.imp <- assignment_marker_loop_mix(
           x = marker.number,
           assignment.analysis = assignment.analysis,
           fst.ranked = fst.ranked.imp,
@@ -1665,23 +1674,19 @@ assignment_function <- function(
           input = input.imp,
           genind.object = genind.object.imp,
           strata.df = strata.df,
-          pop.levels = pop.levels,
           pop.labels = pop.labels,
           sampling.method = sampling.method,
-          iteration.method = iteration.method,
-          base.filename = base.filename,
+          filename = filename,
           keep.gsi.files = keep.gsi.files,
           imputation.method = imputation.method,
           hierarchical.levels = hierarchical.levels,
-          parallel.core = parallel.core,
           directory.subsample = directory.subsample,
           subsample.id = subsample.id
         )
         assignment.res.summary <- suppressWarnings(
           dplyr::bind_rows(assignment.res, assignment.res.imp)
-          )
+        )
       }
-      assignment.res.summary <- assignment.res
     }
     assignment.res.imp <- assignment.res <- NULL
     
@@ -1702,9 +1707,9 @@ assignment_function <- function(
         "assignment.mixture", "imputed", sampling.method, "tsv", sep = ".")
     }
     readr::write_tsv(x = assignment.res.summary,
-                     path = paste0(directory.subsample, filename.assignment.res),
+                     path = file.path(directory.subsample, filename.assignment.res),
                      col_names = TRUE, append = FALSE)
   } # End of ranked thl method
   
   return(assignment.res.summary)
-} # End assignment_function
+} # End assignment_mix
