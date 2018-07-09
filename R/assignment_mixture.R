@@ -46,10 +46,6 @@
 #' If a \code{strata} file is specified, the strata file will have
 #' precedence. The \code{STRATA} column can be any hierarchical grouping. 
 #' To create a strata file see \code{\link[radiator]{individuals2strata}}.
-#' If you have already run 
-#' \href{http://catchenlab.life.illinois.edu/stacks/}{stacks} on your data, 
-#' the strata file is similar to a stacks `population map file`, make sure you 
-#' have the required column names  (\code{INDIVIDUALS} and \code{STRATA}).
 #' Default: \code{strata = NULL}.
 
 #' @param mixture (optional) A file in the working directory (e.g. "mixture.txt")
@@ -106,8 +102,14 @@
 #' Default: \code{impute.mixture = FALSE}. For no imputation. 
 #' For \code{impute.mixture = TRUE} the hierarchical.levels (see below)
 #' for the mixture samples is automatically set to 
-#' \code{hierarchical.levels = "global"}. Warning: bias could be introduced by imputing
-#' missing genotype in the mixture samples.
+#' \code{hierarchical.levels = "global"}. 
+#' \strong{Warning:} bias could be introduced by imputing
+#' missing genotype in the mixture samples. Unless you're mastering imputations
+#' perfectly and you're understanding it's limits, you should avoid this argument.
+
+
+#' @param ... (optional) To pass further argument for fine-tuning the 
+#' function (filters). See details.
 
 #' @details
 #' 
@@ -260,23 +262,14 @@ assignment_mixture <- function(
   data,
   strata = NULL,
   mixture = NULL,
-  assignment.analysis,
-  sampling.method,
+  assignment.analysis = c("gsim_sim", "adegenet"),
+  sampling.method = c("ranked", "random"),
   iteration.method = 10,
   subsample = NULL,
   iteration.subsample = 1,
   marker.number = "all",
-  blacklist.id = NULL,
-  blacklist.genotype = NULL,
-  whitelist.markers = NULL,
-  monomorphic.out = TRUE,
-  snp.ld = NULL,
-  common.markers = TRUE,
-  maf.thresholds = NULL,
   max.marker = NULL,
   pop.levels = NULL,
-  pop.labels = NULL,
-  pop.select = NULL,
   imputation.method = NULL,
   impute.mixture = FALSE,
   hierarchical.levels = "populations",
@@ -285,7 +278,8 @@ assignment_mixture <- function(
   filename = "assignment_data.txt",
   keep.gsi.files = FALSE,
   random.seed = NULL,
-  parallel.core = parallel::detectCores() - 1
+  parallel.core = parallel::detectCores() - 1,
+  ...
 ) {
   
   ## Testing
@@ -329,6 +323,15 @@ assignment_mixture <- function(
          If you have internet access, you can install it
          from within R by invoking the function \"install_gsi_sim(fromSource = TRUE)\"")
   }
+  assignment.analysis <- match.arg(
+    arg = assignment.analysis, 
+    choices = c("gsi_sim", "adegenet"), 
+    several.ok = FALSE)
+  
+  sampling.method <- match.arg(
+    arg = sampling.method, 
+    choices = c("ranked", "random"), 
+    several.ok = FALSE) 
   
   if (assignment.analysis == "gsi_sim") message("Assignment analysis with gsi_sim")
   if (assignment.analysis == "adegenet") message("Assignment analysis with adegenet")
@@ -351,6 +354,34 @@ as using sampling.method = 'random'\n\n\n")
   
   function.call <- match.call() # store function call
   
+  # dotslist -------------------------------------------------------------------
+  dotslist <- list(...)
+  
+  want <- c("blacklist.id", "blacklist.genotype", "whitelist.markers", 
+            "monomorphic.out", "snp.ld", "common.markers", "maf.thresholds",
+            "max.marker", "pop.select", "pop.labels")
+  unknowned_param <- setdiff(names(dotslist), want)
+  
+  if (length(unknowned_param) > 0) {
+    stop("Unknowned \"...\" parameters ",
+         stringi::stri_join(unknowned_param, collapse = " "))
+  }
+  assigner.dots <- dotslist[names(dotslist) %in% want]
+  
+  blacklist.id <- assigner.dots[["blacklist.id"]]
+  blacklist.genotype <- assigner.dots[["blacklist.genotype"]]
+  whitelist.markers <- assigner.dots[["whitelist.markers"]]
+  monomorphic.out <- assigner.dots[["monomorphic.out"]]
+  if (is.null(monomorphic.out)) monomorphic.out <- TRUE
+  snp.ld <- assigner.dots[["snp.ld"]]
+  common.markers <- assigner.dots[["common.markers"]]
+  if (is.null(common.markers)) common.markers <- TRUE
+  maf.thresholds <- assigner.dots[["maf.thresholds"]]
+  max.marker <- assigner.dots[["max.marker"]]
+  pop.select <- assigner.dots[["pop.select"]]
+  pop.labels <- assigner.dots[["pop.labels"]]
+  
+  
   # POP_ID in gsi_sim does not like spaces -------------------------------------
   # we need to remove space in everything touching POP_ID...
   check <- radiator::check_pop_levels(
@@ -361,7 +392,7 @@ as using sampling.method = 'random'\n\n\n")
   pop.levels <-  check$pop.levels
   pop.labels <-  check$pop.labels
   pop.select <-  check$pop.select
-  
+  check <- NULL
   # Create a folder based on filename to save the output files -----------------
   if (is.null(folder)) {
     # Get date and time to have unique filenaming
@@ -903,7 +934,7 @@ assignment_adegenet <- function(
     adegenet::dapc(
       training.data, 
       n.da = length(levels(pop.training)),
-      n.pca = round(((length(rownames(training.data))/3) - 1), 0)
+      n.pca = round((length(rownames(training.data@tab))/3) - 1, 0)
     ),
     pop = pop.training, plot = FALSE)$best
   message("a-score optimisation for iteration:", i, sep = " ")
@@ -924,7 +955,6 @@ assignment_adegenet <- function(
   pop.holdout <- droplevels(pop.holdout)
   assignment.levels <- levels(pop.data)
   rev.assignment.levels <- rev(assignment.levels)
-  
   
   # Predict --------------------------------------------------------------------
   dapc.predict.holdout <- adegenet::predict.dapc(dapc.training, newdata = holdout.data)
@@ -1011,8 +1041,8 @@ assignment_random <- function(
   subsample.id = NULL,
   ...
 ) {
+  # x <- marker.random.list[[1]] #test
   x <- tibble::as_data_frame(x)
-  # x <- x[1] # test
   i <- as.numeric(unique(x$ITERATIONS))      # iteration
   m <- as.numeric(unique(x$MARKER_NUMBER))   # number of marker selected
   
@@ -1265,7 +1295,7 @@ assignment_mix <- function(
     # MAF
     mixture.data <- dplyr::filter(.data = input, POP_ID == "mixture")
     baseline.data <- dplyr::filter(.data = input, POP_ID != "mixture")
-    
+    tidy.filtered.maf <- NULL
     baseline.data <- radiator::filter_maf(
       data = baseline.data,
       interactive.filter = FALSE,

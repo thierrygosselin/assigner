@@ -14,7 +14,7 @@
 #'   \item \strong{Input file:} various file format are supported (see \code{data} argument below)
 #'   \item \strong{Filters:} genotypes, markers, individuals and populations can be 
 #'   filtered and/or selected in several ways using blacklist,
-#'   whitelist and other arguments
+#'   whitelist and other arguments (see details).
 #'   \item \strong{Cross-Validations:} Markers can be randomly selected for a classic LOO (Leave-One-Out)
 #'   assignment or chosen based on ranked Fst for a thl
 #'   (Training, Holdout, Leave-one-out) assignment analysis
@@ -33,20 +33,11 @@
 #' @inheritParams radiator::tidy_genomic_data 
 #' @inheritParams radiator::radiator_imputations_module
 
-#' @param strata (optional/required) Required for VCF and haplotypes files, 
-#' optional for the other file formats supported. 
+#' @param strata (optional/required) Optional for file format with population 
+#' grouping integrated (e.g. vcf is not population-wise and requires a strata file).
 #' 
 #' The strata file is a tab delimited file with 2 columns with header:
-#' \code{INDIVIDUALS} and \code{STRATA}. With a 
-#' data frame of genotypes the strata is the INDIVIDUALS and POP_ID columns, with
-#' PLINK files, the \code{tfam} first 2 columns are used. 
-#' If a \code{strata} file is specified, the strata file will have
-#' precedence. The \code{STRATA} column can be any hierarchical grouping. 
-#' To create a strata file see \code{\link[radiator]{individuals2strata}}.
-#' If you have already run 
-#' \href{http://catchenlab.life.illinois.edu/stacks/}{stacks} on your data, 
-#' the strata file is similar to a stacks `population map file`, make sure you 
-#' have the required column names (\code{INDIVIDUALS} and \code{STRATA}).
+#' \code{INDIVIDUALS} and \code{STRATA}.
 #' The strata column is cleaned of a white spaces that interfere with some
 #' packages or codes: space is changed to an underscore \code{_}.
 #' Default: \code{strata = NULL}.
@@ -165,10 +156,30 @@
 #' a random number is generated and printed in the appropriate output.
 #' Default: \code{random.seed = NULL}.
 
+#' @param ... (optional) To pass further argument for fine-tuning the 
+#' function (filters). See details.
 
 #' @details 
 #' \strong{Input files:} see \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}
 #' for detailed information about supported file format.
+#' 
+#' \strong{Available filters:}
+#' 
+#' Further arguments can be passed via the \emph{dots-dots-dots}: 
+#' \itemize{
+#' \item blacklist.id
+#' \item blacklist.genotype
+#' \item whitelist.markers
+#' \item monomorphic.out
+#' \item snp.ld
+#' \item common.markers
+#' \item maf.thresholds
+#' \item max.marker
+#' \item pop.select
+#' \item pop.labels
+#' }
+#' For argument documentation see \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}.
+#' 
 #' 
 #' \strong{Imputations:}
 #' 
@@ -226,24 +237,11 @@
 #' @examples
 #' \dontrun{
 #' assignment.treefrog <- assignment_ngs(
-#' data = "batch_1.vcf",
-#' assignment.analysis = "gsi_sim",
-#' whitelist.markers = "whitelist.vcf.txt",
-#' snp.ld = NULL,
-#' common.markers = TRUE,
-#' marker.number = c(500, 5000, "all"),
-#' sampling.method = "ranked",
-#' thl = 0.3,
-#' blacklist.id = "blacklist.id.treefrog.tsv",
-#' subsample = 25,
-#' iteration.subsample = 10
-#' filename = "treefrog.txt",
-#' keep.gsi.files = FALSE, 
-#' strata = "strata.treefrog.tsv",
-#' pop.levels = c("PAN", "COS")
-#' imputation.method = NULL,
-#' parallel.core = 12
-#' )
+#'     data = "batch_1.vcf", strata = "strata.treefrog.tsv",
+#'     assignment.analysis = "gsi_sim",
+#'      marker.number = c(500, 5000, "all"),
+#'      sampling.method = "ranked", thl = 0.3,
+#'      subsample = 25, iteration.subsample = 10)
 #' 
 #' Since the 'folder' argument is missing, it will be created automatically
 #' inside your working directory.
@@ -283,28 +281,8 @@
 #' @references Anderson, E. C. (2010) Assessing the power of informative subsets of
 #' loci for population assignment: standard methods are upwardly biased.
 #' Molecular ecology resources 10, 4:701-710.
-#' @references Catchen JM, Amores A, Hohenlohe PA et al. (2011)
-#' Stacks: Building and Genotyping Loci De Novo From Short-Read Sequences.
-#' G3, 1, 171-182.
-#' @references Catchen JM, Hohenlohe PA, Bassham S, Amores A, Cresko WA (2013)
-#' Stacks: an analysis tool set for population genomics.
-#' Molecular Ecology, 22, 3124-3140.
 #' @references Weir BS, Cockerham CC (1984) Estimating F-Statistics for the
 #' Analysis of Population Structure. Evolution, 38, 1358–1370.
-#' @references Ishwaran H. and Kogalur U.B. (2015). Random Forests for Survival,
-#' Regression and Classification (RF-SRC), R package version 1.6.1.
-#' @references Ishwaran H. and Kogalur U.B. (2007). Random survival forests
-#' for R. R News 7(2), 25-31.
-#' @references Ishwaran H., Kogalur U.B., Blackstone E.H. and Lauer M.S. (2008).
-#' Random survival forests. Ann. Appl. Statist. 2(3), 841--860.
-#' @references Danecek P, Auton A, Abecasis G et al. (2011)
-#' The variant call format and VCFtools.
-#' Bioinformatics, 27, 2156-2158.
-#' @references Purcell S, Neale B, Todd-Brown K, Thomas L, Ferreira MAR, 
-#' Bender D, et al. 
-#' PLINK: a tool set for whole-genome association and population-based linkage 
-#' analyses. 
-#' American Journal of Human Genetics. 2007: 81: 559–575. doi:10.1086/519795
 #' @references Jombart T, Devillard S, Balloux F. 
 #' Discriminant analysis of principal components: a new method for the analysis 
 #' of genetically structured populations. 
@@ -312,26 +290,16 @@
 #' @references Jombart T, Ahmed I. adegenet 1.3-1: new tools for the analysis 
 #' of genome-wide SNP data. 
 #' Bioinformatics. 2011:27: 3070–3071. doi:10.1093/bioinformatics/btr521
-#' @references Raymond M. & Rousset F, (1995). 
-#' GENEPOP (version 1.2): population genetics software for exact tests 
-#' and ecumenicism. 
-#' J. Heredity, 86:248-249
-#' @references Rousset F. 
-#' genepop'007: a complete re-implementation of the genepop software
-#' for Windows and Linux.
-#' Molecular Ecology Resources. 
-#' 2008, 8: 103-106. 
-#' doi:10.1111/j.1471-8286.2007.01931.x
 
-
-#' @seealso \code{gsi_sim} development page is available here: \url{https://github.com/eriqande/gsi_sim}
+#' @seealso \href{https://github.com/eriqande/gsi_sim}{gsi_sim} and 
+#' \href{https://github.com/eriqande/rubias}{rubias}
 
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com} and Eric C. Anderson
 
 assignment_ngs <- function(
   data,
-  assignment.analysis,
-  sampling.method,
+  assignment.analysis = c("gsim_sim", "adegenet"),
+  sampling.method = c("ranked", "random"),
   adegenet.dapc.opt = "optim.a.score",
   adegenet.n.rep = 30,
   adegenet.training = 0.9,
@@ -340,18 +308,8 @@ assignment_ngs <- function(
   subsample = NULL,
   iteration.subsample = 1,
   marker.number = "all",
-  blacklist.id = NULL,
-  blacklist.genotype = NULL,
-  whitelist.markers = NULL,
-  monomorphic.out = TRUE,
-  snp.ld = NULL,
-  common.markers = TRUE,
-  maf.thresholds = NULL,
-  max.marker = NULL,
   strata = NULL,
   pop.levels = NULL,
-  pop.labels = NULL,
-  pop.select = NULL,
   imputation.method = NULL,
   hierarchical.levels = "populations",
   verbose = FALSE,
@@ -359,8 +317,22 @@ assignment_ngs <- function(
   filename = "assignment_data.txt",
   keep.gsi.files = FALSE,
   random.seed = NULL,
-  parallel.core = parallel::detectCores() - 1
+  parallel.core = parallel::detectCores() - 1,
+  ...
 ) {
+  
+  ## testing 
+  # blacklist.id = NULL
+  # blacklist.genotype = NULL
+  # whitelist.markers = NULL
+  # monomorphic.out = TRUE
+  # snp.ld = NULL
+  # common.markers = TRUE
+  # maf.thresholds = NULL
+  # max.marker = NULL
+  # pop.select = NULL
+  # pop.labels = NULL
+  
   cat("#######################################################################\n")
   cat("###################### assigner::assignment_ngs #######################\n")
   cat("#######################################################################\n")
@@ -376,6 +348,17 @@ assignment_ngs <- function(
          If you have internet access, you can install it
          from within R by invoking the function \"install_gsi_sim(fromSource = TRUE)\"")
   }
+  
+  assignment.analysis <- match.arg(
+    arg = assignment.analysis, 
+    choices = c("gsi_sim", "adegenet"), 
+    several.ok = FALSE)
+  
+  sampling.method <- match.arg(
+    arg = sampling.method, 
+    choices = c("ranked", "random"), 
+    several.ok = FALSE) 
+  
   if (assignment.analysis == "gsi_sim") message("Assignment analysis with gsi_sim")
   if (assignment.analysis == "adegenet") message("Assignment analysis with adegenet")
   
@@ -395,6 +378,34 @@ assignment_ngs <- function(
     iteration.method <- 1
   }
   
+  # dotslist -------------------------------------------------------------------
+  dotslist <- list(...)
+  
+  want <- c("blacklist.id", "blacklist.genotype", "whitelist.markers", 
+            "monomorphic.out", "snp.ld", "common.markers", "maf.thresholds",
+            "max.marker", "pop.select", "pop.labels")
+  unknowned_param <- setdiff(names(dotslist), want)
+
+  if (length(unknowned_param) > 0) {
+    stop("Unknowned \"...\" parameters ",
+         stringi::stri_join(unknowned_param, collapse = " "))
+  }
+  assigner.dots <- dotslist[names(dotslist) %in% want]
+  
+  blacklist.id <- assigner.dots[["blacklist.id"]]
+  blacklist.genotype <- assigner.dots[["blacklist.genotype"]]
+  whitelist.markers <- assigner.dots[["whitelist.markers"]]
+  monomorphic.out <- assigner.dots[["monomorphic.out"]]
+  if (is.null(monomorphic.out)) monomorphic.out <- TRUE
+  snp.ld <- assigner.dots[["snp.ld"]]
+  common.markers <- assigner.dots[["common.markers"]]
+  if (is.null(common.markers)) common.markers <- TRUE
+  maf.thresholds <- assigner.dots[["maf.thresholds"]]
+  max.marker <- assigner.dots[["max.marker"]]
+  pop.select <- assigner.dots[["pop.select"]]
+  pop.labels <- assigner.dots[["pop.labels"]]
+  
+  # POP levels -----------------------------------------------------------------
   
   # POP_ID in gsi_sim does not like spaces, we need to remove space in everything touching POP_ID...
   # pop.levels, pop.labels, pop.select, strata, etc
@@ -644,7 +655,6 @@ assignment_ngs <- function(
       ggplot2::scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100)) +
       ggplot2::labs(x = "Marker number") +
       ggplot2::labs(y = "Assignment success (%)") +
-      ggplot2::theme_bw() +
       ggplot2::theme(
         legend.position = "bottom",      
         panel.grid.minor.x = ggplot2::element_blank(), 
@@ -653,7 +663,8 @@ assignment_ngs <- function(
         axis.text.x = ggplot2::element_text(size = 8, family = "Helvetica", face = "bold", angle = 90, hjust = 1, vjust = 0.5), 
         axis.title.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"), 
         axis.text.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold")
-      )
+      ) +
+      ggplot2::theme_bw()
   } else {#with imputations
     
     plot.assignment <- ggplot2::ggplot(res, ggplot2::aes(x = factor(MARKER_NUMBER), y = MEAN)) +
@@ -663,7 +674,6 @@ assignment_ngs <- function(
       ggplot2::scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100)) +
       ggplot2::labs(x = "Marker number") +
       ggplot2::labs(y = "Assignment success (%)") +
-      ggplot2::theme_bw() +
       ggplot2::theme(
         legend.position = "bottom",      
         panel.grid.minor.x = ggplot2::element_blank(), 
@@ -672,7 +682,8 @@ assignment_ngs <- function(
         axis.text.x = ggplot2::element_text(size = 8, family = "Helvetica", face = "bold", angle = 90, hjust = 1, vjust = 0.5), 
         axis.title.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"), 
         axis.text.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold")
-      )
+      ) +
+      ggplot2::theme_bw()
   } # end plot
   
   # results --------------------------------------------------------------------
@@ -709,11 +720,9 @@ assignment_gsi_sim <- function(
   sampling.method = "random",
   thl = 1
 ) {
-  # data <- input #test
   # missing.data <- "no.imputation" #test
-  # m = x
   data.select <- suppressWarnings(
-    dplyr::semi_join(data, select.markers, by = "MARKERS") %>%
+    dplyr::semi_join(input, select.markers, by = "MARKERS") %>%
       dplyr::arrange(POP_ID, INDIVIDUALS, MARKERS)
   )
   
@@ -1102,10 +1111,9 @@ assignment_marker_loop <- function(
   filename = NULL,
   keep.gsi.files = FALSE
 ) {
-  message("Marker number: ", x)
-  # x <- 40 # test
-  # x <- marker.number
+  # x <- marker.number[1]
   x <- as.numeric(x)
+  message("Marker number: ", x)
   
   select.markers <- dplyr::filter(.data = fst.ranked, RANKING <= x) %>%
     dplyr::select(MARKERS)
@@ -1220,12 +1228,8 @@ assignment_ranking <- function(
   filename = NULL,
   keep.gsi.files = NULL
 ) {
-  # i <- "TRI_09" #test
-  # i <- "CAR_01" #test
-  # i <- 1
-  # i <- 3
-  i <- iterations.list[[1]]
-  # i <- iterations.list
+  # i <- iterations.list[[1]]
+  i <- iterations.list
   
   # Ranking Fst with training dataset (keep holdout individuals out)
   message("Ranking markers based on Fst")
@@ -1521,7 +1525,7 @@ assignment_function <- function(
   if (sampling.method == "random") {
     message("Conducting Assignment analysis with markers selected randomly")
     # Number of times to repeat the sampling of markers
-    iterations.list <- 1:iteration.method
+    iterations.list <- seq(iteration.method)
     # iterations.list <- 1:10 # test
     
     # Go through the function with the marker number selected
