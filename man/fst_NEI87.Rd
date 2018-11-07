@@ -6,8 +6,8 @@
 \usage{
 fst_NEI87(data, pop.levels = NULL, pop.labels = NULL, strata = NULL,
   holdout.samples = NULL, pairwise = FALSE, ci = FALSE,
-  iteration.ci = 100, quantiles.ci = c(0.025, 0.975), subsample = NULL,
-  iteration.subsample = 1, digits = 9,
+  iteration.ci = 100, quantiles.ci = c(0.025, 0.975),
+  subsample = NULL, iteration.subsample = 1, digits = 9,
   parallel.core = parallel::detectCores() - 1, verbose = FALSE, ...)
 }
 \arguments{

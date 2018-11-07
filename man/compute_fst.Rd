@@ -4,8 +4,8 @@
 \alias{compute_fst}
 \title{compute_fst}
 \usage{
-compute_fst(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(0.025,
-  0.975), digits = 9)
+compute_fst(x, ci = FALSE, iteration.ci = 100,
+  quantiles.ci = c(0.025, 0.975), digits = 9)
 }
 \description{
 main function

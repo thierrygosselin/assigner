@@ -5,11 +5,11 @@
 \title{assignment_function}
 \usage{
 assignment_function(x, input = NULL, subsample = NULL,
-  assignment.analysis = "gsi_sim", snp.ld = NULL, common.markers = TRUE,
-  maf.thresholds = NULL, marker.number = NULL, pop.levels = NULL,
-  pop.labels = NULL, sampling.method = "random", iteration.method = 10,
-  filename = "assignment_data.txt", directory = NULL,
-  keep.gsi.files = FALSE, imputation.method = NULL,
+  assignment.analysis = "gsi_sim", snp.ld = NULL,
+  common.markers = TRUE, maf.thresholds = NULL, marker.number = NULL,
+  pop.levels = NULL, pop.labels = NULL, sampling.method = "random",
+  iteration.method = 10, filename = "assignment_data.txt",
+  directory = NULL, keep.gsi.files = FALSE, imputation.method = NULL,
   impute.mixture = FALSE, hierarchical.levels = "populations",
   verbose = FALSE, parallel.core = parallel::detectCores() - 1,
   manage.all = NULL, random.seed = NULL, base.filename = NULL,

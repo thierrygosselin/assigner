@@ -7,11 +7,12 @@
 assignment_mix(subsample.list, input = NULL, subsample = NULL,
   assignment.analysis = "gsi_sim", mixture.df = NULL, snp.ld = NULL,
   common.markers = TRUE, maf.thresholds = NULL, marker.number = NULL,
-  pop.labels = NULL, sampling.method = "random", iteration.method = 10,
-  directory = NULL, keep.gsi.files = FALSE, imputation.method = NULL,
-  impute.mixture = FALSE, hierarchical.levels = "populations",
-  verbose = FALSE, parallel.core = parallel::detectCores() - 1,
-  manage.all = NULL, random.seed = NULL, filename = NULL)
+  pop.labels = NULL, sampling.method = "random",
+  iteration.method = 10, directory = NULL, keep.gsi.files = FALSE,
+  imputation.method = NULL, impute.mixture = FALSE,
+  hierarchical.levels = "populations", verbose = FALSE,
+  parallel.core = parallel::detectCores() - 1, manage.all = NULL,
+  random.seed = NULL, filename = NULL)
 }
 \description{
 assignment function mixture

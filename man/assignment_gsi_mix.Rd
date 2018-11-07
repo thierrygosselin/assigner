@@ -6,8 +6,9 @@
 \usage{
 assignment_gsi_mix(input, strata.df = NULL, select.markers = NULL,
   markers.names = NULL, missing.data = NULL, i = NULL, m = NULL,
-  filename = NULL, directory.subsample = NULL, keep.gsi.files = FALSE,
-  pop.labels = NULL, sampling.method = "random", ...)
+  filename = NULL, directory.subsample = NULL,
+  keep.gsi.files = FALSE, pop.labels = NULL,
+  sampling.method = "random", ...)
 }
 \description{
 assignment with gsi_sim

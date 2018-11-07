@@ -10,9 +10,10 @@ assignment_ngs(data, assignment.analysis = c("gsim_sim", "adegenet"),
   adegenet.training = 0.9, thl = 1, iteration.method = 10,
   subsample = NULL, iteration.subsample = 1, marker.number = "all",
   strata = NULL, pop.levels = NULL, imputation.method = NULL,
-  hierarchical.levels = "populations", verbose = FALSE, folder = NULL,
-  filename = "assignment_data.txt", keep.gsi.files = FALSE,
-  random.seed = NULL, parallel.core = parallel::detectCores() - 1, ...)
+  hierarchical.levels = "populations", verbose = FALSE,
+  folder = NULL, filename = "assignment_data.txt",
+  keep.gsi.files = FALSE, random.seed = NULL,
+  parallel.core = parallel::detectCores() - 1, ...)
 }
 \arguments{
 \item{data}{12 options: VCF (SNPs or Haplotypes,

@@ -10,8 +10,8 @@ assignment_marker_loop(x, assignment.analysis = "gsi_sim",
   subsample.id = NULL, holdout = NULL, thl = 1,
   adegenet.dapc.opt = NULL, adegenet.n.rep = NULL,
   adegenet.training = NULL, imputation.method = NULL,
-  hierarchical.levels = NULL, directory.subsample = NULL, filename = NULL,
-  keep.gsi.files = FALSE)
+  hierarchical.levels = NULL, directory.subsample = NULL,
+  filename = NULL, keep.gsi.files = FALSE)
 }
 \description{
 assignment_marker_loop

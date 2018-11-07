@@ -16,8 +16,9 @@ mclapply_win(X, FUN, ..., mc.preschedule = TRUE, mc.set.seed = TRUE,
   max.vector.size = getOption("max.vector.size", 1024L))
 
 .assigner_parallel_mc(X, FUN, ..., mc.preschedule = TRUE,
-  mc.set.seed = TRUE, mc.silent = FALSE, mc.cores = getOption("mc.cores",
-  2L), mc.cleanup = TRUE, mc.allow.recursive = TRUE, affinity.list = NULL)
+  mc.set.seed = TRUE, mc.silent = FALSE,
+  mc.cores = getOption("mc.cores", 2L), mc.cleanup = TRUE,
+  mc.allow.recursive = TRUE, affinity.list = NULL)
 }
 \arguments{
 \item{X}{see \pkg{parallel} \code{\link{mclapply}}}
@@ -53,9 +54,5 @@ The code below was inspired from
 \pkg{parallel} \code{\link{mclapply}}, 
 \href{https://github.com/nathanvan}{Nathan VanHoudnos} and 
 \href{https://github.com/EricArcher/}{Eric Archer}.
-
-functions on Windows.
-
-functions on Windows.
 }
 \keyword{internal}

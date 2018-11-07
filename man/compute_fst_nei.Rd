@@ -4,8 +4,8 @@
 \alias{compute_fst_nei}
 \title{compute_fst_nei}
 \usage{
-compute_fst_nei(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(0.025,
-  0.975), digits = 9)
+compute_fst_nei(x, ci = FALSE, iteration.ci = 100,
+  quantiles.ci = c(0.025, 0.975), digits = 9)
 }
 \description{
 fst function

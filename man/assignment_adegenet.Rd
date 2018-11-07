@@ -2,7 +2,6 @@
 % Please edit documentation in R/assignment_mixture.R, R/assignment_ngs.R
 \name{assignment_adegenet}
 \alias{assignment_adegenet}
-\alias{assignment_adegenet}
 \title{assignment with adegenet}
 \usage{
 assignment_adegenet(data = NULL, select.markers = NULL,

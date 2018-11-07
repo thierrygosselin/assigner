@@ -653,8 +653,8 @@ assignment_ngs <- function(
       ggplot2::geom_point(size = 2, alpha = 0.5, na.rm = TRUE) +
       ggplot2::geom_errorbar(ggplot2::aes(ymin = SE_MIN, ymax = SE_MAX), width = 0.3, na.rm = TRUE) +
       ggplot2::scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100)) +
-      ggplot2::labs(x = "Marker number") +
-      ggplot2::labs(y = "Assignment success (%)") +
+      ggplot2::labs(x = "Marker number",
+                    y = "Assignment success (%)") +
       ggplot2::theme(
         legend.position = "bottom",      
         panel.grid.minor.x = ggplot2::element_blank(), 
@@ -672,8 +672,8 @@ assignment_ngs <- function(
       ggplot2::geom_errorbar(ggplot2::aes(ymin = SE_MIN, ymax = SE_MAX), width = 0.3) +
       ggplot2::scale_colour_manual(name = "Missing data", values = c("gray33", "dodgerblue")) +
       ggplot2::scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100)) +
-      ggplot2::labs(x = "Marker number") +
-      ggplot2::labs(y = "Assignment success (%)") +
+      ggplot2::labs(x = "Marker number",
+                    y = "Assignment success (%)") +
       ggplot2::theme(
         legend.position = "bottom",      
         panel.grid.minor.x = ggplot2::element_blank(), 

@@ -2,22 +2,21 @@
 % Please edit documentation in R/assignment_mixture.R, R/assignment_ngs.R
 \name{assignment_random}
 \alias{assignment_random}
-\alias{assignment_random}
 \title{assignment_random}
 \usage{
 assignment_random(x, assignment.analysis = "gsi_sim", input = NULL,
   genind.object = NULL, strata.df = NULL, imputation.method = NULL,
   hierarchical.levels = "populations", directory.subsample = NULL,
-  keep.gsi.files = FALSE, sampling.method = "random", pop.labels = NULL,
-  subsample.id = NULL, filename = NULL, adegenet.n.rep = 30,
-  adegenet.training = 0.9, holdout = NULL)
+  keep.gsi.files = FALSE, sampling.method = "random",
+  pop.labels = NULL, subsample.id = NULL, filename = NULL,
+  adegenet.n.rep = 30, adegenet.training = 0.9, holdout = NULL)
 
 assignment_random(x, assignment.analysis = "gsi_sim", input = NULL,
   genind.object = NULL, strata.df = NULL, imputation.method = NULL,
   hierarchical.levels = "populations", directory.subsample = NULL,
-  keep.gsi.files = FALSE, sampling.method = "random", pop.labels = NULL,
-  subsample.id = NULL, filename = NULL, adegenet.n.rep = 30,
-  adegenet.training = 0.9, holdout = NULL)
+  keep.gsi.files = FALSE, sampling.method = "random",
+  pop.labels = NULL, subsample.id = NULL, filename = NULL,
+  adegenet.n.rep = 30, adegenet.training = 0.9, holdout = NULL)
 }
 \description{
 assignment_random
