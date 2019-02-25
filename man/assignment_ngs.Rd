@@ -9,19 +9,18 @@ assignment_ngs(data, assignment.analysis = c("gsim_sim", "adegenet"),
   adegenet.dapc.opt = "optim.a.score", adegenet.n.rep = 30,
   adegenet.training = 0.9, thl = 1, iteration.method = 10,
   subsample = NULL, iteration.subsample = 1, marker.number = "all",
-  strata = NULL, pop.levels = NULL, imputation.method = NULL,
-  hierarchical.levels = "populations", verbose = FALSE,
-  folder = NULL, filename = "assignment_data.txt",
-  keep.gsi.files = FALSE, random.seed = NULL,
-  parallel.core = parallel::detectCores() - 1, ...)
+  strata = NULL, pop.levels = NULL, verbose = FALSE, folder = NULL,
+  filename = "assignment_data.txt", keep.gsi.files = FALSE,
+  random.seed = NULL, parallel.core = parallel::detectCores() - 1, ...)
 }
 \arguments{
-\item{data}{12 options: VCF (SNPs or Haplotypes,
-to make the vcf population ready, see details below),
+\item{data}{12 options for input: VCFs (SNPs or Haplotypes,
+to make the vcf population ready),
 plink, stacks haplotype file, genind (library(adegenet)),
 genlight (library(adegenet)), gtypes (library(strataG)), genepop, DArT,
-and a data frame in long/tidy or wide format.
-\emph{See details} of \code{\link[radiator]{tidy_genomic_data}}.}
+and a data frame in long/tidy or wide format. To verify that radiator detect
+your file format use \code{\link{detect_genomic_format}} (see example below).
+Documented in \strong{Input genomic datasets} of \code{\link{tidy_genomic_data}}.}
 
 \item{assignment.analysis}{(character) Assignment analysis conducted with 
 \code{assignment.analysis = "gsi_sim"} or 
@@ -124,45 +123,9 @@ The strata column is cleaned of a white spaces that interfere with some
 packages or codes: space is changed to an underscore \code{_}.
 Default: \code{strata = NULL}.}
 
-\item{pop.levels}{(optional, string) This refers to the levels in a factor. In this
-case, the id of the pop.
-Use this argument to have the pop ordered your way instead of the default
-alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")}
-instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}.
-White spaces in population names are replaced by underscore.
+\item{pop.levels}{(optional) Documented in 
+\pkg{radiator} \code{\link[radiator]{read_strata}}.
 Default: \code{pop.levels = NULL}.}
-
-\item{imputation.method}{(character, optional)
-Methods available for map-independent imputations of missing genotype
-(see details for more info):
-
-\enumerate{
-\item \code{imputation.method = "max"} Strawman imputation,
-the most frequently observed genotypes (ties are broken at random).
-
-\item \code{imputation.method = "rf"} On-the-fly-imputations using
-Random Forests algorithm.
-
-\item \code{imputation.method = "rf_pred"} Random Forests algorithm is used
-as a prediction problem.
-
-\item \code{imputation.method = "boost"} extreme gradient boosting trees.
-
-\item \code{imputation.method = "mca"} Multiple Correspondence Analysis (in devel).
-
-\code{imputation.method = NULL} the function will stop.
-Default: \code{imputation.method = NULL}.
-}}
-
-\item{hierarchical.levels}{(character, optional) \code{c("global", "strata")}.
-Should the imputations be computed by markers globally or by strata.
-Historically, this was \code{"populations"}.
-
-Note that imputing genotype globally in conjunction with
-\code{imputation.method = "max"} can potentially create huge bias.
-e.g. by introducing foreign genotypes/haplotypes in some populations
-(see note for more info).
-Default: \code{hierarchical.levels = "strata"}.}
 
 \item{verbose}{(optional, logical) When \code{verbose = TRUE}
 the function is a little more chatty during execution.
@@ -191,7 +154,7 @@ Default: \code{random.seed = NULL}.}
 
 \item{parallel.core}{(optional) The number of core used for parallel
 execution during import.
-Default: \code{parallel::detectCores() - 1}.}
+Default: \code{parallel.core = parallel::detectCores() - 1}.}
 
 \item{...}{(optional) To pass further argument for fine-tuning the 
 function (filters). See details.}
@@ -238,16 +201,7 @@ for detailed information about supported file format.
 
 Further arguments can be passed via the \emph{dots-dots-dots}: 
 \itemize{
-\item blacklist.id
-\item blacklist.genotype
 \item whitelist.markers
-\item monomorphic.out
-\item snp.ld
-\item common.markers
-\item maf.thresholds
-\item max.marker
-\item pop.select
-\item pop.labels
 }
 For argument documentation see \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}.
 

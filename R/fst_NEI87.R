@@ -181,7 +181,6 @@
 #' @importFrom tidyr spread gather unite separate complete nesting
 #' @importFrom stringi stri_replace_all_regex stri_sub stri_join
 #' @importFrom purrr map flatten flatten_int
-#' @importFrom tibble as_data_frame data_frame
 #' @importFrom readr read_tsv
 #' @importFrom utils count.fields combn
 #' @importFrom stats quantile
@@ -645,10 +644,10 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
   # x = data.genotyped # test
   
   # Markers in common between all populations-----------------------------------
-  x <- radiator::keep_common_markers(data = x)$input
+  x <- radiator::filter_common_markers(data = x)
   
   # Removing monomorphic markers------------------------------------------------
-  x <- radiator::discard_monomorphic_markers(data = x)$input
+  x <- radiator::filter_monomorphic(data = x)
   
   # number of marker used for computation 
   n.markers <- dplyr::n_distinct(x$MARKERS)
@@ -868,7 +867,7 @@ pairwise_fst_nei <- function(
     dplyr::mutate(POP_ID = droplevels(x = POP_ID))
   fst.select <- compute_fst_nei(x = data.select, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci, digits = digits)
   # if (ci){
-  df.select <- tibble::data_frame(POP1 = pop.select[1], POP2 = pop.select[2])
+  df.select <- tibble::tibble(POP1 = pop.select[1], POP2 = pop.select[2])
   df.select <- dplyr::bind_cols(df.select, fst.select$fst.overall)
   fst.select <- NULL
   return(df.select)

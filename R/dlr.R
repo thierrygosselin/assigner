@@ -30,7 +30,7 @@
 #' @importFrom stringi stri_dup stri_join stri_replace_all_fixed stri_sub
 #' @importFrom stats as.dist dist
 #' @importFrom utils combn
-#' @importFrom tibble rownames_to_column data_frame
+#' @importFrom tibble rownames_to_column tibble
 #' @importFrom purrr discard flatten_dbl
 #' @importFrom parallel detectCores
 #' @importFrom rlang .data UQ
@@ -147,7 +147,7 @@ dlr <- function(
   # Table with Dlr--------------------------------------------------------------
   names.pairwise <- utils::combn(unique(get.pop$POP_ID), 2, paste, collapse = '-')
 
-  dlr.table <- tibble::data_frame(PAIRWISE_POP = names.pairwise, DLR = dlr.all.pop) %>%
+  dlr.table <- tibble::tibble(PAIRWISE_POP = names.pairwise, DLR = dlr.all.pop) %>%
     dplyr::mutate(DLR = round(as.numeric(DLR), 2))
 
 
@@ -336,10 +336,11 @@ plot_dlr <- function(
 
   dlr.plot.name <- stringi::stri_join("dlr_plot_pop_", stringi::stri_join(pop.select, collapse = "_"))
 
-  assignment.select <- suppressWarnings(assignment.select %>%
-                                          dplyr::filter(Populations %in% pop.select) %>%
-                                          dplyr::select(dplyr::one_of(c(fixed.header, pop.select))))
-
+  assignment.select <- suppressWarnings(
+    assignment.select %>%
+      dplyr::filter(Populations %in% pop.select) %>%
+      dplyr::select(dplyr::one_of(c(fixed.header, pop.select))))
+  
   scale.temp <- suppressWarnings(
     unique(
       dplyr::select(assignment.select,

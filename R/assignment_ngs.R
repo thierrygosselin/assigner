@@ -31,7 +31,6 @@
 #' }
 
 #' @inheritParams radiator::tidy_genomic_data 
-#' @inheritParams radiator::radiator_imputations_module
 
 #' @param strata (optional/required) Optional for file format with population 
 #' grouping integrated (e.g. vcf is not population-wise and requires a strata file).
@@ -42,6 +41,9 @@
 #' packages or codes: space is changed to an underscore \code{_}.
 #' Default: \code{strata = NULL}.
 
+#' @param pop.levels (optional) Documented in 
+#' \pkg{radiator} \code{\link[radiator]{read_strata}}.
+#' Default: \code{pop.levels = NULL}.
 
 #' @param assignment.analysis (character) Assignment analysis conducted with 
 #' \code{assignment.analysis = "gsi_sim"} or 
@@ -167,16 +169,7 @@
 #' 
 #' Further arguments can be passed via the \emph{dots-dots-dots}: 
 #' \itemize{
-#' \item blacklist.id
-#' \item blacklist.genotype
 #' \item whitelist.markers
-#' \item monomorphic.out
-#' \item snp.ld
-#' \item common.markers
-#' \item maf.thresholds
-#' \item max.marker
-#' \item pop.select
-#' \item pop.labels
 #' }
 #' For argument documentation see \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}.
 #' 
@@ -223,7 +216,7 @@
 #' @importFrom parallel detectCores
 #' @importFrom stringi stri_join stri_sub stri_replace_all_fixed stri_detect_fixed stri_replace_na
 #' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join funs sample_n sample_frac
-#' @importFrom radiator tidy_genomic_data change_pop_names radiator_imputations_module write_genind snp_ld keep_common_markers filter_maf detect_genomic_format
+#' @importFrom radiator tidy_genomic_data change_pop_names write_genind filter_maf detect_genomic_format filter_common_markers filter_monomorphic
 #' @importFrom stats var median quantile
 #' @importFrom purrr map flatten keep discard
 #' @importFrom adegenet genind
@@ -310,8 +303,6 @@ assignment_ngs <- function(
   marker.number = "all",
   strata = NULL,
   pop.levels = NULL,
-  imputation.method = NULL,
-  hierarchical.levels = "populations",
   verbose = FALSE,
   folder = NULL,
   filename = "assignment_data.txt",
@@ -322,16 +313,8 @@ assignment_ngs <- function(
 ) {
   
   ## testing 
-  # blacklist.id = NULL
-  # blacklist.genotype = NULL
   # whitelist.markers = NULL
-  # monomorphic.out = TRUE
-  # snp.ld = NULL
-  # common.markers = TRUE
-  # maf.thresholds = NULL
-  # max.marker = NULL
-  # pop.select = NULL
-  # pop.labels = NULL
+  
   
   cat("#######################################################################\n")
   cat("###################### assigner::assignment_ngs #######################\n")
@@ -381,9 +364,7 @@ assignment_ngs <- function(
   # dotslist -------------------------------------------------------------------
   dotslist <- list(...)
   
-  want <- c("blacklist.id", "blacklist.genotype", "whitelist.markers", 
-            "monomorphic.out", "snp.ld", "common.markers", "maf.thresholds",
-            "max.marker", "pop.select", "pop.labels")
+  want <- c("whitelist.markers")
   unknowned_param <- setdiff(names(dotslist), want)
 
   if (length(unknowned_param) > 0) {
@@ -391,35 +372,24 @@ assignment_ngs <- function(
          stringi::stri_join(unknowned_param, collapse = " "))
   }
   assigner.dots <- dotslist[names(dotslist) %in% want]
-  
-  blacklist.id <- assigner.dots[["blacklist.id"]]
-  blacklist.genotype <- assigner.dots[["blacklist.genotype"]]
+
   whitelist.markers <- assigner.dots[["whitelist.markers"]]
-  monomorphic.out <- assigner.dots[["monomorphic.out"]]
-  if (is.null(monomorphic.out)) monomorphic.out <- TRUE
-  snp.ld <- assigner.dots[["snp.ld"]]
-  common.markers <- assigner.dots[["common.markers"]]
-  if (is.null(common.markers)) common.markers <- TRUE
-  maf.thresholds <- assigner.dots[["maf.thresholds"]]
-  max.marker <- assigner.dots[["max.marker"]]
-  pop.select <- assigner.dots[["pop.select"]]
-  pop.labels <- assigner.dots[["pop.labels"]]
   
   # POP levels -----------------------------------------------------------------
   
   # POP_ID in gsi_sim does not like spaces, we need to remove space in everything touching POP_ID...
   # pop.levels, pop.labels, pop.select, strata, etc
-  if (!is.null(pop.levels) & is.null(pop.labels)) {
-    pop.levels <- stringi::stri_replace_all_fixed(pop.levels, pattern = " ", replacement = "_", vectorize_all = FALSE)
-    pop.labels <- pop.levels
-  }
-  if (!is.null(pop.labels)) {
-    pop.labels <- stringi::stri_replace_all_fixed(pop.labels, pattern = " ", replacement = "_", vectorize_all = FALSE)
-  }
-  if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
-  if (!is.null(pop.select)) {
-    pop.select <- stringi::stri_replace_all_fixed(pop.select, pattern = " ", replacement = "_", vectorize_all = FALSE)
-  }
+  # if (!is.null(pop.levels) & is.null(pop.labels)) {
+  #   pop.levels <- stringi::stri_replace_all_fixed(pop.levels, pattern = " ", replacement = "_", vectorize_all = FALSE)
+  #   pop.labels <- pop.levels
+  # }
+  # if (!is.null(pop.labels)) {
+  #   pop.labels <- stringi::stri_replace_all_fixed(pop.labels, pattern = " ", replacement = "_", vectorize_all = FALSE)
+  # }
+  # if (!is.null(pop.labels) & is.null(pop.levels)) stop("pop.levels is required if you use pop.labels")
+  # if (!is.null(pop.select)) {
+  #   pop.select <- stringi::stri_replace_all_fixed(pop.select, pattern = " ", replacement = "_", vectorize_all = FALSE)
+  # }
   
   # store function call
   res.list$call <- match.call()
@@ -428,16 +398,16 @@ assignment_ngs <- function(
   if (is.null(folder)) {
     # Get date and time to have unique filenaming
     file.date <- format(Sys.time(), "%Y%m%d@%H%M")
-    
-    if (is.null(imputation.method)) {
+    imputation.method <- NULL
+    # if (is.null(imputation.method)) {
       message("Map-independent imputations: no")
       directory <- stringi::stri_join(getwd(),"/", "assignment_analysis_", "method_", sampling.method, "_no_imputations_", file.date, "/", sep = "")
       dir.create(file.path(directory))
-    } else {
-      message("Map-independent imputations: yes")
-      directory <- stringi::stri_join(getwd(),"/","assignment_analysis_", "method_", sampling.method, "_imputations_", imputation.method,"_", hierarchical.levels, "_", file.date, "/", sep = "")
-      dir.create(file.path(directory))
-    }
+    # } else {
+    #   message("Map-independent imputations: yes")
+    #   directory <- stringi::stri_join(getwd(),"/","assignment_analysis_", "method_", sampling.method, "_imputations_", imputation.method,"_", hierarchical.levels, "_", file.date, "/", sep = "")
+    #   dir.create(file.path(directory))
+    # }
     message("Folder: ", directory)
     file.date <- NULL #unused object
   } else {
@@ -457,19 +427,8 @@ assignment_ngs <- function(
   # Import input ---------------------------------------------------------------
   input <- radiator::tidy_genomic_data(
     data = data, 
-    vcf.metadata = FALSE,
-    blacklist.id = blacklist.id, 
-    blacklist.genotype = blacklist.genotype, 
     whitelist.markers = whitelist.markers, 
-    monomorphic.out = monomorphic.out, 
-    max.marker = max.marker,
-    snp.ld = snp.ld,
-    common.markers = FALSE, 
-    maf.thresholds = maf.thresholds,
-    strata = strata, 
-    pop.levels = pop.levels, 
-    pop.labels = pop.labels, 
-    pop.select = pop.select,
+    strata = strata,
     filename = NULL,
     verbose = FALSE
   )
@@ -478,6 +437,7 @@ assignment_ngs <- function(
   input$POP_ID <- stringi::stri_replace_all_fixed(input$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
   
   # input <- radiator::change_pop_names(data = input, pop.levels = pop.levels, pop.labels = pop.labels)
+  pop.levels <- pop.labels <- NULL
   input <- radiator::change_pop_names(data = input, pop.levels = unique(pop.labels), pop.labels = unique(pop.labels))
   pop.levels <- levels(input$POP_ID)
   pop.labels <- pop.levels
@@ -541,21 +501,12 @@ assignment_ngs <- function(
     input = input,
     subsample = subsample,
     assignment.analysis = assignment.analysis,
-    snp.ld = snp.ld,
-    common.markers = common.markers,
-    maf.thresholds = maf.thresholds,
     marker.number = marker.number,
-    # pop.levels = unique(pop.labels),
-    # pop.labels = unique(pop.labels),
-    pop.levels = pop.levels,
-    pop.labels = pop.levels,
     sampling.method = sampling.method,
     iteration.method = iteration.method,
     filename = filename,
     directory = directory,
     keep.gsi.files = keep.gsi.files,
-    imputation.method = imputation.method,
-    hierarchical.levels = hierarchical.levels,
     verbose = verbose,
     parallel.core = parallel.core,
     manage.all = manage.all,
@@ -568,11 +519,11 @@ assignment_ngs <- function(
   )
   res <- dplyr::bind_rows(res)
   
-  if (is.null(imputation.method)) {
+  # if (is.null(imputation.method)) {
     filename.res <- stringi::stri_join("assignment", sampling.method, "no.imputation.results.summary.stats.subsample", "tsv", sep = ".")
-  } else {# with imputations
-    filename.res <- stringi::stri_join("assignment", sampling.method, "imputed.results,summary.stats.subsample", "tsv", sep = ".")
-  }
+  # } else {# with imputations
+  #   filename.res <- stringi::stri_join("assignment", sampling.method, "imputed.results,summary.stats.subsample", "tsv", sep = ".")
+  # }
   readr::write_tsv(
     x = res, path = paste0(directory,filename.res),
     col_names = TRUE, append = FALSE
@@ -633,11 +584,11 @@ assignment_ngs <- function(
       dplyr::mutate(SUBSAMPLE = factor(SUBSAMPLE, levels = c(1:iteration.subsample, "OVERALL"), ordered = TRUE)) %>% 
       dplyr::arrange(CURRENT, MARKER_NUMBER, SUBSAMPLE)
     
-    if (is.null(imputation.method)) {
+    # if (is.null(imputation.method)) {
       filename.assignment.sum.subsample <- stringi::stri_join("assignment", sampling.method, "no.imputation.results.summary.stats.subsample.overall", "tsv", sep = ".")
-    } else {# with imputations
-      filename.assignment.sum.subsample <- stringi::stri_join("assignment", sampling.method, "imputed.results.summary.stats.subsample.overall", "tsv", sep = ".")
-    }
+    # } else {# with imputations
+    #   filename.assignment.sum.subsample <- stringi::stri_join("assignment", sampling.method, "imputed.results.summary.stats.subsample.overall", "tsv", sep = ".")
+    # }
     readr::write_tsv(
       x = res, path = paste0(directory, filename.assignment.sum.subsample),
       col_names = TRUE, append = FALSE
@@ -648,7 +599,7 @@ assignment_ngs <- function(
   } # End summary of the subsampling iterations
   
   # Assignment plot ------------------------------------------------------------
-  if (is.null(imputation.method)) { # no imputation
+  # if (is.null(imputation.method)) { # no imputation
     plot.assignment <- ggplot2::ggplot(res, ggplot2::aes(x = factor(MARKER_NUMBER), y = MEAN)) +
       ggplot2::geom_point(size = 2, alpha = 0.5, na.rm = TRUE) +
       ggplot2::geom_errorbar(ggplot2::aes(ymin = SE_MIN, ymax = SE_MAX), width = 0.3, na.rm = TRUE) +
@@ -665,26 +616,26 @@ assignment_ngs <- function(
         axis.text.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold")
       ) +
       ggplot2::theme_bw()
-  } else {#with imputations
-    
-    plot.assignment <- ggplot2::ggplot(res, ggplot2::aes(x = factor(MARKER_NUMBER), y = MEAN)) +
-      ggplot2::geom_point(ggplot2::aes(colour = MISSING_DATA), size = 2, alpha = 0.8) +
-      ggplot2::geom_errorbar(ggplot2::aes(ymin = SE_MIN, ymax = SE_MAX), width = 0.3) +
-      ggplot2::scale_colour_manual(name = "Missing data", values = c("gray33", "dodgerblue")) +
-      ggplot2::scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100)) +
-      ggplot2::labs(x = "Marker number",
-                    y = "Assignment success (%)") +
-      ggplot2::theme(
-        legend.position = "bottom",      
-        panel.grid.minor.x = ggplot2::element_blank(), 
-        panel.grid.major.y = ggplot2::element_line(colour = "grey60", linetype = "dashed"), 
-        axis.title.x = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"), 
-        axis.text.x = ggplot2::element_text(size = 8, family = "Helvetica", face = "bold", angle = 90, hjust = 1, vjust = 0.5), 
-        axis.title.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"), 
-        axis.text.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold")
-      ) +
-      ggplot2::theme_bw()
-  } # end plot
+  # } else {#with imputations
+  #   
+  #   plot.assignment <- ggplot2::ggplot(res, ggplot2::aes(x = factor(MARKER_NUMBER), y = MEAN)) +
+  #     ggplot2::geom_point(ggplot2::aes(colour = MISSING_DATA), size = 2, alpha = 0.8) +
+  #     ggplot2::geom_errorbar(ggplot2::aes(ymin = SE_MIN, ymax = SE_MAX), width = 0.3) +
+  #     ggplot2::scale_colour_manual(name = "Missing data", values = c("gray33", "dodgerblue")) +
+  #     ggplot2::scale_y_continuous(breaks = c(0, 10, 20 ,30, 40, 50, 60, 70, 80, 90, 100)) +
+  #     ggplot2::labs(x = "Marker number",
+  #                   y = "Assignment success (%)") +
+  #     ggplot2::theme(
+  #       legend.position = "bottom",      
+  #       panel.grid.minor.x = ggplot2::element_blank(), 
+  #       panel.grid.major.y = ggplot2::element_line(colour = "grey60", linetype = "dashed"), 
+  #       axis.title.x = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"), 
+  #       axis.text.x = ggplot2::element_text(size = 8, family = "Helvetica", face = "bold", angle = 90, hjust = 1, vjust = 0.5), 
+  #       axis.title.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"), 
+  #       axis.text.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold")
+  #     ) +
+  #     ggplot2::theme_bw()
+  # } # end plot
   
   # results --------------------------------------------------------------------
   res.list$assignment <- res
@@ -987,12 +938,9 @@ assignment_random <- function(
   input = NULL,
   genind.object = NULL,
   strata.df = NULL,
-  imputation.method = NULL,
-  hierarchical.levels = "populations",
   directory.subsample = NULL,
   keep.gsi.files = FALSE,
   sampling.method = "random",
-  pop.labels = NULL,
   subsample.id = NULL,
   filename = NULL,
   adegenet.n.rep = 30,
@@ -1011,26 +959,26 @@ assignment_random <- function(
   # get the list of loci after filter
   markers.names <- unique(select.markers$MARKERS)
   
-  if (is.null(imputation.method)) {
+  # if (is.null(imputation.method)) {
     filename.imp <- "no_imputation.txt"
     missing.data <- "no.imputation"
-  } else {
-    filename.imp <- "imputed.txt"
-    
-    if (imputation.method == "rf") {
-      if (hierarchical.levels == "populations") {
-        missing.data <- "imputed RF populations"
-      } else {
-        missing.data <- "imputed RF global"
-      }
-    } else {
-      if (hierarchical.levels == "populations") {
-        missing.data <- "imputed max populations"
-      } else {
-        missing.data <- "imputed max global"
-      }
-    }
-  }
+  # } else {
+  #   filename.imp <- "imputed.txt"
+  #   
+  #   if (imputation.method == "rf") {
+  #     if (hierarchical.levels == "populations") {
+  #       missing.data <- "imputed RF populations"
+  #     } else {
+  #       missing.data <- "imputed RF global"
+  #     }
+  #   } else {
+  #     if (hierarchical.levels == "populations") {
+  #       missing.data <- "imputed max populations"
+  #     } else {
+  #       missing.data <- "imputed max global"
+  #     }
+  #   }
+  # }
   
   # Modify filename
   filename <- stringi::stri_join(directory.subsample, filename, sep = "")
@@ -1097,7 +1045,6 @@ assignment_marker_loop <- function(
   input = NULL,
   genind.object = NULL,
   strata.df = NULL,
-  pop.labels = NULL,
   sampling.method = NULL,
   subsample.id = NULL,
   holdout = NULL,
@@ -1105,8 +1052,6 @@ assignment_marker_loop <- function(
   adegenet.dapc.opt = NULL,
   adegenet.n.rep = NULL,
   adegenet.training = NULL,
-  imputation.method = NULL,
-  hierarchical.levels = NULL,
   directory.subsample = NULL,
   filename = NULL,
   keep.gsi.files = FALSE
@@ -1121,26 +1066,26 @@ assignment_marker_loop <- function(
   # get the list of markers after filter
   markers.names <- unique(select.markers$MARKERS)
   
-  if (is.null(imputation.method)) {
+  # if (is.null(imputation.method)) {
     filename.imp <- "no_imputation.txt"
     missing.data <- "no.imputation"
-  } else {
-    filename.imp <- "imputed.txt"
-    
-    if (imputation.method == "rf") {
-      if (hierarchical.levels == "populations") {
-        missing.data <- "imputed RF populations"
-      } else {
-        missing.data <- "imputed RF global"
-      }
-    } else {
-      if (hierarchical.levels == "populations") {
-        missing.data <- "imputed max populations"
-      } else {
-        missing.data <- "imputed max global"
-      }
-    }
-  }
+  # } else {
+  #   filename.imp <- "imputed.txt"
+  #   
+  #   if (imputation.method == "rf") {
+  #     if (hierarchical.levels == "populations") {
+  #       missing.data <- "imputed RF populations"
+  #     } else {
+  #       missing.data <- "imputed RF global"
+  #     }
+  #   } else {
+  #     if (hierarchical.levels == "populations") {
+  #       missing.data <- "imputed max populations"
+  #     } else {
+  #       missing.data <- "imputed max global"
+  #     }
+  #   }
+  # }
   
   
   # Modify filename
@@ -1165,7 +1110,6 @@ assignment_marker_loop <- function(
       filename = filename,
       directory.subsample = directory.subsample,
       keep.gsi.files = keep.gsi.files,
-      pop.labels = pop.labels,
       sampling.method = sampling.method,
       thl = thl
     )
@@ -1209,16 +1153,11 @@ assignment_ranking <- function(
   iterations.list = NULL,
   thl = NULL,
   input = NULL,
-  pop.labels = NULL,
-  input.imp = NULL,
   holdout.individuals = NULL,
-  imputation.method = NULL,
-  hierarchical.levels = NULL,
   directory.subsample = NULL,
   marker.number = NULL,
   assignment.analysis = NULL,
   genind.object = NULL,
-  genind.object.imp = NULL,
   strata.df = NULL,
   sampling.method = NULL,
   subsample.id = NULL,
@@ -1241,13 +1180,13 @@ assignment_ranking <- function(
       pop.levels = unique(pop.labels), pop.labels = unique(pop.labels), strata = NULL, 
       holdout.samples = NULL
     )$fst.ranked
-    if (!is.null(imputation.method)) {
-      fst.ranked.imp <- assigner::fst_WC84(
-        data = input.imp, 
-        pop.levels = unique(pop.labels), pop.labels = unique(pop.labels), strata = NULL, 
-        holdout.samples = NULL
-      )$fst.ranked
-    }
+    # if (!is.null(imputation.method)) {
+    #   fst.ranked.imp <- assigner::fst_WC84(
+    #     data = input.imp, 
+    #     pop.levels = unique(pop.labels), pop.labels = unique(pop.labels), strata = NULL, 
+    #     holdout.samples = NULL
+    #   )$fst.ranked
+    # }
   }
   
   if (thl == 1) {
@@ -1257,13 +1196,13 @@ assignment_ranking <- function(
       pop.levels = unique(pop.labels), pop.labels = unique(pop.labels), strata = NULL, 
       holdout.samples = holdout$INDIVIDUALS
     )$fst.ranked
-    if (!is.null(imputation.method)) {
-      fst.ranked.imp <- assigner::fst_WC84(
-        data = input.imp, 
-        pop.levels = unique(pop.labels), pop.labels = unique(pop.labels), strata = NULL, 
-        holdout.samples = holdout$INDIVIDUALS
-      )$fst.ranked
-    }
+    # if (!is.null(imputation.method)) {
+    #   fst.ranked.imp <- assigner::fst_WC84(
+    #     data = input.imp, 
+    #     pop.levels = unique(pop.labels), pop.labels = unique(pop.labels), strata = NULL, 
+    #     holdout.samples = holdout$INDIVIDUALS
+    #   )$fst.ranked
+    # }
   }
   
   # thl proportion or > 1
@@ -1274,13 +1213,13 @@ assignment_ranking <- function(
       pop.levels = unique(pop.labels), pop.labels = unique(pop.labels), strata = NULL, 
       holdout.samples = holdout$INDIVIDUALS
     )$fst.ranked
-    if (!is.null(imputation.method)) {
-      fst.ranked.imp <- assigner::fst_WC84(
-        data = input.imp, 
-        pop.levels = unique(pop.labels), pop.labels = unique(pop.labels), strata = NULL, 
-        holdout.samples = holdout$INDIVIDUALS
-      )$fst.ranked
-    }
+    # if (!is.null(imputation.method)) {
+    #   fst.ranked.imp <- assigner::fst_WC84(
+    #     data = input.imp, 
+    #     pop.levels = unique(pop.labels), pop.labels = unique(pop.labels), strata = NULL, 
+    #     holdout.samples = holdout$INDIVIDUALS
+    #   )$fst.ranked
+    # }
   }
   
   readr::write_tsv(
@@ -1291,15 +1230,15 @@ assignment_ranking <- function(
     append = FALSE
   )
   
-  if (!is.null(imputation.method)) {  # With imputations
-    readr::write_tsv(
-      x = fst.ranked.imp, 
-      path = stringi::stri_join(directory.subsample,
-                                "fst.ranked_", i, "_imputed",".tsv", sep = ""),
-      col_names = TRUE, 
-      append = FALSE
-    )
-  }
+  # if (!is.null(imputation.method)) {  # With imputations
+  #   readr::write_tsv(
+  #     x = fst.ranked.imp, 
+  #     path = stringi::stri_join(directory.subsample,
+  #                               "fst.ranked_", i, "_imputed",".tsv", sep = ""),
+  #     col_names = TRUE, 
+  #     append = FALSE
+  #   )
+  # }
   
   # looping through the markers
   message("Going throught the marker.number")
@@ -1322,8 +1261,6 @@ assignment_ranking <- function(
       adegenet.dapc.opt = adegenet.dapc.opt,
       adegenet.n.rep = adegenet.n.rep,
       adegenet.training = adegenet.training,
-      imputation.method = NULL,
-      hierarchical.levels = NULL,
       directory.subsample = directory.subsample,
       filename = filename,
       keep.gsi.files = keep.gsi.files
@@ -1331,41 +1268,38 @@ assignment_ranking <- function(
       dplyr::bind_rows(.)
   )
   
-  if (!is.null(imputation.method)) {
-    assignment.marker.imp <- list()
-    assignment.marker.imp <- suppressWarnings(
-      purrr::map(
-        .x = marker.number, 
-        .f = assignment_marker_loop,
-        assignment.analysis = assignment.analysis,
-        fst.ranked = fst.ranked.imp,
-        i = i,
-        input = input.imp,
-        genind.object = genind.object.imp,
-        strata.df = strata.df,
-        pop.labels = unique(pop.labels),
-        sampling.method = sampling.method,
-        subsample.id = subsample.id,
-        holdout = holdout,
-        thl = thl,
-        adegenet.dapc.opt = adegenet.dapc.opt,
-        adegenet.n.rep = adegenet.n.rep,
-        adegenet.training = adegenet.training,
-        imputation.method = imputation.method,
-        hierarchical.levels = hierarchical.levels,
-        directory.subsample = directory.subsample,
-        filename = filename,
-        keep.gsi.files = keep.gsi.files
-      ) %>%
-        dplyr::bind_rows(.)
-    )
-    
-    assignment.res.summary <- suppressWarnings(
-      dplyr::bind_rows(assignment.marker, assignment.marker.imp)
-    )
-  } else {
+  # if (!is.null(imputation.method)) {
+  #   assignment.marker.imp <- list()
+  #   assignment.marker.imp <- suppressWarnings(
+  #     purrr::map(
+  #       .x = marker.number, 
+  #       .f = assignment_marker_loop,
+  #       assignment.analysis = assignment.analysis,
+  #       fst.ranked = fst.ranked.imp,
+  #       i = i,
+  #       input = input.imp,
+  #       genind.object = genind.object.imp,
+  #       strata.df = strata.df,
+  #       sampling.method = sampling.method,
+  #       subsample.id = subsample.id,
+  #       holdout = holdout,
+  #       thl = thl,
+  #       adegenet.dapc.opt = adegenet.dapc.opt,
+  #       adegenet.n.rep = adegenet.n.rep,
+  #       adegenet.training = adegenet.training,
+  #       directory.subsample = directory.subsample,
+  #       filename = filename,
+  #       keep.gsi.files = keep.gsi.files
+  #     ) %>%
+  #       dplyr::bind_rows(.)
+  #   )
+  #   
+  #   assignment.res.summary <- suppressWarnings(
+  #     dplyr::bind_rows(assignment.marker, assignment.marker.imp)
+  #   )
+  # } else {
     assignment.res.summary <- assignment.marker
-  }
+  # }
   assignment.marker.imp <- assignment.marker <- NULL
   
   message("Summarizing the assignment analysis results by iterations and marker group")
@@ -1394,20 +1328,12 @@ assignment_function <- function(
   input = NULL,
   subsample = NULL,
   assignment.analysis = "gsi_sim",
-  snp.ld = NULL,
-  common.markers = TRUE,
-  maf.thresholds = NULL,
   marker.number = NULL,
-  pop.levels = NULL,
-  pop.labels = NULL,
   sampling.method = "random",
   iteration.method = 10,
   filename = "assignment_data.txt",
   directory = NULL,
   keep.gsi.files = FALSE,
-  imputation.method = NULL,
-  impute.mixture = FALSE,
-  hierarchical.levels = "populations",
   verbose = FALSE,
   parallel.core = parallel::detectCores() - 1,
   manage.all = NULL,
@@ -1419,6 +1345,9 @@ assignment_function <- function(
   adegenet.n.rep = NULL,
   adegenet.training = NULL
 ) {
+  
+  pop.labels <- NULL
+  
   # x <- subsample.list[[1]] # test
   subsample.id <- unique(x$SUBSAMPLE)
   
@@ -1440,25 +1369,20 @@ assignment_function <- function(
   # unused object
   x <- NULL
   
-  # LD control... keep only 1 SNP per haplotypes/reads (optional) ------------
-  if (!is.null(snp.ld)) {
-    input <- radiator::snp_ld(data = input, snp.ld = snp.ld)
-  } # End of snp.ld control
-  
   # Markers in common between all populations (optional) ---------------------
-  if (common.markers) { # keep only markers present in all pop
-    input <- radiator::keep_common_markers(data = input)$input
-  } # End common markers
-  
+  # if (common.markers) { # keep only markers present in all pop
+  #   input <- radiator::keep_common_markers(data = input)$input
+  # } # End common markers
+  # 
   # Minor Allele Frequency filter --------------------------------------------
-  if (!is.null(maf.thresholds)) {
-    input <- radiator::filter_maf(
-    data = input,
-    interactive.filter = FALSE,
-    maf.thresholds = maf.thresholds,
-    parallel.core = parallel.core,
-    verbose = FALSE)$tidy.filtered.maf
-  } # End of MAF filters
+  # if (!is.null(maf.thresholds)) {
+  #   input <- radiator::filter_maf(
+  #   data = input,
+  #   interactive.filter = FALSE,
+  #   maf.thresholds = maf.thresholds,
+  #   parallel.core = parallel.core,
+  #   verbose = FALSE)$tidy.filtered.maf
+  # } # End of MAF filters
   
   # Keep a new strata df -------------------------------------------------------
   strata.df <- dplyr::distinct(.data = input, INDIVIDUALS, POP_ID)
@@ -1472,31 +1396,31 @@ assignment_function <- function(
   }
   
   # Imputations --------------------------------------------------------------
-  if (!is.null(imputation.method)) {
-    message("Preparing the data for imputations")
-    input.imp <- radiator::radiator_imputations_module(
-      data = input, 
-      imputation.method = imputation.method, 
-      hierarchical.levels = hierarchical.levels, 
-      verbose = verbose, 
-      parallel.core = parallel.core, 
-      filename = stringi::stri_join(directory, "dataset.imputed.tsv")
-    )
-    res.list$tidy.data.imputed <- input.imp
-    # prepare the imputed dataset for gsi_sim or adegenet
-    message("Preparing imputed data set for assignement analysis")
-    
-    # adegenet
-    if (assignment.analysis == "adegenet") {
-      genind.object.imp <- radiator::write_genind(data = input.imp)
-    } else {
-      genind.object.imp <- NULL
-    } # end adegenet
-    
-  } else {
-    input.imp <- NULL
-    genind.object.imp <- NULL
-  } # End imputations
+  # if (!is.null(imputation.method)) {
+  #   message("Preparing the data for imputations")
+  #   input.imp <- radiator::radiator_imputations_module(
+  #     data = input, 
+  #     imputation.method = imputation.method, 
+  #     hierarchical.levels = hierarchical.levels, 
+  #     verbose = verbose, 
+  #     parallel.core = parallel.core, 
+  #     filename = stringi::stri_join(directory, "dataset.imputed.tsv")
+  #   )
+  #   res.list$tidy.data.imputed <- input.imp
+  #   # prepare the imputed dataset for gsi_sim or adegenet
+  #   message("Preparing imputed data set for assignement analysis")
+  #   
+  #   # adegenet
+  #   if (assignment.analysis == "adegenet") {
+  #     genind.object.imp <- radiator::write_genind(data = input.imp)
+  #   } else {
+  #     genind.object.imp <- NULL
+  #   } # end adegenet
+  #   
+  # } else {
+  #   input.imp <- NULL
+  #   genind.object.imp <- NULL
+  # } # End imputations
   
   # Sampling of markers ------------------------------------------------------
   # unique list of markers after all the filtering
@@ -1594,12 +1518,9 @@ assignment_function <- function(
         input = input,
         genind.object = genind.object,
         strata.df = strata.df,
-        imputation.method = NULL,
-        hierarchical.levels = NULL,
         directory.subsample = directory.subsample,
         keep.gsi.files = keep.gsi.files,
         sampling.method = sampling.method,
-        pop.labels = pop.labels,
         subsample.id = subsample.id,
         filename = filename,
         adegenet.n.rep = adegenet.n.rep,
@@ -1614,36 +1535,33 @@ assignment_function <- function(
     )
     
     # with imputations
-    if (!is.null(imputation.method)) {
-      assignment.res.imp <- NULL
-      assignment.res.imp <- suppressWarnings(
-        .assigner_parallel(
-          X = marker.random.list, 
-          FUN = assignment_random,
-          assignment.analysis = assignment.analysis,
-          input = input.imp,
-          genind.object = genind.object.imp,
-          strata.df = strata.df,
-          imputation.method = imputation.method,
-          hierarchical.levels = hierarchical.levels,
-          directory.subsample = directory.subsample,
-          keep.gsi.files = keep.gsi.files,
-          sampling.method = sampling.method,
-          pop.labels = pop.labels,
-          subsample.id = subsample.id,
-          filename = filename,
-          adegenet.n.rep = adegenet.n.rep,
-          adegenet.training = adegenet.training,
-          holdout = NULL,
-          mc.preschedule = FALSE, 
-          mc.silent = FALSE,
-          mc.cleanup = TRUE,
-          mc.cores = parallel.core
-        )
-      )
-      assignment.res <- suppressWarnings(dplyr::bind_rows(assignment.res.imp) %>%
-                                           dplyr::bind_rows(assignment.res))
-    }
+    # if (!is.null(imputation.method)) {
+    #   assignment.res.imp <- NULL
+    #   assignment.res.imp <- suppressWarnings(
+    #     .assigner_parallel(
+    #       X = marker.random.list, 
+    #       FUN = assignment_random,
+    #       assignment.analysis = assignment.analysis,
+    #       input = input.imp,
+    #       genind.object = genind.object.imp,
+    #       strata.df = strata.df,
+    #       directory.subsample = directory.subsample,
+    #       keep.gsi.files = keep.gsi.files,
+    #       sampling.method = sampling.method,
+    #       subsample.id = subsample.id,
+    #       filename = filename,
+    #       adegenet.n.rep = adegenet.n.rep,
+    #       adegenet.training = adegenet.training,
+    #       holdout = NULL,
+    #       mc.preschedule = FALSE, 
+    #       mc.silent = FALSE,
+    #       mc.cleanup = TRUE,
+    #       mc.cores = parallel.core
+    #     )
+    #   )
+    #   assignment.res <- suppressWarnings(dplyr::bind_rows(assignment.res.imp) %>%
+    #                                        dplyr::bind_rows(assignment.res))
+    # }
     # Compiling the results
     message("Compiling results")
     if (assignment.analysis == "adegenet") {
@@ -1667,29 +1585,29 @@ assignment_function <- function(
     # assignment results
     if (assignment.analysis == "gsi_sim") {
       if (is.null(subsample)) {
-        if (is.null(imputation.method)) {
+        # if (is.null(imputation.method)) {
           filename.assignment.res <- stringi::stri_join(
             "assignment", sampling.method, "no.imputation", "results", 
             "individuals", "iterations", "tsv", sep = "."
           )
-        } else {# with imputations
-          filename.assignment.res <- stringi::stri_join(
-            "assignment", sampling.method, "imputed", "results", "individuals", 
-            "iterations", "tsv", sep = "."
-          )
-        }
+        # } else {# with imputations
+        #   filename.assignment.res <- stringi::stri_join(
+        #     "assignment", sampling.method, "imputed", "results", "individuals", 
+        #     "iterations", "tsv", sep = "."
+        #   )
+        # }
       } else {# with subsampling
-        if (is.null(imputation.method)) {
+        # if (is.null(imputation.method)) {
           filename.assignment.res <- stringi::stri_join(
             "assignment", sampling.method, "no.imputation", "results", "individuals",
             "iterations", "subsample", subsample.id, "tsv", sep = "."
           )
-        } else {# with imputations
-          filename.assignment.res <- stringi::stri_join(
-            "assignment", sampling.method, "imputed", "results", "individuals", 
-            "iterations", "subsample", subsample.id, "tsv", sep = "."
-          )
-        }
+        # } else {# with imputations
+        #   filename.assignment.res <- stringi::stri_join(
+        #     "assignment", sampling.method, "imputed", "results", "individuals", 
+        #     "iterations", "subsample", subsample.id, "tsv", sep = "."
+        #   )
+        # }
       }
       readr::write_tsv(
         x = assignment.res, 
@@ -1699,29 +1617,29 @@ assignment_function <- function(
       )
     } else {# with adegenet
       if (is.null(subsample)) {
-        if (is.null(imputation.method)) {
+        # if (is.null(imputation.method)) {
           filename.assignment.res <- stringi::stri_join(
             "assignment", sampling.method, "no.imputation", "results", 
             "iterations", "tsv", sep = "."
           )
-        } else {# with imputations
-          filename.assignment.res <- stringi::stri_join(
-            "assignment", sampling.method, "imputed", "results", "iterations", 
-            "tsv", sep = "."
-          )
-        }
+        # } else {# with imputations
+          # filename.assignment.res <- stringi::stri_join(
+          #   "assignment", sampling.method, "imputed", "results", "iterations", 
+          #   "tsv", sep = "."
+          # )
+        # }
       } else {# with subsampling
-        if (is.null(imputation.method)) {
+        # if (is.null(imputation.method)) {
           filename.assignment.res <- stringi::stri_join(
             "assignment", sampling.method, "no.imputation", "results", 
             "iterations", "subsample", subsample.id, "tsv", sep = "."
           )
-        } else {# with imputations
-          filename.assignment.res <- stringi::stri_join(
-            "assignment", sampling.method, "imputed", "results", "iterations",
-            "subsample", subsample.id, "tsv", sep = "."
-          )
-        }
+        # } else {# with imputations
+        #   filename.assignment.res <- stringi::stri_join(
+        #     "assignment", sampling.method, "imputed", "results", "iterations",
+        #     "subsample", subsample.id, "tsv", sep = "."
+        #   )
+        # }
       }
       readr::write_tsv(
         x = assignment.res, 
@@ -1817,29 +1735,29 @@ assignment_function <- function(
     # Write the tables to directory
     # assignment summary stats
     if (is.null(subsample)) {
-      if (is.null(imputation.method)) {
+      # if (is.null(imputation.method)) {
         filename.assignment.sum <- stringi::stri_join(
           "assignment", sampling.method, "no.imputation", "results", 
           "summary.stats", "tsv", sep = "."
         )
-      } else {# with imputations
-        filename.assignment.sum <- stringi::stri_join(
-          "assignment", sampling.method, "imputed", "results", "summary.stats",
-          "tsv", sep = "."
-        )
-      }
+      # } else {# with imputations
+      #   filename.assignment.sum <- stringi::stri_join(
+      #     "assignment", sampling.method, "imputed", "results", "summary.stats",
+      #     "tsv", sep = "."
+      #   )
+      # }
     } else {# with subsampling
-      if (is.null(imputation.method)) {
+      # if (is.null(imputation.method)) {
         filename.assignment.sum <- stringi::stri_join(
           "assignment", sampling.method, "no.imputation", "results", 
           "summary.stats", "subsample", subsample.id, "tsv", sep = "."
         )
-      } else {# with imputations
-        filename.assignment.sum <- stringi::stri_join(
-          "assignment", sampling.method, "imputed", "results", "summary.stats",
-          "subsample", subsample.id, "tsv", sep = "."
-        )
-      }
+      # } else {# with imputations
+      #   filename.assignment.sum <- stringi::stri_join(
+      #     "assignment", sampling.method, "imputed", "results", "summary.stats",
+      #     "subsample", subsample.id, "tsv", sep = "."
+      #   )
+      # }
     }
     readr::write_tsv(
       x = assignment.summary.stats, 
@@ -1951,16 +1869,11 @@ loci for population assignment: standard methods are upwardly biased.\nMolecular
       FUN = assignment_ranking, 
       thl = thl,
       input = input,
-      pop.labels = pop.labels,
-      input.imp = input.imp,
       holdout.individuals = holdout.individuals,
-      imputation.method = imputation.method,
-      hierarchical.levels = hierarchical.levels,
       directory.subsample = directory.subsample,
       marker.number = marker.number,
       assignment.analysis = assignment.analysis,
       genind.object = genind.object,
-      genind.object.imp = genind.object.imp,
       strata.df = strata.df,
       sampling.method = sampling.method,
       subsample.id = subsample.id,
@@ -1986,17 +1899,17 @@ loci for population assignment: standard methods are upwardly biased.\nMolecular
     
     # assignment results
     if (is.null(subsample)) {
-      if (is.null(imputation.method)) {
+      # if (is.null(imputation.method)) {
         filename.assignment.res <- stringi::stri_join("assignment", sampling.method, "no.imputation", "results", "individuals", "iterations", "tsv", sep = ".")
-      } else {# with imputations
-        filename.assignment.res <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "individuals", "iterations", "tsv", sep = ".")
-      }
+      # } else {# with imputations
+      #   filename.assignment.res <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "individuals", "iterations", "tsv", sep = ".")
+      # }
     } else {# with subsampling
-      if (is.null(imputation.method)) {
+      # if (is.null(imputation.method)) {
         filename.assignment.res <- stringi::stri_join("assignment", sampling.method, "no.imputation", "results", "individuals","iterations", "subsample", subsample.id, "tsv", sep = ".")
-      } else {# with imputations
-        filename.assignment.res <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "individuals", "iterations", "subsample", subsample.id, "tsv", sep = ".")
-      }
+      # } else {# with imputations
+      #   filename.assignment.res <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "individuals", "iterations", "subsample", subsample.id, "tsv", sep = ".")
+      # }
     }
     readr::write_tsv(
       x = assignment.res.summary,
@@ -2061,17 +1974,17 @@ loci for population assignment: standard methods are upwardly biased.\nMolecular
       # }
       
       if (is.null(subsample)) {
-        if (is.null(imputation.method)) {
+        # if (is.null(imputation.method)) {
           filename.assignment.res.sum <- stringi::stri_join("assignment", sampling.method, "no.imputation", "results", "summary", "tsv", sep = ".")
-        } else {# with imputations
-          filename.assignment.res.sum <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "summary", "tsv", sep = ".")
-        }
+        # } else {# with imputations
+        #   filename.assignment.res.sum <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "summary", "tsv", sep = ".")
+        # }
       } else {# with subsampling
-        if (is.null(imputation.method)) {
+        # if (is.null(imputation.method)) {
           filename.assignment.res.sum <- stringi::stri_join("assignment", sampling.method, "no.imputation", "results", "summary", "subsample", subsample.id, "tsv", sep = ".")
-        } else {# with imputations
-          filename.assignment.res.sum <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "summary", "subsample", subsample.id, "tsv", sep = ".")
-        }
+        # } else {# with imputations
+        #   filename.assignment.res.sum <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "summary", "subsample", subsample.id, "tsv", sep = ".")
+        # }
       }
       readr::write_tsv(
         x = assignment.res.summary.prep,
@@ -2130,17 +2043,17 @@ loci for population assignment: standard methods are upwardly biased.\nMolecular
     # Write the tables to directory
     # assignment summary stats
     if (is.null(subsample)) {
-      if (is.null(imputation.method)) {
+      # if (is.null(imputation.method)) {
         filename.assignment.sum <- stringi::stri_join("assignment", sampling.method, "no.imputation", "results", "summary.stats", "tsv", sep = ".")
-      } else {# with imputations
-        filename.assignment.sum <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "summary.stats", "tsv", sep = ".")
-      }
+      # } else {# with imputations
+      #   filename.assignment.sum <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "summary.stats", "tsv", sep = ".")
+      # }
     } else {# with subsampling
-      if (is.null(imputation.method)) {
+      # if (is.null(imputation.method)) {
         filename.assignment.sum <- stringi::stri_join("assignment", sampling.method, "no.imputation", "results", "summary.stats", "subsample", subsample.id, "tsv", sep = ".")
-      } else {# with imputations
-        filename.assignment.sum <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "summary.stats", "subsample", subsample.id, "tsv", sep = ".")
-      }
+      # } else {# with imputations
+      #   filename.assignment.sum <- stringi::stri_join("assignment", sampling.method, "imputed", "results", "summary.stats", "subsample", subsample.id, "tsv", sep = ".")
+      # }
     }
     readr::write_tsv(
       x = assignment.summary.stats,

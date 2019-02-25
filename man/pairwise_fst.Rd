@@ -6,7 +6,8 @@
 \usage{
 pairwise_fst(list.pair, pop.pairwise = NULL, unique.markers.pop = NULL,
   data.genotyped = NULL, ci = FALSE, iteration.ci = 100,
-  quantiles.ci = c(0.025, 0.975), digits = 9)
+  quantiles.ci = c(0.025, 0.975), digits = 9,
+  path.folder = path.folder)
 }
 \description{
 Pairwise Fst function

@@ -1,3 +1,12 @@
+# assigner v.0.5.3 2019-02-25
+
+* `fst_WC84`: work with radiator v.1.0
+* will continue updating fucntions to work with latest radiator release and
+work toward releasing the official v.1.0 of assigner.
+* Imputation module was removed from `assigner` and now lives exclusively in package `grur`
+
+
+
 # assigner v.0.5.2 2018-07-09
 
 * working to make assigner work correctly with ggplot2 v.3.0.0

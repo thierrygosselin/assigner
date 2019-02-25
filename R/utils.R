@@ -319,5 +319,3 @@ install_gsi_sim <- function(commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a",
   }
 }
 
-
-

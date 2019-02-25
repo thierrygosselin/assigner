@@ -5,11 +5,9 @@
 \title{A fast implementation of Weir and Cockerham (1984) Fst/Theta 
 (overall and paiwise estimates)}
 \usage{
-fst_WC84(data, snprelate = FALSE, pop.levels = NULL,
-  pop.labels = NULL, strata = NULL, holdout.samples = NULL,
+fst_WC84(data, snprelate = FALSE, strata = NULL, pop.levels = NULL,
   pairwise = FALSE, ci = FALSE, iteration.ci = 100,
-  quantiles.ci = c(0.025, 0.975), subsample = NULL,
-  iteration.subsample = 1, digits = 9,
+  quantiles.ci = c(0.025, 0.975), digits = 9, filename = NULL,
   parallel.core = parallel::detectCores() - 1, verbose = FALSE, ...)
 }
 \arguments{
@@ -21,29 +19,16 @@ You can also use this function to filter your dataset using
 whitelist of markers, blacklist of individuals and genotypes.}
 
 \item{snprelate}{(optional, logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
-to compute the Fst. Testing as shown an upward bias with \code{SNPRelate::snpgdsFst} function.
-The values are 0.99 correlated with my built in codes and with \code{Hierfstat}.
-But it's the fastest computation I've seen so far!
+to compute the Fst. 
+It's the fastest computation I've seen so far!
+
+However, testing with different RADseq datasets as shown several upward bias
+with \code{SNPRelate::snpgdsFst} (last version tested was v.1.16.0). 
+I compared the results with assigner, hierfstat and strataG
+(results available upon request).
+The SNPRelate author as not given me good reason to belive the issue is fully
+resolved, consequently, the option is no longer available, until further notice.
 Default: \code{snprelate = FALSE}}
-
-\item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
-case, the id of the pop.
-Use this argument to have the pop ordered your way instead of the default 
-alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
-instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
-Default: \code{pop.levels = NULL}.}
-
-\item{pop.labels}{(optional, string) Use this argument to rename/relabel
-your pop or combine your pop. e.g. To combine \code{"QUE"} and \code{"ONT"} 
-into a new pop called \code{"NEW"}:
-(1) First, define the levels for your pop with \code{pop.levels} argument: 
-\code{pop.levels = c("QUE", "ONT", "ALB")}. 
-(2) then, use \code{pop.labels} argument: 
-\code{pop.levels = c("NEW", "NEW", "ALB")}.#' 
-To rename \code{"QUE"} to \code{"TAS"}:
-\code{pop.labels = c("TAS", "ONT", "ALB")}.
-Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
-\code{strata} argument that can do the same thing, see below.}
 
 \item{strata}{(optional, data frame) A tab delimited file with 2 columns with header:
 \code{INDIVIDUALS} and \code{STRATA}.
@@ -52,10 +37,12 @@ precedence over any grouping found input file (\code{data}).
 The \code{STRATA} column can be any hierarchical grouping.
 Default: \code{strata = NULL}.}
 
-\item{holdout.samples}{(optional, data frame) Samples that don't participate in the Fst 
-computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
-This argument is used inside assignment analysis.
-Default: \code{holdout.samples = NULL}.}
+\item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
+case, the id of the pop.
+Use this argument to have the pop ordered your way instead of the default 
+alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
+instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
+Default: \code{pop.levels = NULL}.}
 
 \item{pairwise}{(optional, logical) With \code{pairwise = TRUE}, the 
 pairwise WC84 Fst is calculated between populations. 
@@ -72,21 +59,13 @@ Default: \code{iteration.ci = 100}.}
 The quantiles for the bootstrapped confidence intervals. 
 Default: \code{quantiles.ci = c(0.025,0.975)}.}
 
-\item{subsample}{(Integer or character) 
-With \code{subsample = 36}, 36 individuals in each populations are chosen
-randomly to represent the dataset. With \code{subsample = "min"}, the 
-minimum number of individual/population found in the data is used automatically.
-Default is no subsampling, \code{subsample = NULL}.}
-
-\item{iteration.subsample}{(Integer) The number of iterations to repeat 
-subsampling.
-With \code{subsample = 20} and \code{iteration.subsample = 10},
-20 individuals/populations will be randomly chosen 10 times.
-Default: \code{iteration.subsample = 1}.}
-
 \item{digits}{(optional, integer) The number of decimal places to be used in 
 results.
 Default: \code{digits = 9}.}
+
+\item{filename}{(optional, character) Give filename prefix, this will trigger 
+saving results in a directory.
+Default: \code{filename = NULL}.}
 
 \item{parallel.core}{(optional, integer) The number of core for parallel computation 
 of pairwise Fst.
@@ -137,9 +116,7 @@ For an R implementation, \code{\link{fst_WC84}} is very fast.
 The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
 \pkg{parallel} and \pkg{SNPRelate}.
 The impact of unbalanced design on estimates can be tested by using the 
-subsample argument.
-
-Note: Until the bias observed with SNPRelate is resolved the option will remain unavailable.
+subsample argument (see advance mode section).
 
 \emph{Special concerns for genome-wide estimate and filtering bias}
 
@@ -161,6 +138,41 @@ There is no null hypothesis testing with \emph{P}-values.
 Confidence intervals provided with the \emph{F}-statistics 
 enables more reliable conclusions about the biological trends in the data.
 }
+\section{Advance mode}{
+
+
+\emph{dots-dots-dots ...} allows to pass several arguments for fine-tuning the function:
+\enumerate{
+
+\item \code{filter.monomorphic} (logical, optional) By default monomorphic
+markers present in the dataset are removed (and it should stay that way...).
+Default: \code{filter.monomorphic = TRUE}.
+
+\item \code{holdout.samples} (optional, data frame) Samples that don't participate in the Fst 
+computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
+This argument is used inside assignment analysis.
+Default: \code{holdout.samples = NULL}.
+
+\item \code{subsample} (Integer or character) 
+With \code{subsample = 36}, 36 individuals in each populations are chosen
+randomly to represent the dataset. With \code{subsample = "min"}, the 
+minimum number of individual/population found in the data is used automatically.
+Default is no subsampling, \code{subsample = NULL}.
+\item \code{iteration.subsample} (Integer) The number of iterations to repeat 
+subsampling.
+With \code{subsample = 20} and \code{iteration.subsample = 10},
+20 individuals/populations will be randomly chosen 10 times.
+Default: \code{iteration.subsample = 1}.
+
+\item \code{heatmap.fst} to generate an heatmap with the Fst values in
+lower matrix and CI in the upper matrix.
+Default: \code{heatmap.fst = FALSE}.
+The heatmap can also be generated and more finetuned separately after the Fst
+analysis using \code{\link{heatmap_fst}}.
+
+}
+}
+
 \examples{
 \dontrun{
 wombat.fst.pairwise <- fst_WC84(
@@ -172,7 +184,9 @@ ci = TRUE,
 iteration.ci = 10000, 
 quantiles.ci = c(0.025,0.975),
 parallel.core = 8,
-verbose = TRUE
+verbose = TRUE,
+filename = "wombat",
+heatmap.fst = TRUE
 )
 To get the overall Fst estimate:
 wombat.fst.pairwise$fst.overall
