@@ -1,8 +1,8 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with RADseq Data
-Version: 0.5.3
-Date: 2019-02-25
+Version: 0.5.4
+Date: 2019-03-12
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),

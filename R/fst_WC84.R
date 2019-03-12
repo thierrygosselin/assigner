@@ -263,7 +263,7 @@ fst_WC84 <- function(
   quantiles.ci = c(0.025,0.975),
   digits = 9,
   filename = NULL,
-  parallel.core = parallel::detectCores() - 1,
+  parallel.core = parallel::detectCores() - 2,
   verbose = FALSE,
   ...
 ) {
@@ -314,7 +314,7 @@ fst_WC84 <- function(
     args.list = as.list(environment()),
     dotslist = rlang::dots_list(..., .homonyms = "error", .check_assign = TRUE), 
     keepers = c("filter.monomorphic", "holdout.samples", "subsample",
-                "iteration.subsample", "heatmap.fst"),
+                "iteration.subsample", "heatmap.fst", "blacklist.id"),
     verbose = verbose
   )
   dots.filename <- stringi::stri_join("assigner_fst_WC84_args_", file.date, ".tsv")
@@ -324,7 +324,7 @@ fst_WC84 <- function(
   if (missing(data)) rlang::abort("data is missing")
   if (!ci && heatmap.fst) {
     heatmap.fst <- FALSE
-    if (verbose) message("\nconfidence intervals not selected, heatmap.fst will not be generated\n")
+    if (verbose) message("\nconfidence intervals not selected, heatmap.fst: FALSE\n")
   }
   if (!filter.monomorphic) {
     message("filter.monomorphic = FALSE... not a good idea, but lets do it...")
@@ -359,9 +359,11 @@ fst_WC84 <- function(
   
   # Import data ---------------------------------------------------------------
   if (verbose) message("Importing data")
-  want <- c("MARKERS", "POP_ID", "STRATA", "INDIVIDUALS", "GT", "GT_BIN")
-  input <- suppressWarnings(radiator::tidy_wide(data = data, import.metadata = FALSE)) #%>% 
-  #dplyr::select(dplyr::one_of(want)))# remove unnecessary columns
+  want <- c("MARKERS", "POP_ID", "STRATA", "INDIVIDUALS", "GT")
+  input <- suppressWarnings(
+    radiator::tidy_wide(data = data, import.metadata = FALSE) %>% 
+  dplyr::select(dplyr::one_of(want))# remove unnecessary columns
+  )
   
   # Strata----------------------------------------------------------------------
   strata.df <- radiator::read_strata(
@@ -373,25 +375,19 @@ fst_WC84 <- function(
   
   # population levels and strata------------------------------------------------
   if (!is.null(strata)) {
-    if (rlang::has_name(input, "POP_ID")) {
-      input %<>% dplyr::select(-POP_ID)
-    }
-    input %<>% dplyr::left_join(strata.df, by = "INDIVIDUALS")
+    input <- radiator::join_strata(
+      data = input, strata = strata.df, pop.id = TRUE, verbose = FALSE)
   } else {
-    if (rlang::has_name(input, "POP_ID")) {
-      strata <- strata.df <- dplyr::distinct(input, INDIVIDUALS, POP_ID)
-    }
+    strata <- strata.df <- radiator::generate_strata(data = input)
   }
   
   # subsampling data------------------------------------------------------------
   # create the subsampling list
-  ind.pop.df <- dplyr::distinct(.data = input, POP_ID, INDIVIDUALS)
-  
   if (is.null(subsample)) {
     iteration.subsample <- 1
   } else {
     if (subsample == "min") {
-      subsample <- ind.pop.df %>% 
+      subsample <- strata.df %>% 
         dplyr::group_by(POP_ID) %>% 
         dplyr::tally(.) %>% 
         dplyr::filter(n == min(n)) %>% 
@@ -404,7 +400,7 @@ fst_WC84 <- function(
   subsample.list <- purrr::map(# map_df ?
     .x = 1:iteration.subsample,
     .f = subsampling_data,
-    ind.pop.df = ind.pop.df,
+    ind.pop.df = strata.df,
     subsample = subsample
   )
   
@@ -429,7 +425,7 @@ fst_WC84 <- function(
   } # End subsampling
   
   # unused objects
-  subsampling.individuals <- ind.pop.df <- NULL
+  subsampling.individuals <- NULL
   
   # Calculations ----------------------------------------------------------------
   subsample.fst <- purrr::map(
@@ -750,6 +746,8 @@ fst_WC84 <- function(
 
 # Internal Nested Functions to compute WC84 Fst --------------------------------
 
+# compute_fst------------------------------------------------------------------
+
 #' @title compute_fst
 #' @description main function
 #' @rdname compute_fst
@@ -757,58 +755,98 @@ fst_WC84 <- function(
 #' @keywords internal
 
 compute_fst <- function(
-  x, 
-  ci = FALSE, 
-  iteration.ci = 100, 
-  quantiles.ci = c(0.025,0.975), 
+  x,
+  ci = FALSE,
+  iteration.ci = 100,
+  quantiles.ci = c(0.025,0.975),
   digits = 9,
-  path.folder = NULL
+  path.folder = NULL,
+  parallel.core = parallel::detectCores() - 2
 ) {
-  # x = data.genotyped # test
+  # TEST
+  # ci = FALSE
+  # iteration.ci = 100
+  # quantiles.ci = c(0.025,0.975)
+  # digits = 9
+  # path.folder = NULL
+  ## x = data.genotyped
+  # x <- dplyr::filter(data, GT != "000000")
   
   # Removing monomorphic markers------------------------------------------------
-  if (filter.monomorphic) {
-    x <- radiator::filter_monomorphic(data = x, internal = TRUE, verbose = FALSE, path.folder = path.folder)
-  } 
-  # number of marker used for computation 
+  x <- radiator::filter_monomorphic(data = x, internal = TRUE, verbose = FALSE, path.folder = path.folder)
+  
+  # number of marker used for computation
   n.markers <- length(unique(x$MARKERS))
   
-  count.locus <- dplyr::group_by(.data = x, MARKERS) %>%
-    dplyr::summarise(
-      NPL = length(unique(POP_ID)),# number of populations per locus
-      NIL = n() # number of individuals per locus
-    )
+  # count.locus <- dplyr::group_by(.data = x, MARKERS) %>%
+  #   dplyr::summarise(
+  #     NPL = length(unique(as.character(POP_ID))),# number of populations per locus
+  #     NIL = n() # number of individuals per locus
+  #   )
+  count.locus <- dplyr::bind_cols(
+    dplyr::distinct(.data = x, MARKERS, POP_ID) %>% dplyr::count(MARKERS, name = "NPL"),# number of populations per locus
+    dplyr::distinct(.data = x, MARKERS, INDIVIDUALS) %>% dplyr::count(MARKERS, name = "NIL")# number of individuals per locus
+  )
+  if (!identical(count.locus$MARKERS, count.locus$MARKERS1)) {
+    rlang::abort("contact author")
+  } else {
+    count.locus %<>% dplyr::select(-MARKERS1)
+  }
   
-  count.locus.pop <- dplyr::group_by(.data = x, POP_ID, MARKERS) %>%
-    dplyr::tally(.) %>%
-    dplyr::rename(NIPL = n) %>%
-    dplyr::mutate(NIPL_SQ = NIPL^2) %>% 
-    dplyr::group_by(MARKERS) %>%
-    dplyr::summarise(NIPL_SQ_SUM = sum(NIPL_SQ, na.rm = TRUE)) %>%
-    dplyr::full_join(count.locus, by = "MARKERS") %>%
-    dplyr::mutate(NC = (NIL - NIPL_SQ_SUM/NIL)/(NPL - 1))#correction
+  # count.locus.pop <- dplyr::count(x, POP_ID, MARKERS, name = "NIPL") %>%
+  #   dplyr::mutate(NIPL_SQ = NIPL ^ 2) %>%
+  #   dplyr::group_by(MARKERS) %>%
+  #   dplyr::summarise(NIPL_SQ_SUM = sum(NIPL_SQ, na.rm = TRUE)) %>%
+  #   dplyr::full_join(count.locus, by = "MARKERS") %>%
+  #   dplyr::mutate(NC = (NIL - NIPL_SQ_SUM / NIL) / (NPL - 1))#correction
   
+  
+  # faster:
+  count.locus.pop <- dplyr::bind_cols(
+    count.locus,
+    dplyr::count(x, POP_ID, MARKERS, name = "NIPL") %>%
+      dplyr::mutate(NIPL_SQ = NIPL ^ 2) %>%
+      dplyr::group_by(MARKERS) %>%
+      dplyr::summarise(NIPL_SQ_SUM = sum(NIPL_SQ, na.rm = TRUE))
+  )
+  if (!identical(count.locus.pop$MARKERS, count.locus.pop$MARKERS1)) {
+    rlang::abort("contact author")
+  } else {
+    count.locus.pop %<>%
+      dplyr::select(-MARKERS1) %>%
+      dplyr::mutate(NC = (NIL - NIPL_SQ_SUM / NIL) / (NPL - 1))#correction
+  }
   count.locus <- NULL
   
   # numbers corrected
-  allele.locus <- x %>%
-    dplyr::mutate(
-      A1 = stringi::stri_sub(GT, 1, 3),
-      A2 = stringi::stri_sub(GT, 4,6)
-    ) %>% 
-    dplyr::select(MARKERS, POP_ID, INDIVIDUALS, A1, A2) %>% 
-    tidyr::gather(key = ALLELES_GROUP, ALLELES, -c(INDIVIDUALS, POP_ID, MARKERS))
+  if (n.markers > 30000) {
+    allele.locus <- radiator::separate_gt(
+      x = dplyr::select(x, MARKERS, POP_ID, INDIVIDUALS, GT),
+      sep = 3,
+      gt = "GT",
+      gather = TRUE,
+      haplotypes = FALSE,
+      exclude = c("MARKERS", "POP_ID", "INDIVIDUALS"),
+      parallel.core = parallel.core
+    )
+  } else {
+    allele.locus <- radiator::separate_gt(
+      x = dplyr::select(x, MARKERS, POP_ID, INDIVIDUALS, GT),
+      sep = 3,
+      gt = "GT",
+      gather = TRUE,
+      haplotypes = FALSE,
+      exclude = c("MARKERS", "POP_ID", "INDIVIDUALS"),
+      parallel.core = 1
+    )
+  }
   
   correction <- dplyr::distinct(.data = allele.locus, MARKERS, ALLELES) %>%
-    dplyr::full_join(count.locus.pop, by = "MARKERS") %>% 
+    dplyr::full_join(count.locus.pop, by = "MARKERS") %>%
     dplyr::arrange(MARKERS, ALLELES)
-  
   count.locus.pop <- NULL
   
-  freq.alleles <- allele.locus %>%
-    dplyr::group_by(MARKERS, ALLELES, POP_ID) %>% 
-    dplyr::tally(.) %>%
-    dplyr::ungroup(.) %>%
+  freq.alleles <- dplyr::count(x = allele.locus, MARKERS, ALLELES, POP_ID) %>%
     tidyr::complete(data = ., POP_ID, tidyr::nesting(MARKERS, ALLELES), fill = list(n = 0)) %>%
     dplyr::group_by(MARKERS, POP_ID) %>%
     dplyr::mutate(
@@ -817,18 +855,39 @@ compute_fst <- function(
     ) %>%
     dplyr::group_by(MARKERS, ALLELES) %>%
     dplyr::mutate(FREQ_AL = sum(n) / sum(NAPL)) %>% #Frequency of alleles per locus
-    dplyr::full_join(correction, by = c("MARKERS", "ALLELES")) %>% 
+    dplyr::full_join(correction, by = c("MARKERS", "ALLELES")) %>%
     dplyr::arrange(MARKERS, POP_ID)
+  correction <- allele.locus <- NULL
   
-  fst.stats.prep <- x %>%
-    dplyr::mutate(
-      het = ifelse(stringi::stri_sub(GT, 1, 3) != stringi::stri_sub(GT, 4, 6), 1, 0),
-      AL1 = stringi::stri_sub(GT, 1, 3),
-      AL2 = stringi::stri_sub(GT, 4, 6)
-    ) %>% 
-    dplyr::select(-GT) %>%
-    tidyr::gather(data = ., key = ALLELES_GROUP, value = ALLELES, -c(INDIVIDUALS, MARKERS, POP_ID, het)) %>%
-    dplyr::select(-ALLELES_GROUP) %>% 
+  fst.stats.prep <- dplyr::mutate(
+    .data = x,
+    het = dplyr::if_else(stringi::stri_sub(GT, 1, 3) != stringi::stri_sub(GT, 4, 6), 1, 0)
+  )
+  
+  if (n.markers > 30000) {
+    fst.stats.prep %<>% radiator::separate_gt(
+      x =.,
+      sep = 3,
+      gt = "GT",
+      gather = TRUE,
+      haplotypes = FALSE,
+      exclude = c("MARKERS", "POP_ID", "INDIVIDUALS", "het"),
+      parallel.core = parallel.core
+    )
+  } else {
+    fst.stats.prep %<>% radiator::separate_gt(
+      x =.,
+      sep = 3,
+      gt = "GT",
+      gather = TRUE,
+      haplotypes = FALSE,
+      exclude = c("MARKERS", "POP_ID", "INDIVIDUALS", "het"),
+      parallel.core = 1
+    )
+  }
+  
+  fst.stats.prep %<>%
+    dplyr::select(-ALLELE_GROUP) %>%
     dplyr::group_by(MARKERS, POP_ID, ALLELES) %>%
     dplyr::summarise(MHO = length(het[het == 1])) %>%
     dplyr::ungroup(.) %>%
@@ -855,52 +914,56 @@ compute_fst <- function(
       MSI = SSi/(NIL - NPL),
       sigb = 0.5 * (MSI - sigw),
       siga = 1/2/NC * (MSP - MSI)
-    )
-  
+    ) %>%
+    dplyr::ungroup(.)
+  freq.alleles <- NULL
   
   # variance components of allele frequencies for each allele
   # siga: among populations
   # sigb: among individuals within/between populations
   # sigw: within individuals
   sigma.loc.alleles <- fst.stats.prep %>%
-    dplyr::group_by(MARKERS, ALLELES) %>% 
+    dplyr::group_by(MARKERS, ALLELES) %>%
     dplyr::summarise(
       siga = mean(siga, na.rm = TRUE),
       sigb = mean(sigb, na.rm = TRUE),
       sigw = mean(sigw, na.rm = TRUE)
-    ) 
-  
+    ) %>%
+    dplyr::ungroup(.)
+  fst.stats.prep <- NULL
   # variance components per locus
   # lsiga: among populations
   # lsigb: among individuals within/between populations
   # lsigw: within individuals
   
-  sigma.loc <- sigma.loc.alleles %>% 
+  sigma.loc <- sigma.loc.alleles %>%
     dplyr::group_by(MARKERS) %>%
     dplyr::summarise(
       lsiga = round(sum(siga, na.rm = TRUE), digits),
       lsigb = round(sum(sigb, na.rm = TRUE), digits),
       lsigw = round(sum(sigw, na.rm = TRUE), digits)
-    )
+    ) %>%
+    dplyr::ungroup(.)
   
-  fst.fis.markers <- sigma.loc %>% 
+  fst.fis.markers <- sigma.loc %>%
     dplyr::group_by(MARKERS) %>%
     dplyr::summarise(
       FST = round(lsiga/(lsiga + lsigb + lsigw), digits),
       FIS = round(lsigb/(lsigb + lsigw), digits)
-    ) %>% 
-    dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
+    ) %>%
+    dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0)) %>%
+    dplyr::ungroup(.)
   
-  fst.fis.overall <- dplyr::ungroup(sigma.loc.alleles) %>%
+  fst.fis.overall <- sigma.loc.alleles %>%
     dplyr::summarise(
       tsiga = sum(siga, na.rm = TRUE),
       tsigb = sum(sigb, na.rm = TRUE),
       tsigw = sum(sigw, na.rm = TRUE)
-    ) %>% 
+    ) %>%
     dplyr::summarise(
-      FST = round(tsiga/(tsiga + tsigb + tsigw), digits),
-      FIS = round(tsigb/(tsigb + tsigw), digits)
-    ) %>% 
+      FST = round(tsiga / (tsiga + tsigb + tsigw), digits),
+      FIS = round(tsigb / (tsigb + tsigw), digits)
+    ) %>%
     dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
   # add new column with number of markers
   fst.fis.overall$N_MARKERS <- n.markers
@@ -916,22 +979,22 @@ compute_fst <- function(
       digits = digits
     )
     boot.fst <- dplyr::bind_rows(boot.fst.list)
-    boot.fst.summary <- boot.fst %>% 
+    boot.fst.summary <- boot.fst %>%
       dplyr::summarise(
-        CI_LOW = round(stats::quantile(FST, 
-                                       probs = quantiles.ci[1], 
-                                       na.rm = TRUE), 
+        CI_LOW = round(stats::quantile(FST,
+                                       probs = quantiles.ci[1],
+                                       na.rm = TRUE),
                        digits),
-        CI_HIGH = round(stats::quantile(FST, 
-                                        probs = quantiles.ci[2], 
-                                        na.rm = TRUE), 
+        CI_HIGH = round(stats::quantile(FST,
+                                        probs = quantiles.ci[2],
+                                        na.rm = TRUE),
                         digits)
       )
   }
   
   # Fst markers  -------------------------------------------------------------
-  fst.markers <- fst.fis.markers %>% 
-    dplyr::select(MARKERS, FST) %>% 
+  fst.markers <- fst.fis.markers %>%
+    dplyr::select(MARKERS, FST) %>%
     dplyr::arrange(MARKERS)
   
   # Ranked fst   -------------------------------------------------------------
@@ -945,16 +1008,16 @@ compute_fst <- function(
   
   # Fst overall  -------------------------------------------------------------
   if (ci) {
-    fst.overall <- fst.fis.overall %>% 
-      dplyr::select(FST, N_MARKERS) %>% 
+    fst.overall <- fst.fis.overall %>%
+      dplyr::select(FST, N_MARKERS) %>%
       dplyr::bind_cols(boot.fst.summary)
   } else {
-    fst.overall <- fst.fis.overall %>% 
+    fst.overall <- fst.fis.overall %>%
       dplyr::select(FST, N_MARKERS)
   }
   
   # Fis markers  -------------------------------------------------------------
-  fis.markers <- dplyr::select(.data = fst.fis.markers, MARKERS, FIS) %>% 
+  fis.markers <- dplyr::select(.data = fst.fis.markers, MARKERS, FIS) %>%
     dplyr::arrange(MARKERS)
   
   # Fis overall   ------------------------------------------------------------
@@ -986,7 +1049,7 @@ compute_fst <- function(
   return(res)
 } # End compute_fst function
 
-
+# pairwise_fst------------------------------------------------------------------
 #' @title pairwise_fst
 #' @description Pairwise Fst function
 #' @rdname pairwise_fst
@@ -996,7 +1059,7 @@ compute_fst <- function(
 pairwise_fst <- function(
   list.pair, 
   pop.pairwise = NULL,
-  unique.markers.pop = NULL,
+  # unique.markers.pop = NULL,
   data.genotyped = NULL,
   ci = FALSE, 
   iteration.ci = 100, 
@@ -1006,37 +1069,35 @@ pairwise_fst <- function(
 ) {
   
   pop.select <- stringi::stri_join(purrr::flatten(pop.pairwise[list.pair]))
-  
-  # common markers
-  set1 <- unique.markers.pop %>%
-    dplyr::filter(POP_ID == pop.select[1]) %>%
-    dplyr::select(MARKERS)
-  
-  set2 <- unique.markers.pop %>%
-    dplyr::filter(POP_ID == pop.select[2]) %>%
-    dplyr::select(MARKERS)
-  
-  common.set <- dplyr::intersect(set1, set2) %>%
-    dplyr::arrange(MARKERS)
-  
-  suppressWarnings(data.genotyped  %<>% dplyr::semi_join(common.set, by = "MARKERS"))
-  
-  data.select <- data.genotyped %>% 
-    dplyr::filter(POP_ID %in% pop.select) %>% 
+  data.select <- data.genotyped %>%
+    dplyr::filter(POP_ID %in% pop.select) %>%
     dplyr::mutate(POP_ID = droplevels(x = POP_ID))
   
-  fst.select <- compute_fst(
-    x = data.select, 
-    ci = ci, 
-    iteration.ci = iteration.ci,
-    quantiles.ci = quantiles.ci, 
-    digits = digits,
-    path.folder = path.folder)
-  df.select <- tibble::tibble(POP1 = pop.select[1], POP2 = pop.select[2])
-  df.select  %<>% dplyr::bind_cols(fst.select$fst.overall) 
-  fst.select <- NULL
-  return(df.select)
+  # common markers
+  common.set <- intersect(
+    unique(data.select$MARKERS[data.select$POP_ID == pop.select[1]]),
+    unique(data.select$MARKERS[data.select$POP_ID == pop.select[2]])
+  )
+  
+  data.select %<>% dplyr::filter(MARKERS %in% common.set)
+  common.set <- NULL
+  
+  fst.select <- tibble::tibble(POP1 = pop.select[1], POP2 = pop.select[2]) %>% 
+    dplyr::bind_cols(
+      compute_fst(
+        x = data.select, 
+        ci = ci, 
+        iteration.ci = iteration.ci,
+        quantiles.ci = quantiles.ci, 
+        digits = digits,
+        path.folder = path.folder) %$% 
+        fst.overall
+    )
+  data.select <- pop.select <- NULL
+  return(fst.select)
 } # End pairwise_fst
+
+# pairwise_fst_snprelate--------------------------------------------------------
 
 # @title pairwise_fst_snprelate
 # @description Pairwise Fst function with SNPRelate
@@ -1076,6 +1137,8 @@ pairwise_fst <- function(
 #   return(fst.snprelate)
 # }
 
+# boot_ci-----------------------------------------------------------------------
+
 #' @title boot_ci
 #' @description Confidence interval function
 #' @rdname boot_ci
@@ -1112,6 +1175,7 @@ boot_ci <- function(x, sigma.loc.alleles, digits = 9){
   return(fst.fis.overall.iterations)
 } # End boot_ci function
 
+# fst_subsample-----------------------------------------------------------------
 #' @title fst_subsample
 #' @description Function that link all with subsampling
 #' @rdname fst_subsample
@@ -1181,7 +1245,8 @@ fst_subsample <- function(
     message("Removing holdout individuals\nFst computation...")
     data.genotyped <- dplyr::filter(.data = data.genotyped, !INDIVIDUALS %in% holdout.samples)
   }
-  unique.markers.pop <- dplyr::distinct(.data = data.genotyped, MARKERS, POP_ID)
+  #No longer necessary: duplicate the dataset during parallel process...
+  # unique.markers.pop <- dplyr::distinct(.data = data.genotyped, MARKERS, POP_ID)
   
   # Compute global Fst ---------------------------------------------------------
   # if (snprelate) {
@@ -1311,7 +1376,7 @@ fst_subsample <- function(
       mc.silent = FALSE, 
       mc.cores = parallel.core,
       pop.pairwise = pop.pairwise,
-      unique.markers.pop = unique.markers.pop,
+      # unique.markers.pop = unique.markers.pop,
       data.genotyped = data.genotyped,
       ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci,
       path.folder = path.folder

@@ -1,3 +1,8 @@
+# assigner v.0.5.3 2019-03-12
+
+* `fst_WC84`: work faster
+* continue to integrate `assigner` with `SeqArray` and GDS object/file 
+
 # assigner v.0.5.3 2019-02-25
 
 * `fst_WC84`: work with radiator v.1.0

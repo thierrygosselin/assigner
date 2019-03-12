@@ -8,7 +8,7 @@
 fst_WC84(data, snprelate = FALSE, strata = NULL, pop.levels = NULL,
   pairwise = FALSE, ci = FALSE, iteration.ci = 100,
   quantiles.ci = c(0.025, 0.975), digits = 9, filename = NULL,
-  parallel.core = parallel::detectCores() - 1, verbose = FALSE, ...)
+  parallel.core = parallel::detectCores() - 2, verbose = FALSE, ...)
 }
 \arguments{
 \item{data}{A tidy data frame object in the global environment or
