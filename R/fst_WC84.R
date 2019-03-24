@@ -310,6 +310,7 @@ fst_WC84 <- function(
   
   # Function call and dotslist -------------------------------------------------
   rad.dots <- radiator::radiator_dots(
+    func.name = as.list(sys.call())[[1]],
     fd = rlang::fn_fmls_names(),
     args.list = as.list(environment()),
     dotslist = rlang::dots_list(..., .homonyms = "error", .check_assign = TRUE), 
