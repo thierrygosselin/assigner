@@ -2,8 +2,8 @@
 
 | Caracteristics | Description |
 |:-------------------|:--------------------------------------------------------|
-| **Analysis** | [gsi_sim](https://github.com/eriqande/gsi_sim) (Anderson et al., 2008; Anderson, 2010) or [adegenet](https://github.com/thibautjombart/adegenet) (Jombart, 2008; Jombart and Ahmed, 2011)<br><br>Conducted on: samples of **known origin (population)** or **unknown/mixture**|
-| **Input files** | [VCF](https://samtools.github.io/hts-specs/) (Danecek et al., 2011), [PLINK tped/tfam](http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#tr) (Purcell et al., 2007), [adegenet genind and genlight](https://github.com/thibautjombart/adegenet) (Jombart et al., 2010; Jombart and Ahmed, 2011), [strataG gtypes](https://github.com/EricArcher/strataG), [Genepop](http://genepop.curtin.edu.au) (Raymond and Rousset, 1995; Rousset, 2008), [STACKS haplotype file](http://catchenlab.life.illinois.edu/stacks/) (Catchen et al., 2011, 2013), dataframes of genotypes in wide or long/tidy format |
+|**Analysis**| [gsi_sim](https://github.com/eriqande/gsi_sim) (Anderson et al., 2008; Anderson, 2010) or [adegenet](https://github.com/thibautjombart/adegenet) (Jombart, 2008; Jombart and Ahmed, 2011)<br><br>Conducted on: samples of **known origin (population)** or **unknown/mixture**|
+|**Input files**| assigner relies on `radiator::tidy_genomic_data` for imports |
 |**Markers selections**|Random or ranked based on W&C's Fst (Weir and Cockerham, 1984) or Nei's Gst (Nei, 1987)|
 |**Cross-Validations**|Avoid high-grading bias, use **classic LOO** (Leave-One-Out) or **THL** (Training, Holdout, Leave-one-out) (see Anderson, 2010)|
 |**Resampling/Bootstrap/Subsampling**|markers and individuals|
@@ -16,14 +16,8 @@
 
 | Filters | Description |
 |:---------------|:------------------------------------|
-|**`pop.select`**|Keep selected populations|
-|**`blacklist.id`**|Discard individuals|
+|**`strata`**|Use the strata to **whitelist sample** and/or **selected populations** `??radiator::read_strata`|
 |**`whitelist.markers`**|Keep favorite markers|
-|**`blacklist.genotype`**|Genotypes of poor quality (e.g. in **coverage**, **genotype likelihood** or **sequencing errors**) can be **erased** prior to imputations or assignment analysis|
-|**`maf.thresholds`**|Test different thresholds of the minor allele frequency (local and global MAF)|
-|**`common.markers`**|Keep only markers in common between populations (optimized for pairwise analysis)|
-|**`monomorphic.out`**|Discard monomorphic markers|
-|**`snp.ld`**|Prune markers based on short-distance linkage disequilibrium|
 |**`marker.number`**|Test different groupings of marker numbers automatically (selected randomly or based on the ranking method described in the table above)|
 |**`More filters?`**|For more info on how to filter RADseq data, see [radiator](https://github.com/thierrygosselin/radiator)|
 
@@ -36,10 +30,10 @@
 
 ## Examples and Vignettes (check periodically for updates)
 
-* Learn how to do a pairwise and overall Fst with confidence intervals + building phylogenetic tree [R Notebook vignette](https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0)
+* Learn how to do a pairwise and overall Fst with confidence intervals + building phylogenetic tree [(R Notebook vignette)](https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0)
 * Why use assigner to compute Fst of W&C (1984) in R ? [(R Notebook vignette)](https://www.dropbox.com/s/s4j6y498j1smohs/fst_comparisons.nb.html?dl=0)
 * Run the assignment with several whitelists of markers in `assigner::assignment_ngs`[(html vignette)](https://www.dropbox.com/s/jzv91hbxi0g18kg/assignment.whitelists.nb.html?dl=0)
-* [computer setup and troubleshooting](https://www.dropbox.com/s/5npumwdo0cxtxi4/rad_genomics_computer_setup.nb.html?dl=0)
+* [computer setup and troubleshooting](https://www.dropbox.com/s/1kz59xpolb5y52m/rad_genomics_computer_setup.nb.html?dl=0)
 
 
 ## Parallel computation and Cloud Computing
