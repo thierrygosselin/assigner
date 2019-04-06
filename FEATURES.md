@@ -59,6 +59,7 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 
 ## New features
+
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
 ## Examples and Vignettes (check periodically for updates)
