@@ -61,26 +61,6 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 ## New features
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
-**v.0.4.6 2017-06-17**
-
-* **assigner** works with `dplyr v.0.7.0`
-
-**v.0.4.5 2017-04-25**
-
-* `dlr`: simplified arguments, faster function and now creates the Dlr plots
-* dependencies to package `SNPRelate` are removed until the bugs with Fst
-calculation are resolved.
-
-**v.0.4.4 2017-04-12**
-
-* bug fix in `assignment_ngs` introduced in last commit that was suppose to be
-fix. Problem introduced by `stackr::change_pop_names`.
-
-
-For previous news:
-[NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
-
-
 ## Examples and Vignettes
 
 * **From a browser:**
