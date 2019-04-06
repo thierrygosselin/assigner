@@ -184,23 +184,25 @@
 #' @examples
 #' \dontrun{
 #' wombat.fst.pairwise <- fst_WC84(
-#' data = "wombat.filtered.tidy.tsv", 
-#' pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
-#' holdout.samples = NULL,
-#' pairwise = TRUE,
-#' ci = TRUE, 
-#' iteration.ci = 10000, 
-#' quantiles.ci = c(0.025,0.975),
-#' parallel.core = 8,
-#' verbose = TRUE,
-#' filename = "wombat",
-#' heatmap.fst = TRUE
+#'     data = "wombat.filtered.tidy.tsv", 
+#'     pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
+#'     pairwise = TRUE,
+#'     ci = TRUE, 
+#'     iteration.ci = 10000, 
+#'     quantiles.ci = c(0.025,0.975),
+#'     parallel.core = 8,
+#'     verbose = TRUE,
+#'     filename = "wombat",
+#'     heatmap.fst = TRUE
 #' )
-#' To get the overall Fst estimate:
+#' 
+#' # To get the overall Fst estimate:
 #' wombat.fst.pairwise$fst.overall
-#' To get the Fst plot:
+#' 
+#' # To get the Fst plot:
 #' wombat.fst.pairwise$fst.plot
-#' To get the pairwise Fst values with confidence intervals in a data frame:
+#' 
+#' #To get the pairwise Fst values with confidence intervals in a data frame:
 #' df <- wombat.fst.pairwise$pairwise.fst
 #' }
 
@@ -248,6 +250,8 @@
 #' 
 #' \code{\link[radiator]{tidy_genomic_data}} to transform numerous genomic data 
 #' format in tidy data frames.
+#' 
+#' \href{https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0}{Vignette on how to do the pairwise and overall Fst with confidence intervals and build the phylogenetic tree}
 
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
