@@ -7,9 +7,7 @@
 |**Markers selections**|Random or ranked based on W&C's Fst (Weir and Cockerham, 1984) or Nei's Gst (Nei, 1987)|
 |**Cross-Validations**|Avoid high-grading bias, use **classic LOO** (Leave-One-Out) or **THL** (Training, Holdout, Leave-one-out) (see Anderson, 2010)|
 |**Resampling/Bootstrap/Subsampling**|markers and individuals|
-|**Filters**| `strata`: use the strata to **whitelist samples** and/or **select populations** `??radiator::read_strata`
-`whitelist.markers`: kleep favorite markers
-`marker.number`: test different groupings of marker numbers automatically (selected randomly or based on the ranking method described in the table above)<br><br>For more info on how to filter RADseq data, see [radiator](https://github.com/thierrygosselin/radiator).|
+|**Filters**| `strata`: use the strata to **whitelist samples** and/or **select populations** `??radiator::read_strata`<br>`whitelist.markers`: kleep favorite markers<br>`marker.number`: test different groupings of marker numbers automatically (selected randomly or based on the ranking method described in the table above)<br><br>For more info on how to filter RADseq data, see [radiator](https://github.com/thierrygosselin/radiator).|
 |**[ggplot2](http://ggplot2.org)-based plotting**|View assignment results and create publication-ready figures|
 |**Parallel**|Codes designed and optimized for fast computations running imputations, iterations, etc. in parallel. Works with all OS: Linux, Mac and PC.|
 
