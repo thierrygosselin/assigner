@@ -63,6 +63,7 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
 ## Examples and Vignettes (check periodically for updates)
+
     * Learn how to do a pairwise and overall Fst with confidence intervals + building phylogenetic tree [R Notebook vignette](https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0)
     * Why use assigner to compute Fst of W&C (1984) in R ? [(R Notebook vignette)](https://www.dropbox.com/s/s4j6y498j1smohs/fst_comparisons.nb.html?dl=0)
     * Run the assignment with several whitelists of markers in `assigner::assignment_ngs`[(html vignette)](https://www.dropbox.com/s/jzv91hbxi0g18kg/assignment.whitelists.nb.html?dl=0)
