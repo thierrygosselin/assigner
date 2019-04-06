@@ -24,14 +24,13 @@
 
 ## Independent modules
 
-* **Fst**: assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement). See the [vignettes for this below](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md#examples-and-vignettes).
-* **AMOVA:** Analysis of Molecular Variance that run fast and works with missing values.
+* **Fst**: assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
 * **Dlr:** Compute the genotype likelihood ratio distance metric (Paetkau's et al. 1997, 2004).
 
 ## Examples and Vignettes (check periodically for updates)
 
-* Learn how to do a pairwise and overall Fst with confidence intervals + building phylogenetic tree [(R Notebook vignette)](https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0)
-* Why use assigner to compute Fst of W&C (1984) in R ? [(R Notebook vignette)](https://www.dropbox.com/s/s4j6y498j1smohs/fst_comparisons.nb.html?dl=0)
+* Learn how to do a pairwise and overall Fst with confidence intervals + building phylogenetic tree [R Notebook vignette](https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0)
+* Why use assigner to compute Fst of W&C (1984) in R ? [R Notebook vignette](https://www.dropbox.com/s/s4j6y498j1smohs/fst_comparisons.nb.html?dl=0)
 * Run the assignment with several whitelists of markers in `assigner::assignment_ngs`[(html vignette)](https://www.dropbox.com/s/jzv91hbxi0g18kg/assignment.whitelists.nb.html?dl=0)
 * [computer setup and troubleshooting](https://www.dropbox.com/s/1kz59xpolb5y52m/rad_genomics_computer_setup.nb.html?dl=0)
 
