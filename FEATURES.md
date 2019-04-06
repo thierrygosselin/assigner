@@ -7,7 +7,6 @@
 |**Markers selections**|Random or ranked based on W&C's Fst (Weir and Cockerham, 1984) or Nei's Gst (Nei, 1987)|
 |**Cross-Validations**|Avoid high-grading bias, use **classic LOO** (Leave-One-Out) or **THL** (Training, Holdout, Leave-one-out) (see Anderson, 2010)|
 |**Resampling/Bootstrap/Subsampling**|markers and individuals|
-|**Imputations**|**Map-independent** imputations of missing genotypes.<br>Using **Random Forest** or the most frequent category.<br> Imputations can be conducted **overall samples** or **by populations**.|
 |**Filters**| Whitelist and blacklist arguments provide the way to select/filter(include/exclude):<br>genotypes, markers, individuals and populations.<br><br>See the dedicated filtering arguments on the next table below.|
 |**[ggplot2](http://ggplot2.org)-based plotting**|View assignment results and create publication-ready figures|
 |**Parallel**|Codes designed and optimized for fast computations running imputations, iterations, etc. in parallel. Works with all OS: Linux, Mac and PC.|
@@ -34,6 +33,13 @@
 * **Fst**: assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement). See the [vignettes for this below](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md#examples-and-vignettes).
 * **AMOVA:** Analysis of Molecular Variance that run fast and works with missing values.
 * **Dlr:** Compute the genotype likelihood ratio distance metric (Paetkau's et al. 1997, 2004).
+
+## Examples and Vignettes (check periodically for updates)
+
+* Learn how to do a pairwise and overall Fst with confidence intervals + building phylogenetic tree [R Notebook vignette](https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0)
+* Why use assigner to compute Fst of W&C (1984) in R ? [(R Notebook vignette)](https://www.dropbox.com/s/s4j6y498j1smohs/fst_comparisons.nb.html?dl=0)
+* Run the assignment with several whitelists of markers in `assigner::assignment_ngs`[(html vignette)](https://www.dropbox.com/s/jzv91hbxi0g18kg/assignment.whitelists.nb.html?dl=0)
+* [computer setup and troubleshooting](https://www.dropbox.com/s/5npumwdo0cxtxi4/rad_genomics_computer_setup.nb.html?dl=0)
 
 
 ## Parallel computation and Cloud Computing
@@ -62,12 +68,32 @@ The Amazon image can be imported into Google Cloud Compute Engine to start a new
 
 Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
 
-## Examples and Vignettes (check periodically for updates)
 
-    * Learn how to do a pairwise and overall Fst with confidence intervals + building phylogenetic tree [R Notebook vignette](https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0)
-    * Why use assigner to compute Fst of W&C (1984) in R ? [(R Notebook vignette)](https://www.dropbox.com/s/s4j6y498j1smohs/fst_comparisons.nb.html?dl=0)
-    * Run the assignment with several whitelists of markers in `assigner::assignment_ngs`[(html vignette)](https://www.dropbox.com/s/jzv91hbxi0g18kg/assignment.whitelists.nb.html?dl=0)
-    * [computer setup and troubleshooting](https://www.dropbox.com/s/5npumwdo0cxtxi4/rad_genomics_computer_setup.nb.html?dl=0)
+## Life cycle
+
+**Missing data imputations**
+
+The imputation of missing data requires special attention that fall 
+outside the scope of **assigner**. Consequently, these options are no
+longer available. For assignment, it's better to do no imputation then 
+quickly do imputations with defaults.
+
+Inside my package called [grur](https://github.com/thierrygosselin/grur), users
+can **visualize patterns of missingness** associated with different variables 
+(lanes, chips, sequencers, populations, sample sites, reads/samples, homozygosity, etc).
+Several **Map-independent imputations** of missing genotypes are available:
+**Random Forests** (on-the-fly-imputations or predictive modeling), 
+**Extreme Gradient Tree Boosting**, 
+Strawman imputations (~ max/mean/mode: the most frequently observed, non-missing genotypes is used).
+Imputations can be conducted **overall samples** or **by populations/strata/grouping**.
+`radiator::genomic_converter` is integrated with the imputation function of **grur**.
+
+* filter your data correctly in [radiator](https://github.com/thierrygosselin/radiator)
+* read on imputations an do tests in [grur](https://github.com/thierrygosselin/grur)
+* then use assigner...
+
+
+
 
 ## Roadmap of future developments
 

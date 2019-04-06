@@ -44,7 +44,7 @@ for stability of group membership probabilities.
 For fine tuning the trade-off between power of discrimination and over-fitting.
 See \pkg{adegenet} documentation for more details.
 \code{adegenet.dapc.opt == "xval"} doesn't work with missing data, so it's 
-only available with \strong{imputed data} (i.e. imputation.method == "rf" or "max").
+only available with \strong{imputed data}.
 With non imputed data or the default: \code{adegenet.dapc.opt == "optim.a.score"}.}
 
 \item{adegenet.n.rep}{(optional, integer) 
@@ -181,8 +181,6 @@ maintaining a reproducible workflow. Assignment are conducted using
   \item \strong{Cross-Validations:} Markers can be randomly selected for a classic LOO (Leave-One-Out)
   assignment or chosen based on ranked Fst for a thl
   (Training, Holdout, Leave-one-out) assignment analysis
-  \item \strong{Imputations:} Map-independent imputation of missing genotype/alleles
-  using Random Forest or the most frequent category.
   \item \strong{Assignment analysis:} conducted in 
   \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, a tool 
   for doing and simulating genetic stock identification and 
@@ -205,17 +203,6 @@ Further arguments can be passed via the \emph{dots-dots-dots}:
 }
 For argument documentation see \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}.
 
-
-\strong{Imputations:}
-
-The imputations using Random Forest requires more time to compute
-and can take several
-minutes and hours depending on the size of the dataset and polymorphism of
-the species used. e.g. with a low polymorphic taxa, and a data set
-containing 30\% missing data, 5 000 haplotypes loci and 500 individuals
-will require 15 min. This is using multiple CPUs. To have your computer ready
-for parallel computing during imputations follow the steps in the
-(~10 min)
 
 \strong{THL, Ranking and Fst:}
 
