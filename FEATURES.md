@@ -7,19 +7,11 @@
 |**Markers selections**|Random or ranked based on W&C's Fst (Weir and Cockerham, 1984) or Nei's Gst (Nei, 1987)|
 |**Cross-Validations**|Avoid high-grading bias, use **classic LOO** (Leave-One-Out) or **THL** (Training, Holdout, Leave-one-out) (see Anderson, 2010)|
 |**Resampling/Bootstrap/Subsampling**|markers and individuals|
-|**Filters**| Whitelist and blacklist arguments provide the way to select/filter(include/exclude):<br>genotypes, markers, individuals and populations.<br><br>See the dedicated filtering arguments on the next table below.|
+|**Filters**| `strata`: use the strata to **whitelist samples** and/or **select populations** `??radiator::read_strata`
+`whitelist.markers`: kleep favorite markers
+`marker.number`: test different groupings of marker numbers automatically (selected randomly or based on the ranking method described in the table above)<br><br>For more info on how to filter RADseq data, see [radiator](https://github.com/thierrygosselin/radiator).|
 |**[ggplot2](http://ggplot2.org)-based plotting**|View assignment results and create publication-ready figures|
 |**Parallel**|Codes designed and optimized for fast computations running imputations, iterations, etc. in parallel. Works with all OS: Linux, Mac and PC.|
-
-
-## Specialized filtering arguments tailored for RADseq data and assignment analysis
-
-| Filters | Description |
-|:---------------|:------------------------------------|
-|**`strata`**|Use the strata to **whitelist sample** and/or **selected populations** `??radiator::read_strata`|
-|**`whitelist.markers`**|Keep favorite markers|
-|**`marker.number`**|Test different groupings of marker numbers automatically (selected randomly or based on the ranking method described in the table above)|
-|**`More filters?`**|For more info on how to filter RADseq data, see [radiator](https://github.com/thierrygosselin/radiator)|
 
 
 ## Independent modules
@@ -27,7 +19,7 @@
 * **Fst**: assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
 * **Dlr:** Compute the genotype likelihood ratio distance metric (Paetkau's et al. 1997, 2004).
 
-## Examples and Vignettes (check periodically for updates)
+## Vignettes
 
 * Learn how to do a pairwise and overall Fst with confidence intervals + building phylogenetic tree [R Notebook vignette](https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0)
 * Why use assigner to compute Fst of W&C (1984) in R ? [R Notebook vignette](https://www.dropbox.com/s/s4j6y498j1smohs/fst_comparisons.nb.html?dl=0)
@@ -64,7 +56,7 @@ Change log, version, new features and bug history now lives in the [NEWS.md file
 
 ## Life cycle
 
-**Missing data imputations**
+**Missing data imputations: now in [grur](https://github.com/thierrygosselin/grur)**
 
 The imputation of missing data requires special attention that fall 
 outside the scope of **assigner**. Consequently, these options are no
