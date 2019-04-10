@@ -383,7 +383,7 @@ fst_WC84 <- function(
     input <- radiator::join_strata(
       data = input, strata = strata.df, pop.id = TRUE, verbose = FALSE)
   } else {
-    strata <- strata.df <- radiator::generate_strata(data = input)
+    strata <- strata.df <- radiator::generate_strata(data = input, pop.id = TRUE)
   }
   
   # subsampling data------------------------------------------------------------
