@@ -9,7 +9,7 @@
 #' @usage lhs \%>\% rhs
 NULL
 
-# Exposition pipe-operator
+# Exposition pipe-operator -----------------------------------------------------
 #' @title Exposition pipe-operator
 #' @description magrittr Exposition pipe-operator
 #' @name %$%
@@ -20,7 +20,7 @@ NULL
 #' @usage lhs \%$\% rhs
 NULL
 
-# compound assignment pipe operator
+# compound assignment pipe operator --------------------------------------------
 #' @title compound assignment pipe operator
 #' @description magrittr compound assignment pipe operator
 #' @name %<>%
@@ -31,6 +31,17 @@ NULL
 #' @usage lhs \%<>\% rhs
 NULL
 
+# dplyr n ----------------------------------------------------------------------
+# The number of observations in the current group.
+#' @title The number of observations in the current group.
+#' @description Check dplyr
+#' @name n
+#' @rdname n
+#' @keywords internal
+#' @export
+#' @importFrom dplyr n
+#' @usage n()
+NULL
 
 # subsampling_data --------------------------------------------------------------
 #' @title subsampling data
@@ -38,7 +49,6 @@ NULL
 #' @rdname subsampling_data
 #' @export
 #' @keywords internal
-#' @importFrom dplyr mutate group_by ungroup arrange sample_n sample_frac
 
 
 subsampling_data <- function(
@@ -94,10 +104,6 @@ subsampling_data <- function(
 
 #' @export
 #' @rdname import_subsamples
-#' @importFrom dplyr bind_rows
-#' @importFrom tibble as_data_frame
-#' @importFrom stringi stri_join stri_detect_fixed stri_replace_all_fixed
-#' @importFrom readr read_tsv
 
 #' @examples
 #' \dontrun{
@@ -138,7 +144,7 @@ import_subsamples <- function(dir.path, imputations = FALSE){
     # filter (MISSING_DATA == 'no.imputation')
     data[[i]] <- subsample.data
   }
-  data <- tibble::as_data_frame(dplyr::bind_rows(data))
+  data <- tibble::as_tibble(dplyr::bind_rows(data))
   return(data)
 }#End import_subsamples
 
@@ -155,11 +161,6 @@ import_subsamples <- function(dir.path, imputations = FALSE){
 
 #' @export
 #' @rdname import_subsamples_fst
-#' @importFrom stringi stri_join
-#' @importFrom dplyr bind_rows
-#' @importFrom tibble as_data_frame
-#' @importFrom readr read_tsv
-
 #' @examples
 #' \dontrun{
 #' subsamples.data <- import_subsamples_fst(
@@ -183,16 +184,16 @@ import_subsamples_fst <- function(dir.path){
     data.fst <- list()
     for (j in fst.files.list) {
       fst.file <- readr::read_tsv(file = stringi::stri_join(dir.path, "/", i, "/", j), col_names = TRUE) %>% 
-        mutate(
+        dplyr::mutate(
           SUBSAMPLE = rep(i, n()),
           ITERATIONS = rep(j, n())
         )
       data.fst[[j]] <- fst.file
     }
-    data.fst <- tibble::as_data_frame(dplyr::bind_rows(data.fst))
+    data.fst <- tibble::as_tibble(dplyr::bind_rows(data.fst))
     data.subsample[[i]] <- data.fst
   }
-  data <- tibble::as_data_frame(dplyr::bind_rows(data.subsample))
+  data <- tibble::as_tibble(dplyr::bind_rows(data.subsample))
   return(data)
 }#End import_subsamples_fst
 
@@ -259,9 +260,6 @@ gsi_sim_binary <- function() {
 #' If FALSE, then it will download a precompiled binary, if available.  If a 
 #' binary is not available, then it will attempt to download the source.  
 #' @export
-# @keywords internal
-#' @importFrom utils download.file
-#' 
 install_gsi_sim <- function(commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a", fromSource = FALSE) {
   
   # make a bin directory

@@ -7,33 +7,35 @@ Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
   person("Eric C.", "Anderson", role = "aut"),
-  person("Ian", "Bradbury", role = "ctb"),
-  person("Nick", "Jeffery", role = "ctb"))
+  person("Ian", "Bradbury", role = "ctb")
+  )
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
 Description: Set of R tools for assignment analysis tailored for RADseq data.
 Depends:
     R (>= 3.2.3)
 Imports:
+    adegenet,
     dplyr (>= 0.7.0),
+    magrittr,
+    radiator,
+    pbmcapply,
+    tidyverse
+Suggests:
+    BiocManager,
+    devtools,
+    ggplot2 (>= 3.0.0),
+    knitr,
+    modelr,
+    parallel,
     purrr (>= 0.2.5),
     readr,
+    rlang,
+    rmarkdown,
+    stats,
+    stringi,
     tibble,
     tidyr,
-    ggplot2 (>= 3.0.0),
-    adegenet,
-    parallel,
-    radiator,
-    stringi,
-    utils,
-    modelr,
-    magrittr,
-    stats,
-    pbmcapply,
-    rlang
-Suggests:
-    devtools,
-    knitr,
-    rmarkdown
+    utils
 Remotes:
     github::thierrygosselin/radiator
 License: GPL (>=2)

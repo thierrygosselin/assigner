@@ -25,15 +25,6 @@
 #' \item the list of dlr plots ($dlr.plots)
 #' }
 
-#' @importFrom dplyr mutate select filter group_by ungroup filter_ mutate_ summarise ungroup left_join rename
-#' @importFrom readr read_delim write_tsv read_table read_tsv
-#' @importFrom stringi stri_dup stri_join stri_replace_all_fixed stri_sub
-#' @importFrom stats as.dist dist
-#' @importFrom utils combn
-#' @importFrom tibble rownames_to_column tibble
-#' @importFrom purrr discard flatten_dbl
-#' @importFrom parallel detectCores
-#' @importFrom rlang .data UQ
 
 #' @examples
 #' \dontrun{
@@ -286,11 +277,6 @@ dlr_relative <- function(data, pop1, pop2){
 #' @rdname plot_dlr
 #' @keywords internal
 
-#' @importFrom stringi stri_join stri_sub stri_replace_all_fixed stri_detect_fixed stri_replace_na
-#' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join funs sample_n sample_frac one_of
-#' @importFrom ggplot2 ggplot aes geom_violin geom_boxplot stat_summary labs theme element_blank element_text geom_jitter scale_colour_manual scale_y_reverse theme_light geom_bar facet_grid annotate geom_abline scale_shape_manual scale_fill_manual geom_abline aes_string geom_point scale_x_continuous scale_y_continuous
-#' @importFrom readr read_table read_delim read_tsv
-#' @importFrom purrr discard flatten_dbl
 
 #' @references Paetkau D, Slade R, Burden M, Estoup A (2004)
 #' Genetic assignment methods for the direct, real-time estimation of migration

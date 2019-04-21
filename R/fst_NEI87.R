@@ -176,16 +176,6 @@
 
 #' @export
 #' @rdname fst_NEI87
-#' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join summarise_each_ funs summarise_if mutate_if count bind_rows bind_cols ntile desc n
-#' @importFrom radiator tidy_wide change_pop_names
-#' @importFrom tidyr spread gather unite separate complete nesting
-#' @importFrom stringi stri_replace_all_regex stri_sub stri_join
-#' @importFrom purrr map flatten flatten_int
-#' @importFrom readr read_tsv
-#' @importFrom utils count.fields combn
-#' @importFrom stats quantile
-#' @importFrom parallel detectCores
-#' @importFrom ggplot2 ggplot aes expand_limits geom_histogram labs theme element_blank element_text scale_colour_manual  facet_grid
 
 #' @examples
 #' \dontrun{
@@ -598,7 +588,7 @@ boot_ci_nei <- function(x = NULL, fst.data = NULL, digits = 9){
     dplyr::arrange(MARKERS)
   
   subsample.markers <- markers.list %>% 
-    sample_n(tbl = ., size = nrow(markers.list), replace = TRUE) %>% 
+    dplyr::sample_n(tbl = ., size = nrow(markers.list), replace = TRUE) %>% 
     dplyr::arrange(MARKERS)
   
   fst.data.overall.iterations <- fst.data %>%

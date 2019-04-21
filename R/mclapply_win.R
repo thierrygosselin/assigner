@@ -26,8 +26,6 @@
 
 
 # @return For mclapply, a list of the same length as X and named by X.
-#' @importFrom utils sessionInfo
-#' @importFrom parallel detectCores makeCluster clusterExport mclapply parLapply stopCluster
 #' @rdname assigner_parallel
 #' @export
 #' @keywords internal
@@ -94,7 +92,6 @@ mclapply_win <- function(
 #' functions on Windows.
 # @inheritParams parallel::mclapply
 #' @return For mclapply, a list of the same length as X and named by X.
-# @importFrom parallel detectCores makeCluster clusterExport mclapply parLapply stopCluster
 #' @rdname assigner_parallel
 #' @importFrom pbmcapply pbmclapply
 #' @keywords internal
@@ -115,8 +112,6 @@ mclapply_win <- function(
 #' functions on Windows.
 # @inheritParams parallel::mclapply
 #' @return For mclapply, a list of the same length as X and named by X.
-# @importFrom parallel detectCores makeCluster clusterExport mclapply parLapply stopCluster
-# @importFrom pbmcapply pbmclapply
 #' @rdname assigner_parallel
 #' @keywords internal
 #' @export

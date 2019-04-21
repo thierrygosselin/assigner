@@ -199,18 +199,6 @@
 
 #' @export
 #' @rdname assignment_ngs
-#' @importFrom parallel detectCores
-#' @importFrom stringi stri_join stri_sub stri_replace_all_fixed stri_detect_fixed stri_replace_na
-#' @importFrom dplyr select distinct n_distinct group_by ungroup rename arrange tally filter if_else mutate summarise left_join inner_join right_join anti_join semi_join full_join funs sample_n sample_frac
-#' @importFrom radiator tidy_genomic_data change_pop_names write_genind filter_maf detect_genomic_format filter_common_markers filter_monomorphic
-#' @importFrom stats var median quantile
-#' @importFrom purrr map flatten keep discard
-#' @importFrom adegenet genind
-#' @importFrom readr read_delim read_tsv
-#' @importFrom adegenet optim.a.score dapc xvalDapc indNames pop predict.dapc
-#' @importFrom tibble as_data_frame data_frame
-#' @importFrom tidyr separate
-#' @importFrom ggplot2 ggplot aes geom_violin geom_boxplot stat_summary labs theme element_blank element_text geom_jitter scale_colour_manual scale_y_reverse theme_light geom_bar facet_grid
 
 
 #' @examples
@@ -272,6 +260,9 @@
 
 #' @seealso \href{https://github.com/eriqande/gsi_sim}{gsi_sim} and 
 #' \href{https://github.com/eriqande/rubias}{rubias}
+
+#' @importFrom radiator tidy_genomic_data change_pop_names write_genind detect_genomic_format
+#' @importFrom adegenet optim.a.score dapc xvalDapc indNames pop predict.dapc
 
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com} and Eric C. Anderson
 

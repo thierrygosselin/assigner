@@ -168,19 +168,6 @@
 
 #' @export
 #' @rdname fst_WC84
-#' @importFrom radiator tidy_wide change_pop_names detect_biallelic_markers generate_folder radiator_dots
-#' @importFrom tidyr separate gather spread unite
-#' @importFrom purrr map flatten transpose flatten_int
-#' @importFrom dplyr mutate mutate_if mutate_all summarise group_by ungroup select rename full_join left_join anti_join right_join semi_join filter n_distinct distinct arrange sample_n bind_rows bind_cols ntile desc n
-#' @importFrom stats quantile
-#' @importFrom utils count.fields combn
-# @importFrom SNPRelate snpgdsOpen snpgdsClose snpgdsFst snpgdsCreateGeno
-#' @importFrom stringi stri_replace_all_regex stri_join stri_replace_na stri_sub
-#' @importFrom readr read_tsv
-#' @importFrom parallel detectCores
-#' @importFrom ggplot2 ggplot aes expand_limits geom_histogram labs theme element_blank element_text scale_colour_manual  facet_grid
-
-
 #' @examples
 #' \dontrun{
 #' wombat.fst.pairwise <- fst_WC84(
