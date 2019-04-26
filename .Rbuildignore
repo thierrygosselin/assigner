@@ -11,3 +11,4 @@
 ^inst/_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^_pkgdown\.yml$
