@@ -3,7 +3,7 @@ output:
   md_document:
     variant: markdown_github
 ---
-# pkgdown <img src="man/figures/logo.png" align="right" alt="" width="120" />
+# assigner <img src="man/figures/logo.png" align="right" alt="" width="450" />
 
 
 <!-- badges: start -->
