@@ -1,5 +1,5 @@
 
-assigner <img src="man/figures/logo.png" align="right" alt="" width="200" />
+assigner <img src="man/figures/logo.png" align="right" alt="" width="250" />
 ============================================================================
 
 <!-- badges: start -->
