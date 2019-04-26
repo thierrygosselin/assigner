@@ -15,3 +15,26 @@ reference:
   - import_subsamples
   - import_subsamples_fst
   - install_gsi_sim
+
+navbar:
+  type: default
+  left:
+  - text: Installation
+    href: index.html
+  - text: Reference
+    href: reference/index.html
+  - text: Articles
+    menu:
+    - text: Fst analysis
+      href: articles/fst_confidence_intervals.html
+    - text: Using whitelists in assignment
+      href: articles/assignment.whitelists.html
+    - text: Computer setup - Installation - Troubleshooting
+      href: articles/rad_genomics_computer_setup.html
+  - text: News
+    menu:
+    - text: "Change log"
+      href: news/index.html
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/thierrygosselin/assigner

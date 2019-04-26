@@ -232,8 +232,7 @@ From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDiv
 \emph{'In general, rather than to test differentiation between all pairs of 
 populations,
 it is adviseable to perform an overall test of population differentiation, 
-possibly using a hierarchical population structure, (see AMOVA)'}
-
+possibly using a hierarchical population structure, (see AMOVA)'}. 
 To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 or \code{Phi_st_Meirmans} in \code{mmod}.
 
@@ -241,15 +240,10 @@ or \code{Phi_st_Meirmans} in \code{mmod}.
 CRAN \url{http://cran.r-project.org/web/packages/hierfstat/} and 
 github \url{https://github.com/jgx65/hierfstat/}
 
-Link for \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
-
 For Fisher's exact test and p-values per markers 
 see \code{mmod} \code{diff_test}.
 
-\code{\link[radiator]{tidy_genomic_data}} to transform numerous genomic data 
-format in tidy data frames.
-
-\href{https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0}{Vignette on how to do the pairwise and overall Fst with confidence intervals and build the phylogenetic tree}
+\strong{Vignette for this function:} \href{https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0}{how to do the pairwise and overall Fst with confidence intervals and build the phylogenetic tree}
 }
 \author{
 Thierry Gosselin \email{thierrygosselin@icloud.com}

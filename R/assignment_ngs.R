@@ -18,9 +18,11 @@
 #'   \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, a tool 
 #'   for doing and simulating genetic stock identification and 
 #'   developed by Eric C. Anderson, or 
-#' \href{https://github.com/thibautjombart/adegenet}{adegenet}, 
-#' an R package developed by Thibaul Jombart.
-#'   \item \strong{Parallel:} The assignment can be conduncted on multiple CPUs
+#'   \href{https://github.com/thibautjombart/adegenet}{adegenet}, 
+#'  an R package developed by Thibaul Jombart.
+#'   \item \strong{Parallel:} The assignment can be conduncted on multiple CPUs.
+#'   The R GUI is unstable with this functions, I recommend using 
+#'   \href{https://www.rstudio.com/products/rstudio/download/}{RStudio}. 
 #' }
 #' @param data Several input format are accepted. assigner uses \pkg{radiator}
 #' \code{\link[radiator]{tidy_genomic_data}} module to import the data.
