@@ -7,8 +7,7 @@
 ^README\.Rmd$
 ^README-.*\.png$
 ^FEATURES\.md$
-^man/figures/logo\.png$
 ^vignettes/*\.Rmd
-^_pkgdown\.yml$
+^inst/_pkgdown\.yml$
 ^docs$
 ^pkgdown$
