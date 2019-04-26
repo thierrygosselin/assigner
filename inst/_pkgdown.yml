@@ -1,29 +1,19 @@
 navbar:
-  structure:
-    left:
-    - home
-    - Features
-    - reference
-    - articles
-    - tutorials
-    - Change log
-    right: github
-  components:
-    home:
-      icon: fa-home fa-lg
-      href: index.html
-    Features:
-      text: "Features"
-      href: FEATURES.html
-    reference:
-      text: Reference
-      href: reference/index.html
-    Change log:
-      text: "Change log"
-      href: news/index.html
-    github:
-      icon: fa-github fa-lg
-      href: https://github.com/thierrygosselin/assigner
+  home:
+    icon: fa-home fa-lg
+    href: index.html
+  Features:
+    text: "Features"
+    href: FEATURES.html
+  reference:
+    text: Reference
+    href: reference/index.html
+  News:
+    text: "News"
+    href: news/index.html
+  github:
+    icon: fa-github fa-lg
+    href: https://github.com/thierrygosselin/assigner
 
 reference:
 - title: Assignment analysis
