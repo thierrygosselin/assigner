@@ -12,10 +12,10 @@ Authors@R: c(
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
 Description: Set of R tools for assignment analysis tailored for RADseq data.
 Depends:
-    R (>= 3.2.3)
+    R (>= 3.5.0)
 Imports:
     adegenet,
-    dplyr (>= 0.7.0),
+    dplyr,
     magrittr,
     radiator,
     pbmcapply,
@@ -23,11 +23,11 @@ Imports:
 Suggests:
     BiocManager,
     devtools,
-    ggplot2 (>= 3.0.0),
+    ggplot2,
     knitr,
     modelr,
     parallel,
-    purrr (>= 0.2.5),
+    purrr,
     readr,
     rlang,
     rmarkdown,
