@@ -53,34 +53,32 @@ NULL
 
 subsampling_data <- function(
   iteration.subsample = 1,
-  ind.pop.df = NULL,
+  strata = NULL,
   subsample = NULL,
   random.seed = NULL
 ) {
   # message(paste0("Creating data subsample: ", iteration.subsample))
   if (is.null(subsample)) {
-    subsample.select <- ind.pop.df %>% 
-      dplyr::mutate(SUBSAMPLE = rep(iteration.subsample, n()))
+    subsample.select <- dplyr::mutate(strata, SUBSAMPLE = iteration.subsample)
   } else {
     
     # Set seed for sampling reproducibility
     if (is.null(random.seed)) {
       random.seed <- sample(x = 1:1000000, size = 1)
-      set.seed(random.seed)
-    } else {
-      set.seed(random.seed)
     }
+    set.seed(random.seed)
     
     if (subsample > 1) {# integer
-      subsample.select <- ind.pop.df %>%
+      subsample.select <- strata %>%
         dplyr::group_by(POP_ID) %>%
-        dplyr::sample_n(tbl = ., size = subsample, replace = FALSE)# sampling individuals for each pop
+        dplyr::sample_n(tbl = ., size = subsample, replace = FALSE) %>% 
+        dplyr::ungroup(.)# sampling individuals for each pop
     }
-
-    subsample.select <- subsample.select %>% 
+    
+    subsample.select %<>% 
       dplyr::mutate(
-        SUBSAMPLE = rep(iteration.subsample, n()),
-        RANDOM_SEED_NUMBER = rep(random.seed, n())
+        SUBSAMPLE = iteration.subsample,
+        RANDOM_SEED_NUMBER = random.seed
       ) %>%
       dplyr::arrange(POP_ID, INDIVIDUALS) %>% 
       dplyr::ungroup(.)

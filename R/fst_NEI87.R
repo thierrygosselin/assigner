@@ -344,7 +344,7 @@ fst_NEI87 <- function(
   subsample.list <- purrr::map(
     .x = 1:iteration.subsample,
     .f = subsampling_data,
-    ind.pop.df = ind.pop.df,
+    strata = ind.pop.df,
     subsample = subsample
   )
   

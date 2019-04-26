@@ -4,7 +4,7 @@ assigner<img src="README_assigner_logo.png" align="right"/>
 <!-- badges: start -->
 [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://tidyverse.org/lifecycle/#maturing) [![Travis-CI Build Status](https://travis-ci.org/thierrygosselin/assigner.svg?branch=master)](https://travis-ci.org/thierrygosselin/assigner) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thierrygosselin/assigner?branch=master&svg=true)](https://ci.appveyor.com/project/thierrygosselin/assigner) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/assigner)](http://cran.r-project.org/package=assigner) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 
-[![packageversion](https://img.shields.io/badge/Package%20version-0.5.4-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2019--04--20-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.5.5-orange.svg)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2019--04--25-brightgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -31,11 +31,18 @@ pak::pkg_install("thierrygosselin/assigner")
 library(assigner)
 ```
 
-To use gsi\_sim inside assigner:
+To use `gsi_sim` inside assigner:
+
+With UNIX
 
 ``` r
-assigner::install_gsi_sim(fromSource = TRUE) # for LINUX and macOS
-assigner::install_gsi_sim() # for PC
+assigner::install_gsi_sim(fromSource = TRUE)
+```
+
+With PC
+
+``` r
+assigner::install_gsi_sim()
 ```
 
 **Notes**

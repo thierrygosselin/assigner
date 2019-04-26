@@ -37,7 +37,8 @@ if (getRversion() >= "2.15.1") {
       "Current", "DLR", "DLR_RELATIVE", "Inferred", "Lik_home", "Lik_max",
       "Lik_ratio", "RATIO", "Individual", "Populations", "pop.labels",
       "filter.monomorphic", "LOW", "NS", "POP3", "blacklist.id",
-      "holdout.samples", "ALLELE_GROUP", "MARKERS1", "fst.overall"
+      "holdout.samples", "ALLELE_GROUP", "MARKERS1", "fst.overall",
+      "whitelist.markers", "random.seed", "folder"
     )
   )
 }

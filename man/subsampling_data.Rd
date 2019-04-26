@@ -4,7 +4,7 @@
 \alias{subsampling_data}
 \title{subsampling data}
 \usage{
-subsampling_data(iteration.subsample = 1, ind.pop.df = NULL,
+subsampling_data(iteration.subsample = 1, strata = NULL,
   subsample = NULL, random.seed = NULL)
 }
 \description{

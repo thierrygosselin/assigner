@@ -4,9 +4,9 @@
 \alias{assignment_marker_loop}
 \title{assignment_marker_loop}
 \usage{
-assignment_marker_loop(x, assignment.analysis = "gsi_sim",
+assignment_marker_loop(m, assignment.analysis = "gsi_sim",
   fst.ranked = NULL, i = NULL, input = NULL, genind.object = NULL,
-  strata.df = NULL, sampling.method = NULL, subsample.id = NULL,
+  strata = NULL, markers.sampling = NULL, subsample.id = NULL,
   holdout = NULL, thl = 1, adegenet.dapc.opt = NULL,
   adegenet.n.rep = NULL, adegenet.training = NULL,
   directory.subsample = NULL, filename = NULL,

@@ -50,11 +50,16 @@ pak::pkg_install("thierrygosselin/assigner")
 library(assigner)
 ```
 
-To use gsi_sim inside assigner:
+To use `gsi_sim` inside assigner:
 
+With UNIX
 ```r
-assigner::install_gsi_sim(fromSource = TRUE) # for LINUX and macOS
-assigner::install_gsi_sim() # for PC
+assigner::install_gsi_sim(fromSource = TRUE)
+```
+
+With PC
+```r
+assigner::install_gsi_sim()
 ```
 
 **Notes**

@@ -392,7 +392,7 @@ fst_WC84 <- function(
   subsample.list <- purrr::map(# map_df ?
     .x = 1:iteration.subsample,
     .f = subsampling_data,
-    ind.pop.df = strata.df,
+    strata = strata.df,
     subsample = subsample
   )
   
