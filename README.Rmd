@@ -10,7 +10,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# assigner <img src="man/figures/logo.png" align="right" alt="" />
+# assigner <img src="docs/logo.png" align="right" alt="" />
 
 ```{r, echo = FALSE}
 description <- readLines("DESCRIPTION")

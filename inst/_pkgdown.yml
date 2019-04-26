@@ -15,12 +15,12 @@ navbar:
     Features:
       text: "Features"
       href: FEATURES.html
-    Change log:
-      text: "Change log"
-      href: news/index.html
     reference:
       text: Reference
       href: reference/index.html
+    Change log:
+      text: "Change log"
+      href: news/index.html
     github:
       icon: fa-github fa-lg
       href: https://github.com/thierrygosselin/assigner
