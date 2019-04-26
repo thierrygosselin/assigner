@@ -2,7 +2,8 @@ navbar:
   structure:
     left:
     - home
-    - intro
+    - text: "Features"
+      href: docs/FEATURES.html
     - reference
     - articles
     - tutorials
@@ -21,17 +22,4 @@ navbar:
     github:
       icon: fa-github fa-lg
       href: https://github.com/thierrygosselin/assigner
-
-reference:
-- title: All functions
-  desc: ~
-  contents:
-  - '`assignment_ngs`'
-  - '`dlr`'
-  - '`fst_NEI87`'
-  - '`fst_WC84`'
-  - '`heatmap_fst`'
-  - '`import_subsamples`'
-  - '`import_subsamples_fst`'
-  - '`install_gsi_sim`'
 
