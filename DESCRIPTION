@@ -6,7 +6,7 @@ Date: 2019-04-25
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
-  person("Eric C.", "Anderson", role = "aut"),
+  person("Eric C.", "Anderson", role = "ctb"),
   person("Ian", "Bradbury", role = "ctb")
   )
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
