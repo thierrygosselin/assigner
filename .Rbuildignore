@@ -9,3 +9,6 @@
 ^FEATURES\.md$
 ^README_assigner_logo\.png$
 ^vignettes/*\.Rmd
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

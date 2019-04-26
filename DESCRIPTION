@@ -42,5 +42,5 @@ License: GPL (>=2)
 LazyLoad: yes
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
-URL: https://github.com/thierrygosselin/assigner
+URL: http://thierrygosselin.github.io/assigner/, https://github.com/thierrygosselin/assigner
 BugReports: https://github.com/thierrygosselin/assigner/issues

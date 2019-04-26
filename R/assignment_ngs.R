@@ -22,6 +22,9 @@
 #' an R package developed by Thibaul Jombart.
 #'   \item \strong{Parallel:} The assignment can be conduncted on multiple CPUs
 #' }
+#' @param data Several input format are accepted. assigner uses \pkg{radiator}
+#' \code{\link[radiator]{tidy_genomic_data}} module to import the data.
+#' See function documentation for more details.
 
 #' @inheritParams radiator::tidy_genomic_data 
 #' @inheritParams radiator::read_strata 
@@ -29,6 +32,9 @@
 #' @param assignment.analysis (character) Assignment analysis conducted with 
 #' \code{assignment.analysis = "gsi_sim"} or 
 #' \code{assignment.analysis = "adegenet"}.
+#' See \strong{Details} section below for installing
+#' \href{https://github.com/eriqande/gsi_sim}{gsi_sim}.
+#' 
 
 #' @param marker.number (Integer or string of number or "all") The assignment
 #' analysis can use all your markers (default) or a subset of your markers.
@@ -106,10 +112,6 @@
 
 #' @param ... (optional) To pass further argument for fine-tuning the 
 #' function (see advanced section below).
-
-#' @details 
-#' \strong{Input files:} see \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}
-#' for detailed information about supported file format.
 
 # ... -------------------------- -----------------------------------------------
 #' @section Advance mode:
@@ -235,7 +237,9 @@
 #' \item \code{sampling.method}: renamed \code{markers.sampling}.
 #' }
 #' 
-#' @note \code{assignment_ngs} assumes that the command line version of 
+#' @details Using \href{https://github.com/eriqande/gsi_sim}{gsi_sim}:
+#'
+#' \code{assignment_ngs} assumes that the command line version of 
 #' \href{https://github.com/eriqande/gsi_sim}{gsi_sim} 
 #' is properly installed into \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
 #' Things are set up so that it will try running gsi_sim, and if it does not find it, the 

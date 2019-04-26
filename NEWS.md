@@ -1,4 +1,10 @@
-# assigner v.0.5.3 2019-03-12
+# assigner v.0.5.5 2019-04-25
+
+* cosmetic changes to the package: using `pkgdown`
+* updated documentation of `assignment_ngs`
+
+
+# assigner v.0.5.4 2019-03-12
 
 * `fst_WC84`: work faster
 * continue to integrate `assigner` with `SeqArray` and GDS object/file 
@@ -9,8 +15,6 @@
 * will continue updating fucntions to work with latest radiator release and
 work toward releasing the official v.1.0 of assigner.
 * Imputation module was removed from `assigner` and now lives exclusively in package `grur`
-
-
 
 # assigner v.0.5.2 2018-07-09
 

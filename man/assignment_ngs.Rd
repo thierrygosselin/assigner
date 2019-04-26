@@ -12,13 +12,9 @@ assignment_ngs(data, strata = NULL, pop.levels = NULL,
   parallel.core = parallel::detectCores() - 1, ...)
 }
 \arguments{
-\item{data}{12 options for input: VCFs (SNPs or Haplotypes,
-to make the vcf population ready),
-plink, stacks haplotype file, genind (library(adegenet)),
-genlight (library(adegenet)), gtypes (library(strataG)), genepop, DArT,
-and a data frame in long/tidy or wide format. To verify that radiator detect
-your file format use \code{\link{detect_genomic_format}} (see example below).
-Documented in \strong{Input genomic datasets} of \code{\link{tidy_genomic_data}}.}
+\item{data}{Several input format are accepted. assigner uses \pkg{radiator}
+\code{\link[radiator]{tidy_genomic_data}} module to import the data.
+See function documentation for more details.}
 
 \item{strata}{(optional)
 The strata file is a tab delimited file with a minimum of 2 columns headers:
@@ -38,7 +34,9 @@ Default: \code{pop.levels = NULL}.}
 
 \item{assignment.analysis}{(character) Assignment analysis conducted with 
 \code{assignment.analysis = "gsi_sim"} or 
-\code{assignment.analysis = "adegenet"}.}
+\code{assignment.analysis = "adegenet"}.
+See \strong{Details} section below for installing
+\href{https://github.com/eriqande/gsi_sim}{gsi_sim}.}
 
 \item{marker.number}{(Integer or string of number or "all") The assignment
 analysis can use all your markers (default) or a subset of your markers.
@@ -198,10 +196,8 @@ an R package developed by Thibaul Jombart.
 }
 }
 \details{
-\strong{Input files:} see \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}
-for detailed information about supported file format.
-}
-\note{
+Using \href{https://github.com/eriqande/gsi_sim}{gsi_sim}:
+
 \code{assignment_ngs} assumes that the command line version of 
 \href{https://github.com/eriqande/gsi_sim}{gsi_sim} 
 is properly installed into \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.

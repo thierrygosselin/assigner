@@ -8,6 +8,13 @@
 
 <title>Assignment analysis tailored for RADseq data — assignment_ngs • assigner</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
@@ -49,6 +56,8 @@ adegenet,
 an R package developed by Thibaul Jombart.
 Parallel: The assignment can be conduncted on multiple CPUs
 " />
+
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -157,13 +166,9 @@ an R package developed by Thibaul Jombart.</p></li>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>12 options for input: VCFs (SNPs or Haplotypes,
-to make the vcf population ready),
-plink, stacks haplotype file, genind (library(adegenet)),
-genlight (library(adegenet)), gtypes (library(strataG)), genepop, DArT,
-and a data frame in long/tidy or wide format. To verify that radiator detect
-your file format use <code>detect_genomic_format</code> (see example below).
-Documented in <strong>Input genomic datasets</strong> of <code>tidy_genomic_data</code>.</p></td>
+      <td><p>Several input format are accepted. assigner uses <span class="pkg">radiator</span>
+<code><a href='https://www.rdocumentation.org/packages/radiator/topics/tidy_genomic_data'>tidy_genomic_data</a></code> module to import the data.
+See function documentation for more details.</p></td>
     </tr>
     <tr>
       <th>strata</th>
@@ -189,7 +194,9 @@ Default: <code>pop.levels = NULL</code>.</p></td>
       <th>assignment.analysis</th>
       <td><p>(character) Assignment analysis conducted with 
 <code>assignment.analysis = "gsi_sim"</code> or 
-<code>assignment.analysis = "adegenet"</code>.</p></td>
+<code>assignment.analysis = "adegenet"</code>.
+See <strong>Details</strong> section below for installing
+<a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a>.</p></td>
     </tr>
     <tr>
       <th>marker.number</th>
@@ -337,12 +344,8 @@ See example below.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><strong>Input files:</strong> see <span class="pkg">radiator</span> <code><a href='https://www.rdocumentation.org/packages/radiator/topics/tidy_genomic_data'>tidy_genomic_data</a></code>
-for detailed information about supported file format.</p>
-    
-    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
-
-    <p><code>assignment_ngs</code> assumes that the command line version of 
+    <p>Using <a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a>:</p>
+<p><code>assignment_ngs</code> assumes that the command line version of 
 <a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a> 
 is properly installed into <code><a href='https://www.rdocumentation.org/packages/base/topics/file.path'>file.path(system.file(package = "assigner"), "bin", "gsi_sim")</a></code>.
 Things are set up so that it will try running gsi_sim, and if it does not find it, the 
@@ -527,8 +530,6 @@ fig +
       <li><a href="#value">Value</a></li>
 
       <li><a href="#details">Details</a></li>
-
-      <li><a href="#note">Note</a></li>
 
       <li><a href="#advance-mode">Advance mode</a></li>
 
