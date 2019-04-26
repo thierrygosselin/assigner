@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Assignment plot of genotype likelihood (Dlr). — plot_dlr • assigner</title>
+<title>Articles • assigner</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -37,10 +37,7 @@
 
 
 
-<meta property="og:title" content="Assignment plot of genotype likelihood (Dlr). — plot_dlr" />
-
-<meta property="og:description" content="The function generate a figure similar to Paetkau's et al. (2004)
-Fig 6." />
+<meta property="og:title" content="Articles" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -60,7 +57,7 @@ Fig 6." />
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-article-index">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -124,105 +121,17 @@ Fig 6." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Assignment plot of genotype likelihood (Dlr).</h1>
-    <small class="dont-index">Source: <a href='https://github.com/thierrygosselin/assigner/blob/master/R/dlr.R'><code>R/dlr.R</code></a></small>
-    <div class="hidden name"><code>plot_dlr.Rd</code></div>
+      <h1>Articles</h1>
     </div>
 
-    <div class="ref-description">
-    
-    <p>The function generate a figure similar to Paetkau's et al. (2004)
-Fig 6.</p>
-    
+    <div class="section ">
+      <h3>All vignettes</h3>
+      <p class="section-desc"></p>
+
+      <ul>
+        <li><a href="fst_confidence_intervals.html">Pairwise and overall Fst with confidence intervals + building phylogenetic tree</a></li>
+      </ul>
     </div>
-
-    <pre class="usage"><span class='fu'>plot_dlr</span>(<span class='no'>data</span>, <span class='no'>pop.pairwise</span>, <span class='kw'>dlr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>x.dlr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>y.dlr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>fst</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>x.fst</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>y.fst</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>filename</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>plot.width</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>plot.height</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>plot.dpi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>data</th>
-      <td><p>The assigment object from
-<code><a href='dlr.html'>dlr</a></code> output.</p></td>
-    </tr>
-    <tr>
-      <th>pop.pairwise</th>
-      <td><p>List of pairwise populations to generate the Dlr plot.</p></td>
-    </tr>
-    <tr>
-      <th>dlr</th>
-      <td><p>(optional) Character string with Dlr value.</p></td>
-    </tr>
-    <tr>
-      <th>x.dlr</th>
-      <td><p>(optional) Position to the x-axis of the Dlr value.</p></td>
-    </tr>
-    <tr>
-      <th>y.dlr</th>
-      <td><p>(optional) Position to the y-axis of the Dlr value.</p></td>
-    </tr>
-    <tr>
-      <th>fst</th>
-      <td><p>(optional) Character string with Fst value.</p></td>
-    </tr>
-    <tr>
-      <th>x.fst</th>
-      <td><p>(optional) Position to the x-axis of the Fst value.</p></td>
-    </tr>
-    <tr>
-      <th>y.fst</th>
-      <td><p>(optional) Position to the y-axis of the Fst value.</p></td>
-    </tr>
-    <tr>
-      <th>filename</th>
-      <td><p>(optional) Name of the figure written
-in the working directory.</p></td>
-    </tr>
-    <tr>
-      <th>plot.width</th>
-      <td><p>(optional) Width in cm of the figure.</p></td>
-    </tr>
-    <tr>
-      <th>plot.height</th>
-      <td><p>(optional) height in cm of the figure.</p></td>
-    </tr>
-    <tr>
-      <th>plot.dpi</th>
-      <td><p>(optional) Number of dpi for the figure (e.g 600).</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A list with the assignment table and the assignment plot.</p>
-    
-    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
-
-    <p>Paetkau D, Slade R, Burden M, Estoup A (2004)
-Genetic assignment methods for the direct, real-time estimation of migration
-rate: a simulation-based exploration of accuracy and power.
-Molecular Ecology, 13, 55-65.</p>
-<p>Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
-two programs for the analysis of genetic diversity of asexual organisms.
-Molecular Ecology Notes, 4, 792-794.</p>
-    
-
-  </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#references">References</a></li>
-          </ul>
-
-    <h2>Author</h2>
-    <p>Thierry Gosselin <a href='mailto:thierrygosselin@icloud.com'>thierrygosselin@icloud.com</a></p>
   </div>
 </div>
 
