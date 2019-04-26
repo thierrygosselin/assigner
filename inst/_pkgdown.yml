@@ -1,5 +1,13 @@
 navbar:
-  type: default
+type: default
+structure:
+  left:
+  - home
+  - Features
+  - Reference
+  - News
+right: github
+components:  
   left:
   - icon: fa-home fa-lg
     href: index.html
