@@ -3,13 +3,13 @@ navbar:
     icon: fa-home fa-lg
     href: index.html
   Features:
-    text: "Features"
+    text: Features
     href: FEATURES.html
   reference:
     text: Reference
     href: reference/index.html
   News:
-    text: "News"
+    text: News
     href: news/index.html
   github:
     icon: fa-github fa-lg
