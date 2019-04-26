@@ -2,11 +2,11 @@ navbar:
   structure:
     left:
     - home
-    - features
+    - Features
     - reference
     - articles
     - tutorials
-    - news
+    - NEWS
     right: github
   components:
     home:
