@@ -1,1 +1,37 @@
-destination: docs
+navbar:
+  structure:
+    left:
+    - home
+    - intro
+    - reference
+    - articles
+    - tutorials
+    - news
+    right: github
+  components:
+    home:
+      icon: fa-home fa-lg
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    news:
+      text: Changelog
+      href: news/index.html
+    github:
+      icon: fa-github fa-lg
+      href: https://github.com/thierrygosselin/assigner
+
+reference:
+- title: All functions
+  desc: ~
+  contents:
+  - '`assignment_ngs`'
+  - '`dlr`'
+  - '`fst_NEI87`'
+  - '`fst_WC84`'
+  - '`heatmap_fst`'
+  - '`import_subsamples`'
+  - '`import_subsamples_fst`'
+  - '`install_gsi_sim`'
+
