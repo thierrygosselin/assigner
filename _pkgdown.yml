@@ -3,7 +3,7 @@ navbar:
     left:
     - home
     - text: "Features"
-      href: docs/FEATURES.html
+      href: FEATURES.html
     - reference
     - articles
     - tutorials
