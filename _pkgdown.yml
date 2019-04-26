@@ -2,8 +2,7 @@ navbar:
   structure:
     left:
     - home
-    - text: "Features"
-      href: FEATURES.html
+    - features
     - reference
     - articles
     - tutorials
@@ -13,6 +12,9 @@ navbar:
     home:
       icon: fa-home fa-lg
       href: index.html
+    features:
+      text: "features"
+      href: FEATURES.html
     reference:
       text: Reference
       href: reference/index.html
