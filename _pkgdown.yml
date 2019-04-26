@@ -19,6 +19,7 @@ navbar:
       text: Reference
       href: reference/index.html
     news:
+      one_page: false
       text: Changelog
       href: news/index.html
     github:
