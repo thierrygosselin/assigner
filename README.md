@@ -76,8 +76,8 @@ assigner::install_gsi_sim()
 [Computer setup and troubleshooting
 vignette](http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html)
 
-### [Assigner’s features](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md)
+### [Assigner’s features](http://thierrygosselin.github.io/assigner/FEATURES.html)
 
 ### [Documentation](http://thierrygosselin.github.io/assigner/reference/index.html)
 
-### [Vignettes](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md)
+### [Vignettes](http://thierrygosselin.github.io/assigner/articles/index.html)
