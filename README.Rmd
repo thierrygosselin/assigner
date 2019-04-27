@@ -42,7 +42,6 @@ frequentist, likelihood and the latest machine learning methods, marker selectio
 cross-validation techniques (classic Leave-One-Out and Training, Holdout, Leave-one-out), resampling/bootstrap/subsampling,
 ggplot2-based plotting! 
 
-### [For details about assigner's features, documentation and vignettes](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md)
 
 ## Installation
 To try out the dev version of **assigner**:
@@ -65,10 +64,10 @@ With PC
 assigner::install_gsi_sim()
 ```
 
-**Notes**
+[Computer setup and troubleshooting vignette](http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html)
 
-  * **Problems during installation:** see this
-  [Installation problems.](https://www.dropbox.com/s/5npumwdo0cxtxi4/rad_genomics_computer_setup.nb.html?dl=0)
-  * **Windows users**:  Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
-  * I recommend using [RStudio](https://www.rstudio.com/products/rstudio/download/) 
-  to run **assigner**. The R GUI is unstable with functions using parallel.
+### [Assigner's features](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md)
+
+### [Documentation](http://thierrygosselin.github.io/assigner/reference/index.html)
+
+### [Vignettes](https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md)

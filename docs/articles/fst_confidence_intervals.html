@@ -49,6 +49,9 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li>
+  <a href="../FEATURES.html">Features</a>
+</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
@@ -138,70 +141,59 @@
 <h2 class="hasAnchor">
 <a href="#preparation" class="anchor"></a>Preparation</h2>
 <ol style="list-style-type: decimal">
-<li>
-<p>Clean your desk and remove the clutter in the global environment</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ls">ls</a></span>())</code></pre></div>
-</li>
-<li>
-<p>Required libraries</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"thierrygosselin/assigner"</span>)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"assigner"</span>)</code></pre></div>
-</li>
-<li>
-<p>Get the data:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data.fst &lt;-<span class="st"> </span>readr<span class="op">::</span><span class="kw"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(<span class="dt">file =</span> <span class="st">"https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz"</span>)</code></pre></div>
-</li>
+<li>Clean your desk and remove the clutter in the global environment</li>
 </ol>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ls">ls</a></span>())</a></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>Required libraries</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"assigner"</span>)</a></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>Get the data:</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">data.fst &lt;-<span class="st"> </span>readr<span class="op">::</span><span class="kw"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(<span class="dt">file =</span> <span class="st">"https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz"</span>)</a></code></pre></div>
 </div>
 <div id="fst-calculations" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fst-calculations" class="anchor"></a>Fst calculations</h2>
 <p><code><a href="../reference/fst_WC84.html">assigner::fst_WC84</a></code> first run: overall and pairwise, but without boostrap (i.e. no confidence intervals). Get the function documentation with: <code>??assigner::fst_WC84</code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst &lt;-<span class="st"> </span>assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/fst_WC84">fst_WC84</a></span>(
-    <span class="dt">data =</span> data.fst, 
-    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),
-    <span class="dt">pairwise =</span> <span class="ot">TRUE</span>,
-    <span class="dt">filename =</span> <span class="st">"testing_fst"</span>, <span class="co">#will trigger the function to write the results in directory as well</span>
-    <span class="dt">verbose =</span> <span class="ot">TRUE</span>
-)</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">fst &lt;-<span class="st"> </span>assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/fst_WC84">fst_WC84</a></span>(</a>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="dt">data =</span> data.fst, </a>
+<a class="sourceLine" id="cb4-3" title="3">    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),</a>
+<a class="sourceLine" id="cb4-4" title="4">    <span class="dt">pairwise =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb4-5" title="5">    <span class="dt">filename =</span> <span class="st">"testing_fst"</span>, <span class="co">#will trigger the function to write the results in directory as well</span></a>
+<a class="sourceLine" id="cb4-6" title="6">    <span class="dt">verbose =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb4-7" title="7">)</a></code></pre></div>
 </div>
 <div id="results" class="section level2">
 <h2 class="hasAnchor">
 <a href="#results" class="anchor"></a>Results</h2>
 <p>After 10 sec max you should get the Fst (overall) value of 0.05</p>
 <ol style="list-style-type: decimal">
-<li>
-<p>To view the content of <code>fst</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(fst)</code></pre></div>
-</li>
+<li>To view the content of <code>fst</code>:</li>
+</ol>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(fst)</a></code></pre></div>
+<ol style="list-style-type: decimal">
 <li>Get access to specific content with <code>$</code>:
 <ul>
 <li><p><code>$sigma.loc</code>: the variance components per locus: <code>lsiga</code>: among populations, <code>lsigb</code>: among individuals within populations, <code>lsigw</code>: within individuals.</p></li>
-<li>
-<code>$fst.markers</code>: the fst by markers</li>
-<li>
-<code>$fst.ranked</code>: the fst ranked</li>
-<li>
-<code>$fst.overall</code>: the mean fst overall markers and number of markers</li>
-<li>
-<code>$fis.markers</code>: the fis by markers</li>
-<li>
-<code>$fis.overall</code>: the mean fis overall markers and number of markers</li>
-<li>
-<code>$fst.plot</code>: the histogram of the overall Fst per markers</li>
-<li>
-<code>$pairwise.fst</code>: the pairwise fst in long/tidy data frame and number of markers per pairwise comparison</li>
-<li>
-<code>$pairwise.fst.upper.matrix</code>: the pairwise fst in a upper triangle matrix</li>
-<li>
-<code>$pairwise.fst.full.matrix</code>: the pairwise fst matrix (duplicated upper and lower triangle)</li>
+<li><p><code>$fst.markers</code>: the fst by markers</p></li>
+<li><p><code>$fst.ranked</code>: the fst ranked</p></li>
+<li><p><code>$fst.overall</code>: the mean fst overall markers and number of markers</p></li>
+<li><p><code>$fis.markers</code>: the fis by markers</p></li>
+<li><p><code>$fis.overall</code>: the mean fis overall markers and number of markers</p></li>
+<li><p><code>$fst.plot</code>: the histogram of the overall Fst per markers</p></li>
+<li><p><code>$pairwise.fst</code>: the pairwise fst in long/tidy data frame and number of markers per pairwise comparison</p></li>
+<li><p><code>$pairwise.fst.upper.matrix</code>: the pairwise fst in a upper triangle matrix</p></li>
+<li><p><code>$pairwise.fst.full.matrix</code>: the pairwise fst matrix (duplicated upper and lower triangle)</p></li>
 <li><p><code>$pairwise.fst.ci.matrix</code>: matrix with pairwise fst in the upper triangle and the confidence intervals in the lower triangle.</p></li>
 </ul>
 </li>
-<li>
-<p>To view the pairwise Fst values in a tibble with 4 columns:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span>fst<span class="op">$</span>pairwise.fst</code></pre></div>
-</li>
+<li>To view the pairwise Fst values in a tibble with 4 columns:</li>
+</ol>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">df &lt;-<span class="st"> </span>fst<span class="op">$</span>pairwise.fst</a></code></pre></div>
+<ol style="list-style-type: decimal">
 <li>
 <p>The first 10 parwise comparisons in <code>df</code></p>
 <p><em>N_MARKERS</em>: is the number of markers used between the pairs to calculate the Fst.</p>
@@ -276,46 +268,50 @@
 </tbody>
 </table>
 </li>
-<li>
-<p>The matrix with fst values:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># to see as a tibble:</span>
-fst.matrix &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(fst<span class="op">$</span>pairwise.fst.full.matrix, <span class="dt">rownames =</span> <span class="st">"POP"</span>)
-<span class="co"># to keep matrix:</span>
-fst.matrix &lt;-<span class="st"> </span>fst<span class="op">$</span>pairwise.fst.full.matrix</code></pre></div>
+<li><p>The matrix with fst values:</p></li>
+</ol>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># to see as a tibble:</span></a>
+<a class="sourceLine" id="cb7-2" title="2">fst.matrix &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(fst<span class="op">$</span>pairwise.fst.full.matrix, <span class="dt">rownames =</span> <span class="st">"POP"</span>)</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="co"># to keep matrix:</span></a>
+<a class="sourceLine" id="cb7-4" title="4">fst.matrix &lt;-<span class="st"> </span>fst<span class="op">$</span>pairwise.fst.full.matrix</a></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>If you try to get the <code>pairwise.fst.ci.matrix</code>:</li>
+</ol>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">fst<span class="op">$</span>pairwise.fst.ci.matrix <span class="co"># you will get this:</span></a>
+<a class="sourceLine" id="cb8-2" title="2">[<span class="dv">1</span>] <span class="st">"confidence intervals not selected"</span></a></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>So let’s make another run with <code>fst_WC84</code>, but this time will ask for the confidence intervals and the heatmap:</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="sourceCode rs"><code class="sourceCode rust"><a class="sourceLine" id="cb9-1" title="1">fst.ci &lt;- fst_WC84(data = data.fst, </a>
+<a class="sourceLine" id="cb9-2" title="2">    pop.levels = c(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),</a>
+<a class="sourceLine" id="cb9-3" title="3">    pairwise = TRUE,</a>
+<a class="sourceLine" id="cb9-4" title="4">    ci = TRUE, </a>
+<a class="sourceLine" id="cb9-5" title="5">    iteration.ci = <span class="dv">100</span>,</a>
+<a class="sourceLine" id="cb9-6" title="6">    quantiles.ci = c(<span class="dv">0.025</span>, <span class="dv">0.975</span>),</a>
+<a class="sourceLine" id="cb9-7" title="7">    parallel.core = <span class="dv">12</span>,</a>
+<a class="sourceLine" id="cb9-8" title="8">    heatmap.fst = TRUE,</a>
+<a class="sourceLine" id="cb9-9" title="9">    filename = <span class="st">"testing_fst"</span>,</a>
+<a class="sourceLine" id="cb9-10" title="10">    verbose = TRUE</a>
+<a class="sourceLine" id="cb9-11" title="11">)</a></code></pre></div>
+<pre><code>`fst.ci$pairwise.fst` is the tibble with the Fst values and now with the confidence intervals.</code></pre>
+<ol style="list-style-type: decimal">
+<li>Try again to get the matrix with fst and ci:</li>
+</ol>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">fst.ci<span class="op">$</span>pairwise.fst.ci.matrix</a></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>To have this in a handy table for publication, we will create a new object <code>pairwise.fst.ci.df</code>:</li>
+</ol>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">pairwise.fst.ci.df &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(fst.ci<span class="op">$</span>pairwise.fst.ci.matrix, <span class="dt">rownames =</span> <span class="st">"POP"</span>)</a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="co"># if you have numeric pop_id identifier you might have to do this to get proper column names:</span></a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(pairwise.fst.ci.df) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(fst.ci<span class="op">$</span>pairwise.fst.ci.matrix)</a>
+<a class="sourceLine" id="cb12-4" title="4"><span class="co"># to save:</span></a>
+<a class="sourceLine" id="cb12-5" title="5">readr<span class="op">::</span><span class="kw"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_tsv</a></span>(<span class="dt">x =</span> pairwise.fst.ci.df, <span class="dt">path =</span> <span class="st">"pairwise.fst.ci.df.tsv"</span>)</a></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>Or even better, use the heatmap of Fst and CI values…:
+<center>
+<img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/fst_WC84_heatmap_fst.png" width="600"><center></center>
+</center>
 </li>
-<li>
-<p>If you try to get the <code>pairwise.fst.ci.matrix</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst<span class="op">$</span>pairwise.fst.ci.matrix <span class="co"># you will get this:</span>
-[<span class="dv">1</span>] <span class="st">"confidence intervals not selected"</span></code></pre></div>
-</li>
-<li>
-<p>So let’s make another run with <code>fst_WC84</code>, but this time will ask for the confidence intervals and the heatmap:</p>
-<div class="sourceCode"><pre class="sourceCode rs"><code class="sourceCode rust">fst.ci &lt;- fst_WC84(data = data.fst, 
-pop.levels = c(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),
-pairwise = TRUE,
-ci = TRUE, 
-iteration.ci = <span class="dv">100</span>,
-quantiles.ci = c(<span class="dv">0.025</span>, <span class="dv">0.975</span>),
-parallel.core = <span class="dv">12</span>,
-heatmap.fst = TRUE,
-filename = <span class="st">"testing_fst"</span>,
-verbose = TRUE
-)</code></pre></div>
-<p><code>fst.ci$pairwise.fst</code> is the tibble with the Fst values and now with the confidence intervals.</p>
-</li>
-<li>
-<p>Try again to get the matrix with fst and ci:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fst.ci<span class="op">$</span>pairwise.fst.ci.matrix</code></pre></div>
-</li>
-<li>
-<p>To have this in a handy table for publication, we will create a new object <code>pairwise.fst.ci.df</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pairwise.fst.ci.df &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(fst.ci<span class="op">$</span>pairwise.fst.ci.matrix, <span class="dt">rownames =</span> <span class="st">"POP"</span>)
-<span class="co"># if you have numeric pop_id identifier you might have to do this to get proper column names:</span>
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(pairwise.fst.ci.df) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(fst.ci<span class="op">$</span>pairwise.fst.ci.matrix)
-<span class="co"># to save:</span>
-readr<span class="op">::</span><span class="kw"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_tsv</a></span>(<span class="dt">x =</span> pairwise.fst.ci.df, <span class="dt">path =</span> <span class="st">"pairwise.fst.ci.df.tsv"</span>)</code></pre></div>
-</li>
-<li><p>Or even better, use the heatmap of Fst and CI values…: <img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/fst_WC84_heatmap_fst.png" id="id" class="class" width="600" height="600"></p></li>
 </ol>
 </div>
 <div id="phylogenetic-tree" class="section level2">
@@ -323,62 +319,58 @@ readr<span class="op">::</span><span class="kw"><a href="https://readr.tidyverse
 <a href="#phylogenetic-tree" class="anchor"></a>Phylogenetic tree</h2>
 <p>For the next steps, we need the full distance matrix created in step 10.</p>
 <ol style="list-style-type: decimal">
-<li>
-<p>For a Neighbor joining tree:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># build the tree:</span>
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ape)
-tree &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/nj">nj</a></span>(<span class="dt">X =</span> fst.matrix) <span class="co"># fst.matrix as a matrix</span>
-<span class="co"># for annotating bootstraps values on the tree:</span>
-bootstrap.value &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/boot.phylo">boot.phylo</a></span>(
-<span class="dt">phy =</span> tree, 
-<span class="dt">x =</span> fst.matrix, 
-<span class="dt">FUN =</span> <span class="cf">function</span>(x) ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/nj">nj</a></span>(x), 
-<span class="dt">block =</span> <span class="dv">1</span>, 
-<span class="dt">B =</span> <span class="dv">10000</span>, 
-<span class="dt">trees =</span> <span class="ot">FALSE</span>, 
-<span class="dt">rooted =</span> <span class="ot">FALSE</span>
-)
- <span class="co"># to get percentage values</span>
-bootstrap.value &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>((bootstrap.value<span class="op">/</span><span class="dv">10000</span>)<span class="op">*</span><span class="dv">100</span>, <span class="dv">0</span>)
-bootstrap.value
-<span class="co"># to include in the tree</span>
-tree<span class="op">$</span>node.label &lt;-<span class="st"> </span>bootstrap.value </code></pre></div>
-</li>
-<li>
-<p>For a UPGMA tree:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(stats)
-tree &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/as.phylo">as.phylo</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/hclust">hclust</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/dist">dist</a></span>(fst.matrix), <span class="dt">method =</span> <span class="st">"average"</span>))
-bootstrap.value &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/boot.phylo">boot.phylo</a></span>(<span class="dt">phy =</span> tree, <span class="dt">x =</span> fst.matrix, <span class="dt">FUN =</span> <span class="cf">function</span>(xx) ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/as.phylo">as.phylo</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/hclust">hclust</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/dist">dist</a></span>(xx), <span class="dt">method =</span> <span class="st">"average"</span>)) , <span class="dt">block =</span> <span class="dv">1</span>, <span class="dt">B =</span> <span class="dv">10000</span>, <span class="dt">trees =</span> <span class="ot">FALSE</span>, <span class="dt">rooted =</span> <span class="ot">TRUE</span>) 
-bootstrap.value &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>((bootstrap.value<span class="op">/</span><span class="dv">10000</span>)<span class="op">*</span><span class="dv">100</span>, <span class="dv">0</span>)
-bootstrap.value
-tree<span class="op">$</span>node.label &lt;-<span class="st"> </span>bootstrap.value</code></pre></div>
-</li>
-<li>
-<p>To build the tree we will need to install </p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get the latest development version of ggtree:</span>
-<span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"ggtree"</span>)) <span class="kw">install_github</span>(<span class="st">"GuangchuangYu/ggtree"</span>)
-<span class="co"># If it's not working, use the Bioconductor version:</span>
-<span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"BiocManager"</span>)
-BiocManager<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/BiocManager/topics/install">install</a></span>(<span class="st">"ggtree"</span>)</code></pre></div>
-</li>
-<li><p>Several vignettes are available to get to know <a href="http://guangchuangyu.github.io/ggtree/">ggtree</a></p></li>
-<li>
-<p>Build a very basic tree figure:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ggtree)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ggplot2)
-tree.figure &lt;-<span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(tree, ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(x, y), <span class="dt">ladderize =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span>
-ggtree<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggtree/topics/geom_tree">geom_tree</a></span>() <span class="op">+</span><span class="st"> </span>
-<span class="co"># geom_tiplab(size = 3, hjust = -0.05, vjust = 0.5)+ # for just the tip label</span>
-ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_text">geom_text</a></span>(ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">label =</span> label), <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">hjust =</span> <span class="op">-</span><span class="fl">0.05</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span><span class="co"># for both tips and nodes</span>
-ggtree<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggtree/topics/theme_tree">theme_tree</a></span>() <span class="op">+</span><span class="st"> </span>
-ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/lims">xlim</a></span>(<span class="dv">0</span>, <span class="fl">0.16</span>) <span class="co"># to allocate more space for tip labels (trial/error)</span>
-tree.figure
-ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggsave">ggsave</a></span>(<span class="dt">filename =</span> <span class="st">"assigner.fst.tree.example.pdf"</span>, <span class="dt">width =</span> <span class="dv">15</span>, <span class="dt">height =</span> <span class="dv">15</span>, <span class="dt">dpi =</span> <span class="dv">600</span>, <span class="dt">units =</span> <span class="st">"cm"</span>, <span class="dt">useDingbats =</span> <span class="ot">FALSE</span>)</code></pre></div>
-</li>
+<li>For a Neighbor joining tree:</li>
 </ol>
-<div class="figure">
-<img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assigner_fst_tree_example.png" id="id" class="class" width="600" height="600">
-</div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="co"># build the tree:</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ape)</a>
+<a class="sourceLine" id="cb13-3" title="3">tree &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/nj">nj</a></span>(<span class="dt">X =</span> fst.matrix) <span class="co"># fst.matrix as a matrix</span></a>
+<a class="sourceLine" id="cb13-4" title="4"><span class="co"># for annotating bootstraps values on the tree:</span></a>
+<a class="sourceLine" id="cb13-5" title="5">bootstrap.value &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/boot.phylo">boot.phylo</a></span>(</a>
+<a class="sourceLine" id="cb13-6" title="6">    <span class="dt">phy =</span> tree, </a>
+<a class="sourceLine" id="cb13-7" title="7">    <span class="dt">x =</span> fst.matrix, </a>
+<a class="sourceLine" id="cb13-8" title="8">    <span class="dt">FUN =</span> <span class="cf">function</span>(x) ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/nj">nj</a></span>(x), </a>
+<a class="sourceLine" id="cb13-9" title="9">    <span class="dt">block =</span> <span class="dv">1</span>, </a>
+<a class="sourceLine" id="cb13-10" title="10">    <span class="dt">B =</span> <span class="dv">10000</span>, </a>
+<a class="sourceLine" id="cb13-11" title="11">    <span class="dt">trees =</span> <span class="ot">FALSE</span>, </a>
+<a class="sourceLine" id="cb13-12" title="12">    <span class="dt">rooted =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb13-13" title="13">    )</a>
+<a class="sourceLine" id="cb13-14" title="14"> <span class="co"># to get percentage values</span></a>
+<a class="sourceLine" id="cb13-15" title="15">bootstrap.value &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>((bootstrap.value<span class="op">/</span><span class="dv">10000</span>)<span class="op">*</span><span class="dv">100</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb13-16" title="16">bootstrap.value</a>
+<a class="sourceLine" id="cb13-17" title="17"><span class="co"># to include in the tree</span></a>
+<a class="sourceLine" id="cb13-18" title="18">tree<span class="op">$</span>node.label &lt;-<span class="st"> </span>bootstrap.value </a></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>For a UPGMA tree:</li>
+</ol>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(stats)</a>
+<a class="sourceLine" id="cb14-2" title="2">tree &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/as.phylo">as.phylo</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/hclust">hclust</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/dist">dist</a></span>(fst.matrix), <span class="dt">method =</span> <span class="st">"average"</span>))</a>
+<a class="sourceLine" id="cb14-3" title="3">bootstrap.value &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/boot.phylo">boot.phylo</a></span>(<span class="dt">phy =</span> tree, <span class="dt">x =</span> fst.matrix, <span class="dt">FUN =</span> <span class="cf">function</span>(xx) ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/as.phylo">as.phylo</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/hclust">hclust</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/dist">dist</a></span>(xx), <span class="dt">method =</span> <span class="st">"average"</span>)) , <span class="dt">block =</span> <span class="dv">1</span>, <span class="dt">B =</span> <span class="dv">10000</span>, <span class="dt">trees =</span> <span class="ot">FALSE</span>, <span class="dt">rooted =</span> <span class="ot">TRUE</span>) </a>
+<a class="sourceLine" id="cb14-4" title="4">bootstrap.value &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>((bootstrap.value<span class="op">/</span><span class="dv">10000</span>)<span class="op">*</span><span class="dv">100</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb14-5" title="5">bootstrap.value</a>
+<a class="sourceLine" id="cb14-6" title="6">tree<span class="op">$</span>node.label &lt;-<span class="st"> </span>bootstrap.value</a></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>To build the tree we will need to install </li>
+</ol>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="co"># get the latest development version of ggtree:</span></a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"ggtree"</span>)) <span class="kw">install_github</span>(<span class="st">"GuangchuangYu/ggtree"</span>)</a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="co"># If it's not working, use the Bioconductor version:</span></a>
+<a class="sourceLine" id="cb15-4" title="4"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"BiocManager"</span>)</a>
+<a class="sourceLine" id="cb15-5" title="5">BiocManager<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/BiocManager/topics/install">install</a></span>(<span class="st">"ggtree"</span>)</a></code></pre></div>
+<ol style="list-style-type: decimal">
+<li><p>Several vignettes are available to get to know <a href="http://guangchuangyu.github.io/ggtree/">ggtree</a></p></li>
+<li><p>Build a very basic tree figure:</p></li>
+</ol>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ggtree)</a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ggplot2)</a>
+<a class="sourceLine" id="cb16-3" title="3">tree.figure &lt;-<span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(tree, ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(x, y), <span class="dt">ladderize =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-4" title="4"><span class="st">    </span>ggtree<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggtree/topics/geom_tree">geom_tree</a></span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-5" title="5"><span class="st">    </span><span class="co"># geom_tiplab(size = 3, hjust = -0.05, vjust = 0.5)+ # for just the tip label</span></a>
+<a class="sourceLine" id="cb16-6" title="6"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_text">geom_text</a></span>(ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">label =</span> label), <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">hjust =</span> <span class="fl">-0.05</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span><span class="co"># for both tips and nodes</span></a>
+<a class="sourceLine" id="cb16-7" title="7"><span class="st">    </span>ggtree<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggtree/topics/theme_tree">theme_tree</a></span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-8" title="8"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/lims">xlim</a></span>(<span class="dv">0</span>, <span class="fl">0.16</span>) <span class="co"># to allocate more space for tip labels (trial/error)</span></a>
+<a class="sourceLine" id="cb16-9" title="9">tree.figure</a>
+<a class="sourceLine" id="cb16-10" title="10">ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggsave">ggsave</a></span>(<span class="dt">filename =</span> <span class="st">"assigner.fst.tree.example.pdf"</span>, <span class="dt">width =</span> <span class="dv">15</span>, <span class="dt">height =</span> <span class="dv">15</span>, <span class="dt">dpi =</span> <span class="dv">600</span>, <span class="dt">units =</span> <span class="st">"cm"</span>, <span class="dt">useDingbats =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assigner_fst_tree_example.png" width="400"></p>
 </div>
 </div>
 <div id="conclusion" class="section level1">

@@ -23,7 +23,10 @@ navbar:
     href: index.html
   - text: Reference
     href: reference/index.html
+  - text: Features
+    href: FEATURES.html
   - text: Articles
+    href: articles/index.html
     menu:
     - text: Fst analysis
       href: articles/fst_confidence_intervals.html

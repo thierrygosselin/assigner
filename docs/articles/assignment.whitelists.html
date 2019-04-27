@@ -49,6 +49,9 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li>
+  <a href="../FEATURES.html">Features</a>
+</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
@@ -112,15 +115,15 @@
 <div id="prepare-working-environment" class="section level1">
 <h1 class="hasAnchor">
 <a href="#prepare-working-environment" class="anchor"></a>Prepare working environment</h1>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ls">ls</a></span>())
-<span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"pacman"</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pacman"</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ls">ls</a></span>())</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"pacman"</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pacman"</span>)</a></code></pre></div>
 <pre><code>## Loading required package: pacman</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"pacman"</span>)
-pacman<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pacman/topics/p_load">p_load</a></span>(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, readr, purrr, data.table, ape, adegenet, parallel, lazyeval, randomForestSRC, vcfR)
-<span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"stackr"</span>)) {
-  <span class="kw">install_github</span>(<span class="st">"thierrygosselin/stackr"</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
-  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"stackr"</span>)
-}</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"pacman"</span>)</a>
+<a class="sourceLine" id="cb3-2" title="2">pacman<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pacman/topics/p_load">p_load</a></span>(devtools, reshape2, ggplot2, stringr, stringi, plyr, dplyr, tidyr, readr, purrr, data.table, ape, adegenet, parallel, lazyeval, randomForestSRC, vcfR)</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"stackr"</span>)) {</a>
+<a class="sourceLine" id="cb3-4" title="4">  <span class="kw">install_github</span>(<span class="st">"thierrygosselin/stackr"</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb3-5" title="5">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"stackr"</span>)</a>
+<a class="sourceLine" id="cb3-6" title="6">}</a></code></pre></div>
 <pre><code>## Loading required package: stackr</code></pre>
 <pre><code>## 
 ## ******************************* IMPORTANT NOTICE *******************************
@@ -135,12 +138,12 @@ pacman<span class="op">::</span><span class="kw"><a href="https://www.rdocumenta
 ## 
 ## Reproducibility note: all zenodo DOI and stackr versions were left intact.
 ## ********************************************************************************</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"assigner"</span>)) {
-  <span class="kw">install_github</span>(<span class="st">"thierrygosselin/assigner"</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
-  <span class="co"># if assigner was re-installed, uncomment and run the next line to install gsi_sim:</span>
-  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"assigner"</span>)
-  <span class="kw"><a href="../reference/install_gsi_sim.html">install_gsi_sim</a></span>(<span class="dt">fromSource =</span> <span class="ot">TRUE</span>)
-}</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"assigner"</span>)) {</a>
+<a class="sourceLine" id="cb6-2" title="2">  <span class="kw">install_github</span>(<span class="st">"thierrygosselin/assigner"</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb6-3" title="3">  <span class="co"># if assigner was re-installed, uncomment and run the next line to install gsi_sim:</span></a>
+<a class="sourceLine" id="cb6-4" title="4">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"assigner"</span>)</a>
+<a class="sourceLine" id="cb6-5" title="5">  <span class="kw"><a href="../reference/install_gsi_sim.html">install_gsi_sim</a></span>(<span class="dt">fromSource =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb6-6" title="6">}</a></code></pre></div>
 <pre><code>## Loading required package: assigner</code></pre>
 <pre><code>## 
 ## Attaching package: 'assigner'</code></pre>
@@ -155,8 +158,8 @@ pacman<span class="op">::</span><span class="kw"><a href="https://www.rdocumenta
 <li>Gather your whitelist in a single folder</li>
 <li>Get the list of these file in a string with the command below:</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">all.whitelists &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list.files">list.files</a></span>(<span class="dt">path =</span> <span class="st">"~/Desktop/whitelists_salmon"</span>, <span class="dt">pattern =</span> <span class="st">"whitelist"</span>)
-all.whitelists <span class="co"># to see if the whitelists are all there</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">all.whitelists &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list.files">list.files</a></span>(<span class="dt">path =</span> <span class="st">"~/Desktop/whitelists_salmon"</span>, <span class="dt">pattern =</span> <span class="st">"whitelist"</span>)</a>
+<a class="sourceLine" id="cb10-2" title="2">all.whitelists <span class="co"># to see if the whitelists are all there</span></a></code></pre></div>
 <pre><code>## character(0)</code></pre>
 </div>
 <div id="create-a-function-to-run-your-assignment" class="section level1">
@@ -167,19 +170,19 @@ all.whitelists <span class="co"># to see if the whitelists are all there</span><
 <li>The only argument that will change will be the whitelist</li>
 <li>you could have multiple arguments changing at the same time, but for simplicity, let’s start with just one</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">whitelists_assigner &lt;-<span class="st"> </span><span class="cf">function</span>(x) {
-  res &lt;-<span class="st"> </span>assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/assignment_ngs">assignment_ngs</a></span>(
-    <span class="dt">data =</span> <span class="st">"subset_melville_salmon.tsv"</span>, <span class="co">#change for what you want</span>
-    <span class="dt">whitelist.markers =</span> x, <span class="co"># don't change this one,</span>
-    <span class="dt">assignment.analysis =</span> <span class="st">"adegenet"</span>, <span class="co">#change for what you want</span>
-    <span class="dt">common.markers =</span> <span class="ot">TRUE</span>,<span class="co">#change for what you want</span>
-    <span class="dt">marker.number =</span> <span class="st">"all"</span>,<span class="co"># I think you get the idea...</span>
-    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">11</span>),
-    <span class="dt">sampling.method =</span> <span class="st">"random"</span>,
-    <span class="dt">iteration.method =</span> <span class="dv">1</span>,
-    <span class="dt">keep.gsi.files =</span> <span class="ot">FALSE</span>
-  )
-}</code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">whitelists_assigner &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</a>
+<a class="sourceLine" id="cb12-2" title="2">  res &lt;-<span class="st"> </span>assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/assignment_ngs">assignment_ngs</a></span>(</a>
+<a class="sourceLine" id="cb12-3" title="3">    <span class="dt">data =</span> <span class="st">"subset_melville_salmon.tsv"</span>, <span class="co">#change for what you want</span></a>
+<a class="sourceLine" id="cb12-4" title="4">    <span class="dt">whitelist.markers =</span> x, <span class="co"># don't change this one,</span></a>
+<a class="sourceLine" id="cb12-5" title="5">    <span class="dt">assignment.analysis =</span> <span class="st">"adegenet"</span>, <span class="co">#change for what you want</span></a>
+<a class="sourceLine" id="cb12-6" title="6">    <span class="dt">common.markers =</span> <span class="ot">TRUE</span>,<span class="co">#change for what you want</span></a>
+<a class="sourceLine" id="cb12-7" title="7">    <span class="dt">marker.number =</span> <span class="st">"all"</span>,<span class="co"># I think you get the idea...</span></a>
+<a class="sourceLine" id="cb12-8" title="8">    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">11</span>),</a>
+<a class="sourceLine" id="cb12-9" title="9">    <span class="dt">sampling.method =</span> <span class="st">"random"</span>,</a>
+<a class="sourceLine" id="cb12-10" title="10">    <span class="dt">iteration.method =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb12-11" title="11">    <span class="dt">keep.gsi.files =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb12-12" title="12">  )</a>
+<a class="sourceLine" id="cb12-13" title="13">}</a></code></pre></div>
 </div>
 <div id="run-the-assignment" class="section level1">
 <h1 class="hasAnchor">
@@ -192,10 +195,10 @@ all.whitelists <span class="co"># to see if the whitelists are all there</span><
 <li>If you have access to a MAC or a LINUX cluster, you could just replace the <code><a href="https://purrr.tidyverse.org/reference/map.html">purrr::map</a></code> function to <code><a href="https://www.rdocumentation.org/packages/parallel/topics/mclapply">parallel::mclapply</a></code>
 </li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">salmon.assignment.res &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span>(
-<span class="dt">.x =</span> all.whitelists, <span class="co"># your whitelist created above</span>
-<span class="dt">.f =</span> whitelists_assigner <span class="co"># your new function</span>
-)</code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">salmon.assignment.res &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span>(</a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="dt">.x =</span> all.whitelists, <span class="co"># your whitelist created above</span></a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="dt">.f =</span> whitelists_assigner <span class="co"># your new function</span></a>
+<a class="sourceLine" id="cb13-4" title="4">)</a></code></pre></div>
 </div>
   </div>
 

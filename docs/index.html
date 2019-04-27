@@ -49,6 +49,9 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li>
+  <a href="FEATURES.html">Features</a>
+</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
@@ -114,32 +117,34 @@
 <p>Genomic datasets produced by next-generation sequencing techniques that reduce the size of the genome (e.g. genotype-by-sequencing (GBS) and restriction-site-associated DNA sequencing (RADseq)) have a huge numbers of markers that hold great potential and promises for assignment analysis. After hitting the bioinformatic wall with the different workflows you’ll likely end up with several folders containing whitelist and blacklist of markers and individuals, data sets with various <em>de novo</em> and/or filtering parameters and … missing data. This reality of GBS/RADseq data is quite hard on GUI software traditionally used for population assignment analysis. The end results are usually poor data exploration, constrained by time, and poor reproducibility.</p>
 <p><strong>assigner</strong> was tailored to make it easy to conduct population assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like <a href="http://rmarkdown.rstudio.com/r_notebooks.html">R Notebook</a>, <a href="https://www.rstudio.com">RStudio</a> and <a href="https://github.com">GitHub</a> will make effortless documenting your workflows and pipelines.</p>
 <p>The <strong>keywords</strong> here to remember: 3 differents algorithms implemented with frequentist, likelihood and the latest machine learning methods, marker selection (with a fast Fst WC84 implementation), cross-validation techniques (classic Leave-One-Out and Training, Holdout, Leave-one-out), resampling/bootstrap/subsampling, ggplot2-based plotting!</p>
-<div id="for-details-about-assigners-features-documentation-and-vignettes" class="section level3">
-<h3 class="hasAnchor">
-<a href="#for-details-about-assigners-features-documentation-and-vignettes" class="anchor"></a><a href="https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md">For details about assigner’s features, documentation and vignettes</a>
-</h3>
-</div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>To try out the dev version of <strong>assigner</strong>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"pak"</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pak"</span>)
-pak<span class="op">::</span><span class="kw"><a href="http://pak.r-lib.org/reference/pkg_install.html">pkg_install</a></span>(<span class="st">"thierrygosselin/assigner"</span>)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(assigner)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"pak"</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pak"</span>)</a>
+<a class="sourceLine" id="cb1-2" title="2">pak<span class="op">::</span><span class="kw"><a href="http://pak.r-lib.org/reference/pkg_install.html">pkg_install</a></span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(assigner)</a></code></pre></div>
 <p>To use <code>gsi_sim</code> inside assigner:</p>
 <p>With UNIX</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/install_gsi_sim">install_gsi_sim</a></span>(<span class="dt">fromSource =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/install_gsi_sim">install_gsi_sim</a></span>(<span class="dt">fromSource =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>With PC</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/install_gsi_sim">install_gsi_sim</a></span>()</code></pre></div>
-<p><strong>Notes</strong></p>
-<ul>
-<li>
-<strong>Problems during installation:</strong> see this <a href="https://www.dropbox.com/s/5npumwdo0cxtxi4/rad_genomics_computer_setup.nb.html?dl=0">Installation problems.</a>
-</li>
-<li>
-<strong>Windows users</strong>: Install <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a>.</li>
-<li>I recommend using <a href="https://www.rstudio.com/products/rstudio/download/">RStudio</a> to run <strong>assigner</strong>. The R GUI is unstable with functions using parallel.</li>
-</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/install_gsi_sim">install_gsi_sim</a></span>()</a></code></pre></div>
+<p><a href="http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html">Computer setup and troubleshooting vignette</a></p>
+<div id="assigners-features" class="section level3">
+<h3 class="hasAnchor">
+<a href="#assigners-features" class="anchor"></a><a href="https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md">Assigner’s features</a>
+</h3>
+</div>
+<div id="documentation" class="section level3">
+<h3 class="hasAnchor">
+<a href="#documentation" class="anchor"></a><a href="http://thierrygosselin.github.io/assigner/reference/index.html">Documentation</a>
+</h3>
+</div>
+<div id="vignettes" class="section level3">
+<h3 class="hasAnchor">
+<a href="#vignettes" class="anchor"></a><a href="https://github.com/thierrygosselin/assigner/blob/master/FEATURES.md">Vignettes</a>
+</h3>
+</div>
 </div>
 </div>
   </div>
