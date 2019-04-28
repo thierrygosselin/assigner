@@ -103,7 +103,6 @@
 <!-- badges: start -->
 
 <hr>
-<p>This is the development page of the <strong>assigner</strong> package for the R software.</p>
 <p>The name <strong>assigner</strong> |əˈsʌɪn| is rooted in the latin word <em>assignare</em>. It’s first use in french dates back to XIIIe.</p>
 <p>Genomic datasets produced by next-generation sequencing techniques that reduce the size of the genome (e.g. genotype-by-sequencing (GBS) and restriction-site-associated DNA sequencing (RADseq)) have a huge numbers of markers that hold great potential and promises for assignment analysis. After hitting the bioinformatic wall with the different workflows you’ll likely end up with several folders containing whitelist and blacklist of markers and individuals, data sets with various <em>de novo</em> and/or filtering parameters and … missing data. This reality of GBS/RADseq data is quite hard on GUI software traditionally used for population assignment analysis. The end results are usually poor data exploration, constrained by time, and poor reproducibility.</p>
 <p><strong>assigner</strong> was tailored to make it easy to conduct population assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like <a href="http://rmarkdown.rstudio.com/r_notebooks.html">R Notebook</a>, <a href="https://www.rstudio.com">RStudio</a> and <a href="https://github.com">GitHub</a> will make effortless documenting your workflows and pipelines.</p>
@@ -115,27 +114,21 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"pak"</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pak"</span>)</a>
 <a class="sourceLine" id="cb1-2" title="2">pak<span class="op">::</span><span class="kw"><a href="http://pak.r-lib.org/reference/pkg_install.html">pkg_install</a></span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(assigner)</a></code></pre></div>
-<p>To use <code>gsi_sim</code> inside assigner:</p>
+<p>If you plan on using <code>gsi_sim</code> inside assigner, you need an additional step:</p>
 <p>With UNIX</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/install_gsi_sim">install_gsi_sim</a></span>(<span class="dt">fromSource =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>With PC</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/install_gsi_sim">install_gsi_sim</a></span>()</a></code></pre></div>
-<p><a href="http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html">Computer setup and troubleshooting vignette</a></p>
-<div id="assigners-features" class="section level3">
-<h3 class="hasAnchor">
-<a href="#assigners-features" class="anchor"></a><a href="http://thierrygosselin.github.io/assigner/FEATURES.html">Assigner’s features</a>
-</h3>
-</div>
-<div id="documentation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#documentation" class="anchor"></a><a href="http://thierrygosselin.github.io/assigner/reference/index.html">Documentation</a>
-</h3>
-</div>
-<div id="vignettes" class="section level3">
-<h3 class="hasAnchor">
-<a href="#vignettes" class="anchor"></a><a href="http://thierrygosselin.github.io/assigner/articles/index.html">Vignettes</a>
-</h3>
-</div>
+<ul>
+<li>web site and additional info: <a href="https://thierrygosselin.github.io/assigner/">https://thierrygosselin.github.io/assigner/</a>
+</li>
+<li><a href="http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html">Computer setup and troubleshooting</a></li>
+<li><a href="http://thierrygosselin.github.io/assigner/reference/index.html">Function’s documentation</a></li>
+<li>[Features of assigner][Assigner’s features](<a href="http://thierrygosselin.github.io/assigner/FEATURES.html" class="uri">http://thierrygosselin.github.io/assigner/FEATURES.html</a>)</li>
+<li><a href="http://thierrygosselin.github.io/assigner/articles/index.html">Vignettes</a></li>
+<li>How to cite assigner: inside R type <code><a href="https://www.rdocumentation.org/packages/utils/topics/citation">citation("assigner")</a></code>
+</li>
+</ul>
 </div>
 </div>
   </div>
@@ -180,7 +173,7 @@
 <li><a href="http://www.repostatus.org/#active"><img src="http://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed."></a></li>
 <li><a href="https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner"><img src="https://zenodo.org/badge/14548/thierrygosselin/assigner.svg" alt="DOI"></a></li>
 <li><a href="commits/master"><img src="https://img.shields.io/badge/Package%20version-0.5.5-orange.svg" alt="packageversion"></a></li>
-<li><a href="/commits/master"><img src="https://img.shields.io/badge/last%20change-2019--04--26-brightgreen.svg" alt="Last-changedate"></a></li>
+<li><a href="/commits/master"><img src="https://img.shields.io/badge/last%20change-2019--04--28-brightgreen.svg" alt="Last-changedate"></a></li>
 </ul>
 </div>
 </div>

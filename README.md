@@ -14,12 +14,9 @@ state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.5.5-orange.svg)](commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2019--04--26-brightgreen.svg)](/commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2019--04--28-brightgreen.svg)](/commits/master)
 
 -----
-
-This is the development page of the **assigner** package for the R
-software.
 
 The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*.
 It’s first use in french dates back to XIIIe.
@@ -59,7 +56,8 @@ pak::pkg_install("thierrygosselin/assigner")
 library(assigner)
 ```
 
-To use `gsi_sim` inside assigner:
+If you plan on using `gsi_sim` inside assigner, you need an additional
+step:
 
 With UNIX
 
@@ -73,11 +71,13 @@ With PC
 assigner::install_gsi_sim()
 ```
 
-[Computer setup and troubleshooting
-vignette](http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html)
-
-### [Assigner’s features](http://thierrygosselin.github.io/assigner/FEATURES.html)
-
-### [Documentation](http://thierrygosselin.github.io/assigner/reference/index.html)
-
-### [Vignettes](http://thierrygosselin.github.io/assigner/articles/index.html)
+  - web site and additional info:
+    <https://thierrygosselin.github.io/assigner/>
+  - [Computer setup and
+    troubleshooting](http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html)
+  - [Function’s
+    documentation](http://thierrygosselin.github.io/assigner/reference/index.html)
+  - \[Features of assigner\]\[Assigner’s
+    features\](<http://thierrygosselin.github.io/assigner/FEATURES.html>)
+  - [Vignettes](http://thierrygosselin.github.io/assigner/articles/index.html)
+  - How to cite assigner: inside R type `citation("assigner")`
