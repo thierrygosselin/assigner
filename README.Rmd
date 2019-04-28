@@ -66,7 +66,7 @@ assigner::install_gsi_sim()
 * web site and additional info: [https://thierrygosselin.github.io/assigner/](https://thierrygosselin.github.io/assigner/) 
 * [Computer setup and troubleshooting](http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html)
 * [Function's documentation](http://thierrygosselin.github.io/assigner/reference/index.html)
-* [Features of assigner][Assigner's features](http://thierrygosselin.github.io/assigner/FEATURES.html)
+* [Assigner's features](http://thierrygosselin.github.io/assigner/FEATURES.html)
 * [Vignettes](http://thierrygosselin.github.io/assigner/articles/index.html)
 * How to cite assigner: inside R type `citation("assigner")`
 
