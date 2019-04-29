@@ -167,9 +167,12 @@ each iteration with associated random seed number.
 The names have the different iterations \emph{i}
 starting with \code{assignment_}\emph{i} contains:
 \itemize{
-\item \code{assignment_}\emph{i}\code{.tsv}: the assignment result, for the iteration.
-\item \code{fst.ranked_}\emph{i}\code{.tsv}: for THL method, the ranked Fst per markers, for the iteration.
-\item \code{gsi_sim_seeds}: the \code{gsi_sim} random seeds when this program is used, for the iteration.
+\item \code{assignment_}\emph{i}\code{.tsv}: the assignment result, for the 
+iteration.
+\item \code{fst.ranked_}\emph{i}\code{.tsv}: for THL method, the ranked Fst 
+per markers, for the iteration.
+\item \code{gsi_sim_seeds}: the \code{gsi_sim} random seeds when this program 
+is used, for the iteration.
 }
 The output in your global environment is a list. To view the assignment results
 \code{$assignment} to view the ggplot2 figure \code{$plot.assignment}. 
@@ -366,7 +369,10 @@ facet_names <- c(
 
 # use the labeller in the facet_grid or facet_wrap call:
 fig + 
-    ggplot2::facet_grid(SUBSAMPLE ~ CURRENT, ggplot2::labeller = ggplot2::as_labeller(facet_names)) + 
+    ggplot2::facet_grid(
+        SUBSAMPLE ~ CURRENT, 
+        ggplot2::labeller = ggplot2::as_labeller(facet_names)
+        ) + 
     ggplot2::scale_y_continuous(limits = c(0,100)) 
 }
 }

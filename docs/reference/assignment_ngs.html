@@ -357,9 +357,12 @@ each iteration with associated random seed number.</p></li>
 <p><strong>Folders</strong></p>
 <p>The names have the different iterations <em>i</em>
 starting with <code>assignment_</code><em>i</em> contains:</p><ul>
-<li><p><code>assignment_</code><em>i</em><code>.tsv</code>: the assignment result, for the iteration.</p></li>
-<li><p><code>fst.ranked_</code><em>i</em><code>.tsv</code>: for THL method, the ranked Fst per markers, for the iteration.</p></li>
-<li><p><code>gsi_sim_seeds</code>: the <code>gsi_sim</code> random seeds when this program is used, for the iteration.</p></li>
+<li><p><code>assignment_</code><em>i</em><code>.tsv</code>: the assignment result, for the 
+iteration.</p></li>
+<li><p><code>fst.ranked_</code><em>i</em><code>.tsv</code>: for THL method, the ranked Fst 
+per markers, for the iteration.</p></li>
+<li><p><code>gsi_sim_seeds</code>: the <code>gsi_sim</code> random seeds when this program 
+is used, for the iteration.</p></li>
 </ul><p>The output in your global environment is a list. To view the assignment results
 <code>$assignment</code> to view the ggplot2 figure <code>$plot.assignment</code>. 
 See example below.</p>
@@ -539,7 +542,10 @@ facet_names <- c(
 
 # use the labeller in the facet_grid or facet_wrap call:
 fig + 
-    ggplot2::facet_grid(SUBSAMPLE ~ CURRENT, ggplot2::labeller = ggplot2::as_labeller(facet_names)) + 
+    ggplot2::facet_grid(
+        SUBSAMPLE ~ CURRENT, 
+        ggplot2::labeller = ggplot2::as_labeller(facet_names)
+        ) + 
     ggplot2::scale_y_continuous(limits = c(0,100)) 
 # }
 </pre>

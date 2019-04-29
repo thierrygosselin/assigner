@@ -96,7 +96,7 @@
       <h1>Pairwise and overall Fst with confidence intervals + building phylogenetic tree</h1>
                         <h4 class="author">Thierry Gosselin</h4>
             
-            <h4 class="date">2019-04-28</h4>
+            <h4 class="date">2019-04-29</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_confidence_intervals.Rmd"><code>vignettes/fst_confidence_intervals.Rmd</code></a></small>
       <div class="hidden name"><code>fst_confidence_intervals.Rmd</code></div>
@@ -122,7 +122,7 @@
 <h1 class="hasAnchor">
 <a href="#special-concerns-for-genome-wide-estimate-and-filtering-bias" class="anchor"></a>Special concerns for genome-wide estimate and filtering bias</h1>
 <p>During computation, the function first starts by keeping only the polymorphic markers in common between the populations.</p>
-<p>When your project involves &gt; 2 populations that evolved more by neutral processes (e.g. genetic drift) than by natural selection, filtering to keep only the markers in common between your populations will drastically reduce the number of markers, and consequently your genome coverage for the estimate. Strategically, you should reduce the threshold of number of populations required to keep a marker (e.g. use a minimum of 2 populations genotyped for the markers to keep it). This is easily tested with <code>stackr::filter_population</code> or in stacks population module.</p>
+<p>When your project involves &gt; 2 populations that evolved more by neutral processes (e.g. genetic drift) than by natural selection, filtering to keep only the markers in common between your populations will drastically reduce the number of markers, and consequently your genome coverage for the estimate. Strategically, you should reduce the threshold of number of populations required to keep a marker (e.g. use a minimum of 2 populations genotyped for the markers to keep it). This is easily tested with <code><a href="https://www.rdocumentation.org/packages/radiator/topics/filter_common_markers">radiator::filter_common_markers</a></code> or in stacks population module.</p>
 <p>The overall fst and fis estimates will have reduce genome-wide coverage, because the computation is conducted with shared markers accross all your populations. However, for the pairwise comparisons, the markers will be tallied automatically for the pair. This usually results in more legitimate markers (i.e. less filtering bias) being used during computation, providing better genome-wide estimates for that pair.</p>
 </div>
 <div id="workflow" class="section level1">
@@ -138,8 +138,9 @@
 <ol style="list-style-type: decimal">
 <li>Required libraries</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"assigner"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"pak"</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pak"</span>)</a>
+<a class="sourceLine" id="cb2-2" title="2">pak<span class="op">::</span><span class="kw"><a href="http://pak.r-lib.org/reference/pkg_install.html">pkg_install</a></span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(assigner)</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>Get the data:</li>
 </ol>
@@ -273,16 +274,16 @@
 <ol style="list-style-type: decimal">
 <li>So let’s make another run with <code>fst_WC84</code>, but this time will ask for the confidence intervals and the heatmap:</li>
 </ol>
-<div class="sourceCode" id="cb9"><pre class="sourceCode rs"><code class="sourceCode rust"><a class="sourceLine" id="cb9-1" title="1">fst.ci &lt;- fst_WC84(data = data.fst, </a>
-<a class="sourceLine" id="cb9-2" title="2">    pop.levels = c(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),</a>
-<a class="sourceLine" id="cb9-3" title="3">    pairwise = TRUE,</a>
-<a class="sourceLine" id="cb9-4" title="4">    ci = TRUE, </a>
-<a class="sourceLine" id="cb9-5" title="5">    iteration.ci = <span class="dv">100</span>,</a>
-<a class="sourceLine" id="cb9-6" title="6">    quantiles.ci = c(<span class="dv">0.025</span>, <span class="dv">0.975</span>),</a>
-<a class="sourceLine" id="cb9-7" title="7">    parallel.core = <span class="dv">12</span>,</a>
-<a class="sourceLine" id="cb9-8" title="8">    heatmap.fst = TRUE,</a>
-<a class="sourceLine" id="cb9-9" title="9">    filename = <span class="st">"testing_fst"</span>,</a>
-<a class="sourceLine" id="cb9-10" title="10">    verbose = TRUE</a>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">fst.ci &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fst_WC84.html">fst_WC84</a></span>(<span class="dt">data =</span> data.fst, </a>
+<a class="sourceLine" id="cb9-2" title="2">    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),</a>
+<a class="sourceLine" id="cb9-3" title="3">    <span class="dt">pairwise =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb9-4" title="4">    <span class="dt">ci =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb9-5" title="5">    <span class="dt">iteration.ci =</span> <span class="dv">100</span>,</a>
+<a class="sourceLine" id="cb9-6" title="6">    <span class="dt">quantiles.ci =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>),</a>
+<a class="sourceLine" id="cb9-7" title="7">    <span class="dt">parallel.core =</span> <span class="dv">12</span>,</a>
+<a class="sourceLine" id="cb9-8" title="8">    <span class="dt">heatmap.fst =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb9-9" title="9">    <span class="dt">filename =</span> <span class="st">"testing_fst"</span>,</a>
+<a class="sourceLine" id="cb9-10" title="10">    <span class="dt">verbose =</span> <span class="ot">TRUE</span></a>
 <a class="sourceLine" id="cb9-11" title="11">)</a></code></pre></div>
 <pre><code>`fst.ci$pairwise.fst` is the tibble with the Fst values and now with the confidence intervals.</code></pre>
 <ol style="list-style-type: decimal">
@@ -354,10 +355,10 @@
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ggtree)</a>
 <a class="sourceLine" id="cb16-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ggplot2)</a>
 <a class="sourceLine" id="cb16-3" title="3">tree.figure &lt;-<span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(tree, ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(x, y), <span class="dt">ladderize =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb16-4" title="4"><span class="st">    </span>ggtree<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggtree/topics/geom_tree">geom_tree</a></span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-4" title="4"><span class="st">    </span>ggtree<span class="op">::</span><span class="kw">geom_tree</span>() <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb16-5" title="5"><span class="st">    </span><span class="co"># geom_tiplab(size = 3, hjust = -0.05, vjust = 0.5)+ # for just the tip label</span></a>
 <a class="sourceLine" id="cb16-6" title="6"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_text">geom_text</a></span>(ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">label =</span> label), <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">hjust =</span> <span class="fl">-0.05</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span><span class="co"># for both tips and nodes</span></a>
-<a class="sourceLine" id="cb16-7" title="7"><span class="st">    </span>ggtree<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggtree/topics/theme_tree">theme_tree</a></span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-7" title="7"><span class="st">    </span>ggtree<span class="op">::</span><span class="kw">theme_tree</span>() <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb16-8" title="8"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/lims">xlim</a></span>(<span class="dv">0</span>, <span class="fl">0.16</span>) <span class="co"># to allocate more space for tip labels (trial/error)</span></a>
 <a class="sourceLine" id="cb16-9" title="9">tree.figure</a>
 <a class="sourceLine" id="cb16-10" title="10">ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggsave">ggsave</a></span>(<span class="dt">filename =</span> <span class="st">"assigner.fst.tree.example.pdf"</span>, <span class="dt">width =</span> <span class="dv">15</span>, <span class="dt">height =</span> <span class="dv">15</span>, <span class="dt">dpi =</span> <span class="dv">600</span>, <span class="dt">units =</span> <span class="st">"cm"</span>, <span class="dt">useDingbats =</span> <span class="ot">FALSE</span>)</a></code></pre></div>

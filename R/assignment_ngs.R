@@ -298,9 +298,12 @@
 #' The names have the different iterations \emph{i}
 #' starting with \code{assignment_}\emph{i} contains:
 #' \itemize{
-#' \item \code{assignment_}\emph{i}\code{.tsv}: the assignment result, for the iteration.
-#' \item \code{fst.ranked_}\emph{i}\code{.tsv}: for THL method, the ranked Fst per markers, for the iteration.
-#' \item \code{gsi_sim_seeds}: the \code{gsi_sim} random seeds when this program is used, for the iteration.
+#' \item \code{assignment_}\emph{i}\code{.tsv}: the assignment result, for the 
+#' iteration.
+#' \item \code{fst.ranked_}\emph{i}\code{.tsv}: for THL method, the ranked Fst 
+#' per markers, for the iteration.
+#' \item \code{gsi_sim_seeds}: the \code{gsi_sim} random seeds when this program 
+#' is used, for the iteration.
 #' }
 #' The output in your global environment is a list. To view the assignment results
 #' \code{$assignment} to view the ggplot2 figure \code{$plot.assignment}. 
@@ -337,7 +340,10 @@
 #' 
 #' # use the labeller in the facet_grid or facet_wrap call:
 #' fig + 
-#'     ggplot2::facet_grid(SUBSAMPLE ~ CURRENT, ggplot2::labeller = ggplot2::as_labeller(facet_names)) + 
+#'     ggplot2::facet_grid(
+#'         SUBSAMPLE ~ CURRENT, 
+#'         ggplot2::labeller = ggplot2::as_labeller(facet_names)
+#'         ) + 
 #'     ggplot2::scale_y_continuous(limits = c(0,100)) 
 #' }
 
@@ -565,7 +571,8 @@ assignment_ngs <- function(
           SE_MAX = MEAN + SE
         ) %>%
         dplyr::arrange(CURRENT, MARKER_NUMBER) %>%
-        dplyr::select(CURRENT, MARKER_NUMBER, MEAN, MEDIAN, SE, MIN, MAX, QUANTILE25, QUANTILE75, SE_MIN, SE_MAX, METHOD, SUBSAMPLE)
+        dplyr::select(CURRENT, MARKER_NUMBER, MEAN, MEDIAN, SE, MIN, MAX, 
+                      QUANTILE25, QUANTILE75, SE_MIN, SE_MAX, METHOD, SUBSAMPLE)
     )
     res.pop <- NULL
     
@@ -607,7 +614,13 @@ assignment_ngs <- function(
 #' @rdname generate_subsamples
 #' @export
 #' @keywords internal
-generate_subsamples <- function(subsample, iteration.subsample, strata, random.seed = NULL, path.folder = NULL) {
+generate_subsamples <- function(
+  subsample, 
+  iteration.subsample, 
+  strata, 
+  random.seed = NULL, 
+  path.folder = NULL
+) {
   if (!is.null(subsample)) {
     min.pop.n <- min(dplyr::count(x = strata, POP_ID, sort = TRUE)$n)
     # Control the subsample argument, replace if > than min sample size
@@ -894,7 +907,8 @@ assignment_subsamples <- function(
           SE_MAX = MEAN + SE,
           ITERATIONS = rep(iteration.method, n())
         ) %>%
-        dplyr::select(CURRENT, MARKER_NUMBER, MEAN, MEDIAN, SE, MIN, MAX, QUANTILE25, QUANTILE75, SE_MIN, SE_MAX, METHOD, ITERATIONS)
+        dplyr::select(CURRENT, MARKER_NUMBER, MEAN, MEDIAN, SE, MIN, MAX, 
+                      QUANTILE25, QUANTILE75, SE_MIN, SE_MAX, METHOD, ITERATIONS)
     )
     assignment.stats.pop <- assignment.stats.overall <- NULL
     # update the assignment with subsampling iterations id
@@ -968,9 +982,16 @@ assignment_subsamples <- function(
     
     # assignment results
     if (is.null(subsample)) {
-      filename.assignment.res <- stringi::stri_join("assignment.", markers.sampling, ".results.iterations.raw.tsv")
+      filename.assignment.res <- stringi::stri_join(
+        "assignment.", 
+        markers.sampling,
+        ".results.iterations.raw.tsv")
     } else {# with subsampling
-      filename.assignment.res <- stringi::stri_join("assignment.", markers.sampling, ".results.iterations.raw.subsample.", subsample.id, ".tsv")
+      filename.assignment.res <- stringi::stri_join(
+        "assignment.", 
+        markers.sampling,
+        ".results.iterations.raw.subsample.",
+        subsample.id, ".tsv")
     }
     readr::write_tsv(
       x = assignment.res.summary,
@@ -1021,9 +1042,12 @@ assignment_subsamples <- function(
         dplyr::select(-n, -TOTAL)
       
       if (is.null(subsample)) {
-        filename.assignment.res.sum <- stringi::stri_join("assignment.", markers.sampling, ".results.iterations.summary.tsv")
+        filename.assignment.res.sum <- stringi::stri_join(
+          "assignment.", markers.sampling, ".results.iterations.summary.tsv")
       } else {# with subsampling
-        filename.assignment.res.sum <- stringi::stri_join("assignment.", markers.sampling, ".results.iterations.summary.subsample.", subsample.id, ".tsv")
+        filename.assignment.res.sum <- stringi::stri_join(
+          "assignment.", markers.sampling,
+          ".results.iterations.summary.subsample.", subsample.id, ".tsv")
       }
       readr::write_tsv(
         x = assignment.res.summary.prep,
@@ -1061,7 +1085,9 @@ assignment_subsamples <- function(
     if (!is.null(subsample)) {
       # filename.assignment.sum <- stringi::stri_join("assignment", markers.sampling, "results", "summary.stats", "tsv", sep = ".")
       # } else {# with subsampling
-      filename.assignment.sum <- stringi::stri_join("assignment.", markers.sampling, ".results.summary.stats.subsample.", subsample.id, ".tsv")
+      filename.assignment.sum <- stringi::stri_join(
+        "assignment.", markers.sampling, ".results.summary.stats.subsample.",
+        subsample.id, ".tsv")
       readr::write_tsv(
         x = assignment.summary.stats,
         path = file.path(directory.subsample,filename.assignment.sum),
@@ -1289,10 +1315,14 @@ assignment_gsi_sim <- function(
       tidyr::separate(ID, c("KEEPER", "ASSIGN"), sep = ":/", extra = "warn") %>%
       dplyr::filter(KEEPER == "SELF_ASSIGN_A_LA_GC_CSV") %>%
       tidyr::separate(ASSIGN, c("INDIVIDUALS", "ASSIGN"), sep = ";", extra = "merge") %>%
-      tidyr::separate(ASSIGN, c("INFERRED", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
-      tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
-      tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", convert = TRUE, numerals = "no.loss", extra = "merge") %>%
-      tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", convert = TRUE, numerals = "no.loss") %>% 
+      tidyr::separate(ASSIGN, c("INFERRED", "OTHERS"), sep = ";", convert = TRUE, 
+                      numerals = "no.loss", extra = "merge") %>%
+      tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, 
+                      numerals = "no.loss", extra = "merge") %>%
+      tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", 
+                      convert = TRUE, numerals = "no.loss", extra = "merge") %>%
+      tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", 
+                      convert = TRUE, numerals = "no.loss") %>% 
       dplyr::mutate(INDIVIDUALS = as.character(INDIVIDUALS)) %>% 
       dplyr::left_join(strata, by = "INDIVIDUALS") %>%
       dplyr::rename(CURRENT = POP_ID) %>% 
@@ -1302,7 +1332,8 @@ assignment_gsi_sim <- function(
         MARKER_NUMBER = as.numeric(rep(m, n())), # m: Number of markers
         METHOD = rep(markers.sampling, n())
       ) %>%
-      dplyr::select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, SECOND_BEST_SCORE, MARKER_NUMBER, METHOD) %>%
+      dplyr::select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, 
+                    SECOND_BEST_SCORE, MARKER_NUMBER, METHOD) %>%
       dplyr::arrange(CURRENT)
   )
   
@@ -1380,7 +1411,10 @@ assignment_adegenet <- function(
       message("a-score optimisation for iteration: ", i) # message not working in parallel...
       
       # DAPC
-      dapc.assignment <- adegenet::dapc(data.select, n.da = length(levels(pop.data)), n.pca = dapc.best.optim.a.score, pop = pop.data)
+      dapc.assignment <- adegenet::dapc(
+        data.select, n.da = length(levels(pop.data)),
+        n.pca = dapc.best.optim.a.score, 
+        pop = pop.data)
       message("DAPC iteration: ", i)
       message("DAPC marker group: ", m)
     }
