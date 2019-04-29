@@ -438,8 +438,7 @@ assignment_ngs <- function(
   if (missing(markers.sampling)) stop("markers.sampling argument missing")
   if (assignment.analysis == "gsi_sim" & !gsi_sim_exists()) {
     rlang::abort(
-      "Can't find the gsi_sim executable where it was expected at ", gsi_sim_binary_path(), ".  
-         To install, invoke the function \"assigner::install_gsi_sim(fromSource = TRUE)\"")
+      "Can't find the gsi_sim executable where it was expected.\nFollow instruction for gsi_sim on assigner webpage")  
   }
   
   assignment.analysis <- match.arg(
