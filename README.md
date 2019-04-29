@@ -51,8 +51,8 @@ resampling/bootstrap/subsampling, ggplot2-based plotting\!
 To try out the dev version of **assigner**:
 
 ``` r
-if (!require("pak")) install.packages("pak")
-pak::pkg_install("thierrygosselin/assigner")
+if (!require("devtools")) install.packages("devtools")
+devtools::install_github("thierrygosselin/assigner")
 library(assigner)
 ```
 

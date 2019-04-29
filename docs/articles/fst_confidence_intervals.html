@@ -139,7 +139,7 @@
 <li>Required libraries</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"pak"</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pak"</span>)</a>
-<a class="sourceLine" id="cb2-2" title="2">pak<span class="op">::</span><span class="kw"><a href="http://pak.r-lib.org/reference/pkg_install.html">pkg_install</a></span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
+<a class="sourceLine" id="cb2-2" title="2">pak<span class="op">::</span><span class="kw">pkg_install</span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
 <a class="sourceLine" id="cb2-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(assigner)</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>Get the data:</li>
@@ -347,7 +347,7 @@
 <a class="sourceLine" id="cb15-2" title="2"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"ggtree"</span>)) <span class="kw">install_github</span>(<span class="st">"GuangchuangYu/ggtree"</span>)</a>
 <a class="sourceLine" id="cb15-3" title="3"><span class="co"># If it's not working, use the Bioconductor version:</span></a>
 <a class="sourceLine" id="cb15-4" title="4"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"BiocManager"</span>)</a>
-<a class="sourceLine" id="cb15-5" title="5">BiocManager<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/BiocManager/topics/install">install</a></span>(<span class="st">"ggtree"</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb15-5" title="5">BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">"ggtree"</span>)</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li><p>Several vignettes are available to get to know <a href="http://guangchuangyu.github.io/ggtree/">ggtree</a></p></li>
 <li><p>Build a very basic tree figure:</p></li>
