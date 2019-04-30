@@ -19,4 +19,3 @@ apt_packages:
 #bioc_required: true
 os:
   - linux
-  - osx
