@@ -377,8 +377,8 @@ assignment_ngs <- function(
   strata = NULL,
   pop.levels = NULL,
   assignment.analysis = c("gsim_sim", "adegenet"),
-  marker.number = "all",
   markers.sampling = c("ranked", "random"),
+  marker.number = "all",
   thl = 1,
   iteration.method = 10,
   subsample = NULL,
@@ -388,6 +388,10 @@ assignment_ngs <- function(
   ...
 ) {
   ## testing
+  # verbose = TRUE
+  # parallel.core = parallel::detectCores() - 1
+  # strata = NULL
+  # pop.levels = NULL
   # adegenet.dapc.opt = "optim.a.score"
   # adegenet.n.rep = 30
   # adegenet.training = 0.9

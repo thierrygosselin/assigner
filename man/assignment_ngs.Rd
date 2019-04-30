@@ -6,7 +6,7 @@
 \usage{
 assignment_ngs(data, strata = NULL, pop.levels = NULL,
   assignment.analysis = c("gsim_sim", "adegenet"),
-  marker.number = "all", markers.sampling = c("ranked", "random"),
+  markers.sampling = c("ranked", "random"), marker.number = "all",
   thl = 1, iteration.method = 10, subsample = NULL,
   iteration.subsample = 1, verbose = TRUE,
   parallel.core = parallel::detectCores() - 1, ...)
@@ -38,14 +38,6 @@ Default: \code{pop.levels = NULL}.}
 See \strong{Details} section below for installing
 \href{https://github.com/eriqande/gsi_sim}{gsi_sim}.}
 
-\item{marker.number}{(Integer or string of number or "all") The assignment
-analysis can use all your markers (default) or a subset of your markers.
-e.g. To test 500, 1000, 2000 and all the markers:
-\code{marker.number = c(500, 1000, 2000, "all")}.
-To use only 500 makers \code{marker.number = 500}. How those markers are sampled
-is determined with the argument \code{markers.sampling}, next.
-Default = \code{marker.number = "all"}.}
-
 \item{markers.sampling}{(character) 2 options for markers selection:
 \enumerate{
 \item \code{markers.sampling == "random"} the subset of markers are selected 
@@ -57,6 +49,14 @@ implementation of Weir and Cockerham 1984 Fst/Theta equations. This selection
 method is used during \emph{Training-Holdout-Leave One Out} (thl)
 assignment. How many markers are selected is controlled with argument \code{thl}.
 }}
+
+\item{marker.number}{(Integer or string of number or "all") The assignment
+analysis can use all your markers (default) or a subset of your markers.
+e.g. To test 500, 1000, 2000 and all the markers:
+\code{marker.number = c(500, 1000, 2000, "all")}.
+To use only 500 makers \code{marker.number = 500}. How those markers are sampled
+is determined with the argument \code{markers.sampling}, next.
+Default = \code{marker.number = "all"}.}
 
 \item{thl}{(character, integer, proportion) For \code{markers.sampling = "ranked"} only.
 Several options are available:

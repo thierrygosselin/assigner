@@ -4,5 +4,6 @@ pkgdown_sha: ~
 articles:
   assignment.whitelists: assignment.whitelists.html
   fst_confidence_intervals: fst_confidence_intervals.html
+  get_started: get_started.html
   rad_genomics_computer_setup: rad_genomics_computer_setup.html
 
