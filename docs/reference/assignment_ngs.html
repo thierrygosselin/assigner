@@ -90,7 +90,7 @@ Parallel: The assignment can be conduncted on multiple CPUs.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.6</span>
       </span>
     </div>
 
@@ -101,6 +101,9 @@ Parallel: The assignment can be conduncted on multiple CPUs.
 </li>
 <li>
   <a href="../FEATURES.html">Features</a>
+</li>
+<li>
+  <a href="../articles/get_started.html">Get started</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
@@ -114,6 +117,9 @@ Parallel: The assignment can be conduncted on multiple CPUs.
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="../articles/life_cycle.html">Life cycle</a>
+    </li>
+    <li>
+      <a href="../articles/get_started.html">Get started</a>
     </li>
     <li>
       <a href="../articles/fst_confidence_intervals.html">Fst analysis</a>
@@ -325,6 +331,8 @@ function (see advanced section below).</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Depending on arguments selected, several folders and files are written:</p><ol>
+<li><p><code>01_radiator_tidy_genomic</code> this is the result of importing the data
+with radiator import module <a href='https://thierrygosselin.github.io/radiator/reference/tidy_genomic_data.html'>tidy_genomic_data</a>.</p></li>
 <li><p><code>assigner_assignment_ngs_args_date@time.tsv</code>: For reproducibility,
 the function call, arguments and values used along the default arguments.</p></li>
 <li><p><code>assignment.plot.pdf</code>: The assignment figure.</p></li>
@@ -367,7 +375,7 @@ per markers, for the iteration.</p></li>
 <li><p><code>gsi_sim_seeds</code>: the <code>gsi_sim</code> random seeds when this program 
 is used, for the iteration.</p></li>
 </ul><p>The output in your global environment is a list. To view the assignment results
-<code>$assignment</code> to view the ggplot2 figure <code>$plot.assignment</code>. 
+<code>$assignment</code> to view the ggplot2 figure <code>$assignment.plot</code>. 
 See example below.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
@@ -532,7 +540,7 @@ assignment.treefrog <- assignment_ngs(
 assignment <- assignment.treefrog$assignment
 
 # To plot the assignment using ggplot2 and facet 
-fig <- assignment.treefrog$plot.assignment
+fig <- assignment.treefrog$assignment.plot
 
 # To view the full range of y values = Assignment success(%): 
 fig + ggplot2::scale_y_continuous(limits = c(0,100)) 

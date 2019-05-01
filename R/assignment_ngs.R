@@ -256,6 +256,8 @@
 # Return ------------------------ ----------------------------------------------
 #' @return Depending on arguments selected, several folders and files are written:
 #' \enumerate{
+#' \item \code{01_radiator_tidy_genomic} this is the result of importing the data
+#' with radiator import module \href{https://thierrygosselin.github.io/radiator/reference/tidy_genomic_data.html}{tidy_genomic_data}.
 #' \item \code{assigner_assignment_ngs_args_date@time.tsv}: For reproducibility,
 #' the function call, arguments and values used along the default arguments.
 #' \item \code{assignment.plot.pdf}: The assignment figure.
@@ -306,7 +308,7 @@
 #' is used, for the iteration.
 #' }
 #' The output in your global environment is a list. To view the assignment results
-#' \code{$assignment} to view the ggplot2 figure \code{$plot.assignment}. 
+#' \code{$assignment} to view the ggplot2 figure \code{$assignment.plot}. 
 #' See example below.
 
 
@@ -327,7 +329,7 @@
 #' assignment <- assignment.treefrog$assignment
 #' 
 #' # To plot the assignment using ggplot2 and facet 
-#' fig <- assignment.treefrog$plot.assignment
+#' fig <- assignment.treefrog$assignment.plot
 #' 
 #' # To view the full range of y values = Assignment success(%): 
 #' fig + ggplot2::scale_y_continuous(limits = c(0,100)) 
@@ -604,7 +606,7 @@ assignment_ngs <- function(
   res.list$assignment <- res
   
   # Assignment plot ------------------------------------------------------------
-  res.list$plot.assignment <- plot_assignment(x = res, path.folder = directory)
+  res.list$assignment.plot <- plot_assignment(x = res, path.folder = directory)
   
   # Return results --------------------------------------------------------------------
   return(res.list)
@@ -657,10 +659,7 @@ generate_subsamples <- function(
   )
   
   # keep track of subsampling individuals and write to directory
-  if (is.null(subsample)) {
-    message("Subsampling: not selected")
-  } else {
-    message("Subsampling: selected")
+  if (!is.null(subsample)) {
     readr::write_tsv(
       x = dplyr::bind_rows(subsample.list), 
       path = file.path(path.folder, "subsampling_individuals.tsv"), 

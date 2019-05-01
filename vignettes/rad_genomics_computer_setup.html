@@ -1626,13 +1626,9 @@ wget https://cran.r-project.org/bin/macosx/R-3.5.0.pkg</code></pre>
 </div>
 <div id="makevars-file" class="section level1">
 <h1>Makevars file</h1>
-<p>You need to tell R how to use the compilers. This might change from one package to another. Nothing is simple, you know this by now… All this is done through R’s <code>~/.R/Makevars</code> file.</p>
-<p>If you don’t have the file, the fastest way is to use the built-in nano editor in the Terminal to create one:</p>
-<pre class="bash"><code>cd ~
-mkdir ~/.R</code></pre>
-<pre class="bash"><code>nano ~/.R/Makevars</code></pre>
-<p>Copy/paste the section below (Makevars content). Save and Exit with: <code>crt-o</code>, <code>enter</code>, <code>crt-x</code>.</p>
-<p>If you already have the <em>Makevars</em> file macOS <a href="http://gbs-cloud-tutorial.readthedocs.io/en/latest/03_computer_setup.html#install-textwrangler">BBEdit</a> can be use to open the file with <code>Show hidden items</code> turned <code>ON</code>.</p>
+<p>You need to tell R how to use the compilers. This might change from one package to another. Nothing is simple, you know this by now… All this is done through R’s <strong>Makevars</strong> file located in <code>~/.R/Makevars</code>.</p>
+<p>To modify or create the file, the fastest way is to use the package <a href="https://usethis.r-lib.org">usethis</a> (it’s installed automatically with <code>devtools</code>):</p>
+<pre class="r"><code>usethis::edit_r_makevars()</code></pre>
 <p><strong>Makevars content required:</strong></p>
 <pre class="bash"><code>CC=/usr/local/bin/gcc
 CXX=/usr/local/bin/g++

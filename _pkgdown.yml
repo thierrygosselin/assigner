@@ -23,6 +23,8 @@ navbar:
     href: index.html
   - text: Features
     href: FEATURES.html
+  - text: Get started
+    href: articles/get_started.html
   - text: Reference
     href: reference/index.html
   - text: Articles
@@ -30,6 +32,8 @@ navbar:
     menu:
     - text: Life cycle
       href: articles/life_cycle.html
+    - text: Get started
+      href: articles/get_started.html
     - text: Fst analysis
       href: articles/fst_confidence_intervals.html
     - text: Using whitelists in assignment

@@ -1,8 +1,8 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with RADseq Data
-Version: 0.5.5
-Date: 2019-04-25
+Version: 0.5.6
+Date: 2019-05-01
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
@@ -40,6 +40,7 @@ Remotes:
     github::thierrygosselin/radiator
 License: GPL (>=2)
 LazyLoad: yes
+LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 URL: http://thierrygosselin.github.io/assigner/, https://github.com/thierrygosselin/assigner

@@ -1,3 +1,13 @@
+# assigner 0.5.6 2019-05-01
+
+* included 2 simulated datasets
+* updated documentation of `assignment_ngs`
+* vignette to get started with assigner, finally!
+* this is really starting to smell like a CRAN release
+* work on travis CI
+* work on pkgdown
+
+
 # assigner 0.5.5 2019-04-25
 
 * cosmetic changes to the package: using `pkgdown`
