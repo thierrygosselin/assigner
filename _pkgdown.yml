@@ -21,13 +21,15 @@ navbar:
   left:
   - text: Installation
     href: index.html
-  - text: Reference
-    href: reference/index.html
   - text: Features
     href: FEATURES.html
+  - text: Reference
+    href: reference/index.html
   - text: Articles
     href: articles/index.html
     menu:
+    - text: Life cycle
+      href: articles/life_cycle.html
     - text: Fst analysis
       href: articles/fst_confidence_intervals.html
     - text: Using whitelists in assignment

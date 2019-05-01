@@ -19,13 +19,6 @@
 * **Fst**: assigner provides **one of the fastest** implementation of Weir and Cockerham (1984) Fst/Theta and Nei's fst (1987). Both **overall** and **pairwise Fst** can be estimated with **confidence intervals** based on bootstrap of markers (resampling with replacement).
 * **Dlr:** Compute the genotype likelihood ratio distance metric (Paetkau's et al. 1997, 2004).
 
-## Vignettes
-
-* Learn how to do a pairwise and overall Fst with confidence intervals + building phylogenetic tree [R Notebook vignette](https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0)
-* Why use assigner to compute Fst of W&C (1984) in R ? [R Notebook vignette](https://www.dropbox.com/s/s4j6y498j1smohs/fst_comparisons.nb.html?dl=0)
-* Run the assignment with several whitelists of markers in `assigner::assignment_ngs`[(html vignette)](https://www.dropbox.com/s/jzv91hbxi0g18kg/assignment.whitelists.nb.html?dl=0)
-* [computer setup and troubleshooting](https://www.dropbox.com/s/1kz59xpolb5y52m/rad_genomics_computer_setup.nb.html?dl=0)
-
 
 ## Parallel computation and Cloud Computing
 
@@ -36,80 +29,17 @@ If you decide to keep intermediate files during assignment analysis,
 you will need a large external drive (disk space is cheap). 
 Solid State Drive and thunderbolt cables will provide fast input/output. 
 
-If disk space and computer power is an issue, cloud computing with [Google Cloud Compute Engine](https://cloud.google.com/compute/) and 
+If disk space and computer power is an issue, cloud computing with [DigitalOcean](https://www.r-bloggers.com/a-new-image-on-digitalocean-to-start-using-rstudio-server-without-waiting-more-than-2-minutes-2/), [Google Cloud Compute Engine](https://cloud.google.com/compute/) or 
 [Amazon Elastic Cloud Compute](https://aws.amazon.com/ec2/) is cheap and can be used easily. 
 
 A tutorial and pipeline along an Amazon Machine Image (AMI) are available 
 in our [tutorial-workflow](http://gbs-cloud-tutorial.readthedocs.org/en/latest/). 
 
 The AMI is preloaded with **gsi_sim** and the required **R packages**. 
-Following a few steps: [link](http://gbs-cloud-tutorial.readthedocs.org/en/latest/10_use_rstudio.html), 
+Following a [few steps](http://gbs-cloud-tutorial.readthedocs.org/en/latest/10_use_rstudio.html), 
 you can have [RStudio server](https://www.rstudio.com/) running and used through your web browser!
 
-The Amazon image can be imported into Google Cloud Compute Engine to start a new compute engine virtual machine: [link](https://cloud.google.com/compute/docs/creating-custom-image#import_an_ami_image). 
-
-
-## New features
-
-Change log, version, new features and bug history now lives in the [NEWS.md file](https://github.com/thierrygosselin/assigner/blob/master/NEWS.md)
-
-
-## Life cycle
-
-**Missing data imputations: now in [grur](https://github.com/thierrygosselin/grur)**
-
-The imputation of missing data requires special attention that fall 
-outside the scope of **assigner**. Consequently, these options are no
-longer available. For assignment, it's better to do no imputation then 
-quickly do imputations with defaults.
-
-Inside my package called [grur](https://github.com/thierrygosselin/grur), users
-can **visualize patterns of missingness** associated with different variables 
-(lanes, chips, sequencers, populations, sample sites, reads/samples, homozygosity, etc).
-Several **Map-independent imputations** of missing genotypes are available:
-**Random Forests** (on-the-fly-imputations or predictive modeling), 
-**Extreme Gradient Tree Boosting**, 
-Strawman imputations (~ max/mean/mode: the most frequently observed, non-missing genotypes is used).
-Imputations can be conducted **overall samples** or **by populations/strata/grouping**.
-`radiator::genomic_converter` is integrated with the imputation function of **grur**.
-
-* filter your data correctly in [radiator](https://github.com/thierrygosselin/radiator)
-* read on imputations an do tests in [grur](https://github.com/thierrygosselin/grur)
-* then use assigner...
-
-
-
-
-## Roadmap of future developments
-
-* The ability to provide the ranking of markers based on other statistics, something else than the Fst (Weir and Cockerham, 1984) currently used in the function. e.g. Informativeness for Assignment Measure (In, Rosenberg et al. 2003), the Absolute Allele Frequency Differences (delta, δ, Shriver et al., 1997).
-* Provide ranking from other software: e.g. Toolbox for Ranking and Evaluation of SNPs [TRES](http://mlkd.csd.auth.gr/bio/tres/), [BayeScan](http://cmpg.unibe.ch/software/BayeScan/) and [OutFLANK](https://github.com/whitlock/OutFLANK).
-* Would be very cool to use genotype likelihood information to get more accurate assignment.
-* Use Shiny and ggvis when subplots or facets are available
-* CRAN
-* ...suggestions ?
-
-
-## Contributions
-
-This package has been developed in the open, and it wouldn’t be nearly as good without your contributions. There are a number of ways you can help me make this package even better:  
-
-* If you don’t understand something, please let me know. 
-* Your feedback on what is confusing or hard to understand is valuable. 
-* If you spot a typo, feel free to edit the underlying page and send a pull request.
-
-New to pull request on github ? The process is very easy:  
-
-* Click the edit this page on the sidebar.
-* Make the changes using github’s in-page editor and save.
-* Submit a pull request and include a brief description of your changes. 
-* “Fixing typos” is perfectly adequate.
-
-## Citation
-To get the citation for **assigner**, inside R:
-```r
-citation("assigner")
-```
+The Amazon image can be [imported into Google Cloud Compute Engine to start a new compute engine virtual machine](https://cloud.google.com/compute/docs/creating-custom-image#import_an_ami_image). 
 
 ## References
 

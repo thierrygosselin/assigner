@@ -35,10 +35,15 @@ restriction-site-associated DNA sequencing (RADseq)) have a huge numbers of mark
 
 **assigner** was tailored to make it easy to conduct population assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like [R Notebook](http://rmarkdown.rstudio.com/r_notebooks.html), [RStudio](https://www.rstudio.com) and [GitHub](https://github.com) will make effortless documenting your workflows and pipelines.
 
-The **keywords** here to remember: 3 differents algorithms implemented with 
-frequentist, likelihood and the latest machine learning methods, marker selection (with a fast Fst WC84 implementation),
-cross-validation techniques (classic Leave-One-Out and Training, Holdout, Leave-one-out), resampling/bootstrap/subsampling,
-ggplot2-based plotting! 
+The **keywords** here to remember: 
+
+* 3 differents algorithms implemented: frequentist, likelihood and machine learning
+* cross-validation techniques: classic Leave-One-Out (LOO) and Training, Holdout, Leave-one-out (THL)
+with marker selection
+* resampling/bootstrap/subsampling
+* fast Fst WC84 implementation)
+* ggplot2-based plotting! 
+* [https://thierrygosselin.github.io/assigner/](https://thierrygosselin.github.io/assigner/) 
 
 
 ## Installation
@@ -63,11 +68,24 @@ assigner::install_gsi_sim()
 ```
 
 * web site and additional info: [https://thierrygosselin.github.io/assigner/](https://thierrygosselin.github.io/assigner/) 
-* [Computer setup and troubleshooting](http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html)
+* [Computer setup - installation - troubleshooting](http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html)
+* [assigner's assumptions](http://thierrygosselin.github.io/assigner/reference/assignment_ngs.html#assumptions)
+* [assigner's features](http://thierrygosselin.github.io/assigner/FEATURES.html)
 * [Function's documentation](http://thierrygosselin.github.io/assigner/reference/index.html)
-* [Assigner's features](http://thierrygosselin.github.io/assigner/FEATURES.html)
 * [Vignettes](http://thierrygosselin.github.io/assigner/articles/index.html)
 * How to cite assigner: inside R type `citation("assigner")`
 
+## [Life cycle](https://thierrygosselin.github.io/assigner/articles/life_cycle.html)
+
+assigner is maturing, but in order to make the package better, changes are 
+inevitable. Experimental functions will change, argument names will change.
+Your codes and workflows might break from time to time until **assigner is stable**. 
+Consequently, depending on your tolerance to change, assigner might not be for you.
+
+* Philosophy, major changes and deprecated functions/arguments are documented in
+life cycle section of functions. 
+* The latest changes are documented ([here](https://thierrygosselin.github.io/assigner/articles/life_cycle.html)) and
+in [changelog, versions, new features and bug history](https://thierrygosselin.github.io/assigner/news/index.html)
+* [issues](https://github.com/thierrygosselin/assigner/issues/new/choose) and [contributions](https://github.com/thierrygosselin/assigner/issues/new/choose)
 
 

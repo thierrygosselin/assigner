@@ -80,10 +80,10 @@
   <a href="index.html">Installation</a>
 </li>
 <li>
-  <a href="reference/index.html">Reference</a>
+  <a href="FEATURES.html">Features</a>
 </li>
 <li>
-  <a href="FEATURES.html">Features</a>
+  <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -92,6 +92,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="articles/life_cycle.html">Life cycle</a>
+    </li>
     <li>
       <a href="articles/fst_confidence_intervals.html">Fst analysis</a>
     </li>
@@ -193,81 +196,14 @@
 <strong>Dlr:</strong> Compute the genotype likelihood ratio distance metric (Paetkau’s et al. 1997, 2004).</li>
 </ul>
 </div>
-<div id="vignettes" class="section level2">
-<h2 class="hasAnchor">
-<a href="#vignettes" class="anchor"></a>Vignettes</h2>
-<ul>
-<li>Learn how to do a pairwise and overall Fst with confidence intervals + building phylogenetic tree <a href="https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0">R Notebook vignette</a>
-</li>
-<li>Why use assigner to compute Fst of W&amp;C (1984) in R ? <a href="https://www.dropbox.com/s/s4j6y498j1smohs/fst_comparisons.nb.html?dl=0">R Notebook vignette</a>
-</li>
-<li>Run the assignment with several whitelists of markers in <code><a href="reference/assignment_ngs.html">assigner::assignment_ngs</a></code><a href="https://www.dropbox.com/s/jzv91hbxi0g18kg/assignment.whitelists.nb.html?dl=0">(html vignette)</a>
-</li>
-<li><a href="https://www.dropbox.com/s/1kz59xpolb5y52m/rad_genomics_computer_setup.nb.html?dl=0">computer setup and troubleshooting</a></li>
-</ul>
-</div>
 <div id="parallel-computation-and-cloud-computing" class="section level2">
 <h2 class="hasAnchor">
 <a href="#parallel-computation-and-cloud-computing" class="anchor"></a>Parallel computation and Cloud Computing</h2>
 <p>Most of the function in <strong>assigner</strong> were designed to be as fast as possible. Using computer with 16GB RAM is recommended. With more CPU and Memory comes faster computation time. If you decide to keep intermediate files during assignment analysis, you will need a large external drive (disk space is cheap). Solid State Drive and thunderbolt cables will provide fast input/output.</p>
-<p>If disk space and computer power is an issue, cloud computing with <a href="https://cloud.google.com/compute/">Google Cloud Compute Engine</a> and <a href="https://aws.amazon.com/ec2/">Amazon Elastic Cloud Compute</a> is cheap and can be used easily.</p>
+<p>If disk space and computer power is an issue, cloud computing with <a href="https://www.r-bloggers.com/a-new-image-on-digitalocean-to-start-using-rstudio-server-without-waiting-more-than-2-minutes-2/">DigitalOcean</a>, <a href="https://cloud.google.com/compute/">Google Cloud Compute Engine</a> or <a href="https://aws.amazon.com/ec2/">Amazon Elastic Cloud Compute</a> is cheap and can be used easily.</p>
 <p>A tutorial and pipeline along an Amazon Machine Image (AMI) are available in our <a href="http://gbs-cloud-tutorial.readthedocs.org/en/latest/">tutorial-workflow</a>.</p>
-<p>The AMI is preloaded with <strong>gsi_sim</strong> and the required <strong>R packages</strong>. Following a few steps: <a href="http://gbs-cloud-tutorial.readthedocs.org/en/latest/10_use_rstudio.html">link</a>, you can have <a href="https://www.rstudio.com/">RStudio server</a> running and used through your web browser!</p>
-<p>The Amazon image can be imported into Google Cloud Compute Engine to start a new compute engine virtual machine: <a href="https://cloud.google.com/compute/docs/creating-custom-image#import_an_ami_image">link</a>.</p>
-</div>
-<div id="new-features" class="section level2">
-<h2 class="hasAnchor">
-<a href="#new-features" class="anchor"></a>New features</h2>
-<p>Change log, version, new features and bug history now lives in the <a href="https://github.com/thierrygosselin/assigner/blob/master/NEWS.md">NEWS.md file</a></p>
-</div>
-<div id="life-cycle" class="section level2">
-<h2 class="hasAnchor">
-<a href="#life-cycle" class="anchor"></a>Life cycle</h2>
-<p><strong>Missing data imputations: now in <a href="https://github.com/thierrygosselin/grur">grur</a></strong></p>
-<p>The imputation of missing data requires special attention that fall outside the scope of <strong>assigner</strong>. Consequently, these options are no longer available. For assignment, it’s better to do no imputation then quickly do imputations with defaults.</p>
-<p>Inside my package called <a href="https://github.com/thierrygosselin/grur">grur</a>, users can <strong>visualize patterns of missingness</strong> associated with different variables (lanes, chips, sequencers, populations, sample sites, reads/samples, homozygosity, etc). Several <strong>Map-independent imputations</strong> of missing genotypes are available: <strong>Random Forests</strong> (on-the-fly-imputations or predictive modeling), <strong>Extreme Gradient Tree Boosting</strong>, Strawman imputations (~ max/mean/mode: the most frequently observed, non-missing genotypes is used). Imputations can be conducted <strong>overall samples</strong> or <strong>by populations/strata/grouping</strong>. <code><a href="https://www.rdocumentation.org/packages/radiator/topics/genomic_converter">radiator::genomic_converter</a></code> is integrated with the imputation function of <strong>grur</strong>.</p>
-<ul>
-<li>filter your data correctly in <a href="https://github.com/thierrygosselin/radiator">radiator</a>
-</li>
-<li>read on imputations an do tests in <a href="https://github.com/thierrygosselin/grur">grur</a>
-</li>
-<li>then use assigner…</li>
-</ul>
-</div>
-<div id="roadmap-of-future-developments" class="section level2">
-<h2 class="hasAnchor">
-<a href="#roadmap-of-future-developments" class="anchor"></a>Roadmap of future developments</h2>
-<ul>
-<li>The ability to provide the ranking of markers based on other statistics, something else than the Fst (Weir and Cockerham, 1984) currently used in the function. e.g. Informativeness for Assignment Measure (In, Rosenberg et al. 2003), the Absolute Allele Frequency Differences (delta, δ, Shriver et al., 1997).</li>
-<li>Provide ranking from other software: e.g. Toolbox for Ranking and Evaluation of SNPs <a href="http://mlkd.csd.auth.gr/bio/tres/">TRES</a>, <a href="http://cmpg.unibe.ch/software/BayeScan/">BayeScan</a> and <a href="https://github.com/whitlock/OutFLANK">OutFLANK</a>.</li>
-<li>Would be very cool to use genotype likelihood information to get more accurate assignment.</li>
-<li>Use Shiny and ggvis when subplots or facets are available</li>
-<li>CRAN</li>
-<li>…suggestions ?</li>
-</ul>
-</div>
-<div id="contributions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#contributions" class="anchor"></a>Contributions</h2>
-<p>This package has been developed in the open, and it wouldn’t be nearly as good without your contributions. There are a number of ways you can help me make this package even better:</p>
-<ul>
-<li>If you don’t understand something, please let me know.</li>
-<li>Your feedback on what is confusing or hard to understand is valuable.</li>
-<li>If you spot a typo, feel free to edit the underlying page and send a pull request.</li>
-</ul>
-<p>New to pull request on github ? The process is very easy:</p>
-<ul>
-<li>Click the edit this page on the sidebar.</li>
-<li>Make the changes using github’s in-page editor and save.</li>
-<li>Submit a pull request and include a brief description of your changes.</li>
-<li>“Fixing typos” is perfectly adequate.</li>
-</ul>
-</div>
-<div id="citation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#citation" class="anchor"></a>Citation</h2>
-<p>To get the citation for <strong>assigner</strong>, inside R:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/citation">citation</a></span>(<span class="st">"assigner"</span>)</a></code></pre></div>
+<p>The AMI is preloaded with <strong>gsi_sim</strong> and the required <strong>R packages</strong>. Following a <a href="http://gbs-cloud-tutorial.readthedocs.org/en/latest/10_use_rstudio.html">few steps</a>, you can have <a href="https://www.rstudio.com/">RStudio server</a> running and used through your web browser!</p>
+<p>The Amazon image can be <a href="https://cloud.google.com/compute/docs/creating-custom-image#import_an_ami_image">imported into Google Cloud Compute Engine to start a new compute engine virtual machine</a>.</p>
 </div>
 <div id="references" class="section level2">
 <h2 class="hasAnchor">
