@@ -625,6 +625,7 @@ generate_subsamples <- function(
   path.folder = NULL
 ) {
   if (!is.null(subsample)) {
+    message("Subsampling: selected")
     min.pop.n <- min(dplyr::count(x = strata, POP_ID, sort = TRUE)$n)
     # Control the subsample argument, replace if > than min sample size
     if (rlang::is_bare_numeric(subsample)) {
@@ -637,11 +638,14 @@ generate_subsamples <- function(
       # replace min by the min sample size found in the data
       if (subsample == "min") {
         subsample <- min.pop.n
-        message("Using subsample size of: ", subsample)
       } else {
         rlang::abort("Wrong subsample value")
       }
     }
+    
+    message("    using subsample size of: ", subsample)
+  } else {
+    message("Subsampling: not selected")
   }
   
   subsample.list <- purrr::map(
@@ -700,7 +704,7 @@ assignment_subsamples <- function(
   
   # Updating directories for subsampling
   if (!is.null(subsample)) {
-    message("Analyzing subsample: ", subsample.id)
+    message("\nAnalyzing subsample: ", subsample.id)
     directory.subsample <- file.path(directory, stringi::stri_join("subsample_", subsample.id))
     dir.create(directory.subsample)
   }
@@ -1152,7 +1156,8 @@ assignment_ranking <- function(
   fst.ranked <- assigner::fst_WC84(
     data = input, 
     strata = NULL, 
-    holdout.samples = holdout
+    holdout.samples = holdout,
+    filename = NULL
   ) %$%
     fst.ranked
   
@@ -1183,7 +1188,7 @@ assignment_ranking <- function(
       adegenet.dapc.opt = adegenet.dapc.opt,
       adegenet.n.rep = adegenet.n.rep,
       adegenet.training = adegenet.training,
-      directory.subsample = i.folder,
+      i.folder = i.folder,
       filename = filename,
       keep.gsi.files = keep.gsi.files
     )
@@ -1220,7 +1225,7 @@ assignment_marker_loop <- function(
   adegenet.dapc.opt = NULL,
   adegenet.n.rep = NULL,
   adegenet.training = NULL,
-  directory.subsample = NULL,
+  i.folder = NULL,
   filename = NULL,
   keep.gsi.files = FALSE
 ) {
@@ -1231,7 +1236,7 @@ assignment_marker_loop <- function(
   select.markers <- dplyr::filter(.data = fst.ranked, RANKING <= m) %$% MARKERS
   
   # Modify filename
-  filename <- file.path(directory.subsample, filename)
+  filename <- file.path(i.folder, filename)
   filename <- stringi::stri_replace_all_fixed(
     filename,
     pattern = ".txt",
@@ -1248,7 +1253,7 @@ assignment_marker_loop <- function(
       m = m,
       holdout = holdout,
       filename = filename,
-      directory.subsample = directory.subsample,
+      i.folder = i.folder,
       keep.gsi.files = keep.gsi.files,
       markers.sampling = markers.sampling,
       thl = thl
@@ -1287,7 +1292,7 @@ assignment_gsi_sim <- function(
   m = NULL,
   holdout = NULL,
   filename = NULL,
-  directory.subsample = NULL,
+  i.folder = NULL,
   keep.gsi.files = FALSE,
   markers.sampling = "random",
   thl = 1
@@ -1301,9 +1306,10 @@ assignment_gsi_sim <- function(
   )
   
   # Run gsi_sim
+  input.gsi <- radiator::folder_short(input.gsi)
   output.gsi <- stringi::stri_replace_all_fixed(
     str = input.gsi, pattern = "txt", replacement = "output.txt")
-  setwd(directory.subsample)
+  setwd(i.folder)
   system(
     paste(assigner::gsi_sim_binary(), "-b", input.gsi, "--self-assign > ", 
           output.gsi)
@@ -1590,7 +1596,7 @@ assignment_random <- function(
       m = m,
       holdout = NULL,
       filename = filename,
-      directory.subsample = i.folder,
+      i.folder = i.folder,
       keep.gsi.files = keep.gsi.files,
       markers.sampling = markers.sampling
     )

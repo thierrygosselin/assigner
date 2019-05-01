@@ -301,7 +301,7 @@ fst_WC84 <- function(
     dotslist = rlang::dots_list(..., .homonyms = "error", .check_assign = TRUE), 
     keepers = c("filter.monomorphic", "holdout.samples", "subsample",
                 "iteration.subsample", "heatmap.fst", "blacklist.id"),
-    verbose = verbose
+    verbose = FALSE
   )
   dots.filename <- stringi::stri_join("assigner_fst_WC84_args_", file.date, ".tsv")
   # currently not saved
@@ -316,11 +316,13 @@ fst_WC84 <- function(
     message("filter.monomorphic = FALSE... not a good idea, but lets do it...")
   } 
   # filename & folder ----------------------------------------------------------
-  if (!is.null(filename)) filename <- stringi::stri_join(filename, "_fst_WC84")
-  path.folder <- radiator::generate_folder(
-    f = filename,
-    file.date = file.date,
-    verbose = verbose)
+  if (!is.null(filename)) {
+    filename <- stringi::stri_join(filename, "_fst_WC84")
+    path.folder <- radiator::generate_folder(
+      f = filename,
+      file.date = file.date,
+      verbose = verbose)
+  }
   
   
   if (snprelate) {

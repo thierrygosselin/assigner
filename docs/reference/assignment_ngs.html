@@ -178,7 +178,7 @@ Assignment assumptions are listed in the section below.</p>
 
     <pre class="usage"><span class='fu'>assignment_ngs</span>(<span class='no'>data</span>, <span class='kw'>strata</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>pop.levels</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>assignment.analysis</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gsim_sim"</span>, <span class='st'>"adegenet"</span>),
-  <span class='kw'>marker.number</span> <span class='kw'>=</span> <span class='st'>"all"</span>, <span class='kw'>markers.sampling</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"ranked"</span>, <span class='st'>"random"</span>),
+  <span class='kw'>markers.sampling</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"ranked"</span>, <span class='st'>"random"</span>), <span class='kw'>marker.number</span> <span class='kw'>=</span> <span class='st'>"all"</span>,
   <span class='kw'>thl</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>iteration.method</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>subsample</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>iteration.subsample</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>parallel.core</span> <span class='kw'>=</span> <span class='kw pkg'>parallel</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/parallel/topics/detectCores'>detectCores</a></span>() - <span class='fl'>1</span>, <span class='no'>...</span>)</pre>
@@ -221,16 +221,6 @@ See <strong>Details</strong> section below for installing
 <a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a>.</p></td>
     </tr>
     <tr>
-      <th>marker.number</th>
-      <td><p>(Integer or string of number or "all") The assignment
-analysis can use all your markers (default) or a subset of your markers.
-e.g. To test 500, 1000, 2000 and all the markers:
-<code>marker.number = c(500, 1000, 2000, "all")</code>.
-To use only 500 makers <code>marker.number = 500</code>. How those markers are sampled
-is determined with the argument <code>markers.sampling</code>, next.
-Default = <code>marker.number = "all"</code>.</p></td>
-    </tr>
-    <tr>
       <th>markers.sampling</th>
       <td><p>(character) 2 options for markers selection:</p><ol>
 <li><p><code>markers.sampling == "random"</code> the subset of markers are selected 
@@ -242,6 +232,16 @@ implementation of Weir and Cockerham 1984 Fst/Theta equations. This selection
 method is used during <em>Training-Holdout-Leave One Out</em> (thl)
 assignment. How many markers are selected is controlled with argument <code>thl</code>.</p></li>
 </ol></td>
+    </tr>
+    <tr>
+      <th>marker.number</th>
+      <td><p>(Integer or string of number or "all") The assignment
+analysis can use all your markers (default) or a subset of your markers.
+e.g. To test 500, 1000, 2000 and all the markers:
+<code>marker.number = c(500, 1000, 2000, "all")</code>.
+To use only 500 makers <code>marker.number = 500</code>. How those markers are sampled
+is determined with the argument <code>markers.sampling</code>, next.
+Default = <code>marker.number = "all"</code>.</p></td>
     </tr>
     <tr>
       <th>thl</th>

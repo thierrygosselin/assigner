@@ -6,8 +6,8 @@
 \usage{
 assignment_gsi_sim(input = NULL, strata = NULL,
   select.markers = NULL, i = NULL, m = NULL, holdout = NULL,
-  filename = NULL, directory.subsample = NULL,
-  keep.gsi.files = FALSE, markers.sampling = "random", thl = 1)
+  filename = NULL, i.folder = NULL, keep.gsi.files = FALSE,
+  markers.sampling = "random", thl = 1)
 }
 \description{
 assignment with gsi_sim

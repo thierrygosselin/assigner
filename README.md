@@ -13,7 +13,7 @@ developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repo
 [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.5.5-orange.svg)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2019--04--30-brightgreen.svg)](/commits/master)
-<!-- badges: end --> —
+<!-- badges: end -->
 
 The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*.
 It’s first use in french dates back to XIIIe.
