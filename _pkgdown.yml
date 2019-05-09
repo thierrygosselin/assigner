@@ -15,6 +15,11 @@ reference:
   - import_subsamples
   - import_subsamples_fst
   - install_gsi_sim
+  
+- title: Data
+  contents:
+  - data_assigner_sim_01
+  - data_assigner_sim_02
 
 navbar:
   type: default
@@ -30,8 +35,6 @@ navbar:
   - text: Articles
     href: articles/index.html
     menu:
-    - text: Life cycle
-      href: articles/life_cycle.html
     - text: Get started
       href: articles/get_started.html
     - text: Fst analysis
@@ -40,6 +43,8 @@ navbar:
       href: articles/assignment.whitelists.html
     - text: Computer setup - Installation - Troubleshooting
       href: articles/rad_genomics_computer_setup.html
+    - text: Life cycle
+      href: articles/life_cycle.html
   - text: News
     href: news/index.html
   right:

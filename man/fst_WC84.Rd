@@ -236,9 +236,7 @@ possibly using a hierarchical population structure, (see AMOVA)'}.
 To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 or \code{Phi_st_Meirmans} in \code{mmod}.
 
-\code{hierfstat} is available on 
-CRAN \url{http://cran.r-project.org/web/packages/hierfstat/} and 
-github \url{https://github.com/jgx65/hierfstat/}
+\href{https://github.com/jgx65/hierfstat/}{hierfstat}
 
 For Fisher's exact test and p-values per markers 
 see \code{mmod} \code{diff_test}.

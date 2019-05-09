@@ -223,9 +223,7 @@
 #' 
 #' To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 #' 
-#' \code{hierfstat} is available on 
-#' CRAN \url{http://cran.r-project.org/web/packages/hierfstat/} and 
-#' github \url{https://github.com/jgx65/hierfstat/}
+#' \href{https://github.com/jgx65/hierfstat/}{hierfstat}
 #' 
 #' Link for \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 #' 

@@ -36,9 +36,8 @@ Suggests:
     tibble,
     tidyr,
     utils
-Remotes:
-    github::thierrygosselin/radiator
-License: GPL (>=2)
+Remotes: thierrygosselin/radiator
+License: GPL-3
 LazyLoad: yes
 LazyData: true
 VignetteBuilder: knitr
