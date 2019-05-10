@@ -40,7 +40,7 @@ navbar:
     - text: Fst analysis
       href: articles/fst_confidence_intervals.html
     - text: Comparisons of Fst in 8 packages/software
-      href: vignettes/web_only/_fst_comparisons.nb.html
+      href: articles/_fst_comparisons.nb.html
     - text: Using whitelists in assignment
       href: articles/assignment.whitelists.html
     - text: Computer setup - Installation - Troubleshooting
