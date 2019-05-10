@@ -19,8 +19,6 @@ editor_options:
 ```{r Prepare your R session, eval=FALSE, echo=TRUE, warning=FALSE}
 rm(list = ls()) # clean workspace
 # install required packages
-if (!require("remotes")) install.packages("remotes")
-if (!require("assigner")) remotes::install_github("thierrygosselin/assigner")
 if (!require("diveRsity")) install.packages("diveRsity")
 if (!require("hierfstat")) install.packages("hierfstat")
 if (!require("StAMPP")) install.packages("StAMPP")
@@ -31,6 +29,13 @@ if (!require("SNPRelate")) {
 }
 if (!require("ggcorrplot")) install.packages("ggcorrplot")
 ```
+
+
+```{r assigner}
+if (!require("remotes")) install.packages("remotes")
+if (!require("assigner")) remotes::install_github("thierrygosselin/assigner")
+```
+
 
 For macOS: [GenoDive](http://www.bentleydrummer.nl/software/software/GenoDive.html).
 
@@ -760,7 +765,7 @@ assigner.sim02.fst <- assigner::fst_WC84(
 
 ### Generate a summary tibble
 
-```{r join results together, echo=TRUE}
+```{r join results together, eval = FALSE, echo=TRUE}
 fst.summary <- suppressWarnings(
   assigner.fst %>%
     dplyr::full_join(diversity.fst, by = c("POP1", "POP2")) %>% 
@@ -770,8 +775,14 @@ fst.summary <- suppressWarnings(
     dplyr::full_join(stratag.fst, by = c("POP1", "POP2")) %>% 
     dplyr::full_join(snprelate.fst, by = c("POP1", "POP2"))
 )
+```
+
+If you haven't run the codes above:
+```{r fst.summary, echo = TRUE}
+fst.summary <- readr::read_tsv(file = "fst.summary.tsv", col_types = "ccnnnnnnnn")
 fst.summary
 ```
+
 
 If we highlight the first line, pops G100 and G102:
 ```{r, echo=TRUE}
@@ -850,7 +861,7 @@ plot.fst %<>%
 
 **Generate a summary tibble:**
 
-```{r summary sim01, echo=TRUE}
+```{r summary sim01, eval = FALSE, echo=TRUE}
 fst.summary.sim01<- suppressWarnings(
   assigner.sim01.fst %>%
     dplyr::full_join(diversity.sim01.fst, by = c("POP1", "POP2")) %>% 
@@ -861,8 +872,13 @@ fst.summary.sim01<- suppressWarnings(
     dplyr::full_join(snprelate.sim01.fst, by = c("POP1", "POP2")) %>% 
     dplyr::mutate_if(.tbl = ., .predicate = is.numeric, .funs = round, 4)
 )
+```
+
+```{r fst.summary.sim01, echo = TRUE}
+fst.summary.sim01 <- readr::read_tsv(file = "fst.summary.sim01.tsv", col_types = "ccnnnnnnnn")
 fst.summary.sim01
 ```
+
 
 **Generate the correlation tibble:**
 ```{r, echo=TRUE}
@@ -881,7 +897,7 @@ fst.corr.tibble.sim01
 
 **Generate a summary tibble:**
 
-```{r summary sim02, echo=TRUE}
+```{r summary sim02, eval = FALSE, echo=TRUE}
 fst.summary.sim02<- suppressWarnings(
   assigner.sim02.fst %>%
     dplyr::full_join(diversity.sim02.fst, by = c("POP1", "POP2")) %>% 
@@ -892,6 +908,10 @@ fst.summary.sim02<- suppressWarnings(
     dplyr::full_join(snprelate.sim02.fst, by = c("POP1", "POP2")) %>% 
     dplyr::mutate_if(.tbl = ., .predicate = is.numeric, .funs = round, 4)
 )
+```
+
+```{r fst.summary.sim02, echo = TRUE}
+fst.summary.sim02 <- readr::read_tsv(file = "fst.summary.sim02.tsv", col_types = "ccnnnnnnnn")
 fst.summary.sim02
 ```
 

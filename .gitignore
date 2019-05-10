@@ -2,5 +2,7 @@
 .Rhistory
 .RData
 inst/doc
-vignettes/*.R
-vignettes/*.Rmd
+vignettes/*\.R
+vignettes/*\.Rmd
+*\.nb.html
+*\.tsv

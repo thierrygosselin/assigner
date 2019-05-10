@@ -22,6 +22,7 @@ reference:
   - data_assigner_sim_02
 
 navbar:
+  title: ~
   type: default
   left:
   - text: Installation
@@ -40,7 +41,7 @@ navbar:
     - text: Fst analysis
       href: articles/fst_confidence_intervals.html
     - text: Comparisons of Fst in 8 packages/software
-      href: _fst_comparisons.nb.html
+      href: articles/web_only/fst_comparisons.html
     - text: Using whitelists in assignment
       href: articles/assignment.whitelists.html
     - text: Computer setup - Installation - Troubleshooting

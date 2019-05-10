@@ -7,5 +7,5 @@ articles:
   get_started: get_started.html
   life_cycle: life_cycle.html
   rad_genomics_computer_setup: rad_genomics_computer_setup.html
-  _fst_comparisons: web_only/_fst_comparisons.html
+  fst_comparisons: web_only/fst_comparisons.html
 
