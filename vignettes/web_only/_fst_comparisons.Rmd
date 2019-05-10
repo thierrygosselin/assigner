@@ -1,0 +1,957 @@
+---
+title: "Comparisons of Fst computations"
+subtitle: "`assigner`, `diveRsity`, `GenoDive`, `hierfstat`, `SNPRelate`, `stAMPP`, `strataG`, `VCFtools.`"
+author: "Thierry Gosselin"
+date: "`r Sys.Date()`"
+output:
+  html_notebook: 
+    highlight: tango
+    theme: spacelab
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Prepare your R session
+
+```{r Prepare your R session, eval=FALSE, echo=TRUE, warning=FALSE}
+rm(list = ls()) # clean workspace
+# install required packages
+if (!require("remotes")) install.packages("remotes")
+if (!require("assigner")) remotes::install_github("thierrygosselin/assigner")
+if (!require("diveRsity")) install.packages("diveRsity")
+if (!require("hierfstat")) install.packages("hierfstat")
+if (!require("StAMPP")) install.packages("StAMPP")
+if (!require("strataG")) install.packages("strataG")
+if (!require("SNPRelate")) {
+  if(!require("BiocManager")) install.packages("BiocManager")
+  BiocManager::install("SNPRelate")
+}
+if (!require("ggcorrplot")) install.packages("ggcorrplot")
+```
+
+For macOS: [GenoDive](http://www.bentleydrummer.nl/software/software/GenoDive.html).
+
+VCFtools: [install instructions](https://vcftools.github.io) or [here](https://gbs-cloud-tutorial.readthedocs.io/en/latest/07_start_from_new_image.html#install-gbs-radseq-software-time-required-30min)
+
+
+**Versions of packages and software:**
+
+```{r package version, eval=FALSE, echo=TRUE, warning=FALSE}
+# Check packages versions
+packageVersion('assigner') # 0.5.6.
+packageVersion('diveRsity') # 1.9.90
+packageVersion('hierfstat') # 0.4.22
+packageVersion('stAMPP') # 1.5.1
+packageVersion('strataG') # 2.0.2
+packageVersion('SNPRelate') # 1.18.0
+#GenoDive: 2.27
+# VCFtools.: 0.1.17
+```
+
+
+Put this **Rmd notebook** in the same directory as the data or use `setwd("/YOUR/NEW/PATH/HERE/")`, to change the working directory. 
+
+# Goal of this exercise
+
+Let's see how `assigner's` Fst calculations (using Weir and Cockerham, 1984)
+compares with alternatives. To make differences and bottlenecks really
+stand out we will use a RADseq dataset with **thousands of markers**. 
+
+# Datasets
+
+## Empirical dataset
+
+We're going to use the unfiltered vcf sunflower dataset from Owens et al. 2016, 
+kindly provided by Gregory Owens. This dataset as missing data.
+
+Owens GL, Baute GJ, Rieseberg LH. Revisiting a classic case of introgression: 
+hybridization and gene flow in Californian sunflowers. Abbott RJ, Barton NH, 
+Good JM, editors. Molecular Ecology. 2016;25: 2630–2643. doi:10.1111/mec.13569
+
+
+**Download the files:**
+
+* [vcf](https://www.dropbox.com/s/3kfx351ijeaa1wr/sunflower.vcf?dl=0)
+* [strata](https://www.dropbox.com/s/406jleg3imwfaup/sunflower.strata.tsv?dl=0).
+What's a strata file ? Read the [doc](https://thierrygosselin.github.io/radiator/reference/read_strata.html).
+
+## Simulated datasets
+
+After running this vignette once, I saw something strange in
+the results. To explore this further, this second grind of testing add 2 additional datasets: [data_assigner_sim_01](http://thierrygosselin.github.io/assigner/reference/data_assigner_sim_01.html) and [data_assigner_sim_02](http://thierrygosselin.github.io/assigner/reference/data_assigner_sim_02.html). The documentation explains how these simulated data were produced.
+They differ mainly in migration rate which resulted in contrastingly different
+Fst, admixture/membership probability.
+
+
+# Generate the output files
+
+We use [radiator::genomic_converter](https://thierrygosselin.github.io/radiator/reference/genomic_converter.html) to produce the required files or R objects:
+
+
+## Empirical dataset
+
+```{r genomic converter, eval=FALSE, echo=TRUE}
+# radiator is installed automatically with assigner
+sunflower.filtered <- radiator::genomic_converter(
+  data = "sunflower.vcf", 
+  strata = "sunflower.strata.tsv", 
+  output = c(
+    "genepop", # for GenoDive and diveRsity
+    "gtypes", # for strataG
+    "genlight", # for StAMPP
+    "hierfstat", # for Hierfstat
+    "snprelate" # for SNPRelate
+  )
+) %>% dplyr::glimpse()
+```
+
+VCF stats:
+
+* the original number of markers is 34258.
+* by default, `radiator::genomic_converter` will only keep polymorphic markers
+in common between the strata.
+* 15973 biallelic markers are recovered.
+* Number of populations: 9
+* Number of individuals: 88
+
+
+The `sunflower.filtered` object is a list with several objects inside: 
+
+```{r peek inside the object, eval = FALSE}
+names(sunflower.filtered)
+#> [1] "hierfstat" "gtypes"    "genlight"  "snprelate" "tidy.data"
+# the tidy dataset is used by assigner
+```
+
+The function also produced a folder with several files, including:
+
+* the genepop file
+* the SNPRelate GDS file
+* the hierfstat file
+* the gtypes file
+* the genlight file
+* the tidy data file
+
+To learn more about the output folders and files: [radiator::genomic_converter](https://thierrygosselin.github.io/radiator/reference/genomic_converter.html)
+
+*Note on timing*
+
+I could use fancy timing packages ([microbenchmark](https://github.com/joshuaulrich/microbenchmark), [bench](http://bench.r-lib.org)), but for simplicity we're just going to use `system.time`.
+
+## Simulated datasets
+
+### sim_01
+```{r sim01 genomic converter, eval=FALSE, echo=TRUE}
+data_assigner_sim_01 %<>% 
+  dplyr::mutate(POP_ID = factor(x = POP_ID, levels = c("POP_1", "POP_2", "POP_3", "POP_4", "POP_5"))) %>% 
+  dplyr::arrange(POP_ID)
+
+sim.data1 <- radiator::genomic_converter(
+  data = data_assigner_sim_01, 
+  output = c(
+    "genepop", # for GenoDive and diveRsity
+    "gtypes", # for strataG
+    "genlight", # for StAMPP
+    "hierfstat", # for Hierfstat
+    "snprelate" # for SNPRelate
+  ),
+  filename = "sim01",
+  path.folder = "fst_sim01",
+  internal = TRUE,
+  verbose = FALSE
+)
+sim.data1$tidy.data %<>% dplyr::arrange(POP_ID)
+```
+
+### sim_02
+
+```{r sim02 genomic converter, eval=FALSE, echo=TRUE}
+data_assigner_sim_02 %<>% 
+  dplyr::mutate(POP_ID = factor(x = POP_ID, levels = c("POP_1", "POP_2", "POP_3", "POP_4", "POP_5"))) %>% 
+  dplyr::arrange(POP_ID)
+
+sim.data2 <- radiator::genomic_converter(
+  data = data_assigner_sim_02, 
+  output = c(
+    "genepop", # for GenoDive and diveRsity
+    "gtypes", # for strataG
+    "genlight", # for StAMPP
+    "hierfstat", # for Hierfstat
+    "snprelate" # for SNPRelate
+  ),
+  filename = "sim02",
+  path.folder = "fst_sim02",
+  internal = TRUE,
+  verbose = FALSE
+)
+sim.data2$tidy.data %<>% dplyr::arrange(POP_ID)
+```
+
+# hierfstat
+
+Let's start with the Gold Standard, Jérôme Goudet's [hierfstat](https://github.com/jgx65/hierfstat) package.
+
+## Empirical dataset
+
+```{r run hierfstat, eval = FALSE}
+# ETA ~ 30 min on my MBP, so yes, you have time for coffee...
+pops <- as.character(unique(sunflower.filtered$tidy.data$POP_ID))# pop string
+
+system.time(
+  hierfstat.fst <- hierfstat::pairwise.WCfst(
+    dat = sunflower.filtered$hierfstat, 
+    diploid = TRUE
+  ) %>% 
+    # The result need some work
+    # We transform the matrix into a useful tibble:
+    magrittr::set_colnames(x = ., value = pops) %>% 
+    magrittr::set_rownames(x = ., value = pops) %>% 
+    radiator::distance2tibble(
+      x = ., remove.diag = TRUE, remove.lower = TRUE, na.diag = TRUE, relative = FALSE
+    ) %>% 
+    magrittr::set_colnames(x = ., value = c("POP1", "POP2", "HIERFSTAT")) %>% 
+    dplyr::arrange(POP1, POP2)
+)
+#> 1233.880sec ~20 min
+hierfstat.fst
+```
+
+## Simulated datasets
+
+```{r hierfstat sim, eval = FALSE}
+pops <- as.character(unique(sim.data1$tidy.data$POP_ID))# pop string
+hierfstat.sim01.fst <- hierfstat::pairwise.WCfst(
+    dat = sim.data1$hierfstat, 
+    diploid = TRUE
+  ) %>% 
+    # The result need some work
+    # We transform the matrix into a useful tibble:
+    magrittr::set_colnames(x = ., value = pops) %>% 
+    magrittr::set_rownames(x = ., value = pops) %>% 
+    radiator::distance2tibble(
+      x = ., remove.diag = TRUE, remove.lower = TRUE, na.diag = TRUE, relative = FALSE
+    ) %>% 
+    magrittr::set_colnames(x = ., value = c("POP1", "POP2", "HIERFSTAT_SIM01")) %>% 
+    dplyr::arrange(POP1, POP2)
+pops <- as.character(unique(sim.data2$tidy.data$POP_ID))# pop string
+  hierfstat.sim02.fst <- hierfstat::pairwise.WCfst(
+    dat = sim.data2$hierfstat, 
+    diploid = TRUE
+  ) %>% 
+    # The result need some work
+    # We transform the matrix into a useful tibble:
+    magrittr::set_colnames(x = ., value = pops) %>% 
+    magrittr::set_rownames(x = ., value = pops) %>% 
+    radiator::distance2tibble(
+      x = ., remove.diag = TRUE, remove.lower = TRUE, na.diag = TRUE, relative = FALSE
+    ) %>% 
+    magrittr::set_colnames(x = ., value = c("POP1", "POP2", "HIERFSTAT_SIM02")) %>% 
+    dplyr::arrange(POP1, POP2)
+```
+
+
+# strataG
+
+This is Eric Archer's [strataG](https://github.com/EricArcher/strataG) package.
+
+## Empirical dataset
+
+```{r run strataG, eval = FALSE}
+system.time(
+  stratag.fst <- strataG::popStructTest(
+    g = sunflower.filtered$gtypes, 
+    stats = "fst", 
+    type = "both", 
+    quietly = TRUE, 
+    max.cores = parallel::detectCores() - 1, 
+    nrep = 0, 
+    keep.null = FALSE, 
+    write.output = FALSE) %$%
+    pairwise$result %>% 
+    dplyr::select(POP1 = strata.1, POP2 = strata.2, STRATAG = Fst)
+)
+stratag.fst
+#>657.377sec ~ 11 min
+```
+
+## Simulated datasets
+
+```{r stratag sim, eval = FALSE}
+stratag.sim01.fst <- strataG::popStructTest(
+    g = sim.data1$gtypes, 
+    stats = "fst", 
+    type = "both", 
+    quietly = TRUE, 
+    max.cores = parallel::detectCores() - 1, 
+    nrep = 0, 
+    keep.null = FALSE, 
+    write.output = FALSE) %$%
+    pairwise$result %>% 
+    dplyr::select(POP1 = strata.1, POP2 = strata.2, STRATAG_SIM01 = Fst)
+stratag.sim02.fst <- strataG::popStructTest(
+    g = sim.data2$gtypes, 
+    stats = "fst", 
+    type = "both", 
+    quietly = TRUE, 
+    max.cores = parallel::detectCores() - 1, 
+    nrep = 0, 
+    keep.null = FALSE, 
+    write.output = FALSE) %$%
+    pairwise$result %>% 
+    dplyr::select(POP1 = strata.1, POP2 = strata.2, STRATAG_SIM02 = Fst)
+```
+
+
+
+# diveRsity
+
+* Kevin Keenan's [diveRsity](http://diversityinlife.weebly.com/software.html) package requires the `genepop` file.
+* the function is optimized with C++, so no need for a coffee (< 1 min on my MBP)
+
+## Empirical dataset
+
+```{r run diveRsity, eval = FALSE}
+pops <- as.character(unique(sunflower.filtered$tidy.data$POP_ID)) # pop string
+system.time(
+  diversity.fst <- diveRsity::diffCalc(
+    infile = list.files(
+      path = ".", 
+      pattern = "_genepop.gen", 
+      full.names = TRUE,
+      recursive = TRUE
+    ), 
+    outfile = "sunflower_diversity_output", 
+    fst = TRUE,
+    pairwise = TRUE,
+    para = TRUE
+  ) %$%
+    pairwise %$%
+    Fst %>% 
+    # The result need some work
+    # We transform the matrix into a useful tibble:
+    magrittr::set_colnames(x = ., value = pops) %>% 
+    magrittr::set_rownames(x = ., value = pops) %>% 
+    radiator::distance2tibble(
+      x = ., 
+      remove.diag = TRUE, 
+      remove.lower = FALSE, # FALSE because their's only the lower diag
+      na.diag = TRUE, 
+      relative = FALSE
+    ) %>% 
+    # we switch the POP id column here to match the others
+    magrittr::set_colnames(x = ., value = c("POP2", "POP1", "DIVERSITY"))
+)
+#> 42.711 sec Wow! this is very fast, plus other distances are automatically generated!
+diversity.fst
+```
+
+## Simulated datasets
+
+```{r diversity sim, eval = FALSE}
+pops <- as.character(unique(sim.data1$tidy.data$POP_ID)) # pop string
+diversity.sim01.fst <- diveRsity::diffCalc(
+  infile = list.files(
+    path = ".", 
+    pattern = "sim01_genepop.gen", 
+    full.names = TRUE,
+    recursive = TRUE
+  ), 
+  outfile = "sim_data1_diversity_output", 
+  fst = TRUE,
+  pairwise = TRUE,
+  para = TRUE
+) %$%
+  pairwise %$%
+  Fst %>% 
+  # The result need some work
+  # We transform the matrix into a useful tibble:
+  magrittr::set_colnames(x = ., value = pops) %>% 
+  magrittr::set_rownames(x = ., value = pops) %>% 
+  radiator::distance2tibble(
+    x = ., 
+    remove.diag = TRUE, 
+    remove.lower = FALSE, # FALSE because their's only the lower diag
+    na.diag = TRUE, 
+    relative = FALSE
+  ) %>% 
+  # we switch the POP id column here to match the others
+  magrittr::set_colnames(x = ., value = c("POP2", "POP1", "DIVERSITY_SIM01"))
+pops <- as.character(unique(sim.data2$tidy.data$POP_ID)) # pop string
+diversity.sim02.fst <- diveRsity::diffCalc(
+  infile = list.files(
+    path = ".", 
+    pattern = "sim02_genepop.gen", 
+    full.names = TRUE,
+    recursive = TRUE
+  ),  
+  outfile = "sim_data2_diversity_output", 
+  fst = TRUE,
+  pairwise = TRUE,
+  para = TRUE
+) %$%
+  pairwise %$%
+  Fst %>% 
+  # The result need some work
+  # We transform the matrix into a useful tibble:
+  magrittr::set_colnames(x = ., value = pops) %>% 
+  magrittr::set_rownames(x = ., value = pops) %>% 
+  radiator::distance2tibble(
+    x = ., 
+    remove.diag = TRUE, 
+    remove.lower = FALSE, # FALSE because their's only the lower diag
+    na.diag = TRUE, 
+    relative = FALSE
+  ) %>% 
+  # we switch the POP id column here to match the others
+  magrittr::set_colnames(x = ., value = c("POP2", "POP1", "DIVERSITY_SIM02"))
+
+```
+
+# SNPRelate
+
+* Xiuwen Zheng's [SNPRelate](https://github.com/zhengxwen/SNPRelate) package is very fast.
+* No out-of-the-box pairwise Fst analysis. So I implemented my own below.
+
+
+## Empirical dataset
+
+We need the strata
+```{r import strata, eval = FALSE}
+strata <- radiator::read_strata(strata = "sunflower.strata.tsv") %$% strata
+```
+
+Showing off the global Fst only:
+```{r SNPRelate global FST, eval=FALSE}
+system.time(
+  snprelate.fst <- SNPRelate::snpgdsFst(
+    gdsobj = sunflower.filtered$snprelate,
+    population = strata$STRATA, # factors required
+    sample.id = strata$INDIVIDUALS,
+    snp.id = NULL,
+    method = "W&C84",
+    remove.monosnp = TRUE,
+    maf = NaN,
+    missing.rate = NaN,
+    autosome.only = FALSE,
+    with.id = FALSE,
+    verbose = TRUE
+  )
+)
+#> 0.029sec wo!
+
+names(snprelate.fst)
+#> snprelate.fst$Fst: weighted Fst estimate
+#> snprelate.fst$MeanFst: the average of Fst estimates across SNPs
+#> snprelate.fst$FstSNP: a vector of Fst for each SNP
+```
+
+Build a function to conduct pairwise Fst with SNPRelate:
+
+```{r pairwise_fst_snprelate, eval = FALSE}
+pairwise_fst_snprelate <- function(pop.pairwise, data, strata) {
+  strata.temp <- dplyr::filter(.data = strata, STRATA %in% pop.pairwise) %>%
+    dplyr::mutate(STRATA = droplevels(STRATA))
+  
+  fst <- SNPRelate::snpgdsFst(
+    gdsobj = data,
+    population = strata.temp$STRATA, # factors required
+    sample.id = strata.temp$INDIVIDUALS,
+    snp.id = NULL,
+    method = "W&C84",
+    remove.monosnp = TRUE,
+    maf = NaN,
+    missing.rate = NaN,
+    autosome.only = FALSE,
+    with.id = FALSE,
+    verbose = TRUE
+  )
+  #prepare the results into a tibble:
+  fst <- tibble::tibble(
+    POP1 = pop.pairwise[1], 
+    POP2 = pop.pairwise[2], 
+    SNPRELATE_MEAN = fst$MeanFst,
+    SNPRELATE_WEIGHTED = fst$Fst
+  )
+  return(fst)
+}
+```
+
+To run we need all combination of populations:
+```{r pop.pairwise, eval=FALSE}
+pop.pairwise <- utils::combn(as.character(unique(strata$STRATA)), 2, simplify = FALSE)
+```
+
+
+Run the pairwise implementation:
+```{r SNPRelate pairwise Fst, eval = FALSE}
+system.time(
+  snprelate.fst <- purrr::map_dfr(
+    .x = pop.pairwise,
+    .f = pairwise_fst_snprelate,
+    data = sunflower.filtered$snprelate,
+    strata = strata
+  )
+)
+#> 0.245 sec that's the fastest so far!
+```
+
+## Simulated datasets
+
+```{r snprelate sim, eval = FALSE}
+strata <- radiator::generate_strata(data = sim.data1$tidy.data) %>% dplyr::rename(STRATA = POP_ID)
+pop.pairwise <- utils::combn(as.character(unique(strata$STRATA)), 2, simplify = FALSE)
+snprelate.sim01.fst <- purrr::map_dfr(
+  .x = pop.pairwise,
+  .f = pairwise_fst_snprelate,
+  data = sim.data1$snprelate,
+  strata = strata
+) %>% 
+  dplyr::rename(SNPRELATE_MEAN_SIM01 = SNPRELATE_MEAN, SNPRELATE_WEIGHTED_SIM01 = SNPRELATE_WEIGHTED)
+
+strata <- radiator::generate_strata(data = sim.data2$tidy.data) %>% dplyr::rename(STRATA = POP_ID)
+pop.pairwise <- utils::combn(as.character(unique(strata$STRATA)), 2, simplify = FALSE)
+snprelate.sim02.fst <- purrr::map_dfr(
+  .x = pop.pairwise,
+  .f = pairwise_fst_snprelate,
+  data = sim.data2$snprelate,
+  strata = strata
+) %>% 
+  dplyr::rename(SNPRELATE_MEAN_SIM02 = SNPRELATE_MEAN, SNPRELATE_WEIGHTED_SIM02 = SNPRELATE_WEIGHTED)
+```
+
+
+# GenoDive
+
+* Inside Patrick Meirmans's [GenoDive](http://www.bentleydrummer.nl/software/software/GenoDive.html) software, *import* or *drag* the `genepop` file
+* Run: `Analysis -> Pairwise Differentiation -> F_st`, choose `1 permutations`.
+* Save the results or copy/paste in MS Excel or text editor: **genodive.fst.tsv**.
+* no need for a coffee, `GenoDive` is coded in Objective-C (~ < 3 sec on my MBP)
+
+## Empirical dataset
+
+```{r import GenoDive results, eval = FALSE}
+# Import in R
+# Add the proper columns and rows names
+pops <- as.character(unique(sunflower.filtered$tidy.data$POP_ID)) # pop string
+genodive.fst <- readr::read_tsv(
+  file = "genodive.fst.tsv",
+  col_names = pops
+) %>% 
+  as.matrix(.) %>% 
+  magrittr::set_rownames(x = ., value = pops) %>% 
+  radiator::distance2tibble(
+    x = ., 
+    remove.diag = TRUE, 
+    remove.lower = TRUE, # FALSE because their's only the lower diag
+    na.diag = TRUE, 
+    relative = FALSE
+  ) %>% 
+  magrittr::set_colnames(x = ., value = c("POP1", "POP2", "GENODIVE"))
+genodive.fst
+```
+
+Obviously, here the timing gets doesn't reflect the whole process:
+
+* the data as to be imported in GenoDive
+* several manipulations of the results are required to get from GenoDive to R
+
+## Simulated datasets
+```{r genodive sim, eval = FALSE}
+pops <- as.character(unique(sim.data1$tidy.data$POP_ID)) # pop string
+genodive.sim01.fst <- readr::read_tsv(
+  file = list.files(
+      path = ".", 
+      pattern = "genodive.sim01.fst.tsv", 
+      full.names = TRUE,
+      recursive = TRUE
+    ),
+  col_names = pops
+) %>% 
+  as.matrix(.) %>% 
+  magrittr::set_rownames(x = ., value = pops) %>% 
+  radiator::distance2tibble(
+    x = ., 
+    remove.diag = TRUE, 
+    remove.lower = TRUE, # FALSE because their's only the lower diag
+    na.diag = TRUE, 
+    relative = FALSE
+  ) %>% 
+  magrittr::set_colnames(x = ., value = c("POP1", "POP2", "GENODIVE_SIM01"))
+pops <- as.character(unique(sim.data2$tidy.data$POP_ID)) # pop string
+genodive.sim02.fst <- readr::read_tsv(
+  file = list.files(
+      path = ".", 
+      pattern = "genodive.sim02.fst.tsv", 
+      full.names = TRUE,
+      recursive = TRUE
+    ),
+  col_names = pops
+) %>% 
+  as.matrix(.) %>% 
+  magrittr::set_rownames(x = ., value = pops) %>% 
+  radiator::distance2tibble(
+    x = ., 
+    remove.diag = TRUE, 
+    remove.lower = TRUE, # FALSE because their's only the lower diag
+    na.diag = TRUE, 
+    relative = FALSE
+  ) %>% 
+  magrittr::set_colnames(x = ., value = c("POP1", "POP2", "GENODIVE_SIM02"))
+```
+
+
+
+# StAMPP
+
+Luke Pembleton's `StAMPP` package use `genlight` object as input:
+
+## Empirical dataset
+
+```{r StAMPP fst, eval = FALSE}
+system.time(
+  stampp.fst <- StAMPP::stamppFst(
+    geno = sunflower.filtered$genlight, 
+    nboots = 1, 
+    percent = 95, 
+    nclusters = parallel::detectCores() - 1
+  ) %>% 
+    # The distance matrix need some love
+    # if we want to compare it with the others:
+    radiator::distance2tibble(
+      x = ., 
+      remove.diag = TRUE, 
+      remove.lower = FALSE, 
+      na.diag = TRUE, 
+      relative = FALSE
+    ) %>% 
+    # we switch the POP id column here to match the others
+    magrittr::set_colnames(x = ., value = c("POP2", "POP1", "STAMPP")) %>% 
+    dplyr::arrange(POP1, POP2)
+)
+#> 39.281 sec!
+```
+
+## Simulated datasets
+
+```{r stampp sim, eval = FALSE}
+stampp.sim01.fst <- StAMPP::stamppFst(
+    geno = sim.data1$genlight, 
+    nboots = 1, 
+    percent = 95, 
+    nclusters = parallel::detectCores() - 1
+  ) %>% 
+    # The distance matrix need some love
+    # if we want to compare it with the others:
+    radiator::distance2tibble(
+      x = ., 
+      remove.diag = TRUE, 
+      remove.lower = FALSE, 
+      na.diag = TRUE, 
+      relative = FALSE
+    ) %>% 
+    # we switch the POP id column here to match the others
+    magrittr::set_colnames(x = ., value = c("POP2", "POP1", "STAMPP_SIM01")) %>% 
+    dplyr::arrange(POP1, POP2)
+
+stampp.sim02.fst <- StAMPP::stamppFst(
+    geno = sim.data2$genlight, 
+    nboots = 1, 
+    percent = 95, 
+    nclusters = parallel::detectCores() - 1
+  ) %>% 
+    # The distance matrix need some love
+    # if we want to compare it with the others:
+    radiator::distance2tibble(
+      x = ., 
+      remove.diag = TRUE, 
+      remove.lower = FALSE, 
+      na.diag = TRUE, 
+      relative = FALSE
+    ) %>% 
+    # we switch the POP id column here to match the others
+    magrittr::set_colnames(x = ., value = c("POP2", "POP1", "STAMPP_SIM02")) %>% 
+    dplyr::arrange(POP1, POP2)
+```
+
+
+# VCFtools
+
+I'm not particularly fond of VCFtools for Fst. Too much manipulation of files.
+For the sake of the exercise I'm going to compare it quickly with 2 populations 
+for the empirical dataset only.
+
+## Empirical dataset
+
+```{r, eval=FALSE}
+pop1 <- dplyr::filter(strata, STRATA == "G100") %>% dplyr::select(INDIVIDUALS) %>% readr::write_tsv(x = ., path = "pop1.txt", col_names = FALSE)
+pop2 <- dplyr::filter(strata, STRATA == "G102") %>% dplyr::select(INDIVIDUALS) %>% readr::write_tsv(x = ., path = "pop2.txt", col_names = FALSE)
+```
+
+
+the command used:
+```{bash, eval = FALSE}
+vcftools --vcf sunflower.vcf --weir-fst-pop pop1.txt --weir-fst-pop pop2.txt --out pop1_vs_pop2 
+#> Fst between G100 and G102:
+#> Weir and Cockerham mean Fst estimate: 0.036903
+#> Weir and Cockerham weighted Fst estimate: 0.16222
+```
+
+PLINK users, note that the `--fst` option in [PLINK v.1.9](https://www.cog-genomics.org/plink/1.9/basic_stats#fst) is actually a port of VCFtools.. 
+
+For me, comparison with VCFtools stops here, too painfull to conduct more pairwise, getting the ouput ready for R, etc. This is prone to human error and too much work to automate for no benefit (below you'll understand how those VCFtools results compares with the other packages).
+
+## Simulated datasets
+
+*not conducted*
+
+# assigner
+
+## Empirical dataset
+
+```{r run assigner, eval = FALSE}
+assigner.fst <- assigner::fst_WC84(
+  data = sunflower.filtered$tidy.data, 
+  pairwise = TRUE,
+  parallel.core = parallel::detectCores() - 1,
+  verbose = TRUE
+) %$%
+  pairwise.fst %>% 
+  dplyr::rename(ASSIGNER = FST) %>% 
+  dplyr::select(-N_MARKERS)
+#> 49 sec
+assigner.fst
+```
+
+Learn more about `assigner::fst_WC84` with the dedicated [vignette](http://thierrygosselin.github.io/assigner/articles/fst_confidence_intervals.html).
+
+## Simulated datasets
+
+```{r assigner sim, eval = FALSE}
+assigner.sim01.fst <- assigner::fst_WC84(
+  data = sim.data1$tidy.data, 
+  pairwise = TRUE,
+  parallel.core = parallel::detectCores() - 1,
+  verbose = TRUE
+) %$%
+  pairwise.fst %>% 
+  dplyr::rename(ASSIGNER_SIM01 = FST) %>% 
+  dplyr::select(-N_MARKERS)
+
+assigner.sim02.fst <- assigner::fst_WC84(
+  data = sim.data2$tidy.data, 
+  pairwise = TRUE,
+  parallel.core = parallel::detectCores() - 1,
+  verbose = TRUE
+) %$%
+  pairwise.fst %>% 
+  dplyr::rename(ASSIGNER_SIM02 = FST) %>% 
+  dplyr::select(-N_MARKERS)
+```
+
+
+
+
+# Comparisons
+
+## Empirical dataset
+
+### Generate a summary tibble
+
+```{r join results together, echo=TRUE}
+fst.summary <- suppressWarnings(
+  assigner.fst %>%
+    dplyr::full_join(diversity.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(genodive.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(hierfstat.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(stampp.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(stratag.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(snprelate.fst, by = c("POP1", "POP2"))
+)
+fst.summary
+```
+
+If we highlight the first line, pops G100 and G102:
+```{r, echo=TRUE}
+dplyr::filter(fst.summary, dplyr::row_number() == 1L)
+```
+**Gold Standard**: HIERFSTAT 0.12
+
+* min value: SNPRELATE_MEAN 0.08
+* max value: SNPRELATE_WEIGHTED 0.14
+* Weir and Cockerham mean Fst estimate: 0.036903 !!!
+* Weir and Cockerham weighted Fst estimate: 0.16222 !!!
+* that's a bit scary...
+
+### Generate a correlation matrix
+
+There's obviously differences when we look at the pairwise comparisons separately.
+The difference between the approaches taken in the packages/software probably depends 
+on numerous things:
+
+* how common polymorphic markers are handle
+* how sample size differences are managed
+* missing data
+* rouding during steps of the codes
+
+Let's look at it globally with a correlation matrix:
+
+```{r cor matrix, echo=TRUE}
+fst.corr <- round(cor(x = dplyr::select(fst.summary, -POP1, -POP2)), 6)
+fst.corr
+```
+I prefer to look at it in a tibble...
+
+### Generate a tibble for correlation results
+
+```{r corr tibble, echo=TRUE}
+fst.corr.tibble <- radiator::distance2tibble(
+    x = fst.corr, 
+    na.diag = TRUE, 
+    relative = FALSE, 
+    pop.levels = c("HIERFSTAT", "STRATAG", "ASSIGNER", "DIVERSITY", "STAMPP", "GENODIVE", "SNPRELATE_MEAN", "SNPRELATE_WEIGHTED")) %>%
+      magrittr::set_colnames(x = ., value = c("ID1", "ID2", "CORRELATION")) %>% 
+  dplyr::arrange(dplyr::desc(CORRELATION))
+fst.corr.tibble
+```
+
+Very interesting results!
+
+### Figure of results
+
+Let's plot the results:
+
+```{r plot the results, echo=TRUE}
+plot.fst <- fst.summary %>% 
+  tidyr::unite(data = ., col = PAIRS, POP1, POP2, sep = "-") %>% 
+  tidyr::gather(data = ., key = SOFTWARE, value = FST, -PAIRS) %>% 
+  dplyr::mutate(
+    SOFTWARE = factor(
+      x = SOFTWARE, 
+      levels = c("HIERFSTAT", "ASSIGNER", "STAMPP", "STRATAG", "DIVERSITY", "GENODIVE", "SNPRELATE_WEIGHTED", "SNPRELATE_MEAN"), ordered = TRUE))
+
+pairs.levels <- dplyr::group_by(plot.fst, PAIRS) %>% 
+  dplyr::summarise(FST = mean(FST, na.rm = TRUE)) %>% 
+  dplyr::arrange(FST) %$% 
+  PAIRS
+under.the.sea.palette <- c("#1C2344", "#163D7D", "#118386", "#89D6D6", "#6E783D", "#FC564F", "#901546", "#FFD521")#, "#010101")
+plot.fst %<>% 
+  dplyr::mutate(PAIRS = factor(x = PAIRS, levels = pairs.levels, ordered = TRUE)) %>% 
+  ggplot2::ggplot(data = ., ggplot2::aes(x = FST, y = PAIRS, colour = SOFTWARE)) +
+  ggplot2::geom_jitter(alpha = 0.8) +
+  ggplot2::scale_colour_manual(values = under.the.sea.palette)
+```
+
+## Simulated datasets
+
+### sim_01: high Fst
+
+**Generate a summary tibble:**
+
+```{r summary sim01, echo=TRUE}
+fst.summary.sim01<- suppressWarnings(
+  assigner.sim01.fst %>%
+    dplyr::full_join(diversity.sim01.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(genodive.sim01.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(hierfstat.sim01.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(stampp.sim01.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(stratag.sim01.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(snprelate.sim01.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::mutate_if(.tbl = ., .predicate = is.numeric, .funs = round, 4)
+)
+fst.summary.sim01
+```
+
+**Generate the correlation tibble:**
+```{r, echo=TRUE}
+fst.corr.tibble.sim01 <- round(cor(x = dplyr::select(fst.summary.sim01, -POP1, -POP2)), 6) %>% 
+ radiator::distance2tibble(
+  x = ., 
+  na.diag = TRUE, 
+  relative = FALSE, 
+  pop.levels = c("HIERFSTAT_SIM01", "STRATAG_SIM01", "ASSIGNER_SIM01", "DIVERSITY_SIM01", "STAMPP_SIM01", "GENODIVE_SIM01", "SNPRELATE_MEAN_SIM01", "SNPRELATE_WEIGHTED_SIM01")) %>%
+  magrittr::set_colnames(x = ., value = c("ID1", "ID2", "CORRELATION_SIM01")) %>% 
+  dplyr::arrange(dplyr::desc(CORRELATION_SIM01))
+fst.corr.tibble.sim01
+```
+
+### sim_02: low Fst
+
+**Generate a summary tibble:**
+
+```{r summary sim02, echo=TRUE}
+fst.summary.sim02<- suppressWarnings(
+  assigner.sim02.fst %>%
+    dplyr::full_join(diversity.sim02.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(genodive.sim02.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(hierfstat.sim02.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(stampp.sim02.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(stratag.sim02.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::full_join(snprelate.sim02.fst, by = c("POP1", "POP2")) %>% 
+    dplyr::mutate_if(.tbl = ., .predicate = is.numeric, .funs = round, 4)
+)
+fst.summary.sim02
+```
+
+**Generate the correlation tibble:**
+```{r, echo=TRUE}
+fst.corr.tibble.sim02 <- round(cor(x = dplyr::select(fst.summary.sim02, -POP1, -POP2)), 6) %>% 
+ radiator::distance2tibble(
+  x = ., 
+  na.diag = TRUE, 
+  relative = FALSE, 
+  pop.levels = c("HIERFSTAT_SIM02", "STRATAG_SIM02", "ASSIGNER_SIM02", "DIVERSITY_SIM02", "STAMPP_SIM02", "GENODIVE_SIM02", "SNPRELATE_MEAN_SIM02", "SNPRELATE_WEIGHTED_SIM02")) %>%
+  magrittr::set_colnames(x = ., value = c("ID1", "ID2", "CORRELATION_SIM02")) %>% 
+  dplyr::arrange(dplyr::desc(CORRELATION_SIM02))
+fst.corr.tibble.sim02
+```
+
+# Table of features
+
+The table timing was produced using the empirical dataset.
+```{r Table of caracteristics, echo=TRUE}
+summary.table <- readr::read_tsv(file = "fst_comparisons_packages_features.tsv", col_types = readr::cols(.default = readr::col_character()))
+knitr::kable(summary.table) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE)
+```
+
+*Note:*
+
+* VCFtools: we used only 2 populations and timing is inside VCFtools only, it doesn't
+account for manipulations of output.
+* SNPRelate: No out-of-the-box pairwise Fst analysis, but very quick solution is
+proposed in this vignette.
+
+# Conclusion
+
+You could go and look at the 36 pairwise comparisons, but the end of the story is very simple:
+
+* For Fst, I'm definitely staying away from VCFtools and SNPRelate `MeanFst`.
+* `SNPRelate` MeanFst as a systematic downward bias and the weighted estimate is
+usually a little higher.
+* Empirical and simulated data: `assigner` and `hierfstat` have equal values down to a very large number of decimals!
+* The packages show different colors with empirical and simulated data.
+    * contrary to empirical data, with simulated data all the packages have the
+    same results.
+    * missing data is probably the stats driving those differences.
+    * `assigner` and `hierfstat` show consistent behaviors in the presence of
+    missing data.
+    * high or low Fst in simulated data: doesn't impact the packages.
+    * `assigner` is different than the others: it transform `-` Fst to 0.
+    * it should be worth exploring the impact of missing data patterns and level
+    of missingness on those Fst calculations...
+
+
+In the absence of missing data, because overall Fst values are similar, in the end,
+it's worth looking at: 
+
+* **speed**: if this is an issue for you (e.g. if running 
+multiple simulations, assignment analysis, etc).
+* **features**: lots of differences between packages/software.
+
+
+
+*Please let me know if I did something wrong or forgot to mention
+an interesting feature of your favorite package.*
