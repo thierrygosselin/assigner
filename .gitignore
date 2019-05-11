@@ -6,3 +6,4 @@ vignettes/*\.R
 vignettes/*\.Rmd
 *\.nb.html
 *\.tsv
+*\.png

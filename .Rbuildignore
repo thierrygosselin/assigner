@@ -5,7 +5,6 @@
 ^\.travis\.yml$
 ^appveyor\.yml$
 ^README\.Rmd$
-^README-.*\.png$
 ^FEATURES\.md$
 ^inst/_pkgdown\.yml$
 ^docs$
@@ -15,4 +14,5 @@
 ^LICENSE\.md$
 ^cran-comments\.md$
 ^vignettes/web_only/*
-
+^png$
+^tsv$
