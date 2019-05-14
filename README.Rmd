@@ -19,11 +19,7 @@ version <- gsub(" ", "", gsub("Version:", "", grep("Version:", description, valu
 <!-- badges: end -->
 
 ```{r, echo = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/"
-)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 

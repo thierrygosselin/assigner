@@ -20,12 +20,6 @@ resource_files:
   - membership_dataset2.png
 ---
 
-```{r setup, include=FALSE}
-# > knitr::opts_chunk$get('fig.path')
-knitr::opts_chunk$set(fig.path = "vignettes/")
-```
-
-
 
 # Objectives
 
