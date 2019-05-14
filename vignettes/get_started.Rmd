@@ -20,6 +20,13 @@ resource_files:
   - membership_dataset2.png
 ---
 
+```{r setup, include=FALSE}
+# > knitr::opts_chunk$get('fig.path')
+knitr::opts_chunk$set(fig.path = "vignettes/")
+```
+
+
+
 # Objectives
 
 With this vignette, you should be able to learn the basics in under 30 minutes.
@@ -37,7 +44,7 @@ Anderson EC (2010) Assessing the power of informative subsets of loci for popula
 * clean your workspace `rm(list = ls())`
 * load assigner
 
-```{r setup, eval = FALSE}
+```{r Prepare your workspace, eval = FALSE}
 library(assigner)
 ```
 
