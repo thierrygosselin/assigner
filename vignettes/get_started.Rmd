@@ -16,8 +16,8 @@ resource_files:
   - assignment_thl_test1.png
   - assignment_thl_test2.png
   - assignment_thl_test3.png
-  - memership_dataset1.png
-  - memership_dataset2.png
+  - membership_dataset1.png
+  - membership_dataset2.png
 ---
 
 # Objectives
@@ -257,7 +257,7 @@ assigner::fst_WC84(data) %$% fst.overall$FST
 The look of the membership probabilities with `adegenet` dapc analysis would show
 something similar to this:
 
-![](memership_dataset1.png)
+![](membership_dataset1.png)
 
 
 
@@ -307,7 +307,7 @@ assigner::fst_WC84(data) %$% fst.overall$FST
 
 This is the membership probabilities with `adegenet` dapc analysis:
 
-![](memership_dataset2.png)
+![](membership_dataset2.png)
 
 The populations are very admixed because of the high migration rate used during
 the simulations.
