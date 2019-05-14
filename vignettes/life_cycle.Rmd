@@ -1,0 +1,47 @@
+---
+title: "Life cycle"
+author: "Thierry Gosselin"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Life cycle}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+assigner is maturing, but in order to make the package better, changes are 
+inevitable. Experimental functions will change, argument names will change.
+
+
+Below an example of recent changes that are all documented in [NEWS and changelog](https://thierrygosselin.github.io/assigner/news/index.html).
+
+
+## Life cycle
+
+**Missing data imputations: now in [grur](https://github.com/thierrygosselin/grur)**
+
+The imputation of missing data requires special attention that fall 
+outside the scope of **assigner**. Consequently, these options are no
+longer available. For assignment, it's better to do no imputation then 
+quickly do imputations with defaults.
+
+Inside my package called [grur](https://github.com/thierrygosselin/grur), users
+can **visualize patterns of missingness** associated with different variables 
+(lanes, chips, sequencers, populations, sample sites, reads/samples, homozygosity, etc).
+Several **Map-independent imputations** of missing genotypes are available:
+**Random Forests** (on-the-fly-imputations or predictive modeling), 
+**Extreme Gradient Tree Boosting**, 
+Strawman imputations (~ max/mean/mode: the most frequently observed, non-missing genotypes is used).
+Imputations can be conducted **overall samples** or **by populations/strata/grouping**.
+`radiator::genomic_converter` is integrated with the imputation function of **grur**.
+
+* filter your data correctly in [radiator](https://github.com/thierrygosselin/radiator)
+* read on imputations an do tests in [grur](https://github.com/thierrygosselin/grur)
+* then use assigner...

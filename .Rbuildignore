@@ -13,4 +13,3 @@
 ^\.github
 ^LICENSE\.md$
 ^cran-comments\.md$
-^vignettes/web_only/*
