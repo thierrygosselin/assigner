@@ -10,14 +10,6 @@ vignette: >
   %\VignetteIndexEntry{get started using assigner}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-resource_files:
-  - assignment_loo_test4.png
-  - assignment_thl_test1_full_range.png
-  - assignment_thl_test1.png
-  - assignment_thl_test2.png
-  - assignment_thl_test3.png
-  - membership_dataset1.png
-  - membership_dataset2.png
 ---
 
 
