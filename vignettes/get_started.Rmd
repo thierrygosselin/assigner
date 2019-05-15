@@ -10,15 +10,6 @@ vignette: >
   %\VignetteIndexEntry{get started using assigner}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-
-resource_files:
-  - "assignment_loo_test4.png"
-  - "assignment_thl_test1_full_range.png"
-  - "assignment_thl_test1.png"
-  - "assignment_thl_test2.png"
-  - "assignment_thl_test3.png"
-  - "membership_dataset1.png"
-  - "membership_dataset2.png"
 ---
 
 
@@ -138,7 +129,11 @@ To see the figure:
 ```{r thl figure, eval = FALSE}
 test1$plot.assignment
 ```
-![](assignment_thl_test1.png)
+
+```{r fig1, echo=FALSE}
+knitr::include_graphics(path = "assignment_thl_test1.png")
+```
+
 By default, the figure display the range of the data, to change this behavior
 and see the full range for the y axis:
 
@@ -146,7 +141,10 @@ and see the full range for the y axis:
 test1$plot.assignment + ggplot2::scale_y_continuous(limits = c(0,100)) 
 ```
 
-![](assignment_thl_test1_full_range.png)
+```{r fig2, echo=FALSE}
+knitr::include_graphics(path = "assignment_thl_test1_full_range.png")
+```
+
 
 * assignment is very high for all populations (the points are mean values and
 the error bar represent the SE based on the 5 iterations).
@@ -238,7 +236,10 @@ To view the figure:
 ```{r y axis full range test2, message=FALSE, warning=TRUE, eval = FALSE}
 test2$plot.assignment + ggplot2::scale_y_continuous(limits = c(0,100)) 
 ```
-![](assignment_thl_test2.png)
+
+```{r fig3, echo=FALSE}
+knitr::include_graphics(path = "assignment_thl_test2.png")
+```
 
 * The last vertical and horizontal facets are the mean assignment for all the 
 subsampling iterations and mean assignment over populations, respectively.
@@ -259,9 +260,9 @@ assigner::fst_WC84(data) %$% fst.overall$FST
 The look of the membership probabilities with `adegenet` dapc analysis would show
 something similar to this:
 
-![](membership_dataset1.png)
-
-
+```{r fig4, echo=FALSE}
+knitr::include_graphics(path = "membership_dataset1.png")
+```
 
 # Data 2: low structure
 
@@ -293,7 +294,10 @@ To view the figure:
 ```{r y axis full range test3, message=FALSE, warning=TRUE, eval = FALSE}
 test3$plot.assignment + ggplot2::scale_y_continuous(limits = c(0,100)) 
 ```
-![](assignment_thl_test3.png)
+
+```{r fig5, echo=FALSE}
+knitr::include_graphics(path = "assignment_thl_test3.png")
+```
 
 * Very different overall results...
 * For the assignment analysis of species exhibiting overall low structure, 
@@ -309,7 +313,10 @@ assigner::fst_WC84(data) %$% fst.overall$FST
 
 This is the membership probabilities with `adegenet` dapc analysis:
 
-![](membership_dataset2.png)
+```{r fig6, echo=FALSE}
+knitr::include_graphics(path = "membership_dataset2.png")
+```
+
 
 The populations are very admixed because of the high migration rate used during
 the simulations.
@@ -352,6 +359,9 @@ To view the figure:
 ```{r loo y axis full range test4, message=FALSE, warning=TRUE, eval = FALSE}
 test4$plot.assignment + ggplot2::scale_y_continuous(limits = c(0,100)) 
 ```
-![](assignment_loo_test4.png)
+
+```{r fig7, echo=FALSE}
+knitr::include_graphics(path = "assignment_loo_test4.png")
+```
 
 Conclusion: not much to gain here by using the LOO...
