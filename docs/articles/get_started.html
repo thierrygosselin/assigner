@@ -204,10 +204,10 @@
 <p>These folders and files are detailed in the function documentation under <a href="http://thierrygosselin.github.io/assigner/reference/assignment_ngs.html#value">value</a> returned by the function.</p>
 <p>To see the figure:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">test1<span class="op">$</span>plot.assignment</a></code></pre></div>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assignment_thl_test1.png" width="2025" height="668"></p>
+<p><img src="assignment_thl_test1.png"></p>
 <p>By default, the figure display the range of the data, to change this behavior and see the full range for the y axis:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">test1<span class="op">$</span>plot.assignment <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_y_continuous</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>,<span class="dv">100</span>)) </a></code></pre></div>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assignment_thl_test1_full_range.png" width="height="></p>
+<p><img src="assignment_thl_test1_full_range.png"></p>
 <ul>
 <li>assignment is very high for all populations (the points are mean values and the error bar represent the SE based on the 5 iterations).</li>
 <li>the horizontal facet display a <code>1</code>, because subsampling of the samples was not used, only 1 set was calculated with all samples. An example below will show something different.</li>
@@ -280,7 +280,7 @@
 <a class="sourceLine" id="cb11-9" title="9"><span class="co"># subsampling_individuals.tsv: tibble, file</span></a></code></pre></div>
 <p>To view the figure:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">test2<span class="op">$</span>plot.assignment <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_y_continuous</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>,<span class="dv">100</span>)) </a></code></pre></div>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assignment_thl_test2.png" width="height="></p>
+<p><img src="assignment_thl_test2.png"></p>
 <ul>
 <li>The last vertical and horizontal facets are the mean assignment for all the subsampling iterations and mean assignment over populations, respectively.</li>
 <li>With the last plot, in the lower right corner, corresponding to the overall average (subsampling and strata/pops).</li>
@@ -290,7 +290,7 @@
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/fst_WC84">fst_WC84</a></span>(data) <span class="op">%$%</span><span class="st"> </span>fst.overall<span class="op">$</span>FST</a>
 <a class="sourceLine" id="cb13-2" title="2"><span class="co">#&gt;[1] 0.39603</span></a></code></pre></div>
 <p>The look of the membership probabilities with <code>adegenet</code> dapc analysis would show something similar to this:</p>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/membership_dataset1.png" width="height="></p>
+<p><img src="membership_dataset1.png"></p>
 </div>
 </div>
 <div id="data-2-low-structure" class="section level1">
@@ -315,7 +315,7 @@
 <a class="sourceLine" id="cb15-10" title="10">)</a></code></pre></div>
 <p>To view the figure:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">test3<span class="op">$</span>plot.assignment <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_y_continuous</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>,<span class="dv">100</span>)) </a></code></pre></div>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assignment_thl_test3.png" width="height="></p>
+<p><img src="assignment_thl_test3.png"></p>
 <ul>
 <li>Very different overall results…</li>
 <li>For the assignment analysis of species exhibiting overall low structure, using more markers will, generally, help the assingnment (if the data is filtered correctly…)</li>
@@ -324,7 +324,7 @@
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/fst_WC84">fst_WC84</a></span>(data) <span class="op">%$%</span><span class="st"> </span>fst.overall<span class="op">$</span>FST</a>
 <a class="sourceLine" id="cb17-2" title="2"><span class="co">#&gt;[1] 0.001320833</span></a></code></pre></div>
 <p>This is the membership probabilities with <code>adegenet</code> dapc analysis:</p>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/membership_dataset2.png" width="height="></p>
+<p><img src="membership_dataset2.png"></p>
 <p>The populations are very admixed because of the high migration rate used during the simulations.</p>
 </div>
 <div id="analysis-using-loo-with-gsi_sim" class="section level1">
@@ -354,7 +354,7 @@
 <a class="sourceLine" id="cb18-20" title="20"><span class="co">#&gt; ########################## assignment_ngs completed ############################</span></a></code></pre></div>
 <p>To view the figure:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">test4<span class="op">$</span>plot.assignment <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_y_continuous</a></span>(<span class="dt">limits =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">0</span>,<span class="dv">100</span>)) </a></code></pre></div>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assignment_loo_test4.png" width="height="></p>
+<p><img src="assignment_loo_test4.png"></p>
 <p>Conclusion: not much to gain here by using the LOO…</p>
 </div>
   </div>

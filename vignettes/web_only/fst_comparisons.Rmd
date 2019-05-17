@@ -16,7 +16,7 @@ editor_options:
 
 # Prepare your R session
 
-```{r Prepare your R session, eval=FALSE, echo=TRUE, warning=FALSE}
+```{r Prepare your R session, eval = FALSE, echo = TRUE, warning=FALSE}
 rm(list = ls()) # clean workspace
 # install required packages
 if (!require("diveRsity")) install.packages("diveRsity")
@@ -44,7 +44,7 @@ VCFtools: [install instructions](https://vcftools.github.io) or [here](https://g
 
 **Versions of packages and software:**
 
-```{r package version, eval=FALSE, echo=TRUE, warning=FALSE}
+```{r package version, eval = FALSE, echo = TRUE, warning=FALSE}
 # Check packages versions
 packageVersion('assigner') # 0.5.6.
 packageVersion('diveRsity') # 1.9.90
@@ -98,7 +98,7 @@ We use [radiator::genomic_converter](https://thierrygosselin.github.io/radiator/
 
 ## Empirical dataset
 
-```{r genomic converter, eval=FALSE, echo=TRUE}
+```{r genomic converter, eval = FALSE, echo = TRUE}
 # radiator is installed automatically with assigner
 sunflower.filtered <- radiator::genomic_converter(
   data = "sunflower.vcf", 
@@ -149,7 +149,7 @@ I could use fancy timing packages ([microbenchmark](https://github.com/joshuaulr
 ## Simulated datasets
 
 ### sim_01
-```{r sim01 genomic converter, eval=FALSE, echo=TRUE}
+```{r sim01 genomic converter, eval = FALSE, echo = TRUE}
 data_assigner_sim_01 %<>% 
   dplyr::mutate(POP_ID = factor(x = POP_ID, levels = c("POP_1", "POP_2", "POP_3", "POP_4", "POP_5"))) %>% 
   dplyr::arrange(POP_ID)
@@ -173,7 +173,7 @@ sim.data1$tidy.data %<>% dplyr::arrange(POP_ID)
 
 ### sim_02
 
-```{r sim02 genomic converter, eval=FALSE, echo=TRUE}
+```{r sim02 genomic converter, eval = FALSE, echo = TRUE}
 data_assigner_sim_02 %<>% 
   dplyr::mutate(POP_ID = factor(x = POP_ID, levels = c("POP_1", "POP_2", "POP_3", "POP_4", "POP_5"))) %>% 
   dplyr::arrange(POP_ID)
@@ -429,7 +429,7 @@ strata <- radiator::read_strata(strata = "sunflower.strata.tsv") %$% strata
 ```
 
 Showing off the global Fst only:
-```{r SNPRelate global FST, eval=FALSE}
+```{r SNPRelate global FST, eval = FALSE}
 system.time(
   snprelate.fst <- SNPRelate::snpgdsFst(
     gdsobj = sunflower.filtered$snprelate,
@@ -485,7 +485,7 @@ pairwise_fst_snprelate <- function(pop.pairwise, data, strata) {
 ```
 
 To run we need all combination of populations:
-```{r pop.pairwise, eval=FALSE}
+```{r pop.pairwise, eval = FALSE}
 pop.pairwise <- utils::combn(as.character(unique(strata$STRATA)), 2, simplify = FALSE)
 ```
 
@@ -690,7 +690,7 @@ for the empirical dataset only.
 
 ## Empirical dataset
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 pop1 <- dplyr::filter(strata, STRATA == "G100") %>% dplyr::select(INDIVIDUALS) %>% readr::write_tsv(x = ., path = "pop1.txt", col_names = FALSE)
 pop2 <- dplyr::filter(strata, STRATA == "G102") %>% dplyr::select(INDIVIDUALS) %>% readr::write_tsv(x = ., path = "pop2.txt", col_names = FALSE)
 ```
@@ -765,7 +765,7 @@ assigner.sim02.fst <- assigner::fst_WC84(
 
 ### Generate a summary tibble
 
-```{r join results together, eval = FALSE, echo=TRUE}
+```{r join results together, eval = FALSE, echo = TRUE}
 fst.summary <- suppressWarnings(
   assigner.fst %>%
     dplyr::full_join(diversity.fst, by = c("POP1", "POP2")) %>% 
@@ -785,7 +785,7 @@ fst.summary
 
 
 If we highlight the first line, pops G100 and G102:
-```{r, echo=TRUE}
+```{r, echo = TRUE}
 dplyr::filter(fst.summary, dplyr::row_number() == 1L)
 ```
 **Gold Standard**: HIERFSTAT 0.12
@@ -809,7 +809,7 @@ on numerous things:
 
 Let's look at it globally with a correlation matrix:
 
-```{r cor matrix, echo=TRUE}
+```{r cor matrix, echo = TRUE}
 fst.corr <- round(cor(x = dplyr::select(fst.summary, -POP1, -POP2)), 6)
 fst.corr
 ```
@@ -817,7 +817,7 @@ I prefer to look at it in a tibble...
 
 ### Generate a tibble for correlation results
 
-```{r corr tibble, echo=TRUE}
+```{r corr tibble, echo = TRUE}
 fst.corr.tibble <- radiator::distance2tibble(
     x = fst.corr, 
     na.diag = TRUE, 
@@ -834,7 +834,7 @@ Very interesting results!
 
 Let's plot the results:
 
-```{r plot the results, echo=TRUE}
+```{r plot the results, echo = TRUE}
 plot.fst <- fst.summary %>% 
   tidyr::unite(data = ., col = PAIRS, POP1, POP2, sep = "-") %>% 
   tidyr::gather(data = ., key = SOFTWARE, value = FST, -PAIRS) %>% 
@@ -861,7 +861,7 @@ plot.fst %<>%
 
 **Generate a summary tibble:**
 
-```{r summary sim01, eval = FALSE, echo=TRUE}
+```{r summary sim01, eval = FALSE, echo = TRUE}
 fst.summary.sim01<- suppressWarnings(
   assigner.sim01.fst %>%
     dplyr::full_join(diversity.sim01.fst, by = c("POP1", "POP2")) %>% 
@@ -881,7 +881,7 @@ fst.summary.sim01
 
 
 **Generate the correlation tibble:**
-```{r, echo=TRUE}
+```{r, echo = TRUE}
 fst.corr.tibble.sim01 <- round(cor(x = dplyr::select(fst.summary.sim01, -POP1, -POP2)), 6) %>% 
  radiator::distance2tibble(
   x = ., 
@@ -897,7 +897,7 @@ fst.corr.tibble.sim01
 
 **Generate a summary tibble:**
 
-```{r summary sim02, eval = FALSE, echo=TRUE}
+```{r summary sim02, eval = FALSE, echo = TRUE}
 fst.summary.sim02<- suppressWarnings(
   assigner.sim02.fst %>%
     dplyr::full_join(diversity.sim02.fst, by = c("POP1", "POP2")) %>% 
@@ -916,7 +916,7 @@ fst.summary.sim02
 ```
 
 **Generate the correlation tibble:**
-```{r, echo=TRUE}
+```{r, echo = TRUE}
 fst.corr.tibble.sim02 <- round(cor(x = dplyr::select(fst.summary.sim02, -POP1, -POP2)), 6) %>% 
  radiator::distance2tibble(
   x = ., 
@@ -931,7 +931,7 @@ fst.corr.tibble.sim02
 # Table of features
 
 The table timing was produced using the empirical dataset.
-```{r Table of caracteristics, echo=TRUE}
+```{r Table of caracteristics, echo = TRUE}
 summary.table <- readr::read_tsv(file = "fst_comparisons_packages_features.tsv", col_types = readr::cols(.default = readr::col_character()))
 knitr::kable(summary.table) %>% 
   kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE)
