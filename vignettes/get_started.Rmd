@@ -11,7 +11,19 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
+```{r, echo = FALSE}
+embed_png <- function(path, dpi = NULL) {
+  meta <- attr(png::readPNG(path, native = TRUE, info = TRUE), "info")
+  if (!is.null(dpi)) meta$dpi <- rep(dpi, 2)
+  knitr::asis_output(paste0(
+    "<img src='", path, "'",
+    " width=", round(meta$dim[1] / (meta$dpi[1] / 96)),
+    " height=", round(meta$dim[2] / (meta$dpi[2] / 96)),
+    " />"
+  ))
+}
+knitr::opts_chunk$set(comment = "#>", collapse = TRUE)
+```
 
 # Objectives
 
@@ -44,7 +56,7 @@ For this exercise, we use the first dataset included in assigner.
 It's a simulated dataset generated with [grur](https://thierrygosselin.github.io/grur/reference/simulate_rad.html).
 Details of the dataset are available using: `?assigner::data_assigner_sim_01`.
 
-```{r load data, , eval = FALSE}
+```{r load data, eval = FALSE}
 data <- data_assigner_sim_01
 ```
 
@@ -130,8 +142,8 @@ To see the figure:
 test1$plot.assignment
 ```
 
-```{r fig1, echo=FALSE}
-knitr::include_graphics(path = "assignment_thl_test1.png")
+```{r fig1, echo = FALSE}
+embed_png("assignment_thl_test1.png")
 ```
 
 By default, the figure display the range of the data, to change this behavior
@@ -141,8 +153,8 @@ and see the full range for the y axis:
 test1$plot.assignment + ggplot2::scale_y_continuous(limits = c(0,100)) 
 ```
 
-```{r fig2, echo=FALSE}
-knitr::include_graphics(path = "assignment_thl_test1_full_range.png")
+```{r fig2, echo = FALSE}
+embed_png("assignment_thl_test1_full_range.png")
 ```
 
 
@@ -237,8 +249,8 @@ To view the figure:
 test2$plot.assignment + ggplot2::scale_y_continuous(limits = c(0,100)) 
 ```
 
-```{r fig3, echo=FALSE}
-knitr::include_graphics(path = "assignment_thl_test2.png")
+```{r fig3, echo = FALSE}
+embed_png("assignment_thl_test2.png")
 ```
 
 * The last vertical and horizontal facets are the mean assignment for all the 
@@ -260,8 +272,8 @@ assigner::fst_WC84(data) %$% fst.overall$FST
 The look of the membership probabilities with `adegenet` dapc analysis would show
 something similar to this:
 
-```{r fig4, echo=FALSE}
-knitr::include_graphics(path = "membership_dataset1.png")
+```{r fig4, echo = FALSE}
+embed_png("membership_dataset1.png")
 ```
 
 # Data 2: low structure
@@ -295,8 +307,8 @@ To view the figure:
 test3$plot.assignment + ggplot2::scale_y_continuous(limits = c(0,100)) 
 ```
 
-```{r fig5, echo=FALSE}
-knitr::include_graphics(path = "assignment_thl_test3.png")
+```{r fig5, echo = FALSE}
+embed_png("assignment_thl_test3.png")
 ```
 
 * Very different overall results...
@@ -313,8 +325,8 @@ assigner::fst_WC84(data) %$% fst.overall$FST
 
 This is the membership probabilities with `adegenet` dapc analysis:
 
-```{r fig6, echo=FALSE}
-knitr::include_graphics(path = "membership_dataset2.png")
+```{r fig6, echo = FALSE}
+embed_png("membership_dataset2.png")
 ```
 
 
@@ -360,8 +372,8 @@ To view the figure:
 test4$plot.assignment + ggplot2::scale_y_continuous(limits = c(0,100)) 
 ```
 
-```{r fig7, echo=FALSE}
-knitr::include_graphics(path = "assignment_loo_test4.png")
+```{r fig7, echo = FALSE}
+embed_png("assignment_loo_test4.png")
 ```
 
 Conclusion: not much to gain here by using the LOO...

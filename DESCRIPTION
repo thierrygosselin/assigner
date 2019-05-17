@@ -27,6 +27,7 @@ Suggests:
     knitr,
     modelr,
     parallel,
+    png,
     purrr,
     readr,
     rlang,
