@@ -4,10 +4,19 @@
 \alias{assignment_gsi_sim}
 \title{assignment with gsi_sim}
 \usage{
-assignment_gsi_sim(input = NULL, strata = NULL,
-  select.markers = NULL, i = NULL, m = NULL, holdout = NULL,
-  filename = NULL, i.folder = NULL, keep.gsi.files = FALSE,
-  markers.sampling = "random", thl = 1)
+assignment_gsi_sim(
+  input = NULL,
+  strata = NULL,
+  select.markers = NULL,
+  i = NULL,
+  m = NULL,
+  holdout = NULL,
+  filename = NULL,
+  i.folder = NULL,
+  keep.gsi.files = FALSE,
+  markers.sampling = "random",
+  thl = 1
+)
 }
 \description{
 assignment with gsi_sim

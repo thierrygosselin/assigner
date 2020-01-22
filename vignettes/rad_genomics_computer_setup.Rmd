@@ -72,17 +72,17 @@ The command below fro both GCC and Clang will:
 
 Choose the binary version number based on your OS and change the version accordingly [link](http://hpc.sourceforge.net).
 
-**Mojave** [gcc-8.2.tar.gz](https://www.dropbox.com/s/9b7s07n2b65r5jd/gcc-8.2-bin.tar.gz?dl=0)
+**Mojave** [gcc-8.3.tar.gz](http://prdownloads.sourceforge.net/hpc/gcc-8.3-bin.tar.gz)
 **High Sierra** [gcc-8.1-bin.tar.gz](http://prdownloads.sourceforge.net/hpc/gcc-8.1-bin.tar.gz)
 
 ```{bash eval=FALSE}
 #In Terminal
 cd Downloads
-sudo tar -zxvf gcc-8.2-bin.tar.gz -C /usr/local --strip-components=2
+sudo tar -zxvf gcc-8.3-bin.tar.gz -C /usr/local --strip-components=2
 ```
 
 ```{bash eval=FALSE}
-sudo rm gcc-8.2-bin.tar.gz
+sudo rm gcc-8.3-bin.tar.gz
 gcc -v
 ```
 
@@ -92,15 +92,15 @@ We want [clang](https://en.wikipedia.org/wiki/Clang) compiler with OpenMP enable
 
 ```{bash eval=FALSE}
 #In browser
-http://releases.llvm.org/7.0.0/clang+llvm-7.0.0-x86_64-apple-darwin.tar.xz
+http://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-apple-darwin.tar.xz
 #In Terminal
 cd Downloads
-sudo tar -xzvf clang+llvm-7.0.0-x86_64-apple-darwin.tar.xz -C/usr/local --strip-components=1
+sudo tar -xzvf clang+llvm-8.0.0-x86_64-apple-darwin.tar.xz -C/usr/local --strip-components=1
 ```
 
 
 ```{bash eval=FALSE}
-sudo rm clang+llvm-7.0.0-x86_64-apple-darwin.tar.xz
+sudo rm clang+llvm-8.0.0-x86_64-apple-darwin.tar.xz
 clang -v
 ```
 
@@ -112,11 +112,11 @@ Several flavors available, check for the proper [link](http://releases.llvm.org/
 
 # Install R
 
-To install R v3.5.3 **Great Truth** released on 2019-03-11 download the
+To install R v3.6.1 **"Action of the Toes"** released on 2019-07-05 download the
 installer and follow the instructions
 ```{bash eval=FALSE}
 cd Downloads
-wget https://cran.r-project.org/bin/macosx/R-3.5.0.pkg
+wget https://cran.r-project.org/bin/macosx/R-3.6.1.pkg
 ```
 
 
@@ -341,7 +341,7 @@ If you have a PC and you're getting this error or closely related error:
 ## `rmetasim`
 
 ### Download
-Download the latest github release (3.1.7) of Allan Strand's **rmetasim**
+Download the latest github release (3.1.10) of Allan Strand's **rmetasim**
 ```{bash eval=FALSE}
 cd ~/Downloads
 wget --no-check-certificate https://github.com/stranda/rmetasim/archive/master.zip
@@ -363,6 +363,9 @@ sed -i -e 's/#define MAXLOCI               1000/#define MAXLOCI               20
 *rmetasim* requires these Makevars  (`~/.R/Makevars` file) specifications. 
 If you have other lines, comment (#) before compiling `rmetasim`:
 
+```{r eval=FALSE}
+usethis::edit_r_makevars()
+```
 
 ```{bash eval=FALSE}
 CC=/usr/local/bin/clang # -fopenmp
@@ -418,6 +421,11 @@ Modify in a text editor the `configure` file inside the `xgboost/R-package` fold
 
 `XGBoost` requires these Makevars specifications. If you have other lines, comment (#)
 before compiling:
+
+```{r eval=FALSE}
+usethis::edit_r_makevars()
+```
+
 ```{bash eval=FALSE}
 CC=/usr/local/bin/gcc
 CXX=/usr/local/bin/g++
@@ -498,6 +506,11 @@ See instructions above if not already done.
 
 ### Makevars configuration
 Check that the lines below **are not** commented in your `~/.R/Makevars` file:
+
+```{r eval=FALSE}
+usethis::edit_r_makevars()
+```
+
 ```{bash eval=FALSE}
 CC=/usr/local/bin/gcc
 CXX=/usr/local/bin/g++
@@ -513,8 +526,8 @@ F77=/usr/local/bin/gfortran
 From the Terminal run these steps to download and compile randomForestSRC:
 ```{bash eval=FALSE}
 cd ~/Downloads
-curl -O https://cran.r-project.org/src/contrib/randomForestSRC_2.7.0.tar.gz
-tar -zxvf randomForestSRC_2.7.0.tar.gz
+curl -O https://cran.r-project.org/src/contrib/randomForestSRC_4.6-14.tar.gz
+tar -zxvf randomForestSRC_4.6-14.tar.gz
 cd randomForestSRC
 autoconf
 cd ..

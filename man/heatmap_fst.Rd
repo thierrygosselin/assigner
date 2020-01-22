@@ -4,10 +4,20 @@
 \alias{heatmap_fst}
 \title{heatmap_fst}
 \usage{
-heatmap_fst(pairwise.fst.full.matrix, pairwise.fst.ci.matrix, n.s = TRUE,
-  digits = 5, color.low = "blue", color.mid = "yellow",
-  color.high = "red", text.size = 4, plot.size = 40,
-  pop.levels = NULL, path.folder = NULL, filename = NULL)
+heatmap_fst(
+  pairwise.fst.full.matrix,
+  pairwise.fst.ci.matrix,
+  n.s = TRUE,
+  digits = 5,
+  color.low = "blue",
+  color.mid = "yellow",
+  color.high = "red",
+  text.size = 4,
+  plot.size = 40,
+  pop.levels = NULL,
+  path.folder = NULL,
+  filename = NULL
+)
 }
 \arguments{
 \item{pairwise.fst.full.matrix}{(object or path).}
@@ -37,7 +47,9 @@ Default: \code{text.size = 2}.}
 to 40 cm x 40 cm.
 Default: \code{plot.size = 40}.}
 
-\item{pop.levels}{(optional, character) the pop.levels to have the pop ordered as desired.
+\item{pop.levels}{(optional, character) the pop.levels to have the pop ordered 
+as desired. The default takes the info from the \code{pairwise.fst.full.matrix} 
+colnames.
 Default: \code{pop.levels = NULL}.}
 
 \item{path.folder}{(optional, character)

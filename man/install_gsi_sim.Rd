@@ -4,8 +4,10 @@
 \alias{install_gsi_sim}
 \title{downloads gsi_sim that is appropriate for the operating system}
 \usage{
-install_gsi_sim(commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a",
-  fromSource = FALSE)
+install_gsi_sim(
+  commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a",
+  fromSource = FALSE
+)
 }
 \arguments{
 \item{commit}{The full SHA-1 hash from GitHub from which to get

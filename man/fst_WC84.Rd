@@ -5,10 +5,21 @@
 \title{A fast implementation of Weir and Cockerham (1984) Fst/Theta 
 (overall and paiwise estimates)}
 \usage{
-fst_WC84(data, snprelate = FALSE, strata = NULL, pop.levels = NULL,
-  pairwise = FALSE, ci = FALSE, iteration.ci = 100,
-  quantiles.ci = c(0.025, 0.975), digits = 9, filename = NULL,
-  parallel.core = parallel::detectCores() - 2, verbose = FALSE, ...)
+fst_WC84(
+  data,
+  snprelate = FALSE,
+  strata = NULL,
+  pop.levels = NULL,
+  pairwise = FALSE,
+  ci = FALSE,
+  iteration.ci = 100,
+  quantiles.ci = c(0.025, 0.975),
+  digits = 9,
+  filename = NULL,
+  parallel.core = parallel::detectCores() - 2,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{A tidy data frame object in the global environment or
@@ -169,7 +180,6 @@ lower matrix and CI in the upper matrix.
 Default: \code{heatmap.fst = FALSE}.
 The heatmap can also be generated and more finetuned separately after the Fst
 analysis using \code{\link{heatmap_fst}}.
-
 }
 }
 

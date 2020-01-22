@@ -499,6 +499,14 @@ assignment_ngs <- function(
     verbose = FALSE,
     path.folder = directory
   )
+  data <- NULL
+  
+  if (!rlang::has_name(input, "GT")) {
+    input <- radiator::calibrate_alleles(
+      data =input, 
+      parallel.core = parallel.core
+    ) %$% input
+  }
   
   # Strata and pop levels ------------------------------------------------------
   input <- radiator::change_pop_names(data = input, pop.levels = pop.levels)
@@ -789,6 +797,10 @@ assignment_subsamples <- function(
       col_names = TRUE, append = FALSE
     )
     message("Starting parallel computations, for progress monitor activity in folder...")
+    
+    # bug with arguments that must have names
+    names(marker.random.list) <- marker.random.list
+    
     assignment.res <- NULL
     assignment.res <- suppressWarnings(
       .assigner_parallel_mc(#.assigner_parallel(
@@ -956,6 +968,10 @@ assignment_subsamples <- function(
     # Going through the loop of holdout individuals
     message("Starting parallel computations, for progress monitor activity in folder...")
     assignment.res.summary <- list()
+    
+    # bug with arguments that must have names
+    names(iterations.list) <- iterations.list
+    
     # assignment.res <- .assigner_parallel(
     assignment.res.summary <- suppressWarnings(
       .assigner_parallel_mc(
@@ -1319,31 +1335,49 @@ assignment_gsi_sim <- function(
   
   # Import GSI_SIM results
   assignment <- suppressWarnings(
-    suppressMessages(readr::read_delim(output.gsi, col_names = "ID", delim = "\t")) %>%
+    suppressMessages(
+      readr::read_delim(
+        file = output.gsi, 
+        col_names = "ID", 
+        delim = "\t", 
+        col_types = "c"
+      ) %>%
       tidyr::separate(ID, c("KEEPER", "ASSIGN"), sep = ":/", extra = "warn") %>%
       dplyr::filter(KEEPER == "SELF_ASSIGN_A_LA_GC_CSV") %>%
-      tidyr::separate(ASSIGN, c("INDIVIDUALS", "ASSIGN"), sep = ";", extra = "merge") %>%
-      tidyr::separate(ASSIGN, c("INFERRED", "OTHERS"), sep = ";", convert = TRUE, 
-                      numerals = "no.loss", extra = "merge") %>%
-      tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, 
-                      numerals = "no.loss", extra = "merge") %>%
-      tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", 
-                      convert = TRUE, numerals = "no.loss", extra = "merge") %>%
-      tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", 
-                      convert = TRUE, numerals = "no.loss") %>% 
-      dplyr::mutate(INDIVIDUALS = as.character(INDIVIDUALS)) %>% 
-      dplyr::left_join(strata, by = "INDIVIDUALS") %>%
-      dplyr::rename(CURRENT = POP_ID) %>% 
-      dplyr::mutate(
-        SCORE = round(SCORE, 2),
-        SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
-        MARKER_NUMBER = as.numeric(rep(m, n())), # m: Number of markers
-        METHOD = rep(markers.sampling, n())
-      ) %>%
-      dplyr::select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, 
-                    SECOND_BEST_SCORE, MARKER_NUMBER, METHOD) %>%
-      dplyr::arrange(CURRENT)
-  )
+        tidyr::separate(ASSIGN, c("INDIVIDUALS", "ASSIGN"), sep = ";", extra = "merge") %>%
+        tidyr::separate(ASSIGN, c("INFERRED", "OTHERS"), sep = ";", convert = TRUE, 
+                        extra = "merge") %>%
+        tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, 
+                        extra = "merge") %>% 
+        tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", 
+                        convert = TRUE, extra = "merge") %>%
+        tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", 
+                        convert = TRUE) %>% 
+        dplyr::mutate(INDIVIDUALS = as.character(INDIVIDUALS)) %>% 
+        dplyr::left_join(strata, by = "INDIVIDUALS") %>%
+        dplyr::rename(CURRENT = POP_ID) %>% 
+        dplyr::mutate(
+          SCORE = round(SCORE, 2),
+          SECOND_BEST_SCORE = round(SECOND_BEST_SCORE, 2),
+          MARKER_NUMBER = as.numeric(rep(m, n())), # m: Number of markers
+          METHOD = rep(markers.sampling, n())
+        ) %>%
+        dplyr::select(INDIVIDUALS, CURRENT, INFERRED, SCORE, SECOND_BEST_POP, 
+                      SECOND_BEST_SCORE, MARKER_NUMBER, METHOD) %>%
+        dplyr::arrange(CURRENT)
+      )
+    )
+  
+  # Latest problem stems from separate numerals... doesnt work anymore...
+    # tidyr::separate(ASSIGN, c("INFERRED", "OTHERS"), sep = ";", convert = TRUE, 
+    #                 numerals = "no.loss", extra = "merge")%>%
+    #   tidyr::separate(OTHERS, c("SCORE", "OTHERS"), sep = ";;", convert = TRUE, 
+    #                   numerals = "no.loss", extra = "merge") %>%
+    #   tidyr::separate(OTHERS, c("SECOND_BEST_POP", "OTHERS"), sep = ";", 
+    #                   convert = TRUE, numerals = "no.loss", extra = "merge") %>%
+    #   tidyr::separate(OTHERS, c("SECOND_BEST_SCORE", "OTHERS"), sep = ";;", 
+    #                   convert = TRUE, numerals = "no.loss")
+
   
   if (markers.sampling == "random") {
     assignment %<>% 

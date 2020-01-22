@@ -4,8 +4,12 @@
 \alias{marker_selection}
 \title{marker_selection}
 \usage{
-marker_selection(iteration.method, m = NULL, random.seed = NULL,
-  unique.markers = NULL)
+marker_selection(
+  iteration.method,
+  m = NULL,
+  random.seed = NULL,
+  unique.markers = NULL
+)
 }
 \description{
 Random selection of marker function + iteration.method

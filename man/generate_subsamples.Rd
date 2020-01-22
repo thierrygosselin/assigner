@@ -4,8 +4,13 @@
 \alias{generate_subsamples}
 \title{generate_subsamples}
 \usage{
-generate_subsamples(subsample, iteration.subsample, strata,
-  random.seed = NULL, path.folder = NULL)
+generate_subsamples(
+  subsample,
+  iteration.subsample,
+  strata,
+  random.seed = NULL,
+  path.folder = NULL
+)
 }
 \description{
 generate_subsamples

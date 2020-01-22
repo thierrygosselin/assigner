@@ -284,9 +284,15 @@ test3 <- assigner::assignment_ngs(
 To view the figure:
 ```{r y axis full range test3, message=FALSE, warning=TRUE, eval = FALSE}
 test3$plot.assignment + ggplot2::scale_y_continuous(limits = c(0,100)) 
+# <img src="assignment_thl_test3.png">: works
+#![](assignment_thl_test3.png): works
+#knitr::include_graphics("assignment_thl_test3.png"):works
 ```
 
-<img src="assignment_thl_test3.png">
+```{r, echo = FALSE}
+knitr::include_graphics("assignment_thl_test3.png")
+```
+
 
 * Very different overall results...
 * For the assignment analysis of species exhibiting overall low structure, 
@@ -346,7 +352,8 @@ To view the figure:
 ```{r loo y axis full range test4, message=FALSE, warning=TRUE, eval = FALSE}
 test4$plot.assignment + ggplot2::scale_y_continuous(limits = c(0,100)) 
 ```
-
-<img src="assignment_loo_test4.png">
+```{r, echo = FALSE}
+knitr::include_graphics("assignment_loo_test4.png")
+```
 
 Conclusion: not much to gain here by using the LOO...

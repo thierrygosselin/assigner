@@ -4,9 +4,20 @@
 \alias{plot_dlr}
 \title{Assignment plot of genotype likelihood (Dlr).}
 \usage{
-plot_dlr(data, pop.pairwise, dlr = NULL, x.dlr = NULL, y.dlr = NULL,
-  fst = NULL, x.fst = NULL, y.fst = NULL, filename = NULL,
-  plot.width = NULL, plot.height = NULL, plot.dpi = NULL)
+plot_dlr(
+  data,
+  pop.pairwise,
+  dlr = NULL,
+  x.dlr = NULL,
+  y.dlr = NULL,
+  fst = NULL,
+  x.fst = NULL,
+  y.fst = NULL,
+  filename = NULL,
+  plot.width = NULL,
+  plot.height = NULL,
+  plot.dpi = NULL
+)
 }
 \arguments{
 \item{data}{The assigment object from

@@ -7,6 +7,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
@@ -67,8 +68,6 @@ overflow: auto;
 margin-left: 2%;
 position: fixed;
 border: 1px solid #ccc;
-webkit-border-radius: 6px;
-moz-border-radius: 6px;
 border-radius: 6px;
 }
 
@@ -96,9 +95,14 @@ font-size: 12px;
 .tocify-subheader .tocify-subheader {
 text-indent: 30px;
 }
-
 .tocify-subheader .tocify-subheader .tocify-subheader {
 text-indent: 40px;
+}
+.tocify-subheader .tocify-subheader .tocify-subheader .tocify-subheader {
+text-indent: 50px;
+}
+.tocify-subheader .tocify-subheader .tocify-subheader .tocify-subheader .tocify-subheader {
+text-indent: 60px;
 }
 
 .tocify .tocify-item > a, .tocify .nav-list .nav-header {
@@ -502,13 +506,13 @@ float: none;
 
           item.append($("<a/>", {
 
-            "text": self.text()
+            "html": self.html()
 
           }));
 
         } else {
 
-          item.text(self.text());
+          item.html(self.html());
 
         }
 
@@ -1413,48 +1417,9 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
 
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -1503,8 +1468,6 @@ div.tocify {
 
 .tocify-subheader .tocify-item {
   font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -1587,22 +1550,22 @@ div.tocify {
 <div id="update-gcc" class="section level3">
 <h3>Update GCC</h3>
 <p>Choose the binary version number based on your OS and change the version accordingly <a href="http://hpc.sourceforge.net">link</a>.</p>
-<p><strong>Mojave</strong> <a href="https://www.dropbox.com/s/9b7s07n2b65r5jd/gcc-8.2-bin.tar.gz?dl=0">gcc-8.2.tar.gz</a> <strong>High Sierra</strong> <a href="http://prdownloads.sourceforge.net/hpc/gcc-8.1-bin.tar.gz">gcc-8.1-bin.tar.gz</a></p>
+<p><strong>Mojave</strong> <a href="http://prdownloads.sourceforge.net/hpc/gcc-8.3-bin.tar.gz">gcc-8.3.tar.gz</a> <strong>High Sierra</strong> <a href="http://prdownloads.sourceforge.net/hpc/gcc-8.1-bin.tar.gz">gcc-8.1-bin.tar.gz</a></p>
 <pre class="bash"><code>#In Terminal
 cd Downloads
-sudo tar -zxvf gcc-8.2-bin.tar.gz -C /usr/local --strip-components=2</code></pre>
-<pre class="bash"><code>sudo rm gcc-8.2-bin.tar.gz
+sudo tar -zxvf gcc-8.3-bin.tar.gz -C /usr/local --strip-components=2</code></pre>
+<pre class="bash"><code>sudo rm gcc-8.3-bin.tar.gz
 gcc -v</code></pre>
 </div>
 <div id="update-clang" class="section level3">
 <h3>Update Clang</h3>
 <p>We want <a href="https://en.wikipedia.org/wiki/Clang">clang</a> compiler with OpenMP enabled.</p>
 <pre class="bash"><code>#In browser
-http://releases.llvm.org/7.0.0/clang+llvm-7.0.0-x86_64-apple-darwin.tar.xz
+http://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-apple-darwin.tar.xz
 #In Terminal
 cd Downloads
-sudo tar -xzvf clang+llvm-7.0.0-x86_64-apple-darwin.tar.xz -C/usr/local --strip-components=1</code></pre>
-<pre class="bash"><code>sudo rm clang+llvm-7.0.0-x86_64-apple-darwin.tar.xz
+sudo tar -xzvf clang+llvm-8.0.0-x86_64-apple-darwin.tar.xz -C/usr/local --strip-components=1</code></pre>
+<pre class="bash"><code>sudo rm clang+llvm-8.0.0-x86_64-apple-darwin.tar.xz
 clang -v</code></pre>
 </div>
 </div>
@@ -1613,9 +1576,9 @@ clang -v</code></pre>
 </div>
 <div id="install-r" class="section level1">
 <h1>Install R</h1>
-<p>To install R v3.5.3 <strong>Great Truth</strong> released on 2019-03-11 download the installer and follow the instructions</p>
+<p>To install R v3.6.1 <strong>“Action of the Toes”</strong> released on 2019-07-05 download the installer and follow the instructions</p>
 <pre class="bash"><code>cd Downloads
-wget https://cran.r-project.org/bin/macosx/R-3.5.0.pkg</code></pre>
+wget https://cran.r-project.org/bin/macosx/R-3.6.1.pkg</code></pre>
 <p><strong>To remove R completely from macOS</strong></p>
 <pre class="bash"><code>sudo rm -rf /Library/Frameworks/R.framework /Applications/R.app \
    /usr/bin/R /usr/bin/Rscript</code></pre>
@@ -1660,7 +1623,7 @@ devtools::install_github(&quot;thierrygosselin/assigner&quot;)</code></pre>
 <pre class="r"><code>#Warning: cannot remove prior installation of package ‘stringi’</code></pre>
 <p>To solve this problem, delete manually the problematic package in the installation folder (on mac: <code>/Library/Frameworks/R.framework/Resources/library</code>) or in the <code>Terminal</code>:</p>
 <pre class="bash"><code>sudo rm -R /Library/Frameworks/R.framework/Resources/library/package_name
-# Changing &#39;package_name&#39; to the problematic package.
+# Changing 'package_name' to the problematic package.
 # Reinstall the package.</code></pre>
 <ul>
 <li><p>Using the latest version of R, RStudio and packages is recommended. If your heart start pounding just at the thought of having to install a new R version, you should have a look at <a href="https://www.rstudio.com/resources/webinars/managing-package-dependencies-in-r-with-packrat/">packrat</a>.</p></li>
@@ -1726,7 +1689,7 @@ open .Renviron</code></pre>
 <pre class="bash"><code>clang++ -std=gnu++11 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG  -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/Rcpp/include&quot; -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/progress/include&quot; -I/usr/local/include  -Imio/include -DWIN32_LEAN_AND_MEAN -Ispdlog/include -fPIC  -Wall -g -O2 -c gen.cc -o gen.o
 clang++ -std=gnu++11 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG  -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/Rcpp/include&quot; -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/progress/include&quot; -I/usr/local/include  -Imio/include -DWIN32_LEAN_AND_MEAN -Ispdlog/include -fPIC  -Wall -g -O2 -c index_collection.cc -o index_collection.o
 /usr/local/bin/clang -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG  -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/Rcpp/include&quot; -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/progress/include&quot; -I/usr/local/include   -fPIC  -I/usr/local/include -c localtime.c -o localtime.o
-localtime.c:42:10: fatal error: &#39;string.h&#39; file not found
+localtime.c:42:10: fatal error: 'string.h' file not found
 #include &lt;string.h&gt;
          ^~~~~~~~~~</code></pre>
 <p>Do this:</p>
@@ -1750,13 +1713,13 @@ localtime.c:42:10: fatal error: &#39;string.h&#39; file not found
 <h2>Error in <code>.DynamicClusterCall</code></h2>
 <p>If you have a PC and you’re getting this error or closely related error:</p>
 <pre class="bash"><code># Error in .DynamicClusterCall(cl, length(cl), .fun = function(.proc_idx,  :
-# One of the nodes produced an error: Can not open file &#39;FILE PATH&#39;. The process cannot access the file because it # is being used by another process.</code></pre>
+# One of the nodes produced an error: Can not open file 'FILE PATH'. The process cannot access the file because it # is being used by another process.</code></pre>
 <p><strong>Solution:</strong> Use <code>parallel.core = 1</code> in the function generating the error.</p>
 </div>
 <div id="error-during-install-when-numerous-of-packages-are-updated" class="section level2">
 <h2>Error during install when numerous of packages are updated:</h2>
 <pre class="bash"><code># Error in get0(oNam, envir = ns) :
-# lazy-load database &#39;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/callr/R/callr.rdb&#39; is corrupt
+# lazy-load database '/Library/Frameworks/R.framework/Versions/3.5/Resources/library/callr/R/callr.rdb' is corrupt
 # In addition: Warning message:
 # In get0(oNam, envir = ns) : internal error -3 in R_decompress1</code></pre>
 <p><strong>Solution:</strong></p>
@@ -1775,7 +1738,7 @@ localtime.c:42:10: fatal error: &#39;string.h&#39; file not found
 <h2><code>rmetasim</code></h2>
 <div id="download" class="section level3">
 <h3>Download</h3>
-<p>Download the latest github release (3.1.7) of Allan Strand’s <strong>rmetasim</strong></p>
+<p>Download the latest github release (3.1.10) of Allan Strand’s <strong>rmetasim</strong></p>
 <pre class="bash"><code>cd ~/Downloads
 wget --no-check-certificate https://github.com/stranda/rmetasim/archive/master.zip
 unzip master.zip</code></pre>
@@ -1783,11 +1746,12 @@ unzip master.zip</code></pre>
 <div id="modify-the-number-of-loci-maxloci" class="section level3">
 <h3>Modify the number of loci: MAXLOCI</h3>
 <p>If you want to use more loci during your simulations (default is 1000), you need to modify rmetasim before compiling. With a text editor <a href="http://gbs-cloud-tutorial.readthedocs.io/en/latest/03_computer_setup.html#install-textwrangler">e.g. BBEdit with macOS</a>, modify the <code>const.h</code> file in the <code>src</code> folder: <code>rmetasim-master/src/const.h</code>. Navigate to <strong>lane 33</strong> and change the integer to the desired maximum number of loci. Or do this in the Terminal:</p>
-<pre class="bash"><code>sed -i -e &#39;s/#define MAXLOCI               1000/#define MAXLOCI               20000/g&#39; rmetasim-master/src/const.h</code></pre>
+<pre class="bash"><code>sed -i -e 's/#define MAXLOCI               1000/#define MAXLOCI               20000/g' rmetasim-master/src/const.h</code></pre>
 </div>
 <div id="makevars-configuration" class="section level3">
 <h3>Makevars configuration</h3>
 <p><em>rmetasim</em> requires these Makevars (<code>~/.R/Makevars</code> file) specifications. If you have other lines, comment (#) before compiling <code>rmetasim</code>:</p>
+<pre class="r"><code>usethis::edit_r_makevars()</code></pre>
 <pre class="bash"><code>CC=/usr/local/bin/clang # -fopenmp
 CC=/usr/local/bin/clang
 CXX=/usr/local/bin/clang++
@@ -1834,6 +1798,7 @@ cd xgboost</code></pre>
 <div id="makevars-configuration-1" class="section level3">
 <h3>Makevars configuration</h3>
 <p><code>XGBoost</code> requires these Makevars specifications. If you have other lines, comment (#) before compiling:</p>
+<pre class="r"><code>usethis::edit_r_makevars()</code></pre>
 <pre class="bash"><code>CC=/usr/local/bin/gcc
 CXX=/usr/local/bin/g++
 CXX11=/usr/local/bin/g++
@@ -1873,7 +1838,7 @@ https://cmake.org/files/v3.12/cmake-3.12.2-Darwin-x86_64.dmg
 # double-click on the disk image and follow instructions</code></pre>
 <p>To add CMake to the PATH:</p>
 <pre class="bash"><code>PATH=&quot;/Applications/CMake.app/Contents/bin&quot;:&quot;$PATH&quot;
-# Or, to install symlinks to &#39;/usr/local/bin&#39;, run:
+# Or, to install symlinks to '/usr/local/bin', run:
 sudo &quot;/Applications/CMake.app/Contents/bin/cmake-gui&quot; --install
 # Or, to install symlinks to another directory, run:
 sudo &quot;/Applications/CMake.app/Contents/bin/cmake-gui&quot; --install=/path/to/bin
@@ -1897,6 +1862,7 @@ Rscript build_r.R
 <div id="makevars-configuration-2" class="section level3">
 <h3>Makevars configuration</h3>
 <p>Check that the lines below <strong>are not</strong> commented in your <code>~/.R/Makevars</code> file:</p>
+<pre class="r"><code>usethis::edit_r_makevars()</code></pre>
 <pre class="bash"><code>CC=/usr/local/bin/gcc
 CXX=/usr/local/bin/g++
 CFLAGS=-g -O3 -Wall -pedantic -std=gnu99 -mtune=native -pipe
@@ -1910,8 +1876,8 @@ F77=/usr/local/bin/gfortran</code></pre>
 <h3>Download and install</h3>
 <p>From the Terminal run these steps to download and compile randomForestSRC:</p>
 <pre class="bash"><code>cd ~/Downloads
-curl -O https://cran.r-project.org/src/contrib/randomForestSRC_2.7.0.tar.gz
-tar -zxvf randomForestSRC_2.7.0.tar.gz
+curl -O https://cran.r-project.org/src/contrib/randomForestSRC_4.6-14.tar.gz
+tar -zxvf randomForestSRC_4.6-14.tar.gz
 cd randomForestSRC
 autoconf
 cd ..
@@ -1990,6 +1956,49 @@ $(document).ready(function () {
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

@@ -4,8 +4,13 @@
 \alias{dlr}
 \title{Genotype likelihood ratio distance (Dlr)}
 \usage{
-dlr(data, strata, plots = FALSE, filename = NULL,
-  parallel.core = parallel::detectCores() - 1)
+dlr(
+  data,
+  strata,
+  plots = FALSE,
+  filename = NULL,
+  parallel.core = parallel::detectCores() - 1
+)
 }
 \arguments{
 \item{data}{The output assignment file (home likelihood or

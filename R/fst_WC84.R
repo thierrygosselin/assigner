@@ -137,7 +137,6 @@
 #' Default: \code{heatmap.fst = FALSE}.
 #' The heatmap can also be generated and more finetuned separately after the Fst
 #' analysis using \code{\link{heatmap_fst}}.
-#'
 #' }
 
 
@@ -345,10 +344,17 @@ fst_WC84 <- function(
   
   # Import data ---------------------------------------------------------------
   if (verbose) message("Importing data")
+  input <- radiator::tidy_wide(data = data, import.metadata = TRUE)
+  
+  if (!rlang::has_name(input, "GT")) {
+    input <- radiator::calibrate_alleles(
+      data =input, 
+      parallel.core = parallel.core
+      ) %$% input
+  }
   want <- c("MARKERS", "POP_ID", "STRATA", "INDIVIDUALS", "GT")
-  input <- suppressWarnings(
-    radiator::tidy_wide(data = data, import.metadata = FALSE) %>% 
-  dplyr::select(dplyr::one_of(want))# remove unnecessary columns
+  suppressWarnings(
+    input %<>% dplyr::select(dplyr::one_of(want))# remove unnecessary columns
   )
   
   # Strata----------------------------------------------------------------------
@@ -1448,7 +1454,9 @@ fst_subsample <- function(
 #' @param plot.size (optional, integer) By default the size of the plot is set
 #' to 40 cm x 40 cm.
 #' Default: \code{plot.size = 40}.
-#' @param pop.levels (optional, character) the pop.levels to have the pop ordered as desired.
+#' @param pop.levels (optional, character) the pop.levels to have the pop ordered 
+#' as desired. The default takes the info from the \code{pairwise.fst.full.matrix} 
+#' colnames.
 #' Default: \code{pop.levels = NULL}.
 #' @param path.folder (optional, character)
 #' Default: \code{path.folder = NULL}. Default will use the working directory.
@@ -1501,6 +1509,8 @@ heatmap_fst <- function(
     data.ci <- pairwise.fst.ci.matrix
   }
   
+  if (is.null(pop.levels)) pop.levels <- colnames(data.fst)
+  
   
   data.fst %<>%
     radiator::distance2tibble(x = ., remove.diag = FALSE, na.diag = TRUE, remove.lower = FALSE, relative = FALSE, pop.levels = pop.levels) %>% 
@@ -1533,9 +1543,9 @@ heatmap_fst <- function(
   
   # data without CI
   if (n.s || round.num) {
-    data.ci <- dplyr::filter(data.fst, stringi::stri_detect_fixed(str = CI, pattern = " - ")) %>% 
+    data.ci <- dplyr::filter(data.fst, stringi::stri_detect_fixed(str = CI, pattern = " - ")) %>%
       tidyr::separate(data = ., col = CI, into = c("LOW", "HIGH"), sep = " - ") %>% 
-      dplyr::mutate_at(.tbl = ., .vars = c("LOW", "HIGH"), .funs = rounder, digits = 5) %>% 
+      dplyr::mutate_at(.tbl = ., .vars = c("FST", "LOW", "HIGH"), .funs = rounder, digits = digits) %>% 
       dplyr::mutate(NS = dplyr::if_else(LOW == 0, TRUE, FALSE)) %>% 
       dplyr::mutate_at(.tbl = ., .vars = c("LOW", "HIGH"), .funs = format, scientific = FALSE) %>% 
       tidyr::unite(data = ., col = CI, c("LOW", "HIGH"), sep = "\n")
@@ -1547,7 +1557,7 @@ heatmap_fst <- function(
     suppressWarnings(
       data.fst %<>% 
         dplyr::filter(!stringi::stri_detect_fixed(str = CI, pattern = " - ") | is.na(CI)) %>%
-        dplyr::mutate_at(.tbl = ., .vars = c("CI"), .funs = rounder, digits = 5) %>%
+        dplyr::mutate_at(.tbl = ., .vars = c("FST", "CI"), .funs = rounder, digits = digits) %>%
         dplyr::mutate_at(.tbl = ., .vars = c("CI"), .funs = format, scientific = FALSE) %>% 
         dplyr::left_join(ns, by = c("POP1", "POP2"))
     )
@@ -1556,6 +1566,8 @@ heatmap_fst <- function(
       suppressWarnings(
         data.fst %<>% 
           dplyr::mutate(CI = dplyr::if_else(NS, paste0(CI, "*"), CI), NS = NULL)
+        # dplyr::mutate_at(.tbl = ., .vars = "FST", .funs = format, scientific = FALSE) %>% 
+        # dplyr::mutate(FST = dplyr::if_else(NS, paste0(FST, "*"), FST), NS = NULL)
       )
     }
     suppressWarnings(data.fst %<>% dplyr::bind_rows(data.ci))
@@ -1565,8 +1577,8 @@ heatmap_fst <- function(
   }
   
   heatmap.fst <- ggplot2::ggplot(
-    data = data.fst, 
-    ggplot2::aes(x = POP1, y = POP2, fill = FST)) + 
+    data = data.fst, ggplot2::aes(x = POP1, y = POP2, fill = FST)
+    ) + 
     ggplot2::geom_tile(color = "white") +
     ggplot2::geom_text(ggplot2::aes(x = POP1, y = POP2, label = CI), 
                        color = "black", size = text.size, na.rm = TRUE) +

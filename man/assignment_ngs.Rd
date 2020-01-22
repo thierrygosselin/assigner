@@ -4,12 +4,21 @@
 \alias{assignment_ngs}
 \title{Assignment analysis tailored for RADseq data}
 \usage{
-assignment_ngs(data, strata = NULL, pop.levels = NULL,
+assignment_ngs(
+  data,
+  strata = NULL,
+  pop.levels = NULL,
   assignment.analysis = c("gsim_sim", "adegenet"),
-  markers.sampling = c("ranked", "random"), marker.number = "all",
-  thl = 1, iteration.method = 10, subsample = NULL,
-  iteration.subsample = 1, verbose = TRUE,
-  parallel.core = parallel::detectCores() - 1, ...)
+  markers.sampling = c("ranked", "random"),
+  marker.number = "all",
+  thl = 1,
+  iteration.method = 10,
+  subsample = NULL,
+  iteration.subsample = 1,
+  verbose = TRUE,
+  parallel.core = parallel::detectCores() - 1,
+  ...
+)
 }
 \arguments{
 \item{data}{Several input format are accepted. assigner uses \pkg{radiator}
@@ -18,9 +27,9 @@ See function documentation for more details.}
 
 \item{strata}{(optional)
 The strata file is a tab delimited file with a minimum of 2 columns headers:
-\code{INDIVIDUALS} and \code{STRATA}. Documented in \code{\link{read_strata}}.
+\code{INDIVIDUALS} and \code{STRATA}. Documented in \code{\link[radiator]{read_strata}}.
 DArT data: a third column \code{TARGET_ID} is required.
-Documented on \code{\link{read_dart}}. Also use the strata read function to
+Documented on \code{\link[radiator]{read_dart}}. Also use the strata read function to
 blacklist individuals.
 Default: \code{strata = NULL}.}
 

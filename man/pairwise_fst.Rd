@@ -4,9 +4,16 @@
 \alias{pairwise_fst}
 \title{pairwise_fst}
 \usage{
-pairwise_fst(list.pair, pop.pairwise = NULL, data.genotyped = NULL,
-  ci = FALSE, iteration.ci = 100, quantiles.ci = c(0.025, 0.975),
-  digits = 9, path.folder = path.folder)
+pairwise_fst(
+  list.pair,
+  pop.pairwise = NULL,
+  data.genotyped = NULL,
+  ci = FALSE,
+  iteration.ci = 100,
+  quantiles.ci = c(0.025, 0.975),
+  digits = 9,
+  path.folder = path.folder
+)
 }
 \description{
 Pairwise Fst function

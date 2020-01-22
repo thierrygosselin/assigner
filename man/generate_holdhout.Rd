@@ -4,8 +4,13 @@
 \alias{generate_holdhout}
 \title{generate_holdhout}
 \usage{
-generate_holdhout(thl, strata, iteration.method, random.seed = NULL,
-  path.folder = NULL)
+generate_holdhout(
+  thl,
+  strata,
+  iteration.method,
+  random.seed = NULL,
+  path.folder = NULL
+)
 }
 \description{
 Generate holdhout samples based on thl and iterations.list

@@ -13,8 +13,9 @@
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Pairwise and overall Fst with confidence intervals + building phylogenetic tree">
 <meta property="og:description" content="">
 <meta property="og:image" content="/logo.png">
@@ -37,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.7</span>
       </span>
     </div>
 
@@ -102,13 +103,14 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Pairwise and overall Fst with confidence intervals + building phylogenetic tree</h1>
                         <h4 class="author">Thierry Gosselin</h4>
             
-            <h4 class="date">2019-05-17</h4>
+            <h4 class="date">2020-01-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_confidence_intervals.Rmd"><code>vignettes/fst_confidence_intervals.Rmd</code></a></small>
       <div class="hidden name"><code>fst_confidence_intervals.Rmd</code></div>
@@ -134,7 +136,7 @@
 <h1 class="hasAnchor">
 <a href="#special-concerns-for-genome-wide-estimate-and-filtering-bias" class="anchor"></a>Special concerns for genome-wide estimate and filtering bias</h1>
 <p>During computation, the function first starts by keeping only the polymorphic markers in common between the populations.</p>
-<p>When your project involves &gt; 2 populations that evolved more by neutral processes (e.g. genetic drift) than by natural selection, filtering to keep only the markers in common between your populations will drastically reduce the number of markers, and consequently your genome coverage for the estimate. Strategically, you should reduce the threshold of number of populations required to keep a marker (e.g. use a minimum of 2 populations genotyped for the markers to keep it). This is easily tested with <code><a href="https://www.rdocumentation.org/packages/radiator/topics/filter_common_markers">radiator::filter_common_markers</a></code> or in stacks population module.</p>
+<p>When your project involves &gt; 2 populations that evolved more by neutral processes (e.g. genetic drift) than by natural selection, filtering to keep only the markers in common between your populations will drastically reduce the number of markers, and consequently your genome coverage for the estimate. Strategically, you should reduce the threshold of number of populations required to keep a marker (e.g. use a minimum of 2 populations genotyped for the markers to keep it). This is easily tested with <code><a href="https://rdrr.io/pkg/radiator/man/filter_common_markers.html">radiator::filter_common_markers</a></code> or in stacks population module.</p>
 <p>The overall fst and fis estimates will have reduce genome-wide coverage, because the computation is conducted with shared markers accross all your populations. However, for the pairwise comparisons, the markers will be tallied automatically for the pair. This usually results in more legitimate markers (i.e. less filtering bias) being used during computation, providing better genome-wide estimates for that pair.</p>
 </div>
 <div id="workflow" class="section level1">
@@ -146,29 +148,29 @@
 <ol style="list-style-type: decimal">
 <li>Clean your desk and remove the clutter in the global environment</li>
 </ol>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ls">ls</a></span>())</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/rm.html">rm</a></span>(<span class="dt">list=</span><span class="kw"><a href="https://rdrr.io/r/base/ls.html">ls</a></span>())</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>Required libraries</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"pak"</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pak"</span>)</a>
-<a class="sourceLine" id="cb2-2" title="2">pak<span class="op">::</span><span class="kw">pkg_install</span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(assigner)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"pak"</span>)) <span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"pak"</span>)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">pak<span class="op">::</span><span class="kw">pkg_install</span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(assigner)</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>Get the data:</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">data.fst &lt;-<span class="st"> </span>readr<span class="op">::</span><span class="kw"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(<span class="dt">file =</span> <span class="st">"https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">data.fst &lt;-<span class="st"> </span>readr<span class="op">::</span><span class="kw"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(<span class="dt">file =</span> <span class="st">"https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz"</span>)</a></code></pre></div>
 </div>
 <div id="fst-calculations" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fst-calculations" class="anchor"></a>Fst calculations</h2>
 <p><code><a href="../reference/fst_WC84.html">assigner::fst_WC84</a></code> first run: overall and pairwise, but without boostrap (i.e. no confidence intervals). Get the function documentation with: <code>??assigner::fst_WC84</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">fst &lt;-<span class="st"> </span>assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/fst_WC84">fst_WC84</a></span>(</a>
-<a class="sourceLine" id="cb4-2" title="2">    <span class="dt">data =</span> data.fst, </a>
-<a class="sourceLine" id="cb4-3" title="3">    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),</a>
-<a class="sourceLine" id="cb4-4" title="4">    <span class="dt">pairwise =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb4-5" title="5">    <span class="dt">filename =</span> <span class="st">"testing_fst"</span>, <span class="co">#will trigger the function to write the results in directory as well</span></a>
-<a class="sourceLine" id="cb4-6" title="6">    <span class="dt">verbose =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb4-7" title="7">)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">fst &lt;-<span class="st"> </span>assigner<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/assigner/man/fst_WC84.html">fst_WC84</a></span>(</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">    <span class="dt">data =</span> data.fst, </a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="dt">pairwise =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">    <span class="dt">filename =</span> <span class="st">"testing_fst"</span>, <span class="co">#will trigger the function to write the results in directory as well</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">    <span class="dt">verbose =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">)</a></code></pre></div>
 </div>
 <div id="results" class="section level2">
 <h2 class="hasAnchor">
@@ -177,26 +179,35 @@
 <ol style="list-style-type: decimal">
 <li>To view the content of <code>fst</code>:</li>
 </ol>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(fst)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(fst)</a></code></pre></div>
 <ol style="list-style-type: decimal">
-<li>Get access to specific content with <code>$</code>:
+<li>Get access to specific content with <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code>:
 <ul>
 <li><p><code>$sigma.loc</code>: the variance components per locus: <code>lsiga</code>: among populations, <code>lsigb</code>: among individuals within populations, <code>lsigw</code>: within individuals.</p></li>
-<li><p><code>$fst.markers</code>: the fst by markers</p></li>
-<li><p><code>$fst.ranked</code>: the fst ranked</p></li>
-<li><p><code>$fst.overall</code>: the mean fst overall markers and number of markers</p></li>
-<li><p><code>$fis.markers</code>: the fis by markers</p></li>
-<li><p><code>$fis.overall</code>: the mean fis overall markers and number of markers</p></li>
-<li><p><code>$fst.plot</code>: the histogram of the overall Fst per markers</p></li>
-<li><p><code>$pairwise.fst</code>: the pairwise fst in long/tidy data frame and number of markers per pairwise comparison</p></li>
-<li><p><code>$pairwise.fst.upper.matrix</code>: the pairwise fst in a upper triangle matrix</p></li>
-<li><p><code>$pairwise.fst.full.matrix</code>: the pairwise fst matrix (duplicated upper and lower triangle)</p></li>
+<li>
+<code>$fst.markers</code>: the fst by markers</li>
+<li>
+<code>$fst.ranked</code>: the fst ranked</li>
+<li>
+<code>$fst.overall</code>: the mean fst overall markers and number of markers</li>
+<li>
+<code>$fis.markers</code>: the fis by markers</li>
+<li>
+<code>$fis.overall</code>: the mean fis overall markers and number of markers</li>
+<li>
+<code>$fst.plot</code>: the histogram of the overall Fst per markers</li>
+<li>
+<code>$pairwise.fst</code>: the pairwise fst in long/tidy data frame and number of markers per pairwise comparison</li>
+<li>
+<code>$pairwise.fst.upper.matrix</code>: the pairwise fst in a upper triangle matrix</li>
+<li>
+<code>$pairwise.fst.full.matrix</code>: the pairwise fst matrix (duplicated upper and lower triangle)</li>
 <li><p><code>$pairwise.fst.ci.matrix</code>: matrix with pairwise fst in the upper triangle and the confidence intervals in the lower triangle.</p></li>
 </ul>
 </li>
 <li>To view the pairwise Fst values in a tibble with 4 columns:</li>
 </ol>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">df &lt;-<span class="st"> </span>fst<span class="op">$</span>pairwise.fst</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">df &lt;-<span class="st"> </span>fst<span class="op">$</span>pairwise.fst</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>
 <p>The first 10 parwise comparisons in <code>df</code></p>
@@ -274,42 +285,42 @@
 </li>
 <li><p>The matrix with fst values:</p></li>
 </ol>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># to see as a tibble:</span></a>
-<a class="sourceLine" id="cb7-2" title="2">fst.matrix &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(fst<span class="op">$</span>pairwise.fst.full.matrix, <span class="dt">rownames =</span> <span class="st">"POP"</span>)</a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="co"># to keep matrix:</span></a>
-<a class="sourceLine" id="cb7-4" title="4">fst.matrix &lt;-<span class="st"> </span>fst<span class="op">$</span>pairwise.fst.full.matrix</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co"># to see as a tibble:</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">fst.matrix &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(fst<span class="op">$</span>pairwise.fst.full.matrix, <span class="dt">rownames =</span> <span class="st">"POP"</span>)</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co"># to keep matrix:</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">fst.matrix &lt;-<span class="st"> </span>fst<span class="op">$</span>pairwise.fst.full.matrix</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>If you try to get the <code>pairwise.fst.ci.matrix</code>:</li>
 </ol>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">fst<span class="op">$</span>pairwise.fst.ci.matrix <span class="co"># you will get this:</span></a>
-<a class="sourceLine" id="cb8-2" title="2">[<span class="dv">1</span>] <span class="st">"confidence intervals not selected"</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">fst<span class="op">$</span>pairwise.fst.ci.matrix <span class="co"># you will get this:</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">[<span class="dv">1</span>] <span class="st">"confidence intervals not selected"</span></a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>So let’s make another run with <code>fst_WC84</code>, but this time will ask for the confidence intervals and the heatmap:</li>
 </ol>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">fst.ci &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fst_WC84.html">fst_WC84</a></span>(<span class="dt">data =</span> data.fst, </a>
-<a class="sourceLine" id="cb9-2" title="2">    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),</a>
-<a class="sourceLine" id="cb9-3" title="3">    <span class="dt">pairwise =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb9-4" title="4">    <span class="dt">ci =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb9-5" title="5">    <span class="dt">iteration.ci =</span> <span class="dv">100</span>,</a>
-<a class="sourceLine" id="cb9-6" title="6">    <span class="dt">quantiles.ci =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>),</a>
-<a class="sourceLine" id="cb9-7" title="7">    <span class="dt">parallel.core =</span> <span class="dv">12</span>,</a>
-<a class="sourceLine" id="cb9-8" title="8">    <span class="dt">heatmap.fst =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb9-9" title="9">    <span class="dt">filename =</span> <span class="st">"testing_fst"</span>,</a>
-<a class="sourceLine" id="cb9-10" title="10">    <span class="dt">verbose =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb9-11" title="11">)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">fst.ci &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fst_WC84.html">fst_WC84</a></span>(<span class="dt">data =</span> data.fst, </a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">    <span class="dt">pairwise =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">    <span class="dt">ci =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">    <span class="dt">iteration.ci =</span> <span class="dv">100</span>,</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6">    <span class="dt">quantiles.ci =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>),</a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">    <span class="dt">parallel.core =</span> <span class="dv">12</span>,</a>
+<a class="sourceLine" id="cb9-8" data-line-number="8">    <span class="dt">heatmap.fst =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb9-9" data-line-number="9">    <span class="dt">filename =</span> <span class="st">"testing_fst"</span>,</a>
+<a class="sourceLine" id="cb9-10" data-line-number="10">    <span class="dt">verbose =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb9-11" data-line-number="11">)</a></code></pre></div>
 <pre><code>`fst.ci$pairwise.fst` is the tibble with the Fst values and now with the confidence intervals.</code></pre>
 <ol style="list-style-type: decimal">
 <li>Try again to get the matrix with fst and ci:</li>
 </ol>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">fst.ci<span class="op">$</span>pairwise.fst.ci.matrix</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">fst.ci<span class="op">$</span>pairwise.fst.ci.matrix</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>To have this in a handy table for publication, we will create a new object <code>pairwise.fst.ci.df</code>:</li>
 </ol>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">pairwise.fst.ci.df &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(fst.ci<span class="op">$</span>pairwise.fst.ci.matrix, <span class="dt">rownames =</span> <span class="st">"POP"</span>)</a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="co"># if you have numeric pop_id identifier you might have to do this to get proper column names:</span></a>
-<a class="sourceLine" id="cb12-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(pairwise.fst.ci.df) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(fst.ci<span class="op">$</span>pairwise.fst.ci.matrix)</a>
-<a class="sourceLine" id="cb12-4" title="4"><span class="co"># to save:</span></a>
-<a class="sourceLine" id="cb12-5" title="5">readr<span class="op">::</span><span class="kw"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_tsv</a></span>(<span class="dt">x =</span> pairwise.fst.ci.df, <span class="dt">path =</span> <span class="st">"pairwise.fst.ci.df.tsv"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">pairwise.fst.ci.df &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(fst.ci<span class="op">$</span>pairwise.fst.ci.matrix, <span class="dt">rownames =</span> <span class="st">"POP"</span>)</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="co"># if you have numeric pop_id identifier you might have to do this to get proper column names:</span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(pairwise.fst.ci.df) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(fst.ci<span class="op">$</span>pairwise.fst.ci.matrix)</a>
+<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="co"># to save:</span></a>
+<a class="sourceLine" id="cb12-5" data-line-number="5">readr<span class="op">::</span><span class="kw"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_tsv</a></span>(<span class="dt">x =</span> pairwise.fst.ci.df, <span class="dt">path =</span> <span class="st">"pairwise.fst.ci.df.tsv"</span>)</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>Or even better, use the heatmap of Fst and CI values…:
 <center>
@@ -325,55 +336,55 @@
 <ol style="list-style-type: decimal">
 <li>For a Neighbor joining tree:</li>
 </ol>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="co"># build the tree:</span></a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ape)</a>
-<a class="sourceLine" id="cb13-3" title="3">tree &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/nj">nj</a></span>(<span class="dt">X =</span> fst.matrix) <span class="co"># fst.matrix as a matrix</span></a>
-<a class="sourceLine" id="cb13-4" title="4"><span class="co"># for annotating bootstraps values on the tree:</span></a>
-<a class="sourceLine" id="cb13-5" title="5">bootstrap.value &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/boot.phylo">boot.phylo</a></span>(</a>
-<a class="sourceLine" id="cb13-6" title="6">    <span class="dt">phy =</span> tree, </a>
-<a class="sourceLine" id="cb13-7" title="7">    <span class="dt">x =</span> fst.matrix, </a>
-<a class="sourceLine" id="cb13-8" title="8">    <span class="dt">FUN =</span> <span class="cf">function</span>(x) ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/nj">nj</a></span>(x), </a>
-<a class="sourceLine" id="cb13-9" title="9">    <span class="dt">block =</span> <span class="dv">1</span>, </a>
-<a class="sourceLine" id="cb13-10" title="10">    <span class="dt">B =</span> <span class="dv">10000</span>, </a>
-<a class="sourceLine" id="cb13-11" title="11">    <span class="dt">trees =</span> <span class="ot">FALSE</span>, </a>
-<a class="sourceLine" id="cb13-12" title="12">    <span class="dt">rooted =</span> <span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb13-13" title="13">    )</a>
-<a class="sourceLine" id="cb13-14" title="14"> <span class="co"># to get percentage values</span></a>
-<a class="sourceLine" id="cb13-15" title="15">bootstrap.value &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>((bootstrap.value<span class="op">/</span><span class="dv">10000</span>)<span class="op">*</span><span class="dv">100</span>, <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb13-16" title="16">bootstrap.value</a>
-<a class="sourceLine" id="cb13-17" title="17"><span class="co"># to include in the tree</span></a>
-<a class="sourceLine" id="cb13-18" title="18">tree<span class="op">$</span>node.label &lt;-<span class="st"> </span>bootstrap.value </a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co"># build the tree:</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(ape)</a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">tree &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/ape/man/nj.html">nj</a></span>(<span class="dt">X =</span> fst.matrix) <span class="co"># fst.matrix as a matrix</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="co"># for annotating bootstraps values on the tree:</span></a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">bootstrap.value &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/ape/man/boot.phylo.html">boot.phylo</a></span>(</a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">    <span class="dt">phy =</span> tree, </a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">    <span class="dt">x =</span> fst.matrix, </a>
+<a class="sourceLine" id="cb13-8" data-line-number="8">    <span class="dt">FUN =</span> <span class="cf">function</span>(x) ape<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/ape/man/nj.html">nj</a></span>(x), </a>
+<a class="sourceLine" id="cb13-9" data-line-number="9">    <span class="dt">block =</span> <span class="dv">1</span>, </a>
+<a class="sourceLine" id="cb13-10" data-line-number="10">    <span class="dt">B =</span> <span class="dv">10000</span>, </a>
+<a class="sourceLine" id="cb13-11" data-line-number="11">    <span class="dt">trees =</span> <span class="ot">FALSE</span>, </a>
+<a class="sourceLine" id="cb13-12" data-line-number="12">    <span class="dt">rooted =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb13-13" data-line-number="13">    )</a>
+<a class="sourceLine" id="cb13-14" data-line-number="14"> <span class="co"># to get percentage values</span></a>
+<a class="sourceLine" id="cb13-15" data-line-number="15">bootstrap.value &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Round.html">round</a></span>((bootstrap.value<span class="op">/</span><span class="dv">10000</span>)<span class="op">*</span><span class="dv">100</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb13-16" data-line-number="16">bootstrap.value</a>
+<a class="sourceLine" id="cb13-17" data-line-number="17"><span class="co"># to include in the tree</span></a>
+<a class="sourceLine" id="cb13-18" data-line-number="18">tree<span class="op">$</span>node.label &lt;-<span class="st"> </span>bootstrap.value </a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>For a UPGMA tree:</li>
 </ol>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(stats)</a>
-<a class="sourceLine" id="cb14-2" title="2">tree &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/as.phylo">as.phylo</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/hclust">hclust</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/dist">dist</a></span>(fst.matrix), <span class="dt">method =</span> <span class="st">"average"</span>))</a>
-<a class="sourceLine" id="cb14-3" title="3">bootstrap.value &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/boot.phylo">boot.phylo</a></span>(<span class="dt">phy =</span> tree, <span class="dt">x =</span> fst.matrix, <span class="dt">FUN =</span> <span class="cf">function</span>(xx) ape<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ape/topics/as.phylo">as.phylo</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/hclust">hclust</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/dist">dist</a></span>(xx), <span class="dt">method =</span> <span class="st">"average"</span>)) , <span class="dt">block =</span> <span class="dv">1</span>, <span class="dt">B =</span> <span class="dv">10000</span>, <span class="dt">trees =</span> <span class="ot">FALSE</span>, <span class="dt">rooted =</span> <span class="ot">TRUE</span>) </a>
-<a class="sourceLine" id="cb14-4" title="4">bootstrap.value &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>((bootstrap.value<span class="op">/</span><span class="dv">10000</span>)<span class="op">*</span><span class="dv">100</span>, <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb14-5" title="5">bootstrap.value</a>
-<a class="sourceLine" id="cb14-6" title="6">tree<span class="op">$</span>node.label &lt;-<span class="st"> </span>bootstrap.value</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(stats)</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">tree &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/ape/man/as.phylo.html">as.phylo</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span>(fst.matrix), <span class="dt">method =</span> <span class="st">"average"</span>))</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">bootstrap.value &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/ape/man/boot.phylo.html">boot.phylo</a></span>(<span class="dt">phy =</span> tree, <span class="dt">x =</span> fst.matrix, <span class="dt">FUN =</span> <span class="cf">function</span>(xx) ape<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/ape/man/as.phylo.html">as.phylo</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span>(xx), <span class="dt">method =</span> <span class="st">"average"</span>)) , <span class="dt">block =</span> <span class="dv">1</span>, <span class="dt">B =</span> <span class="dv">10000</span>, <span class="dt">trees =</span> <span class="ot">FALSE</span>, <span class="dt">rooted =</span> <span class="ot">TRUE</span>) </a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">bootstrap.value &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Round.html">round</a></span>((bootstrap.value<span class="op">/</span><span class="dv">10000</span>)<span class="op">*</span><span class="dv">100</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb14-5" data-line-number="5">bootstrap.value</a>
+<a class="sourceLine" id="cb14-6" data-line-number="6">tree<span class="op">$</span>node.label &lt;-<span class="st"> </span>bootstrap.value</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>To build the tree we will need to install </li>
 </ol>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="co"># get the latest development version of ggtree:</span></a>
-<a class="sourceLine" id="cb15-2" title="2"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"ggtree"</span>)) <span class="kw">install_github</span>(<span class="st">"GuangchuangYu/ggtree"</span>)</a>
-<a class="sourceLine" id="cb15-3" title="3"><span class="co"># If it's not working, use the Bioconductor version:</span></a>
-<a class="sourceLine" id="cb15-4" title="4"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"BiocManager"</span>)</a>
-<a class="sourceLine" id="cb15-5" title="5">BiocManager<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/BiocManager/topics/install">install</a></span>(<span class="st">"ggtree"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="co"># get the latest development version of ggtree:</span></a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"ggtree"</span>)) <span class="kw">install_github</span>(<span class="st">"GuangchuangYu/ggtree"</span>)</a>
+<a class="sourceLine" id="cb15-3" data-line-number="3"><span class="co"># If it's not working, use the Bioconductor version:</span></a>
+<a class="sourceLine" id="cb15-4" data-line-number="4"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) <span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)</a>
+<a class="sourceLine" id="cb15-5" data-line-number="5">BiocManager<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"ggtree"</span>)</a></code></pre></div>
 <ol style="list-style-type: decimal">
 <li><p>Several vignettes are available to get to know <a href="http://guangchuangyu.github.io/ggtree/">ggtree</a></p></li>
 <li><p>Build a very basic tree figure:</p></li>
 </ol>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ggtree)</a>
-<a class="sourceLine" id="cb16-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(ggplot2)</a>
-<a class="sourceLine" id="cb16-3" title="3">tree.figure &lt;-<span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(tree, ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(x, y), <span class="dt">ladderize =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb16-4" title="4"><span class="st">    </span>ggtree<span class="op">::</span><span class="kw">geom_tree</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb16-5" title="5"><span class="st">    </span><span class="co"># geom_tiplab(size = 3, hjust = -0.05, vjust = 0.5)+ # for just the tip label</span></a>
-<a class="sourceLine" id="cb16-6" title="6"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_text">geom_text</a></span>(ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">label =</span> label), <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">hjust =</span> <span class="fl">-0.05</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span><span class="co"># for both tips and nodes</span></a>
-<a class="sourceLine" id="cb16-7" title="7"><span class="st">    </span>ggtree<span class="op">::</span><span class="kw">theme_tree</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb16-8" title="8"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/lims">xlim</a></span>(<span class="dv">0</span>, <span class="fl">0.16</span>) <span class="co"># to allocate more space for tip labels (trial/error)</span></a>
-<a class="sourceLine" id="cb16-9" title="9">tree.figure</a>
-<a class="sourceLine" id="cb16-10" title="10">ggplot2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggsave">ggsave</a></span>(<span class="dt">filename =</span> <span class="st">"assigner.fst.tree.example.pdf"</span>, <span class="dt">width =</span> <span class="dv">15</span>, <span class="dt">height =</span> <span class="dv">15</span>, <span class="dt">dpi =</span> <span class="dv">600</span>, <span class="dt">units =</span> <span class="st">"cm"</span>, <span class="dt">useDingbats =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(ggtree)</a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(ggplot2)</a>
+<a class="sourceLine" id="cb16-3" data-line-number="3">tree.figure &lt;-<span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(tree, ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x, y), <span class="dt">ladderize =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="st">    </span>ggtree<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/ggtree/man/geom_tree.html">geom_tree</a></span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="st">    </span><span class="co"># geom_tiplab(size = 3, hjust = -0.05, vjust = 0.5)+ # for just the tip label</span></a>
+<a class="sourceLine" id="cb16-6" data-line-number="6"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html">geom_text</a></span>(ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">label =</span> label), <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">hjust =</span> <span class="fl">-0.05</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span><span class="co"># for both tips and nodes</span></a>
+<a class="sourceLine" id="cb16-7" data-line-number="7"><span class="st">    </span>ggtree<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/ggtree/man/theme_tree.html">theme_tree</a></span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-8" data-line-number="8"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/lims.html">xlim</a></span>(<span class="dv">0</span>, <span class="fl">0.16</span>) <span class="co"># to allocate more space for tip labels (trial/error)</span></a>
+<a class="sourceLine" id="cb16-9" data-line-number="9">tree.figure</a>
+<a class="sourceLine" id="cb16-10" data-line-number="10">ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span>(<span class="dt">filename =</span> <span class="st">"assigner.fst.tree.example.pdf"</span>, <span class="dt">width =</span> <span class="dv">15</span>, <span class="dt">height =</span> <span class="dv">15</span>, <span class="dt">dpi =</span> <span class="dv">600</span>, <span class="dt">units =</span> <span class="st">"cm"</span>, <span class="dt">useDingbats =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assigner_fst_tree_example.png" width="400"></p>
 </div>
 </div>
@@ -388,6 +399,7 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -410,17 +422,20 @@
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Thierry Gosselin.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

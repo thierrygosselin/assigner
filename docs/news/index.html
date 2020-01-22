@@ -15,21 +15,25 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,10 +41,11 @@
 
 
 
-<meta property="og:title" content="Changelog" />
 
+<meta property="og:title" content="Changelog" />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -52,6 +57,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -70,7 +76,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.7</span>
       </span>
     </div>
 
@@ -119,7 +125,6 @@
   <a href="../news/index.html">News</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/thierrygosselin/assigner">
@@ -134,6 +139,7 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -143,9 +149,16 @@
       <small>Source: <a href='https://github.com/thierrygosselin/assigner/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="assigner-056-2019-05-01" class="section level1">
+    <div id="assigner-0-5-7-2020-01-21" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-056-2019-05-01" class="anchor"></a>assigner 0.5.6 2019-05-01</h1>
+<a href="#assigner-0-5-7-2020-01-21" class="anchor"></a>assigner 0.5.7 2020-01-21</h1>
+<ul>
+<li>Bug fix in heatmap: digits was fixed to 5 and when pop.levels = NULL, the heatmap was all mixed up. Thanks to <a href='https://github.com/siberianhigh'>@siberianhigh</a> for highlighting the bug.</li>
+</ul>
+</div>
+    <div id="assigner-0-5-6-2019-05-01" class="section level1">
+<h1 class="page-header">
+<a href="#assigner-0-5-6-2019-05-01" class="anchor"></a>assigner 0.5.6 2019-05-01</h1>
 <ul>
 <li>included 2 simulated datasets</li>
 <li>updated documentation of <code>assignment_ngs</code>
@@ -156,9 +169,9 @@
 <li>work on pkgdown</li>
 </ul>
 </div>
-    <div id="assigner-055-2019-04-25" class="section level1">
+    <div id="assigner-0-5-5-2019-04-25" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-055-2019-04-25" class="anchor"></a>assigner 0.5.5 2019-04-25</h1>
+<a href="#assigner-0-5-5-2019-04-25" class="anchor"></a>assigner 0.5.5 2019-04-25</h1>
 <ul>
 <li>cosmetic changes to the package: using <code>pkgdown</code>
 </li>
@@ -166,18 +179,18 @@
 </li>
 </ul>
 </div>
-    <div id="assigner-054-2019-03-12" class="section level1">
+    <div id="assigner-0-5-4-2019-03-12" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-054-2019-03-12" class="anchor"></a>assigner 0.5.4 2019-03-12</h1>
+<a href="#assigner-0-5-4-2019-03-12" class="anchor"></a>assigner 0.5.4 2019-03-12</h1>
 <ul>
 <li>
 <code>fst_WC84</code>: work faster</li>
 <li>continue to integrate <code>assigner</code> with <code>SeqArray</code> and GDS object/file</li>
 </ul>
 </div>
-    <div id="assigner-053-2019-02-25" class="section level1">
+    <div id="assigner-0-5-3-2019-02-25" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-053-2019-02-25" class="anchor"></a>assigner 0.5.3 2019-02-25</h1>
+<a href="#assigner-0-5-3-2019-02-25" class="anchor"></a>assigner 0.5.3 2019-02-25</h1>
 <ul>
 <li>
 <code>fst_WC84</code>: work with radiator v.1.0</li>
@@ -186,79 +199,79 @@
 </li>
 </ul>
 </div>
-    <div id="assigner-052-2018-07-09" class="section level1">
+    <div id="assigner-0-5-2-2018-07-09" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-052-2018-07-09" class="anchor"></a>assigner 0.5.2 2018-07-09</h1>
+<a href="#assigner-0-5-2-2018-07-09" class="anchor"></a>assigner 0.5.2 2018-07-09</h1>
 <ul>
 <li>working to make assigner work correctly with ggplot2 v.3.0.0</li>
 <li>assigner ready for R 3.5.1 “Feather Spray” released on 2018/07/05</li>
 </ul>
 </div>
-    <div id="assigner-051-2018-06-21" class="section level1">
+    <div id="assigner-0-5-1-2018-06-21" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-051-2018-06-21" class="anchor"></a>assigner 0.5.1 2018-06-21</h1>
+<a href="#assigner-0-5-1-2018-06-21" class="anchor"></a>assigner 0.5.1 2018-06-21</h1>
 <ul>
 <li>bug in <code>assignment_mixture</code> generated by <code>purrr::df</code> replaced recently by <code>purrr:dfr</code>. Changed <code>DESCRIPTION</code> field accordingly.</li>
 </ul>
 </div>
-    <div id="assigner-050-2017-12-12" class="section level1">
+    <div id="assigner-0-5-0-2017-12-12" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-050-2017-12-12" class="anchor"></a>assigner 0.5.0 2017-12-12</h1>
+<a href="#assigner-0-5-0-2017-12-12" class="anchor"></a>assigner 0.5.0 2017-12-12</h1>
 <ul>
 <li>
 <code>subsample</code> argument in <code>assignment_ngs</code> and <code>assignment_mixture</code> can now automatically detect the smallest sample size in the data’s grouping. So you can use <code>subsample = "min"</code> to let the function decide (if your not sure).</li>
 </ul>
 </div>
-    <div id="assigner-049-2017-08-18" class="section level1">
+    <div id="assigner-0-4-9-2017-08-18" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-049-2017-08-18" class="anchor"></a>assigner 0.4.9 2017-08-18</h1>
+<a href="#assigner-0-4-9-2017-08-18" class="anchor"></a>assigner 0.4.9 2017-08-18</h1>
 <ul>
 <li>migration of <code>assigner</code> from using <code>stackr</code> -&gt; <code>radiator</code>
 </li>
 </ul>
 </div>
-    <div id="assigner-048-2017-08-15" class="section level1">
+    <div id="assigner-0-4-8-2017-08-15" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-048-2017-08-15" class="anchor"></a>assigner 0.4.8 2017-08-15</h1>
+<a href="#assigner-0-4-8-2017-08-15" class="anchor"></a>assigner 0.4.8 2017-08-15</h1>
 <ul>
 <li>restored progress bar when using parallel computing by installing the new dev version of <code>pbmcapply</code> package.</li>
 </ul>
 </div>
-    <div id="assigner-047-2017-08-15" class="section level1">
+    <div id="assigner-0-4-7-2017-08-15" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-047-2017-08-15" class="anchor"></a>assigner 0.4.7 2017-08-15</h1>
+<a href="#assigner-0-4-7-2017-08-15" class="anchor"></a>assigner 0.4.7 2017-08-15</h1>
 <ul>
 <li>bug fix: removed the progress bar when using parallel computing. This is temporary, while waiting for a fix with <code>pbmcapply</code> package.</li>
 </ul>
 </div>
-    <div id="assigner-046-2017-06-17" class="section level1">
+    <div id="assigner-0-4-6-2017-06-17" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-046-2017-06-17" class="anchor"></a>assigner 0.4.6 2017-06-17</h1>
+<a href="#assigner-0-4-6-2017-06-17" class="anchor"></a>assigner 0.4.6 2017-06-17</h1>
 <ul>
 <li>
 <strong>assigner</strong> works with <code>dplyr v.0.7.0</code>
 </li>
 </ul>
 </div>
-    <div id="assigner-045-2017-04-25" class="section level1">
+    <div id="assigner-0-4-5-2017-04-25" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-045-2017-04-25" class="anchor"></a>assigner 0.4.5 2017-04-25</h1>
+<a href="#assigner-0-4-5-2017-04-25" class="anchor"></a>assigner 0.4.5 2017-04-25</h1>
 <ul>
 <li>
 <code>dlr</code>: simplified arguments, faster function and now creates the Dlr plots</li>
 <li>dependencies to package <code>SNPRelate</code> are removed until the bugs with Fst calculation are resolved.</li>
 </ul>
 </div>
-    <div id="assigner-044-2017-04-12" class="section level1">
+    <div id="assigner-0-4-4-2017-04-12" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-044-2017-04-12" class="anchor"></a>assigner 0.4.4 2017-04-12</h1>
+<a href="#assigner-0-4-4-2017-04-12" class="anchor"></a>assigner 0.4.4 2017-04-12</h1>
 <ul>
-<li>bug fix in <code>assignment_ngs</code> introduced in last commit that was suppose to be fix. Problem introduced by <code>stackr::change_pop_names</code>.</li>
+<li>bug fix in <code>assignment_ngs</code> introduced in last commit that was suppose to be fix. Problem introduced by <code><a href="https://rdrr.io/pkg/stackr/man/change_pop_names.html">stackr::change_pop_names</a></code>.</li>
 </ul>
 </div>
-    <div id="assigner-043-2017-04-02" class="section level1">
+    <div id="assigner-0-4-3-2017-04-02" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-043-2017-04-02" class="anchor"></a>assigner 0.4.3 2017-04-02</h1>
+<a href="#assigner-0-4-3-2017-04-02" class="anchor"></a>assigner 0.4.3 2017-04-02</h1>
 <ul>
 <li>it’s now official, <code>assigner</code> as a logo</li>
 <li>faster <code>fst_NEI87</code>
@@ -267,9 +280,9 @@
 </li>
 </ul>
 </div>
-    <div id="assigner-042" class="section level1">
+    <div id="assigner-0-4-2" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-042" class="anchor"></a>assigner 0.4.2</h1>
+<a href="#assigner-0-4-2" class="anchor"></a>assigner 0.4.2</h1>
 <ul>
 <li>until <code>SNPRelate</code> <a href="https://github.com/zhengxwen/SNPRelate/issues/21">bias issue</a> is resolved the option is unavailable</li>
 <li>better use of <code>pbmcapply</code> for Windows</li>
@@ -277,50 +290,50 @@
 <strong>imputations</strong> is being reworked and will be buggy until the next update. The codes are being completely re-written and arguments will change (for the better).</li>
 </ul>
 </div>
-    <div id="assigner-041" class="section level1">
+    <div id="assigner-0-4-1" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-041" class="anchor"></a>assigner 0.4.1</h1>
+<a href="#assigner-0-4-1" class="anchor"></a>assigner 0.4.1</h1>
 <ul>
 <li>debug code to work in parallel with Windows</li>
 <li>code cleaning to prep for CRAN</li>
 </ul>
 </div>
-    <div id="assigner-040" class="section level1">
+    <div id="assigner-0-4-0" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-040" class="anchor"></a>assigner 0.4.0</h1>
+<a href="#assigner-0-4-0" class="anchor"></a>assigner 0.4.0</h1>
 <ul>
 <li>
 <code>assignment_ngs</code> and <code>assignment_mixture</code> code cleaning to prep for CRAN and make them easier to debug.</li>
 </ul>
 </div>
-    <div id="assigner-039" class="section level1">
+    <div id="assigner-0-3-9" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-039" class="anchor"></a>assigner 0.3.9</h1>
+<a href="#assigner-0-3-9" class="anchor"></a>assigner 0.3.9</h1>
 <ul>
 <li>I’m pleased to announce that <code>assigner</code> now works in parallel with <strong>Windows</strong>
 </li>
 <li>bug fix introduce in last commit in <code>write_gsi_sim</code> where the file was not created properly from an internal module.</li>
 </ul>
 </div>
-    <div id="assigner-038" class="section level1">
+    <div id="assigner-0-3-8" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-038" class="anchor"></a>assigner 0.3.8</h1>
+<a href="#assigner-0-3-8" class="anchor"></a>assigner 0.3.8</h1>
 <ul>
 <li>
 <code><a href="../reference/fst_WC84.html">assigner::fst_WC84</a></code> can now use <a href="https://github.com/zhengxwen/SNPRelate">SNPRelate</a> to compute Fst. The confidence intervals are not implemented, yet. The speed increase left me speechless, dataset with 30K snp are computed in less than 15 sec!</li>
 </ul>
 </div>
-    <div id="assigner-037" class="section level1">
+    <div id="assigner-0-3-7" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-037" class="anchor"></a>assigner 0.3.7</h1>
+<a href="#assigner-0-3-7" class="anchor"></a>assigner 0.3.7</h1>
 <ul>
 <li>
 <code><a href="../reference/fst_WC84.html">assigner::fst_WC84</a></code> is 40% faster!</li>
 </ul>
 </div>
-    <div id="assigner-036" class="section level1">
+    <div id="assigner-0-3-6" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-036" class="anchor"></a>assigner 0.3.6</h1>
+<a href="#assigner-0-3-6" class="anchor"></a>assigner 0.3.6</h1>
 <ul>
 <li>bug fix <code>assignment_ngs</code> during imputations, the imputation module could not recognise that REF/ALT alleles are not necessary or usefull for assignment analysis. *enhancement to <code>assignment_ngs</code> and <code>assignment_mixture</code> so that when <code>marker.number</code> include <code>"all"</code> the <code>iteration.method</code> is set automatically to <code>1</code> when conducting the assignment with all the markers. Iterations at this point is useless and a waist of time.</li>
 <li>random seed number is now stored in the appropriate files.</li>
@@ -328,57 +341,57 @@
 <code>assignment_mixture</code>: with <code>assignment.analysis = "gsi_sim</code> the unknown/mixture samples are compared with baseline populations using common markers between the pair. Now, the tables include the number of markers used. The summary provides the mean number of markers. This number will change each time randomness is used.</li>
 </ul>
 </div>
-    <div id="assigner-035" class="section level1">
+    <div id="assigner-0-3-5" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-035" class="anchor"></a>assigner 0.3.5</h1>
+<a href="#assigner-0-3-5" class="anchor"></a>assigner 0.3.5</h1>
 <ul>
 <li>bug fix in population not recognise properly</li>
 </ul>
 </div>
-    <div id="assigner-034" class="section level1">
+    <div id="assigner-0-3-4" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-034" class="anchor"></a>assigner 0.3.4</h1>
+<a href="#assigner-0-3-4" class="anchor"></a>assigner 0.3.4</h1>
 <ul>
 <li>
 <code>fst_NEI87</code>: very fast function that can compute: the overall and pairwise Nei’s (1987) fst and f’st (prime). Bootstrap resampling of markers is avalaible to build Confidence Intervals. The estimates are available as a data frame and a matrix with upper diagonal filled with Fst values and lower diagonal filled with the confidence intervals. Jost’s D is also given ;)</li>
 </ul>
 </div>
-    <div id="assigner-033" class="section level1">
+    <div id="assigner-0-3-3" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-033" class="anchor"></a>assigner 0.3.3</h1>
+<a href="#assigner-0-3-3" class="anchor"></a>assigner 0.3.3</h1>
 <ul>
 <li>
 <code>fst_WC84</code>: bug fix, the function was not properly configured for multi-allelic markers (e.g. microsatellite, and haplotype format from STACKS). Thanks to Craig McDougall for catching this.</li>
 </ul>
 </div>
-    <div id="assigner-032" class="section level1">
+    <div id="assigner-0-3-2" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-032" class="anchor"></a>assigner 0.3.2</h1>
+<a href="#assigner-0-3-2" class="anchor"></a>assigner 0.3.2</h1>
 <ul>
 <li>
 <code>assignment_mixture</code>: added a check to throw an error when pop.levels != the pop.id in strata</li>
 </ul>
 </div>
-    <div id="assigner-031" class="section level1">
+    <div id="assigner-0-3-1" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-031" class="anchor"></a>assigner 0.3.1</h1>
+<a href="#assigner-0-3-1" class="anchor"></a>assigner 0.3.1</h1>
 <p><code>assignment_mixture</code>:</p>
 <ul>
 <li>updated with latest modules from <code>stackr</code>.</li>
 <li>simplified the identification of mixture or unknown samples. See doc.</li>
 </ul>
 </div>
-    <div id="assigner-030" class="section level1">
+    <div id="assigner-0-3-0" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-030" class="anchor"></a>assigner 0.3.0</h1>
+<a href="#assigner-0-3-0" class="anchor"></a>assigner 0.3.0</h1>
 <ul>
 <li>updated vignettes</li>
 <li>major bug fix that involved dplyr new version (0.5.0) and mostly with the use of dplyr::distinct</li>
 </ul>
 </div>
-    <div id="assigner-029" class="section level1">
+    <div id="assigner-0-2-9" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-029" class="anchor"></a>assigner 0.2.9</h1>
+<a href="#assigner-0-2-9" class="anchor"></a>assigner 0.2.9</h1>
 <ul>
 <li>updated vignettes</li>
 <li>bug fix in <code>fst_WC84</code>
@@ -386,11 +399,11 @@
 <li>bug fix between assinger -&gt; devtools -&gt; github -&gt; travis, [this page helped] (<a href="http://itsalocke.com/using-travis-make-sure-use-github-pat/" class="uri">http://itsalocke.com/using-travis-make-sure-use-github-pat/</a>)</li>
 </ul>
 </div>
-    <div id="assigner-028" class="section level1">
+    <div id="assigner-0-2-8" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-028" class="anchor"></a>assigner 0.2.8</h1>
+<a href="#assigner-0-2-8" class="anchor"></a>assigner 0.2.8</h1>
 <ul>
-<li>While changing some lines with <code><a href="https://tidyr.tidyverse.org/reference/spread.html">tidyr::spread</a></code> and <code><a href="https://tidyr.tidyverse.org/reference/gather.html">tidyr::gather</a></code> for <code><a href="https://www.rdocumentation.org/packages/data.table/topics/dcast.data.table">data.table::dcast.data.table</a></code> and <code><a href="https://www.rdocumentation.org/packages/data.table/topics/melt.data.table">data.table::melt.data.table</a></code> to make the code faster, I forgot to split genotype into alleles for <code>gsi_sim</code>.</li>
+<li>While changing some lines with <code><a href="https://tidyr.tidyverse.org/reference/spread.html">tidyr::spread</a></code> and <code><a href="https://tidyr.tidyverse.org/reference/gather.html">tidyr::gather</a></code> for <code><a href="https://Rdatatable.gitlab.io/data.table/reference/dcast.data.table.html">data.table::dcast.data.table</a></code> and <code><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">data.table::melt.data.table</a></code> to make the code faster, I forgot to split genotype into alleles for <code>gsi_sim</code>.</li>
 <li>please update both <strong>stackr</strong> and <strong>assigner</strong>
 <ul>
 <li>the build error from Travis will be fixed soon. It should not affect the package “experience”" in any way.</li>
@@ -398,20 +411,20 @@
 </li>
 </ul>
 </div>
-    <div id="assigner-027" class="section level1">
+    <div id="assigner-0-2-7" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-027" class="anchor"></a>assigner 0.2.7</h1>
+<a href="#assigner-0-2-7" class="anchor"></a>assigner 0.2.7</h1>
 <ul>
 <li><p>you need to update [stackr] (<a href="https://github.com/thierrygosselin/stackr" class="uri">https://github.com/thierrygosselin/stackr</a>) to v.0.2.7 to appreciate this new version of assigner.</p></li>
 <li><p>updated <code>assignment_ngs</code> with the separate stackr modules to simplify the function.</p></li>
 <li><p>new data file available for <code>assignment_ngs</code>: <code>genepop</code> and <code>genind</code> object.</p></li>
 <li><p><code>assignment_ngs</code> now accept any vcf input file! i.e. it’s no longer limited to stacks vcf.</p></li>
-<li><p>new arguments in <code>assignment_ngs</code>. The assignment using dapc can now use the optimized alpha score <code>adegenet.dapc.opt == "optim.a.score"</code> or the cross-validation <code>adegenet.dapc.opt == "xval"</code>. This is useful for fine tuning the trade-off between power of discrimination and over-fitting (for stability of group membership probabilities). Cross validation with <code>adegenet.dapc.opt == "xval"</code> doesn’t work with missing data, so it’s only available with <em>imputed data</em> (i.e. <code>imputation.method == "rf" or "max"</code>). With non imputed data or the default: the optimized alpha-score is used (<code>adegenet.dapc.opt == "optim.a.score"</code>). When using <code>adegenet.dapc.opt == "xval"</code>, 2 new arguments are available:</p></li>
+<li>new arguments in <code>assignment_ngs</code>. The assignment using dapc can now use the optimized alpha score <code>adegenet.dapc.opt == "optim.a.score"</code> or the cross-validation <code>adegenet.dapc.opt == "xval"</code>. This is useful for fine tuning the trade-off between power of discrimination and over-fitting (for stability of group membership probabilities). Cross validation with <code>adegenet.dapc.opt == "xval"</code> doesn’t work with missing data, so it’s only available with <em>imputed data</em> (i.e. <code>imputation.method == "rf" or "max"</code>). With non imputed data or the default: the optimized alpha-score is used (<code>adegenet.dapc.opt == "optim.a.score"</code>). When using <code>adegenet.dapc.opt == "xval"</code>, 2 new arguments are available:</li>
 </ul>
 <p>(1) <code>adegenet.n.rep</code> and (2) <code>adegenet.training</code>. See documentation for details.</p>
 <ul>
 <li><p>removed arguments in <code>assignment_ngs</code>. Removed the <code>pop.id.start</code> and <code>pop.id.end</code> arguments that were confusing people. For those used to these arguments, they are now recycled in the new function <code>individuals2strata</code> in [stackr] (<a href="https://github.com/thierrygosselin/stackr" class="uri">https://github.com/thierrygosselin/stackr</a>). The strata file created by this function can be used with the <code>strata</code> argument in <code>assignment_ngs</code>.</p></li>
-<li><p>2 modified arguments in <code>assignment_ngs</code>: (1) <code>gsi_sim.filename</code> is now <code>filename</code>; and</p></li>
+<li>2 modified arguments in <code>assignment_ngs</code>: (1) <code>gsi_sim.filename</code> is now <code>filename</code>; and</li>
 </ul>
 <p>(2) if you didn’t use the imputation argument, replace <code>imputation.method = FALSE</code> to <code>imputation.method = NULL</code> or leave the argument missing.</p>
 <ul>
@@ -419,103 +432,103 @@
 <li><p>new function: <code>write_gsi_sim</code>. Write a gsi_sim file from a data frame (wide or long/tidy). Used internally in [assigner] (<a href="https://github.com/thierrygosselin/assigner" class="uri">https://github.com/thierrygosselin/assigner</a>) and might be of interest for users.</p></li>
 </ul>
 </div>
-    <div id="assigner-026" class="section level1">
+    <div id="assigner-0-2-6" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-026" class="anchor"></a>assigner 0.2.6</h1>
+<a href="#assigner-0-2-6" class="anchor"></a>assigner 0.2.6</h1>
 <ul>
 <li>Added a <code>NEWS.md</code> file to track changes to the package.</li>
 <li>
 <code>fst_WC84</code> is now a separate and very fast function that can compute: the overall and pairwise Weir and Cockerham 1984 Theta/Fst. Bootstrap resampling of markers is avalaible to build Confidence Intervals (For Louis Bernatchez and his students;). The estimates are available as a data frame and a matrix with upper diagonal filled with Fst values and lower diagonal filled with the confidence intervals.</li>
 </ul>
 </div>
-    <div id="assigner-025" class="section level1">
+    <div id="assigner-0-2-5" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-025" class="anchor"></a>assigner 0.2.5</h1>
+<a href="#assigner-0-2-5" class="anchor"></a>assigner 0.2.5</h1>
 <ul>
 <li>cleaner code for strata section</li>
 <li>bug fix restricted to <code>assignment_ngs</code> + <code>assignment.analysis = "adegenet"</code> + <code>sampling.method = "ranked"</code>. A line at the beginning of a gsi_sim code section was deleted makig the assignment with adegenet go through that chunk of code and causing 100% assignment! if (assignment.analysis = “gsi_sim”) {code} prevent this problem…</li>
 </ul>
 </div>
-    <div id="assigner-024" class="section level1">
+    <div id="assigner-0-2-4" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-024" class="anchor"></a>assigner 0.2.4</h1>
+<a href="#assigner-0-2-4" class="anchor"></a>assigner 0.2.4</h1>
 <ul>
 <li>bug fixed using adegenet that was introduced in v.0.2.3</li>
 <li>introducing a new function <code>import_subsamples_fst</code> to import the fst ranking results from all the subsample runs inside an assignment folder.</li>
 </ul>
 </div>
-    <div id="assigner-023" class="section level1">
+    <div id="assigner-0-2-3" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-023" class="anchor"></a>assigner 0.2.3</h1>
+<a href="#assigner-0-2-3" class="anchor"></a>assigner 0.2.3</h1>
 <ul>
 <li>bug fixed in the compilation results section when no pop.id.start and end are used.</li>
 </ul>
 </div>
-    <div id="assigner-021" class="section level1">
+    <div id="assigner-0-2-1" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-021" class="anchor"></a>assigner 0.2.1</h1>
+<a href="#assigner-0-2-1" class="anchor"></a>assigner 0.2.1</h1>
 <ul>
 <li>updated the function <code>assignment_mixture</code> with <code>sampling.method = "ranked"</code> and <code>assignment.analysis = "adegenet"</code>.</li>
 </ul>
 </div>
-    <div id="assigner-020" class="section level1">
+    <div id="assigner-0-2-0" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-020" class="anchor"></a>assigner 0.2.0</h1>
+<a href="#assigner-0-2-0" class="anchor"></a>assigner 0.2.0</h1>
 <ul>
 <li>new function: <code>assignment_mixture</code> for mixture analysis.</li>
 </ul>
 </div>
-    <div id="assigner-019" class="section level1">
+    <div id="assigner-0-1-9" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-019" class="anchor"></a>assigner 0.1.9</h1>
+<a href="#assigner-0-1-9" class="anchor"></a>assigner 0.1.9</h1>
 <ul>
 <li>Simplified gsi_sim install</li>
 </ul>
 </div>
-    <div id="assigner-018" class="section level1">
+    <div id="assigner-0-1-8" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-018" class="anchor"></a>assigner 0.1.8</h1>
+<a href="#assigner-0-1-8" class="anchor"></a>assigner 0.1.8</h1>
 <ul>
 <li>You can now opt between [gsi_sim] (<a href="https://github.com/eriqande/gsi_sim" class="uri">https://github.com/eriqande/gsi_sim</a>) or [adegenet] (<a href="https://github.com/thibautjombart/adegenet" class="uri">https://github.com/thibautjombart/adegenet</a>), a R package developed by Thibaul Jombart, to conduct the assignment analysis</li>
 </ul>
 </div>
-    <div id="assigner-017" class="section level1">
+    <div id="assigner-0-1-7" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-017" class="anchor"></a>assigner 0.1.7</h1>
+<a href="#assigner-0-1-7" class="anchor"></a>assigner 0.1.7</h1>
 <ul>
 <li>New input file: Re-introduced the haplotype data frame file from stacks.</li>
 <li>Argument name change: <code>imputations</code> is now <code>impute.method</code>.</li>
 <li>New argument: <code>impute</code> with 2 options: <code>impute = "genotype"</code> or <code>impute = "allele"</code>.</li>
 </ul>
 </div>
-    <div id="assigner-016" class="section level1">
+    <div id="assigner-0-1-6" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-016" class="anchor"></a>assigner 0.1.6</h1>
+<a href="#assigner-0-1-6" class="anchor"></a>assigner 0.1.6</h1>
 <ul>
 <li>Input file argument is now <code>data</code> and covers the three types of files the function can use: VCF file, PLINK tped/tfam or data frame of genotypes file.</li>
 <li>Huge number of markers (&gt; 50 000 markers) can now be imported in PLINK tped/tfam format. The first 2 columns of the <code>tfam</code> file will be used for the <code>strata</code> argument, unless a new one is provided. Columns 1, 3 and 4 of the <code>tped</code> are discarded. The remaining columns correspond to the genotype in the format <code>01/04</code> where <code>A = 01, C = 02, G = 03 and T = 04</code>. For <code>A/T</code> format, use PLINK or bash to convert. Use [VCFTOOLS] (<a href="http://vcftools.sourceforge.net/" class="uri">http://vcftools.sourceforge.net/</a>) with <code>--plink-tped</code> to convert very large VCF file. For <code>.ped</code> file conversion to <code>.tped</code> use [PLINK] (<a href="http://pngu.mgh.harvard.edu/~purcell/plink/" class="uri">http://pngu.mgh.harvard.edu/~purcell/plink/</a>) with <code>--recode transpose</code>.</li>
 </ul>
 </div>
-    <div id="assigner-015" class="section level1">
+    <div id="assigner-0-1-5" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-015" class="anchor"></a>assigner 0.1.5</h1>
+<a href="#assigner-0-1-5" class="anchor"></a>assigner 0.1.5</h1>
 <ul>
 <li>bug fix in <code>method = "random"</code> and <code>imputation</code>
 </li>
 </ul>
 </div>
-    <div id="assigner-014" class="section level1">
+    <div id="assigner-0-1-4" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-014" class="anchor"></a>assigner 0.1.4</h1>
+<a href="#assigner-0-1-4" class="anchor"></a>assigner 0.1.4</h1>
 <ul>
 <li>Changed function name, from <code>GBS_assignment</code> to <code>assignment_ngs</code>. Stands for assignment with next-generation sequencing data.</li>
 <li>New argument <code>df.file</code> if you don’t have a VCF file. See documentation.</li>
 <li>New argument <code>strata</code> if you don’t have population id or other metadata info in the individual name. See documentation.</li>
 </ul>
 </div>
-    <div id="assigner-013" class="section level1">
+    <div id="assigner-0-1-3" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-013" class="anchor"></a>assigner 0.1.3</h1>
+<a href="#assigner-0-1-3" class="anchor"></a>assigner 0.1.3</h1>
 <ul>
 <li>Changed arguments <code>THL</code> to <code>thl</code> and <code>snp.LD</code> to <code>snp.ld</code> to follow convention.</li>
 <li>
@@ -523,12 +536,12 @@
 <li>
 <code>iterations</code> changed to <code>iteration.method</code> to avoid confusion with other iteration arguments.</li>
 <li>Removed <code>baseline</code> and <code>mixture</code> arguments from the function <code>GBS_assignment</code>. These options will be re-introduce later in a separate function.</li>
-<li>Using <code>marker.number</code> higher than the number of markers in the data set was causing problems. This could arise when using arguments that removed markers from the dataset (e.g. <code>snp.ld</code>, <code>common.markers</code>, and <code>maf</code> filters).</li>
+<li>Using <code>marker.number</code> higher than the number of markers in the data set was causing problems. This could arise when using arguments that removed markers from the dataset (e.g. <code>snp.ld</code>, <code>common.markers</code>, and <code>maf</code> filters).</li>
 </ul>
 </div>
-    <div id="assigner-012" class="section level1">
+    <div id="assigner-0-1-2" class="section level1">
 <h1 class="page-header">
-<a href="#assigner-012" class="anchor"></a>assigner 0.1.2</h1>
+<a href="#assigner-0-1-2" class="anchor"></a>assigner 0.1.2</h1>
 <ul>
 <li>new version to update with gsi_sim new install instruction for Linux and Mac. After re-installing assigner package, follow the instruction to re-install the new [gsi_sim] (<a href="https://github.com/eriqande/gsi_sim" class="uri">https://github.com/eriqande/gsi_sim</a>). And delete the old binary ‘gsisim’ in the /usr/local/bin folder with the following Terminal command: <code>sudo rm /usr/local/bin/gsisim</code>
 </li>
@@ -540,55 +553,57 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-        <li><a href="#assigner-056-2019-05-01">0.5.6</a></li>
-        <li><a href="#assigner-055-2019-04-25">0.5.5</a></li>
-        <li><a href="#assigner-054-2019-03-12">0.5.4</a></li>
-        <li><a href="#assigner-053-2019-02-25">0.5.3</a></li>
-        <li><a href="#assigner-052-2018-07-09">0.5.2</a></li>
-        <li><a href="#assigner-051-2018-06-21">0.5.1</a></li>
-        <li><a href="#assigner-050-2017-12-12">0.5.0</a></li>
-        <li><a href="#assigner-049-2017-08-18">0.4.9</a></li>
-        <li><a href="#assigner-048-2017-08-15">0.4.8</a></li>
-        <li><a href="#assigner-047-2017-08-15">0.4.7</a></li>
-        <li><a href="#assigner-046-2017-06-17">0.4.6</a></li>
-        <li><a href="#assigner-045-2017-04-25">0.4.5</a></li>
-        <li><a href="#assigner-044-2017-04-12">0.4.4</a></li>
-        <li><a href="#assigner-043-2017-04-02">0.4.3</a></li>
-        <li><a href="#assigner-042">0.4.2</a></li>
-        <li><a href="#assigner-041">0.4.1</a></li>
-        <li><a href="#assigner-040">0.4.0</a></li>
-        <li><a href="#assigner-039">0.3.9</a></li>
-        <li><a href="#assigner-038">0.3.8</a></li>
-        <li><a href="#assigner-037">0.3.7</a></li>
-        <li><a href="#assigner-036">0.3.6</a></li>
-        <li><a href="#assigner-035">0.3.5</a></li>
-        <li><a href="#assigner-034">0.3.4</a></li>
-        <li><a href="#assigner-033">0.3.3</a></li>
-        <li><a href="#assigner-032">0.3.2</a></li>
-        <li><a href="#assigner-031">0.3.1</a></li>
-        <li><a href="#assigner-030">0.3.0</a></li>
-        <li><a href="#assigner-029">0.2.9</a></li>
-        <li><a href="#assigner-028">0.2.8</a></li>
-        <li><a href="#assigner-027">0.2.7</a></li>
-        <li><a href="#assigner-026">0.2.6</a></li>
-        <li><a href="#assigner-025">0.2.5</a></li>
-        <li><a href="#assigner-024">0.2.4</a></li>
-        <li><a href="#assigner-023">0.2.3</a></li>
-        <li><a href="#assigner-021">0.2.1</a></li>
-        <li><a href="#assigner-020">0.2.0</a></li>
-        <li><a href="#assigner-019">0.1.9</a></li>
-        <li><a href="#assigner-018">0.1.8</a></li>
-        <li><a href="#assigner-017">0.1.7</a></li>
-        <li><a href="#assigner-016">0.1.6</a></li>
-        <li><a href="#assigner-015">0.1.5</a></li>
-        <li><a href="#assigner-014">0.1.4</a></li>
-        <li><a href="#assigner-013">0.1.3</a></li>
-        <li><a href="#assigner-012">0.1.2</a></li>
+        <li><a href="#assigner-0-5-7-2020-01-21">0.5.7</a></li>
+        <li><a href="#assigner-0-5-6-2019-05-01">0.5.6</a></li>
+        <li><a href="#assigner-0-5-5-2019-04-25">0.5.5</a></li>
+        <li><a href="#assigner-0-5-4-2019-03-12">0.5.4</a></li>
+        <li><a href="#assigner-0-5-3-2019-02-25">0.5.3</a></li>
+        <li><a href="#assigner-0-5-2-2018-07-09">0.5.2</a></li>
+        <li><a href="#assigner-0-5-1-2018-06-21">0.5.1</a></li>
+        <li><a href="#assigner-0-5-0-2017-12-12">0.5.0</a></li>
+        <li><a href="#assigner-0-4-9-2017-08-18">0.4.9</a></li>
+        <li><a href="#assigner-0-4-8-2017-08-15">0.4.8</a></li>
+        <li><a href="#assigner-0-4-7-2017-08-15">0.4.7</a></li>
+        <li><a href="#assigner-0-4-6-2017-06-17">0.4.6</a></li>
+        <li><a href="#assigner-0-4-5-2017-04-25">0.4.5</a></li>
+        <li><a href="#assigner-0-4-4-2017-04-12">0.4.4</a></li>
+        <li><a href="#assigner-0-4-3-2017-04-02">0.4.3</a></li>
+        <li><a href="#assigner-0-4-2">0.4.2</a></li>
+        <li><a href="#assigner-0-4-1">0.4.1</a></li>
+        <li><a href="#assigner-0-4-0">0.4.0</a></li>
+        <li><a href="#assigner-0-3-9">0.3.9</a></li>
+        <li><a href="#assigner-0-3-8">0.3.8</a></li>
+        <li><a href="#assigner-0-3-7">0.3.7</a></li>
+        <li><a href="#assigner-0-3-6">0.3.6</a></li>
+        <li><a href="#assigner-0-3-5">0.3.5</a></li>
+        <li><a href="#assigner-0-3-4">0.3.4</a></li>
+        <li><a href="#assigner-0-3-3">0.3.3</a></li>
+        <li><a href="#assigner-0-3-2">0.3.2</a></li>
+        <li><a href="#assigner-0-3-1">0.3.1</a></li>
+        <li><a href="#assigner-0-3-0">0.3.0</a></li>
+        <li><a href="#assigner-0-2-9">0.2.9</a></li>
+        <li><a href="#assigner-0-2-8">0.2.8</a></li>
+        <li><a href="#assigner-0-2-7">0.2.7</a></li>
+        <li><a href="#assigner-0-2-6">0.2.6</a></li>
+        <li><a href="#assigner-0-2-5">0.2.5</a></li>
+        <li><a href="#assigner-0-2-4">0.2.4</a></li>
+        <li><a href="#assigner-0-2-3">0.2.3</a></li>
+        <li><a href="#assigner-0-2-1">0.2.1</a></li>
+        <li><a href="#assigner-0-2-0">0.2.0</a></li>
+        <li><a href="#assigner-0-1-9">0.1.9</a></li>
+        <li><a href="#assigner-0-1-8">0.1.8</a></li>
+        <li><a href="#assigner-0-1-7">0.1.7</a></li>
+        <li><a href="#assigner-0-1-6">0.1.6</a></li>
+        <li><a href="#assigner-0-1-5">0.1.5</a></li>
+        <li><a href="#assigner-0-1-4">0.1.4</a></li>
+        <li><a href="#assigner-0-1-3">0.1.3</a></li>
+        <li><a href="#assigner-0-1-2">0.1.2</a></li>
       </ul>
     </div>
   </div>
 
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -596,13 +611,16 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

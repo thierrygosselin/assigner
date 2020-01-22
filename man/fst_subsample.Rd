@@ -4,11 +4,23 @@
 \alias{fst_subsample}
 \title{fst_subsample}
 \usage{
-fst_subsample(x, input, snprelate = FALSE, pop.levels = NULL,
-  strata = NULL, holdout.samples = NULL, pairwise = FALSE,
-  ci = FALSE, iteration.ci = 100, quantiles.ci = c(0.025, 0.975),
-  digits = 9, subsample = NULL, path.folder = NULL,
-  parallel.core = parallel::detectCores() - 1, verbose = FALSE)
+fst_subsample(
+  x,
+  input,
+  snprelate = FALSE,
+  pop.levels = NULL,
+  strata = NULL,
+  holdout.samples = NULL,
+  pairwise = FALSE,
+  ci = FALSE,
+  iteration.ci = 100,
+  quantiles.ci = c(0.025, 0.975),
+  digits = 9,
+  subsample = NULL,
+  path.folder = NULL,
+  parallel.core = parallel::detectCores() - 1,
+  verbose = FALSE
+)
 }
 \description{
 Function that link all with subsampling

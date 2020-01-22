@@ -1,3 +1,8 @@
+# assigner 0.5.7 2020-01-21
+
+* Bug fix in heatmap: digits was fixed to 5 and when pop.levels = NULL, 
+the heatmap was all mixed up. Thanks to @siberianhigh for highlighting the bug.
+
 # assigner 0.5.6 2019-05-01
 
 * included 2 simulated datasets

@@ -13,8 +13,9 @@
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Running assigner::assignment_ngs with several whitelists">
 <meta property="og:description" content="">
 <meta property="og:image" content="/logo.png">
@@ -37,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.7</span>
       </span>
     </div>
 
@@ -102,6 +103,7 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
@@ -118,11 +120,11 @@
 <div id="prepare-working-environment" class="section level1">
 <h1 class="hasAnchor">
 <a href="#prepare-working-environment" class="anchor"></a>Prepare working environment</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ls">ls</a></span>())</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(<span class="st">"pak"</span>)) <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pak"</span>)</a>
-<a class="sourceLine" id="cb1-3" title="3">pak<span class="op">::</span><span class="kw">pkg_install</span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(assigner)</a>
-<a class="sourceLine" id="cb1-5" title="5">assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/install_gsi_sim">install_gsi_sim</a></span>(<span class="dt">fromSource =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/rm.html">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://rdrr.io/r/base/ls.html">ls</a></span>())</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"pak"</span>)) <span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"pak"</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">pak<span class="op">::</span><span class="kw">pkg_install</span>(<span class="st">"thierrygosselin/assigner"</span>)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(assigner)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">assigner<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/assigner/man/install_gsi_sim.html">install_gsi_sim</a></span>(<span class="dt">fromSource =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 </div>
 <div id="prepare-whitelists" class="section level1">
 <h1 class="hasAnchor">
@@ -131,8 +133,8 @@
 <li>Gather your whitelist in a single folder</li>
 <li>Get the list of these file in a string with the command below:</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">all.whitelists &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list.files">list.files</a></span>(<span class="dt">path =</span> <span class="st">"~/Desktop/whitelists_salmon"</span>, <span class="dt">pattern =</span> <span class="st">"whitelist"</span>)</a>
-<a class="sourceLine" id="cb2-2" title="2">all.whitelists <span class="co"># to see if the whitelists are all there</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">all.whitelists &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span>(<span class="dt">path =</span> <span class="st">"~/Desktop/whitelists_salmon"</span>, <span class="dt">pattern =</span> <span class="st">"whitelist"</span>)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">all.whitelists <span class="co"># to see if the whitelists are all there</span></a></code></pre></div>
 </div>
 <div id="create-a-function-to-run-your-assignment" class="section level1">
 <h1 class="hasAnchor">
@@ -142,19 +144,19 @@
 <li>The only argument that will change will be the whitelist</li>
 <li>you could have multiple arguments changing at the same time, but for simplicity, let’s start with just one</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">whitelists_assigner &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</a>
-<a class="sourceLine" id="cb3-2" title="2">  res &lt;-<span class="st"> </span>assigner<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/assigner/topics/assignment_ngs">assignment_ngs</a></span>(</a>
-<a class="sourceLine" id="cb3-3" title="3">    <span class="dt">data =</span> <span class="st">"subset_melville_salmon.tsv"</span>, <span class="co">#change for what you want</span></a>
-<a class="sourceLine" id="cb3-4" title="4">    <span class="dt">whitelist.markers =</span> x, <span class="co"># don't change this one,</span></a>
-<a class="sourceLine" id="cb3-5" title="5">    <span class="dt">assignment.analysis =</span> <span class="st">"adegenet"</span>, <span class="co">#change for what you want</span></a>
-<a class="sourceLine" id="cb3-6" title="6">    <span class="dt">common.markers =</span> <span class="ot">TRUE</span>,<span class="co">#change for what you want</span></a>
-<a class="sourceLine" id="cb3-7" title="7">    <span class="dt">marker.number =</span> <span class="st">"all"</span>,<span class="co"># I think you get the idea...</span></a>
-<a class="sourceLine" id="cb3-8" title="8">    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">11</span>),</a>
-<a class="sourceLine" id="cb3-9" title="9">    <span class="dt">sampling.method =</span> <span class="st">"random"</span>,</a>
-<a class="sourceLine" id="cb3-10" title="10">    <span class="dt">iteration.method =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb3-11" title="11">    <span class="dt">keep.gsi.files =</span> <span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb3-12" title="12">  )</a>
-<a class="sourceLine" id="cb3-13" title="13">}</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">whitelists_assigner &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">  res &lt;-<span class="st"> </span>assigner<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/assigner/man/assignment_ngs.html">assignment_ngs</a></span>(</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">    <span class="dt">data =</span> <span class="st">"subset_melville_salmon.tsv"</span>, <span class="co">#change for what you want</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">    <span class="dt">whitelist.markers =</span> x, <span class="co"># don't change this one,</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">    <span class="dt">assignment.analysis =</span> <span class="st">"adegenet"</span>, <span class="co">#change for what you want</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">    <span class="dt">common.markers =</span> <span class="ot">TRUE</span>,<span class="co">#change for what you want</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">    <span class="dt">marker.number =</span> <span class="st">"all"</span>,<span class="co"># I think you get the idea...</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">    <span class="dt">pop.levels =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">11</span>),</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">    <span class="dt">sampling.method =</span> <span class="st">"random"</span>,</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">    <span class="dt">iteration.method =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">    <span class="dt">keep.gsi.files =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12">  )</a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">}</a></code></pre></div>
 </div>
 <div id="run-the-assignment" class="section level1">
 <h1 class="hasAnchor">
@@ -164,17 +166,18 @@
 </li>
 <li>The results are in a list easily managed by R</li>
 <li>The <code>purrr</code> package is awesome for this, it’s very similar to the <code>lapply</code> function, only better.</li>
-<li>If you have access to a MAC or a LINUX cluster, you could just replace the <code><a href="https://purrr.tidyverse.org/reference/map.html">purrr::map</a></code> function to <code><a href="https://www.rdocumentation.org/packages/parallel/topics/mclapply">parallel::mclapply</a></code>
+<li>If you have access to a MAC or a LINUX cluster, you could just replace the <code><a href="https://purrr.tidyverse.org/reference/map.html">purrr::map</a></code> function to <code><a href="https://rdrr.io/r/parallel/mclapply.html">parallel::mclapply</a></code>
 </li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">salmon.assignment.res &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span>(</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="dt">.x =</span> all.whitelists, <span class="co"># your whitelist created above</span></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="dt">.f =</span> whitelists_assigner <span class="co"># your new function</span></a>
-<a class="sourceLine" id="cb4-4" title="4">)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">salmon.assignment.res &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span>(</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="dt">.x =</span> all.whitelists, <span class="co"># your whitelist created above</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="dt">.f =</span> whitelists_assigner <span class="co"># your new function</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">)</a></code></pre></div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -190,17 +193,20 @@
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Thierry Gosselin.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

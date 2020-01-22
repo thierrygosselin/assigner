@@ -4,9 +4,15 @@
 \alias{pairwise_fst_nei}
 \title{pairwise_fst_nei}
 \usage{
-pairwise_fst_nei(list.pair, pop.pairwise = NULL, data.genotyped = NULL,
-  ci = FALSE, iteration.ci = 100, quantiles.ci = c(0.025, 0.975),
-  digits = 9)
+pairwise_fst_nei(
+  list.pair,
+  pop.pairwise = NULL,
+  data.genotyped = NULL,
+  ci = FALSE,
+  iteration.ci = 100,
+  quantiles.ci = c(0.025, 0.975),
+  digits = 9
+)
 }
 \description{
 pairwise Fst function for nei
