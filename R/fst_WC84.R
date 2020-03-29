@@ -350,7 +350,7 @@ fst_WC84 <- function(
     input <- radiator::calibrate_alleles(
       data =input, 
       parallel.core = parallel.core
-      ) %$% input
+    ) %$% input
   }
   want <- c("MARKERS", "POP_ID", "STRATA", "INDIVIDUALS", "GT")
   suppressWarnings(
@@ -362,16 +362,24 @@ fst_WC84 <- function(
     strata = strata,
     pop.id = TRUE,
     blacklist.id = blacklist.id,
-    pop.levels = pop.levels,
+    pop.levels = NULL,
     verbose = verbose) %$% strata
   
   # population levels and strata------------------------------------------------
   if (!is.null(strata)) {
     input <- radiator::join_strata(
       data = input, strata = strata.df, pop.id = TRUE, verbose = FALSE)
-  } else {
-    strata <- strata.df <- radiator::generate_strata(data = input, pop.id = TRUE)
+  } 
+  
+  if (is.null(pop.levels)) {
+    pop.levels <- unique(input$POP_ID)
   }
+  
+  input %<>%
+    dplyr::mutate(POP_ID = factor(x = POP_ID, levels = pop.levels)) %>% 
+    dplyr::arrange(POP_ID)
+  
+  strata <- strata.df <- radiator::generate_strata(data = input, pop.id = TRUE)
   
   # subsampling data------------------------------------------------------------
   # create the subsampling list
@@ -425,7 +433,6 @@ fst_WC84 <- function(
     .f = fst_subsample,
     input = input,
     snprelate = snprelate,
-    pop.levels = pop.levels, 
     strata = strata,
     holdout.samples = holdout.samples,
     pairwise = pairwise,
@@ -715,7 +722,6 @@ fst_WC84 <- function(
       pairwise.fst.full.matrix = res$pairwise.fst.full.matrix, 
       pairwise.fst.ci.matrix = res$pairwise.fst.ci.matrix, 
       digits = digits, 
-      pop.levels = pop.levels,
       path.folder = path.folder,
       filename = filename)
   }
@@ -1178,7 +1184,6 @@ fst_subsample <- function(
   x,
   input,
   snprelate = FALSE,
-  pop.levels = NULL, 
   strata = NULL,
   holdout.samples = NULL,
   pairwise = FALSE,
@@ -1370,7 +1375,9 @@ fst_subsample <- function(
       pop.pairwise = pop.pairwise,
       # unique.markers.pop = unique.markers.pop,
       data.genotyped = data.genotyped,
-      ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci,
+      ci = ci, 
+      iteration.ci = iteration.ci, 
+      quantiles.ci = quantiles.ci,
       path.folder = path.folder
     )
     # Table with Fst
@@ -1454,10 +1461,6 @@ fst_subsample <- function(
 #' @param plot.size (optional, integer) By default the size of the plot is set
 #' to 40 cm x 40 cm.
 #' Default: \code{plot.size = 40}.
-#' @param pop.levels (optional, character) the pop.levels to have the pop ordered 
-#' as desired. The default takes the info from the \code{pairwise.fst.full.matrix} 
-#' colnames.
-#' Default: \code{pop.levels = NULL}.
 #' @param path.folder (optional, character)
 #' Default: \code{path.folder = NULL}. Default will use the working directory.
 #' @param filename (optional, character) Name of the plot to write.
@@ -1475,7 +1478,6 @@ heatmap_fst <- function(
   color.high = "red",
   text.size = 4,
   plot.size = 40,
-  pop.levels = NULL,
   path.folder = NULL,
   filename = NULL
 ) {
@@ -1490,7 +1492,6 @@ heatmap_fst <- function(
   # color.high = "red"
   # text.size = 4
   # plot.size = 40
-  # pop.levels = NULL
   # filename = NULL
   # path.folder = NULL
   
@@ -1509,14 +1510,21 @@ heatmap_fst <- function(
     data.ci <- pairwise.fst.ci.matrix
   }
   
-  if (is.null(pop.levels)) pop.levels <- colnames(data.fst)
-  
+  pop.levels <- colnames(data.fst)
   
   data.fst %<>%
-    radiator::distance2tibble(x = ., remove.diag = FALSE, na.diag = TRUE, remove.lower = FALSE, relative = FALSE, pop.levels = pop.levels) %>% 
+    radiator::distance2tibble(
+      x = ., 
+      remove.diag = FALSE, 
+      na.diag = TRUE, 
+      remove.lower = FALSE, 
+      relative = FALSE, 
+      pop.levels = pop.levels
+    ) %>% 
     magrittr::set_colnames(x = ., value = c("POP1", "POP2", "FST"))
+  
   inv.levels <- rev(levels(data.fst$POP2))
-  pop.levels <- levels(data.fst$POP2)
+  # pop.levels <- levels(data.fst$POP2)
   if (max(stringi::stri_length(data.fst$FST), na.rm = TRUE) != digits) {
     round.num <- TRUE
     rounder <- function(x, digits) round(as.numeric(x), digits)
@@ -1528,9 +1536,14 @@ heatmap_fst <- function(
   
   data.ci %<>%
     radiator::distance2tibble(
-      x = ., remove.diag = FALSE, na.diag = TRUE,
-      remove.lower = FALSE, relative = FALSE,
-      distance.class.double = FALSE, pop.levels = pop.levels) %>% 
+      x = ., 
+      remove.diag = FALSE, 
+      na.diag = TRUE,
+      remove.lower = FALSE, 
+      relative = FALSE,
+      distance.class.double = FALSE, 
+      pop.levels = pop.levels
+    ) %>% 
     magrittr::set_colnames(x = ., value = c("POP1", "POP2", "CI"))
   
   data.fst %<>% dplyr::left_join(data.ci, by = c("POP1", "POP2"))
@@ -1578,7 +1591,7 @@ heatmap_fst <- function(
   
   heatmap.fst <- ggplot2::ggplot(
     data = data.fst, ggplot2::aes(x = POP1, y = POP2, fill = FST)
-    ) + 
+  ) + 
     ggplot2::geom_tile(color = "white") +
     ggplot2::geom_text(ggplot2::aes(x = POP1, y = POP2, label = CI), 
                        color = "black", size = text.size, na.rm = TRUE) +

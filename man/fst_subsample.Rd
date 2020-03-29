@@ -8,7 +8,6 @@ fst_subsample(
   x,
   input,
   snprelate = FALSE,
-  pop.levels = NULL,
   strata = NULL,
   holdout.samples = NULL,
   pairwise = FALSE,

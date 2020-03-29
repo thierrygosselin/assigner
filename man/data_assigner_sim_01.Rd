@@ -4,13 +4,15 @@
 \name{data_assigner_sim_01}
 \alias{data_assigner_sim_01}
 \title{Simulated dataset to test assigner}
-\format{A tibble with 125000 rows (genotypes) and 4 variables:
+\format{
+A tibble with 125000 rows (genotypes) and 4 variables:
 \describe{
   \item{MARKERS}{SNPs markers}
   \item{POP_ID}{Populations/strata for the samples}
   \item{INDIVIDUALS}{Samples id)}
   \item{GT}{Genotypes coded \emph{a la genepop} format}
-}}
+}
+}
 \source{
 The data was simulated with grur
 \url{https://thierrygosselin.github.io/grur/reference/simulate_rad.html}
