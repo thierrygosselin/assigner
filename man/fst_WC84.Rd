@@ -241,7 +241,7 @@ doi:10.1093/bioinformatics/bts606
 From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive} manual:
 \emph{'In general, rather than to test differentiation between all pairs of 
 populations,
-it is adviseable to perform an overall test of population differentiation, 
+it is advisable to perform an overall test of population differentiation, 
 possibly using a hierarchical population structure, (see AMOVA)'}. 
 To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 or \code{Phi_st_Meirmans} in \code{mmod}.

@@ -219,7 +219,7 @@
 #' From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive} manual:
 #' \emph{'In general, rather than to test differentiation between all pairs of 
 #' populations,
-#' it is adviseable to perform an overall test of population differentiation, 
+#' it is advisable to perform an overall test of population differentiation, 
 #' possibly using a hierarchical population structure, (see AMOVA)'}. 
 #' To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 #' or \code{Phi_st_Meirmans} in \code{mmod}.
@@ -1458,9 +1458,9 @@ fst_subsample <- function(
 #' Default: \code{color.high = "red"}.
 #' @param text.size (optional, integer) Size of the values.
 #' Default: \code{text.size = 2}.
-#' @param plot.size (optional, integer) By default the size of the plot is set
-#' to 40 cm x 40 cm.
-#' Default: \code{plot.size = 40}.
+#' @param plot.size (optional, integer) By default the size is 
+#' \code{the number of strata * 2} in cm.
+#' Default: \code{plot.size = NULL}.
 #' @param path.folder (optional, character)
 #' Default: \code{path.folder = NULL}. Default will use the working directory.
 #' @param filename (optional, character) Name of the plot to write.
@@ -1477,7 +1477,7 @@ heatmap_fst <- function(
   color.mid = "yellow", 
   color.high = "red",
   text.size = 4,
-  plot.size = 40,
+  plot.size = NULL,
   path.folder = NULL,
   filename = NULL
 ) {
@@ -1546,6 +1546,7 @@ heatmap_fst <- function(
     ) %>% 
     magrittr::set_colnames(x = ., value = c("POP1", "POP2", "CI"))
   
+  
   data.fst %<>% dplyr::left_join(data.ci, by = c("POP1", "POP2"))
   # median.fst <- median(x = data.fst$FST, na.rm = TRUE)
   mean.fst <- mean(x = data.fst$FST, na.rm = TRUE)
@@ -1554,7 +1555,7 @@ heatmap_fst <- function(
   data.fst$POP2 <- factor(x = as.character(data.fst$POP2), 
                           levels = inv.levels, ordered = TRUE)
   
-  # data without CI
+  # data without CI for the lower diag
   if (n.s || round.num) {
     data.ci <- dplyr::filter(data.fst, stringi::stri_detect_fixed(str = CI, pattern = " - ")) %>%
       tidyr::separate(data = ., col = CI, into = c("LOW", "HIGH"), sep = " - ") %>% 
@@ -1602,7 +1603,10 @@ heatmap_fst <- function(
       # midpoint = median.fst, 
       midpoint = mean.fst,
       na.value = "white",
-      limit = c(min.fst, max.fst), space = "Lab") +
+      limit = NULL,
+      # limit = c(min.fst, max.fst),
+      space = "Lab"
+      ) +
     ggplot2::scale_x_discrete(position = "top") +
     ggplot2::theme_minimal() +
     ggplot2::theme(
@@ -1615,13 +1619,38 @@ heatmap_fst <- function(
   
   if (!is.null(filename)) {
     if (is.null(path.folder)) path.folder <- getwd()
-    heatmap.n <- stringi::stri_join(filename, "_heatmap.fst.pdf")
+    
+    if (digits > 5) {
+      mult.fact <- 3
+    } else {
+      mult.fact <- 2
+    }
+    if (is.null(plot.size)) plot.size <- length(levels(data.fst$POP1)) * mult.fact
+    
+    heatmap.pdf <- stringi::stri_join(filename, "_heatmap.fst.pdf")
+    heatmap.png <- stringi::stri_join(filename, "_heatmap.fst.png")
+    
     ggplot2::ggsave(
-      filename = file.path(path.folder, heatmap.n),
+      filename = file.path(path.folder, heatmap.png),
       plot = heatmap.fst,
-      width = plot.size, height = plot.size,
-      dpi = 300, units = "cm", device = "pdf", limitsize = FALSE,
+      width = plot.size, 
+      height = plot.size,
+      dpi = 200, 
+      units = "cm", 
+      device = "png", 
+      limitsize = FALSE)
+    
+    ggplot2::ggsave(
+      filename = file.path(path.folder, heatmap.pdf),
+      plot = heatmap.fst,
+      width = plot.size, 
+      height = plot.size,
+      dpi = 300, 
+      units = "cm", 
+      device = "pdf", 
+      limitsize = FALSE,
       useDingbats = FALSE)
+    
   }
   return(heatmap.fst)
 }#End heatmap_fst

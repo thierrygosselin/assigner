@@ -300,12 +300,9 @@ install_gsi_sim <- function(commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a",
     td <- tempdir()
     
     message("Will be cloning gsi_sim repository to ", td)
-    message("")
     message("Removing any earlier instances of the repository in that temp directory")
-    message("")
     system(paste("cd", td, "; rm -r -f gsi_sim"))
     message("Cloning repository, dealing with submodules, compiling gsi_sim ")
-    message("")
     comm <- paste("cd ", td, 
                   "&&  git clone https://github.com/eriqande/gsi_sim.git ",
                   "&&  cd gsi_sim ",
