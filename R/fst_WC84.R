@@ -371,6 +371,10 @@ fst_WC84 <- function(
       data = input, strata = strata.df, pop.id = TRUE, verbose = FALSE)
   } 
   
+  if (!rlang::has_name(input, "POP_ID") && rlang::has_name(input, "STRATA")) {
+    input %<>% dplyr::rename(POP_ID = STRATA)
+  }
+  
   if (is.null(pop.levels)) {
     pop.levels <- unique(input$POP_ID)
   }
