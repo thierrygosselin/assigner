@@ -13,7 +13,7 @@ plot_dlr(
   fst = NULL,
   x.fst = NULL,
   y.fst = NULL,
-  filename = NULL,
+  plot.dlr = TRUE,
   plot.width = NULL,
   plot.height = NULL,
   plot.dpi = NULL
@@ -37,8 +37,7 @@ plot_dlr(
 
 \item{y.fst}{(optional) Position to the y-axis of the Fst value.}
 
-\item{filename}{(optional) Name of the figure written
-in the working directory.}
+\item{plot.dlr}{(optional) By default will  write the plot in the working directory.}
 
 \item{plot.width}{(optional) Width in cm of the figure.}
 

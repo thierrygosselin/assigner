@@ -16,17 +16,17 @@ if (getRversion() >= "2.15.1") {
       "MARKERS", "MISSING_DATA",
       "ITERATIONS", "METHOD", "TOTAL", "MEAN_i", "MEAN", "ASSIGNMENT_PERC",
       "SE", "MEDIAN", "MIN", "MAX", "QUANTILE25", "QUANTILE75", "SE_MIN",
-      "SE_MAX", ".", "QUAL", "FILTER", "INFO", "pb", "SUBSAMPLE", "STRATA", 
+      "SE_MAX", ".", "QUAL", "FILTER", "INFO", "pb", "SUBSAMPLE", "STRATA",
       "sum.pop", "A1", "A2", "INDIVIDUALS_2", "Cnt", "Catalog ID", "GROUP",
       "COUNT", "MAX_COUNT_MARKERS", "hierarchy", "GT_VCF", "ANALYSIS",
       "MEAN_ITERATIONS", "MEAN_SUBSAMPLE", "NUMBER_ITERATIONS",
       "NUMBER_SUBSAMPLE", "TOTAL_ITERATIONS", "TOTAL_SUBSAMPLE", "X1", "X2",
       "strata.df", "GENOTYPE", "FIS", "POP1", "POP2", "tsiga", "tsigb", "tsigw",
-      "CI", "CI_LOW", "CI_HIGH", "N_MARKERS","sigma.loc.alleles", "DST", "DST_P", 
-      "FIS_CI_HIGH", "FIS_CI_LOW", "HO", "HS", "HT", "HT_P", "JOST_D", "MHO", 
+      "CI", "CI_LOW", "CI_HIGH", "N_MARKERS","sigma.loc.alleles", "DST", "DST_P",
+      "FIS_CI_HIGH", "FIS_CI_LOW", "HO", "HS", "HT", "HT_P", "JOST_D", "MHO",
       "MN", "MP", "MP2", "MSP2", "NEI_FST", "NEI_FST_CI_HIGH", "NEI_FST_CI_LOW",
-      "NEI_FST_P", "NEI_FST_P_CI_HIGH", "NEI_FST_P_CI_LOW", "NP", "N_INV", 
-      "SHO", "SP2", "n.markers", "JOST_D_CI_LOW", "JOST_D_CI_HIGH", 
+      "NEI_FST_P", "NEI_FST_P_CI_HIGH", "NEI_FST_P_CI_LOW", "NP", "N_INV",
+      "SHO", "SP2", "n.markers", "JOST_D_CI_LOW", "JOST_D_CI_HIGH",
       "NEW_MARKERS", "PHI", "PHI_CI_HIGH", "PHI_CI_LOW", "PHI_PRIME",
       "PHI_PRIME_CI_HIGH", "PHI_PRIME_CI_LOW", "DATA", "ID1", "ID2", "DISTANCE",
       "nn", "maxsdap", "ID1_POP", "POP_COMP", "AMOVA", "F_STATS", "MC_ITERATIONS",
@@ -38,7 +38,8 @@ if (getRversion() >= "2.15.1") {
       "Lik_ratio", "RATIO", "Individual", "Populations", "pop.labels",
       "filter.monomorphic", "LOW", "NS", "POP3", "blacklist.id",
       "holdout.samples", "ALLELE_GROUP", "MARKERS1", "fst.overall",
-      "whitelist.markers", "random.seed", "folder"
+      "whitelist.markers", "random.seed", "folder", ".data", "MARKERS...1",
+      "MARKERS...3", "MARKERS...4"
     )
   )
 }

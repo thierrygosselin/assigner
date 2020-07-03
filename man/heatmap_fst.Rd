@@ -13,7 +13,7 @@ heatmap_fst(
   color.mid = "yellow",
   color.high = "red",
   text.size = 4,
-  plot.size = 40,
+  plot.size = NULL,
   path.folder = NULL,
   filename = NULL
 )
@@ -42,9 +42,9 @@ Default: \code{color.high = "red"}.}
 \item{text.size}{(optional, integer) Size of the values.
 Default: \code{text.size = 2}.}
 
-\item{plot.size}{(optional, integer) By default the size of the plot is set
-to 40 cm x 40 cm.
-Default: \code{plot.size = 40}.}
+\item{plot.size}{(optional, integer) By default the size is 
+\code{the number of strata * 2} in cm.
+Default: \code{plot.size = NULL}.}
 
 \item{path.folder}{(optional, character)
 Default: \code{path.folder = NULL}. Default will use the working directory.}

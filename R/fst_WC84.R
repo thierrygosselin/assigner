@@ -252,14 +252,14 @@ fst_WC84 <- function(
   ## test
   # data
   # snprelate = FALSE
-  # pop.levels = NULL 
+  # pop.levels = NULL
   # strata = NULL
   # holdout.samples = NULL
   # pairwise = FALSE
   # ci = FALSE
   # iteration.ci = 100
   # quantiles.ci = c(0.025, 0.975)
-  # subsample = NULL 
+  # subsample = NULL
   # iteration.subsample = 1
   # digits = 9
   # parallel.core = parallel::detectCores() - 1
@@ -319,6 +319,8 @@ fst_WC84 <- function(
       f = filename,
       file.date = file.date,
       verbose = verbose)
+  } else {
+    path.folder <- NULL
   }
   
   
@@ -785,14 +787,23 @@ compute_fst <- function(
   #     NPL = length(unique(as.character(POP_ID))),# number of populations per locus
   #     NIL = n() # number of individuals per locus
   #   )
-  count.locus <- dplyr::bind_cols(
-    dplyr::distinct(.data = x, MARKERS, POP_ID) %>% dplyr::count(MARKERS, name = "NPL"),# number of populations per locus
-    dplyr::distinct(.data = x, MARKERS, INDIVIDUALS) %>% dplyr::count(MARKERS, name = "NIL")# number of individuals per locus
+  count.locus <- suppressMessages(
+    dplyr::bind_cols(
+      dplyr::distinct(.data = x, MARKERS, POP_ID) %>% dplyr::count(MARKERS, name = "NPL"),# number of populations per locus
+      dplyr::distinct(.data = x, MARKERS, INDIVIDUALS) %>% dplyr::count(MARKERS, name = "NIL")# number of individuals per locus
+    )
   )
-  if (!identical(count.locus$MARKERS, count.locus$MARKERS1)) {
+  # as of dplyr 1.0.0 this throw an error...
+  # if (!identical(count.locus$MARKERS, count.locus$MARKERS1)) {
+  #   rlang::abort("contact author")
+  # } else {
+  #   count.locus %<>% dplyr::select(-MARKERS1)
+  # }
+  
+  if (!identical(count.locus$MARKERS...1, count.locus$MARKERS...3)) {
     rlang::abort("contact author")
   } else {
-    count.locus %<>% dplyr::select(-MARKERS1)
+    count.locus %<>% dplyr::select(-MARKERS...3, MARKERS = MARKERS...1)
   }
   
   # count.locus.pop <- dplyr::count(x, POP_ID, MARKERS, name = "NIPL") %>%
@@ -804,18 +815,20 @@ compute_fst <- function(
   
   
   # faster:
-  count.locus.pop <- dplyr::bind_cols(
-    count.locus,
-    dplyr::count(x, POP_ID, MARKERS, name = "NIPL") %>%
-      dplyr::mutate(NIPL_SQ = NIPL ^ 2) %>%
-      dplyr::group_by(MARKERS) %>%
-      dplyr::summarise(NIPL_SQ_SUM = sum(NIPL_SQ, na.rm = TRUE))
+  count.locus.pop <- suppressMessages(
+    dplyr::bind_cols(
+      count.locus,
+      dplyr::count(x, POP_ID, MARKERS, name = "NIPL") %>%
+        dplyr::mutate(NIPL_SQ = NIPL ^ 2) %>%
+        dplyr::group_by(MARKERS) %>%
+        dplyr::summarise(NIPL_SQ_SUM = sum(NIPL_SQ, na.rm = TRUE))
+    )
   )
-  if (!identical(count.locus.pop$MARKERS, count.locus.pop$MARKERS1)) {
+  if (!identical(count.locus.pop$MARKERS...1, count.locus.pop$MARKERS...4)) {
     rlang::abort("contact author")
   } else {
     count.locus.pop %<>%
-      dplyr::select(-MARKERS1) %>%
+      dplyr::select(-MARKERS...4, MARKERS = MARKERS...1) %>% 
       dplyr::mutate(NC = (NIL - NIPL_SQ_SUM / NIL) / (NPL - 1))#correction
   }
   count.locus <- NULL
@@ -1388,8 +1401,10 @@ fst_subsample <- function(
     pairwise.fst <- dplyr::bind_rows(fst.all.pop) %>% 
       dplyr::mutate(
         POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
-        POP2 = factor(POP2, levels = pop.list, ordered = TRUE)
-      )
+        POP2 = factor(POP2, levels = pop.list, ordered = TRUE),
+        N_MARKERS = as.integer(N_MARKERS)
+      ) %>% 
+      dplyr::mutate_if(.predicate = is.numeric, .funs = round, digits = digits)
     # }#End pairwise Fst
     
     # Matrix--------------------------------------------------------------------
@@ -1629,7 +1644,7 @@ heatmap_fst <- function(
     } else {
       mult.fact <- 2
     }
-    if (is.null(plot.size)) plot.size <- length(levels(data.fst$POP1)) * mult.fact
+    if (is.null(plot.size)) plot.size <- max(20, length(levels(data.fst$POP1)) * mult.fact)
     
     heatmap.pdf <- stringi::stri_join(filename, "_heatmap.fst.pdf")
     heatmap.png <- stringi::stri_join(filename, "_heatmap.fst.png")

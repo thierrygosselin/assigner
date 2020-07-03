@@ -41,19 +41,19 @@ instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}.
 White spaces in population names are replaced by underscore.
 Default: \code{pop.levels = NULL}.}
 
-\item{assignment.analysis}{(character) Assignment analysis conducted with 
-\code{assignment.analysis = "gsi_sim"} or 
+\item{assignment.analysis}{(character) Assignment analysis conducted with
+\code{assignment.analysis = "gsi_sim"} or
 \code{assignment.analysis = "adegenet"}.
 See \strong{Details} section below for installing
 \href{https://github.com/eriqande/gsi_sim}{gsi_sim}.}
 
 \item{markers.sampling}{(character) 2 options for markers selection:
 \enumerate{
-\item \code{markers.sampling == "random"} the subset of markers are selected 
+\item \code{markers.sampling == "random"} the subset of markers are selected
 randomly, this is the classic \emph{Leave-One-Out} (LOO) assignment.
-\item \code{markers.sampling == "ranked"} the subset of markers are first 
+\item \code{markers.sampling == "ranked"} the subset of markers are first
 ranked based on an overall \emph{decreasing} Fst values.
-The Fst is computed with \code{\link{fst_WC84}} function, that uses a fast 
+The Fst is computed with \code{\link{fst_WC84}} function, that uses a fast
 implementation of Weir and Cockerham 1984 Fst/Theta equations. This selection
 method is used during \emph{Training-Holdout-Leave One Out} (thl)
 assignment. How many markers are selected is controlled with argument \code{thl}.
@@ -73,7 +73,7 @@ Several options are available:
 \item \code{thl = 1}: Only 1 individual sample is used as holdout. This individual is not
 participating in the markers ranking. For each marker number,
 the analysis will be repeated with all the indiviuals in the data set
-(e.g. 500 individuals, 500 times 500, 1000, 2000 markers). This is the default. 
+(e.g. 500 individuals, 500 times 500, 1000, 2000 markers). This is the default.
 \item \code{proportion}: e.g. \code{thl = 0.15}, 15 percent of the individuals,
 in each strata, are chosen randomly as holdout individuals.
 \item \code{thl = "all"}: all individuals are used for ranking (not good) and
@@ -83,9 +83,9 @@ only.
 Different lists of holdout individuals are generated when the argument
 \code{iteration.method} (bootstrap) is used.}
 
-\item{iteration.method}{(integer) 
+\item{iteration.method}{(integer)
 With \strong{random markers selection} method, the iterations argument =
-the number of iterations to repeat marker resampling. 
+the number of iterations to repeat marker resampling.
 Default: \code{iteration.method = 10}.
 
 With \code{marker.number = c(500, 1000)} and default iterations setting,
@@ -93,7 +93,7 @@ With \code{marker.number = c(500, 1000)} and default iterations setting,
 chosen 10 times.
 
 \strong{Notes:} If all the markers are used, with \code{marker.number = "all"}
-or in a series of marker number groupings \code{marker.number = c(200, 500, "all")}, 
+or in a series of marker number groupings \code{marker.number = c(200, 500, "all")},
 the number of iteration is automatically set to 1. The remaining groupings
 are unaffected.
 
@@ -104,18 +104,18 @@ will be repeated for each individuals in the data set for every
 individuals and this process is reapeated the number of times chosen by the
 \code{iteration.method} value.}
 
-\item{subsample}{(Integer or Character, optional) 
+\item{subsample}{(Integer or Character, optional)
 This argument subsample individuals.
 With \code{subsample = 36}, 36 individuals in each populations are chosen
 randomly to represent the dataset. This integer as to be smaller than the
-population with min sample size, if higher, the minimum sample size found 
+population with min sample size, if higher, the minimum sample size found
 in the data will be used as default. In doubt, use \code{subsample = "min"},
 the function will use the smallest population sample size found in the data.
 The number of times this process is repeated is controlled by the argument
 \code{iteration.subsample}.
 Default: \code{subsample = NULL} (no subsampling).}
 
-\item{iteration.subsample}{(Integer) The number of iterations to repeat 
+\item{iteration.subsample}{(Integer) The number of iterations to repeat
 subsampling of individuals.
 With \code{subsample = 20} and \code{iteration.subsample = 10},
 20 individuals/populations will be randomly chosen 10 times.
@@ -129,7 +129,7 @@ Default: \code{verbose = TRUE}.}
 execution during import.
 Default: \code{parallel.core = parallel::detectCores() - 1}.}
 
-\item{...}{(optional) To pass further argument for fine-tuning the 
+\item{...}{(optional) To pass further argument for fine-tuning the
 function (see advanced section below).}
 }
 \value{
@@ -143,7 +143,7 @@ the function call, arguments and values used along the default arguments.
 \item \code{assignment.results.summary.stats.tsv}: tibble
 of summarized assignment statistics.
 \item \code{assignment.ranked.results.summary.stats.all.subsamples.tsv}:
-When subsampling is used, this file contains the raw results of all subsample before 
+When subsampling is used, this file contains the raw results of all subsample before
 summarizing.
 }
 
@@ -154,7 +154,7 @@ and/or subsample:
 \enumerate{
 \item \code{assignment.ranked.results.iterations.raw.tsv}: tibble
 with raw intermediate results of all iterations.
-\item \code{assignment.ranked.results.iterations.summary.tsv}: tibble 
+\item \code{assignment.ranked.results.iterations.summary.tsv}: tibble
 with intermediate summary over iterations.
 \item \code{holdout.individuals.tsv}: tibble with the holdout individuals and
 associated iteration and random seed number.
@@ -178,15 +178,15 @@ each iteration with associated random seed number.
 The names have the different iterations \emph{i}
 starting with \code{assignment_}\emph{i} contains:
 \itemize{
-\item \code{assignment_}\emph{i}\code{.tsv}: the assignment result, for the 
+\item \code{assignment_}\emph{i}\code{.tsv}: the assignment result, for the
 iteration.
-\item \code{fst.ranked_}\emph{i}\code{.tsv}: for THL method, the ranked Fst 
+\item \code{fst.ranked_}\emph{i}\code{.tsv}: for THL method, the ranked Fst
 per markers, for the iteration.
-\item \code{gsi_sim_seeds}: the \code{gsi_sim} random seeds when this program 
+\item \code{gsi_sim_seeds}: the \code{gsi_sim} random seeds when this program
 is used, for the iteration.
 }
 The output in your global environment is a list. To view the assignment results
-\code{$assignment} to view the ggplot2 figure \code{$assignment.plot}. 
+\code{$assignment} to view the ggplot2 figure \code{$assignment.plot}.
 See example below.
 }
 \description{
@@ -200,30 +200,30 @@ Assignment assumptions are listed in the section below.
   \item \strong{Cross-Validations:} Markers can be randomly selected for a classic LOO (Leave-One-Out)
   assignment or chosen based on ranked Fst for a thl
   (Training, Holdout, Leave-one-out) assignment analysis.
-  \item \strong{Assignment analysis:} conducted in 
-  \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, a tool 
-  for doing and simulating genetic stock identification and 
-  developed by Eric C. Anderson, or 
-  \href{https://github.com/thibautjombart/adegenet}{adegenet}, 
+  \item \strong{Assignment analysis:} conducted in
+  \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, a tool
+  for doing and simulating genetic stock identification and
+  developed by Eric C. Anderson, or
+  \href{https://github.com/thibautjombart/adegenet}{adegenet},
  an R package developed by Thibaul Jombart.
   \item \strong{Parallel:} The assignment can be conduncted on multiple CPUs.
-  The R GUI is unstable with this functions, I recommend using 
-  \href{https://www.rstudio.com/products/rstudio/download/}{RStudio}. 
+  The R GUI is unstable with this functions, I recommend using
+  \href{https://www.rstudio.com/products/rstudio/download/}{RStudio}.
 }
 }
 \details{
 Using \href{https://github.com/eriqande/gsi_sim}{gsi_sim}:
 
-\code{assignment_ngs} assumes that the command line version of 
-\href{https://github.com/eriqande/gsi_sim}{gsi_sim} 
+\code{assignment_ngs} assumes that the command line version of
+\href{https://github.com/eriqande/gsi_sim}{gsi_sim}
 is properly installed into \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
-Things are set up so that it will try running gsi_sim, and if it does not find it, the 
+Things are set up so that it will try running gsi_sim, and if it does not find it, the
 program will throw an error and ask the user to run \code{\link{install_gsi_sim}}
-which will do its best to put a usable copy of gsi_sim where it is needed. 
+which will do its best to put a usable copy of gsi_sim where it is needed.
 To do so, you must be connected to the internet. If that doesn't work, you will
 need to compile the program yourself, or get it yourself, and the manually copy
 it to \code{file.path(system.file(package = "assigner"), "bin", "gsi_sim")}.
-To compile \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, follow the 
+To compile \href{https://github.com/eriqande/gsi_sim}{gsi_sim}, follow the
 instruction here: \url{https://github.com/eriqande/gsi_sim}.
 }
 \section{Advance mode}{
@@ -233,57 +233,64 @@ Ideally, forget about this section.
 For advance users, through \emph{dots-dots-dots ...} you can pass several
 arguments for fine-tuning the function:
 \enumerate{
-\item \code{adegenet.dapc.opt} (optional, character) Argument available only when 
+\item \code{adegenet.dapc.opt} (optional, character) Argument available only when
 using:
 \code{assignment.analysis = "adegenet"} with
 \code{markers.sampling == "random"}.
 
-The assignment using dapc can use the optimized alpha score 
-\code{adegenet.dapc.opt == "optim.a.score"} or 
+The assignment using dapc can use the optimized alpha score
+\code{adegenet.dapc.opt == "optim.a.score"} or
 cross-validation \code{adegenet.dapc.opt == "xval"}
-for stability of group membership probabilities. 
+for stability of group membership probabilities.
 For fine tuning the trade-off between power of discrimination and over-fitting.
 See \pkg{adegenet} documentation for more details.
-\code{adegenet.dapc.opt == "xval"} doesn't work with missing data, so it's 
+\code{adegenet.dapc.opt == "xval"} doesn't work with missing data, so it's
 only available with full dataset or \strong{imputed dataset}.
 With non imputed data or the default: \code{adegenet.dapc.opt == "optim.a.score"}.
 
-\item \code{adegenet.n.rep}: (optional, integer) 
-When \code{adegenet.dapc.opt == "xval"}, the number of replicates to be 
-carried out at each level of PC retention. 
+\item \code{adegenet.n.rep}: (optional, integer)
+When \code{adegenet.dapc.opt == "xval"}, the number of replicates to be
+carried out at each level of PC retention.
 Default: \code{adegenet.n.rep = 30}.
 See \pkg{adegenet} documentation for more details.
 
 
-\item \code{adegenet.training}: (optional, numeric) 
-When \code{adegenet.dapc.opt == "xval"}, the proportion of data (individuals) 
+\item \code{adegenet.training}: (optional, numeric)
+When \code{adegenet.dapc.opt == "xval"}, the proportion of data (individuals)
 to be used for the training set.
-Default: \code{adegenet.training = 0.9}, if all groups have >= 10 members. 
-Otherwise, training.set scales automatically to the largest proportion 
-that still ensures all groups will be present in both training 
+Default: \code{adegenet.training = 0.9}, if all groups have >= 10 members.
+Otherwise, training.set scales automatically to the largest proportion
+that still ensures all groups will be present in both training
 and validation sets.
 See \pkg{adegenet} documentation for more details.
 
-\item \code{folder}: (optional) The name of the folder created in the working 
+\item \code{folder}: (optional) The name of the folder created in the working
 directory to save the files/results. Default: \code{folder = NULL} will create
 the folder for you with data and time.
 
 \item \code{filename}: (optional) The name of the file written to the directory.
-Use the extension ".txt" at the end. 
+Use the extension ".txt" at the end.
 Several info will be appended to the name of the file.
 Default \code{assignment_data.txt}.
 
-\item \code{keep.gsi.files}: (logical, optional) With the default, 
-the intermediate input and output gsi_sim files will be deleted from the 
-directory when finished processing. I you decide to keep the files, with 
-\code{keep.gsi.files = TRUE}, remember to allocate a large chunk of the disk 
+\item \code{keep.gsi.files}: (logical, optional) With the default,
+the intermediate input and output gsi_sim files will be deleted from the
+directory when finished processing. I you decide to keep the files, with
+\code{keep.gsi.files = TRUE}, remember to allocate a large chunk of the disk
 space for the analysis.
-Default: \code{keep.gsi.files = FALSE} 
+Default: \code{keep.gsi.files = FALSE}
 
 \item \code{random.seed}: (integer, optional) For reproducibility, set an integer
 that will be used inside function that requires randomness. With default,
 a random number is generated and printed in the appropriate output.
 Default: \code{random.seed = NULL}.
+
+\item \code{full.y.range}: (logical, optional) By default the y axis print
+min and max values are determied  automatically from the data. It might
+be more usefull to see the full range of the scale from 0 to 100, in
+this case use \code{full.y.range = TRUE}. This can also be modified after
+running the analysis. See example below.
+Default: \code{full.y.range = FALSE}.
 }
 }
 
@@ -294,10 +301,10 @@ Default: \code{random.seed = NULL}.
 the assignment results.
 \itemize{
 \item \strong{remove duplicates samples: } when found within the same strata,
-duplicates generate a false population signal, when they are found 
+duplicates generate a false population signal, when they are found
 between strata (yes, I've seen it),
 it's generating noise and the core population signal is diluted.
-\item \strong{remove individual with outlier heterozygosity: } 
+\item \strong{remove individual with outlier heterozygosity: }
 unchecked, outlier individuals based on heterozygosity will generate false population
 signal when the sample as lower heterozygosity and match against several
 strata (week assignment) when the sample as higher heterozygosity.
@@ -308,16 +315,16 @@ and presence of pattern of missingness.
 \item \strong{Markers QC}: Bad markers QC \strong{will bias}
 the assignment results.
 \itemize{
-\item \strong{low MAC}: improper Minor Allele Count filtering generate noise. 
+\item \strong{low MAC}: improper Minor Allele Count filtering generate noise.
 The LOO and THL methods, both removes samples during model construction,
 if MAC is too low, the population core signature is greatly impacted at each iteration.
 \item \strong{Linkage disequilibrium}: remove highly linked markers.
-\item \strong{HWE}: remove markers in very strong Hardy-Weinberg disequilibrium 
+\item \strong{HWE}: remove markers in very strong Hardy-Weinberg disequilibrium
 likely artefactual and/or genotyping errors.
 }
 \item \strong{Strata}: bad K selection will result in poor assingment results.
 \item \strong{filtered data:} Don't expect to filter your data here.
-\pkg{radiator} was designed for this, and \code{filter_rad} will handle 
+\pkg{radiator} was designed for this, and \code{filter_rad} will handle
 the issues mentioned above. By default, the function will only remove
 monomorphic markers and keep markers in common between strata.
 }
@@ -363,28 +370,29 @@ assignment.treefrog <- assignment_ngs(
      markers.sampling = "ranked", thl = 0.3
      )
 
-# To create a dataframe with the assignment results: 
+# To create a dataframe with the assignment results:
 assignment <- assignment.treefrog$assignment
 
-# To plot the assignment using ggplot2 and facet 
+# To plot the assignment using ggplot2 and facet
 fig <- assignment.treefrog$assignment.plot
 
-# To view the full range of y values = Assignment success(\%): 
-fig + ggplot2::scale_y_continuous(limits = c(0,100)) 
+# To view the full range of y values = Assignment success(\%):
+fig + ggplot2::scale_y_continuous(limits = c(0,100))
+# Or use the ... argument: full.y.range = TRUE
 
 # If you want to remove underscore in population names that contained white space:
 facet_names <- c(
-    `some_pop` = "Some POP", 
-    `some_other_pop` = "This is what I want", 
+    `some_pop` = "Some POP",
+    `some_other_pop` = "This is what I want",
     `OVERALL` = "Overall")
 
 # use the labeller in the facet_grid or facet_wrap call:
-fig + 
+fig +
     ggplot2::facet_grid(
-        SUBSAMPLE ~ CURRENT, 
+        SUBSAMPLE ~ CURRENT,
         ggplot2::labeller = ggplot2::as_labeller(facet_names)
-        ) + 
-    ggplot2::scale_y_continuous(limits = c(0,100)) 
+        ) +
+    ggplot2::scale_y_continuous(limits = c(0,100))
 }
 }
 \references{
@@ -399,17 +407,17 @@ Molecular ecology resources 10, 4:701-710.
 Weir BS, Cockerham CC (1984) Estimating F-Statistics for the
 Analysis of Population Structure. Evolution, 38, 1358–1370.
 
-Jombart T, Devillard S, Balloux F. 
-Discriminant analysis of principal components: a new method for the analysis 
-of genetically structured populations. 
+Jombart T, Devillard S, Balloux F.
+Discriminant analysis of principal components: a new method for the analysis
+of genetically structured populations.
 BMC Genet. 2010:11: 94. doi:10.1186/1471-2156-11-94
 
-Jombart T, Ahmed I. adegenet 1.3-1: new tools for the analysis 
-of genome-wide SNP data. 
+Jombart T, Ahmed I. adegenet 1.3-1: new tools for the analysis
+of genome-wide SNP data.
 Bioinformatics. 2011:27: 3070–3071. doi:10.1093/bioinformatics/btr521
 }
 \seealso{
-\href{https://github.com/eriqande/gsi_sim}{gsi_sim} and 
+\href{https://github.com/eriqande/gsi_sim}{gsi_sim} and
 \href{https://github.com/eriqande/rubias}{rubias}
 }
 \author{

@@ -15,7 +15,7 @@ Depends:
     R (>= 3.5.0)
 Imports:
     adegenet,
-    dplyr,
+    dplyr (>= 1.0.0),
     magrittr,
     radiator,
     pbmcapply,

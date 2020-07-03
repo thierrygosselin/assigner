@@ -4,7 +4,7 @@
 \alias{plot_assignment}
 \title{plot_assignment}
 \usage{
-plot_assignment(x, path.folder = NULL)
+plot_assignment(x, path.folder = NULL, full.y.range = FALSE)
 }
 \description{
 plot_assignment

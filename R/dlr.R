@@ -54,22 +54,35 @@
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
 dlr <- function(
-  data, strata, plots = FALSE, filename = NULL,
-  parallel.core = parallel::detectCores() - 1) {
+  data, 
+  strata, 
+  plots = FALSE, 
+  filename = NULL,
+  parallel.core = parallel::detectCores() - 1
+) {
   cat("#######################################################################\n")
   cat("########################### assigner::Dlr #############################\n")
   cat("#######################################################################\n")
   timing <- proc.time()
-
+  
   if (missing(data)) stop("GenoDive file missing")
   if (missing(strata)) stop("Strata file missing")
-
+  
   # import and modify the assignment file form GenoDive-------------------------
   message("Importing GenoDive assignment results")
-  temp.file <- suppressWarnings(suppressMessages(readr::read_table(file = data)))
+  temp.file <- suppressWarnings(
+    suppressMessages(
+      readr::read_table(
+        file = data, 
+        col_names = FALSE, 
+        skip_empty_rows = FALSE
+      )
+    )
+  )
   max.lines = nrow(temp.file) - 1
   skip.number <- which(stringi::stri_detect_fixed(str = temp.file$X1,
-                                                  pattern = "membership")) + 2
+                                                  pattern = "membership")) + 1
+  
   assignment <- suppressMessages(
     suppressWarnings(
       readr::read_delim(
@@ -78,70 +91,93 @@ dlr <- function(
         skip = skip.number,
         n_max = max.lines,
         col_names = TRUE,
-        progress = interactive())) %>%
+        progress = interactive(), na = "---"
+      )
+    ) %>%
       dplyr::filter(!is.na(Current)) %>%
       dplyr::rename(
         INDIVIDUALS = Individual, POP_ID = Current, INFERRED = Inferred,
-        LIK_MAX = Lik_max, LIK_HOME = Lik_home, LIK_RATIO = Lik_ratio))
-
+        LIK_MAX = Lik_max, LIK_HOME = Lik_home, LIK_RATIO = Lik_ratio)
+  )
+  
   temp.file <- skip.number <- NULL
-
+  
   message("Importing strata file")
-  strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = "cc") %>%
-    dplyr::rename(POP_ID = STRATA)
-
+  strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = "cc")
+  
+  if (!rlang::has_name(strata.df, "POP_ID") && rlang::has_name(strata.df, "STRATA")) {
+    strata.df %<>% dplyr::rename(POP_ID = STRATA)
+  }
+  
+  
   # check that same number of individuals and pop...
   if (!identical(sort(assignment$INDIVIDUALS), sort(strata.df$INDIVIDUALS))) {
     stop("Assignment file and strata don't have the same individuals")
   }
-
+  
   assignment.pop <- ncol(assignment) - 6
   strata.pop <- dplyr::n_distinct(strata.df$POP_ID)
   if (assignment.pop != strata.pop) stop("Assignment file and strata don't have the same number of populations")
-
+  
   fixed.header <- c("INDIVIDUALS", "POP_ID", "INFERRED", "LIK_MAX", "LIK_HOME", "LIK_RATIO")
   header.pop <- purrr::discard(.x = colnames(assignment), .p = colnames(assignment) %in% fixed.header)
-
+  
   get.pop <- strata.df %>%
     dplyr::filter(INDIVIDUALS %in% header.pop)
-
+  
   strata.df <- NULL
-
+  
   # Change header for the real pop names
   colnames(assignment) <- stringi::stri_replace_all_fixed(
     str = colnames(assignment), pattern = get.pop$INDIVIDUALS, replacement = get.pop$POP_ID, vectorize_all = FALSE)
-
+  
   # Change POP_ID and inferred for the real pop name
-  assignment <- assignment %>%
+  assignment %<>%
     dplyr::mutate(
       POP_ID = stringi::stri_replace_all_fixed(
         str = POP_ID, pattern = get.pop$INDIVIDUALS, replacement = get.pop$POP_ID, vectorize_all = FALSE),
       INFERRED = stringi::stri_replace_all_fixed(
         str = INFERRED, pattern = get.pop$INDIVIDUALS, replacement = get.pop$POP_ID, vectorize_all = FALSE)
     )
-
+  
+  # check if some columns are filled with NA.. (small sample size...)
+  pop.prob <- assignment %>% 
+    purrr::keep(~all(is.na(.x))) %>% 
+    names
+  
+  if (length(pop.prob) > 0) {
+    message("Problem with sample size too low for: ", paste0(pop.prob, collapse = ", "))
+    message("Removing problematic strata")
+    assignment %<>%
+      dplyr::select(-dplyr::one_of(pop.prob))
+    get.pop %<>% dplyr::filter(!POP_ID %in% pop.prob)
+  }
+  
+  
+  
   # All combination of populations----------------------------------------------
   message("Calculating Dlr...")
   pop.pairwise <- utils::combn(unique(get.pop$POP_ID), 2)
   # pop.pairwise <- matrix(pop.pairwise, nrow = 2)
-
+  
   # Dlr for all pairwise populations--------------------------------------------
   dlr.all.pop <- as.numeric()
   for (i in 1:ncol(pop.pairwise)) {
+    # i <- 1
     dlr.all.pop[i] <- dlr_relative(data = assignment,
                                    pop1 = pop.pairwise[1,i],
                                    pop2 = pop.pairwise[2,i])
   }
   dlr.all.pop <- as.numeric(dlr.all.pop)
   # pop.pairwise <- NULL
-
+  
   # Table with Dlr--------------------------------------------------------------
   names.pairwise <- utils::combn(unique(get.pop$POP_ID), 2, paste, collapse = '-')
-
+  
   dlr.table <- tibble::tibble(PAIRWISE_POP = names.pairwise, DLR = dlr.all.pop) %>%
     dplyr::mutate(DLR = round(as.numeric(DLR), 2))
-
-
+  
+  
   # Dist and Matrix-------------------------------------------------------------
   dlr.dist <- stats::dist(1:length(unique(get.pop$POP_ID)))
   dlr.dist.matrix <- dlr.all.pop
@@ -149,12 +185,10 @@ dlr <- function(
   dlr.dist.matrix <- as.matrix(dlr.dist.matrix)
   colnames(dlr.dist.matrix) <- rownames(dlr.dist.matrix) <- unique(get.pop$POP_ID)
   dlr.dist.matrix <- stats::as.dist(dlr.dist.matrix)
-
-  dlr.matrix <- as.data.frame(as.matrix(dlr.dist.matrix)) %>%
-    tibble::rownames_to_column(df = ., var = "POP")
-
+  
+  dlr.matrix <- tibble::as_tibble(x = as.matrix(dlr.dist.matrix), rownames = "POP")
   # get.pop <- NULL
-
+  
   # create list of results -----------------------------------------------------
   res <- list(
     assignment = assignment,
@@ -166,36 +200,56 @@ dlr <- function(
   if (plots) {
     # all combination of individual pair
     pop.pairwise <- utils::combn(unique(get.pop$POP_ID), 2, simplify = FALSE)
-
+    # names(pop.pairwise) <- pop.pairwise
+    
     # get the number of pairwise comp.
     number.pairwise <- length(pop.pairwise)
-
-    # Optimizing cpu usage
-    # if (number.pairwise <= 50) {
-    #   round.cpu <- floor(number.pairwise / parallel.core)
-    # } else {
-    #   round.cpu <- floor(number.pairwise / (50 * parallel.core))
-    # }
-    # # as.integer is usually twice as light as numeric vector...
-    # split.vec <- as.integer(floor((parallel.core * round.cpu * (1:number.pairwise - 1) / number.pairwise) + 1))
-    # pop.pairwise <- split(x = pop.pairwise, f = split.vec)
-
+    
     message("Generating ", number.pairwise, " Dlr plots...")
-    # round.cpu <- split.vec <- number.pairwise <- NULL
 
-    dlr.plots <- list()
-    dlr.plots <- .assigner_parallel(
-      X = pop.pairwise,
-      FUN = plot_dlr,
-      mc.preschedule = FALSE,
-      mc.silent = FALSE,
-      mc.cleanup = TRUE,
-      mc.cores = parallel.core,
-      data = assignment
-    ) %>% purrr::flatten(.)
+    # dlr.plots <- list()
+    # dlr.plots <- .assigner_parallel_mc(
+    #   X = pop.pairwise,
+    #   FUN = plot_dlr,
+    #   mc.preschedule = FALSE,
+    #   mc.silent = FALSE,
+    #   mc.cleanup = TRUE,
+    #   mc.cores = parallel.core,
+    #   data = assignment,
+    #   dlr = NULL,
+    #   x.dlr = NULL,
+    #   y.dlr = NULL,
+    #   fst = NULL,
+    #   x.fst = NULL,
+    #   y.fst = NULL,
+    #   plot.dlr = TRUE,
+    #   plot.width = NULL,
+    #   plot.height = NULL,
+    #   plot.dpi = NULL
+    # ) %>%
+    #   purrr::flatten(.)
+    
+    dlr.plots <- purrr::map(
+      .x = pop.pairwise,
+      .f = plot_dlr,
+      data = assignment,
+      dlr = NULL,
+      x.dlr = NULL,
+      y.dlr = NULL,
+      fst = NULL,
+      x.fst = NULL,
+      y.fst = NULL,
+      plot.dlr = TRUE,
+      plot.width = NULL,
+      plot.height = NULL,
+      plot.dpi = NULL
+    ) %>%
+    purrr::flatten(.)
+    
+    
     res$dlr.plots <- dlr.plots
   }#End Dlr plots
-
+  
   # Write file to working directory --------------------------------------------
   if (is.null(filename)) {
     message("Writing files to directory: no")
@@ -203,7 +257,7 @@ dlr <- function(
     # saving table
     filename.table <- stringi::stri_join(filename, "table.tsv", sep = ".")
     readr::write_tsv(dlr.table, filename.table)
-
+    
     # saving matrix
     filename.matrix <- stringi::stri_join(filename, "matrix.tsv", sep = ".")
     readr::write_tsv(dlr.matrix, filename.matrix)
@@ -239,17 +293,21 @@ dlr <- function(
 #' @keywords internal
 dlr_relative <- function(data, pop1, pop2){
   dlr <- data %>%
-    dplyr::filter(POP_ID == rlang::UQ(pop1) | POP_ID == rlang::UQ(pop2)) %>%
+    dplyr::filter(POP_ID %in% c(pop1, pop2)) %>%
     dplyr::group_by(INDIVIDUALS) %>%
-    dplyr::mutate(RATIO = dplyr::if_else(
-      POP_ID == rlang::UQ(pop1),
-      rlang::.data[[pop1]] - rlang::.data[[pop2]],
-      rlang::.data[[pop2]] - rlang::.data[[pop1]])
+    dplyr::mutate(
+      RATIO = dplyr::if_else(
+        POP_ID %in% pop1,
+        .data[[pop1]] - .data[[pop2]],
+        # rlang::.data[[pop1]] - rlang::.data[[pop2]],
+        .data[[pop2]] - .data[[pop1]]
+        # rlang::.data[[pop2]] - rlang::.data[[pop1]]
+      )
     ) %>%
     dplyr::group_by(POP_ID) %>%
-    dplyr::summarise(DLR_RELATIVE = (sum(RATIO)/length(RATIO)^2)) %>%
+    dplyr::summarise(DLR_RELATIVE = (sum(RATIO) / length(RATIO) ^ 2)) %>%
     dplyr::ungroup(.) %>%
-    dplyr::summarise(DLR_RELATIVE = sum(DLR_RELATIVE)/2)
+    dplyr::summarise(DLR_RELATIVE = sum(DLR_RELATIVE) / 2)
   return(dlr)
 }#End dlr_relative
 
@@ -267,8 +325,7 @@ dlr_relative <- function(data, pop1, pop2){
 #' @param fst (optional) Character string with Fst value.
 #' @param x.fst (optional) Position to the x-axis of the Fst value.
 #' @param y.fst (optional) Position to the y-axis of the Fst value.
-#' @param filename (optional) Name of the figure written
-#' in the working directory.
+#' @param plot.dlr (optional) By default will  write the plot in the working directory.
 #' @param plot.width (optional) Width in cm of the figure.
 #' @param plot.height (optional) height in cm of the figure.
 #' @param plot.dpi (optional) Number of dpi for the figure (e.g 600).
@@ -298,30 +355,30 @@ plot_dlr <- function(
   fst = NULL,
   x.fst = NULL,
   y.fst = NULL,
-  filename = NULL,
+  plot.dlr = TRUE,
   plot.width = NULL,
   plot.height = NULL,
   plot.dpi = NULL) {
-
+  
   if (missing(data)) stop("GenoDive file missing")
   if (missing(pop.pairwise)) stop("Missing pop.pairwise argument")
-
+  
   # import data ----------------------------------------------------------------
   assignment.select <- dplyr::rename(data, Populations = POP_ID)
-
+  
   POPA <- pop.pairwise[1]
   POPB <- pop.pairwise[2]
-
+  
   # Check that POPA and POPB are found in the data
   if (!POPA %in% colnames(assignment.select)) stop("POPA value is not in the assignment file")
   if (!POPB %in% colnames(assignment.select)) stop("POPB value is not in the assignment file")
-
-
+  
+  
   pop.select <- c(POPA, POPB)
   fixed.header <- c("INDIVIDUALS", "Populations", "INFERRED", "LIK_MAX", "LIK_HOME", "LIK_RATIO")
-
+  
   dlr.plot.name <- stringi::stri_join("dlr_plot_pop_", stringi::stri_join(pop.select, collapse = "_"))
-
+  
   assignment.select <- suppressWarnings(
     assignment.select %>%
       dplyr::filter(Populations %in% pop.select) %>%
@@ -335,7 +392,7 @@ plot_dlr <- function(
     ))
   min.scale <- min(scale.temp)
   max.scale <- max(scale.temp)
-
+  
   assignment.plot  <- ggplot2::ggplot(assignment.select, ggplot2::aes_string(x = POPA, y = POPB)) +
     ggplot2::geom_point(ggplot2::aes(fill = Populations, shape = Populations), na.rm = TRUE, alpha = 0.8, size = 4) +
     ggplot2::geom_abline(slope = 1) +
@@ -350,32 +407,39 @@ plot_dlr <- function(
       legend.text = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"),
       strip.text.y = ggplot2::element_text(angle = 0, size = 10, family = "Helvetica", face = "bold")
     )
-
+  
   if (is.null(dlr)) {
     assignment.plot <- assignment.plot
   } else {
     assignment.plot <- assignment.plot + ggplot2::annotate("text", x = x.dlr, y = y.dlr,
                                                            label = dlr, colour = "black")
   }
-
+  
   if (is.null(fst)) {
     assignment.plot <- assignment.plot
   } else {
     assignment.plot <- assignment.plot + ggplot2::annotate("text", x = x.fst, y = y.fst,
                                                            label = fst, colour = "black")
   }
-
-
-  if (is.null(filename)) {
-    # message("Saving was not selected...")
-  } else {
-    message("Saving the figure was selected, the filename: ", filename)
-
-    if (is.null(plot.width)) stop("plot.width argument is required")
-    if (is.null(plot.height)) stop("plot.height argument is required")
-    if (is.null(plot.dpi)) stop("plot.dpi argument is required")
-    ggplot2::ggsave(filename, width = plot.width, height = plot.height,
-                    dpi = plot.dpi, units = "cm", useDingbats = FALSE)
+  
+  if (plot.dlr) {
+    filename <- stringi::stri_join(dlr.plot.name, ".png")  
+    message("File written: ", filename)
+    
+    if (is.null(plot.width)) plot.width <- 20
+    if (is.null(plot.height)) plot.height <- 20
+    if (is.null(plot.dpi)) plot.dpi <- 300
+    
+    ggplot2::ggsave(
+      filename = filename, 
+      plot = assignment.plot,
+      width = plot.width, 
+      height = plot.height,
+      dpi = plot.dpi, 
+      units = "cm", 
+      device = "png",
+      limitsize = FALSE
+    )
   }
   res <- list(assignment.plot)
   names(res) <- dlr.plot.name

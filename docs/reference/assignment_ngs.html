@@ -17,23 +17,27 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -52,19 +56,18 @@ Input file: various file format are supported (see data argument below).
 Cross-Validations: Markers can be randomly selected for a classic LOO (Leave-One-Out)
   assignment or chosen based on ranked Fst for a thl
   (Training, Holdout, Leave-one-out) assignment analysis.
-Assignment analysis: conducted in 
-  gsi_sim, a tool 
-  for doing and simulating genetic stock identification and 
-  developed by Eric C. Anderson, or 
-  adegenet, 
+Assignment analysis: conducted in
+  gsi_sim, a tool
+  for doing and simulating genetic stock identification and
+  developed by Eric C. Anderson, or
+  adegenet,
  an R package developed by Thibaul Jombart.
 Parallel: The assignment can be conduncted on multiple CPUs.
-  The R GUI is unstable with this functions, I recommend using 
+  The R GUI is unstable with this functions, I recommend using
   RStudio.
 
 " />
 <meta property="og:image" content="/logo.png" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -82,7 +85,7 @@ Parallel: The assignment can be conduncted on multiple CPUs.
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -180,14 +183,14 @@ Assignment assumptions are listed in the section below.</p>
 <li><p><strong>Cross-Validations:</strong> Markers can be randomly selected for a classic LOO (Leave-One-Out)
   assignment or chosen based on ranked Fst for a thl
   (Training, Holdout, Leave-one-out) assignment analysis.</p></li>
-<li><p><strong>Assignment analysis:</strong> conducted in 
-  <a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a>, a tool 
-  for doing and simulating genetic stock identification and 
-  developed by Eric C. Anderson, or 
-  <a href='https://github.com/thibautjombart/adegenet'>adegenet</a>, 
+<li><p><strong>Assignment analysis:</strong> conducted in
+  <a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a>, a tool
+  for doing and simulating genetic stock identification and
+  developed by Eric C. Anderson, or
+  <a href='https://github.com/thibautjombart/adegenet'>adegenet</a>,
  an R package developed by Thibaul Jombart.</p></li>
 <li><p><strong>Parallel:</strong> The assignment can be conduncted on multiple CPUs.
-  The R GUI is unstable with this functions, I recommend using 
+  The R GUI is unstable with this functions, I recommend using
   <a href='https://www.rstudio.com/products/rstudio/download/'>RStudio</a>.</p></li>
 </ul>
 
@@ -240,8 +243,8 @@ Default: <code>pop.levels = NULL</code>.</p></td>
     </tr>
     <tr>
       <th>assignment.analysis</th>
-      <td><p>(character) Assignment analysis conducted with 
-<code>assignment.analysis = "gsi_sim"</code> or 
+      <td><p>(character) Assignment analysis conducted with
+<code>assignment.analysis = "gsi_sim"</code> or
 <code>assignment.analysis = "adegenet"</code>.
 See <strong>Details</strong> section below for installing
 <a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a>.</p></td>
@@ -249,11 +252,11 @@ See <strong>Details</strong> section below for installing
     <tr>
       <th>markers.sampling</th>
       <td><p>(character) 2 options for markers selection:</p><ol>
-<li><p><code>markers.sampling == "random"</code> the subset of markers are selected 
+<li><p><code>markers.sampling == "random"</code> the subset of markers are selected
 randomly, this is the classic <em>Leave-One-Out</em> (LOO) assignment.</p></li>
-<li><p><code>markers.sampling == "ranked"</code> the subset of markers are first 
+<li><p><code>markers.sampling == "ranked"</code> the subset of markers are first
 ranked based on an overall <em>decreasing</em> Fst values.
-The Fst is computed with <code><a href='fst_WC84.html'>fst_WC84</a></code> function, that uses a fast 
+The Fst is computed with <code><a href='fst_WC84.html'>fst_WC84</a></code> function, that uses a fast
 implementation of Weir and Cockerham 1984 Fst/Theta equations. This selection
 method is used during <em>Training-Holdout-Leave One Out</em> (thl)
 assignment. How many markers are selected is controlled with argument <code>thl</code>.</p></li>
@@ -287,15 +290,15 @@ only.</p></li>
     </tr>
     <tr>
       <th>iteration.method</th>
-      <td><p>(integer) 
+      <td><p>(integer)
 With <strong>random markers selection</strong> method, the iterations argument =
-the number of iterations to repeat marker resampling. 
+the number of iterations to repeat marker resampling.
 Default: <code>iteration.method = 10</code>.</p>
 <p>With <code>marker.number = c(500, 1000)</code> and default iterations setting,
 500 markers will be randomly chosen 10 times and 1000 markers will be randomly
 chosen 10 times.</p>
 <p><strong>Notes:</strong> If all the markers are used, with <code>marker.number = "all"</code>
-or in a series of marker number groupings <code>marker.number = c(200, 500, "all")</code>, 
+or in a series of marker number groupings <code>marker.number = c(200, 500, "all")</code>,
 the number of iteration is automatically set to 1. The remaining groupings
 are unaffected.</p>
 <p>With <strong>ranked makers selection</strong> method, using <code>thl = 1</code>, the analysis
@@ -307,11 +310,11 @@ individuals and this process is reapeated the number of times chosen by the
     </tr>
     <tr>
       <th>subsample</th>
-      <td><p>(Integer or Character, optional) 
+      <td><p>(Integer or Character, optional)
 This argument subsample individuals.
 With <code>subsample = 36</code>, 36 individuals in each populations are chosen
 randomly to represent the dataset. This integer as to be smaller than the
-population with min sample size, if higher, the minimum sample size found 
+population with min sample size, if higher, the minimum sample size found
 in the data will be used as default. In doubt, use <code>subsample = "min"</code>,
 the function will use the smallest population sample size found in the data.
 The number of times this process is repeated is controlled by the argument
@@ -320,7 +323,7 @@ Default: <code>subsample = NULL</code> (no subsampling).</p></td>
     </tr>
     <tr>
       <th>iteration.subsample</th>
-      <td><p>(Integer) The number of iterations to repeat 
+      <td><p>(Integer) The number of iterations to repeat
 subsampling of individuals.
 With <code>subsample = 20</code> and <code>iteration.subsample = 10</code>,
 20 individuals/populations will be randomly chosen 10 times.
@@ -340,7 +343,7 @@ Default: <code>parallel.core = parallel::detectCores() - 1</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>(optional) To pass further argument for fine-tuning the 
+      <td><p>(optional) To pass further argument for fine-tuning the
 function (see advanced section below).</p></td>
     </tr>
     </table>
@@ -356,7 +359,7 @@ the function call, arguments and values used along the default arguments.</p></l
 <li><p><code>assignment.results.summary.stats.tsv</code>: tibble
 of summarized assignment statistics.</p></li>
 <li><p><code>assignment.ranked.results.summary.stats.all.subsamples.tsv</code>:
-When subsampling is used, this file contains the raw results of all subsample before 
+When subsampling is used, this file contains the raw results of all subsample before
 summarizing.</p></li>
 </ol>
 
@@ -365,7 +368,7 @@ summarizing.</p></li>
 and/or subsample:</p><ol>
 <li><p><code>assignment.ranked.results.iterations.raw.tsv</code>: tibble
 with raw intermediate results of all iterations.</p></li>
-<li><p><code>assignment.ranked.results.iterations.summary.tsv</code>: tibble 
+<li><p><code>assignment.ranked.results.iterations.summary.tsv</code>: tibble
 with intermediate summary over iterations.</p></li>
 <li><p><code>holdout.individuals.tsv</code>: tibble with the holdout individuals and
 associated iteration and random seed number.</p></li>
@@ -385,28 +388,28 @@ each iteration with associated random seed number.</p></li>
 <p><strong>Folders</strong></p>
 <p>The names have the different iterations <em>i</em>
 starting with <code>assignment_</code><em>i</em> contains:</p><ul>
-<li><p><code>assignment_</code><em>i</em><code>.tsv</code>: the assignment result, for the 
+<li><p><code>assignment_</code><em>i</em><code>.tsv</code>: the assignment result, for the
 iteration.</p></li>
-<li><p><code>fst.ranked_</code><em>i</em><code>.tsv</code>: for THL method, the ranked Fst 
+<li><p><code>fst.ranked_</code><em>i</em><code>.tsv</code>: for THL method, the ranked Fst
 per markers, for the iteration.</p></li>
-<li><p><code>gsi_sim_seeds</code>: the <code>gsi_sim</code> random seeds when this program 
+<li><p><code>gsi_sim_seeds</code>: the <code>gsi_sim</code> random seeds when this program
 is used, for the iteration.</p></li>
 </ul><p>The output in your global environment is a list. To view the assignment results
-<code>$assignment</code> to view the ggplot2 figure <code>$assignment.plot</code>. 
+<code>$assignment</code> to view the ggplot2 figure <code>$assignment.plot</code>.
 See example below.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Using <a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a>:</p>
-<p><code>assignment_ngs</code> assumes that the command line version of 
-<a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a> 
+<p><code>assignment_ngs</code> assumes that the command line version of
+<a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a>
 is properly installed into <code><a href='https://rdrr.io/r/base/file.path.html'>file.path(system.file(package = "assigner"), "bin", "gsi_sim")</a></code>.
-Things are set up so that it will try running gsi_sim, and if it does not find it, the 
+Things are set up so that it will try running gsi_sim, and if it does not find it, the
 program will throw an error and ask the user to run <code><a href='install_gsi_sim.html'>install_gsi_sim</a></code>
-which will do its best to put a usable copy of gsi_sim where it is needed. 
+which will do its best to put a usable copy of gsi_sim where it is needed.
 To do so, you must be connected to the internet. If that doesn't work, you will
 need to compile the program yourself, or get it yourself, and the manually copy
 it to <code><a href='https://rdrr.io/r/base/file.path.html'>file.path(system.file(package = "assigner"), "bin", "gsi_sim")</a></code>.
-To compile <a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a>, follow the 
+To compile <a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a>, follow the
 instruction here: <a href='https://github.com/eriqande/gsi_sim'>https://github.com/eriqande/gsi_sim</a>.</p>
     <h2 class="hasAnchor" id="advance-mode"><a class="anchor" href="#advance-mode"></a>Advance mode</h2>
 
@@ -416,49 +419,55 @@ instruction here: <a href='https://github.com/eriqande/gsi_sim'>https://github.c
 <p>Ideally, forget about this section.
 For advance users, through <em>dots-dots-dots ...</em> you can pass several
 arguments for fine-tuning the function:</p><ol>
-<li><p><code>adegenet.dapc.opt</code> (optional, character) Argument available only when 
+<li><p><code>adegenet.dapc.opt</code> (optional, character) Argument available only when
 using:
 <code>assignment.analysis = "adegenet"</code> with
 <code>markers.sampling == "random"</code>.</p>
-<p>The assignment using dapc can use the optimized alpha score 
-<code>adegenet.dapc.opt == "optim.a.score"</code> or 
+<p>The assignment using dapc can use the optimized alpha score
+<code>adegenet.dapc.opt == "optim.a.score"</code> or
 cross-validation <code>adegenet.dapc.opt == "xval"</code>
-for stability of group membership probabilities. 
+for stability of group membership probabilities.
 For fine tuning the trade-off between power of discrimination and over-fitting.
 See <span class="pkg">adegenet</span> documentation for more details.
-<code>adegenet.dapc.opt == "xval"</code> doesn't work with missing data, so it's 
+<code>adegenet.dapc.opt == "xval"</code> doesn't work with missing data, so it's
 only available with full dataset or <strong>imputed dataset</strong>.
 With non imputed data or the default: <code>adegenet.dapc.opt == "optim.a.score"</code>.</p></li>
-<li><p><code>adegenet.n.rep</code>: (optional, integer) 
-When <code>adegenet.dapc.opt == "xval"</code>, the number of replicates to be 
-carried out at each level of PC retention. 
+<li><p><code>adegenet.n.rep</code>: (optional, integer)
+When <code>adegenet.dapc.opt == "xval"</code>, the number of replicates to be
+carried out at each level of PC retention.
 Default: <code>adegenet.n.rep = 30</code>.
 See <span class="pkg">adegenet</span> documentation for more details.</p></li>
-<li><p><code>adegenet.training</code>: (optional, numeric) 
-When <code>adegenet.dapc.opt == "xval"</code>, the proportion of data (individuals) 
+<li><p><code>adegenet.training</code>: (optional, numeric)
+When <code>adegenet.dapc.opt == "xval"</code>, the proportion of data (individuals)
 to be used for the training set.
-Default: <code>adegenet.training = 0.9</code>, if all groups have &gt;= 10 members. 
-Otherwise, training.set scales automatically to the largest proportion 
-that still ensures all groups will be present in both training 
+Default: <code>adegenet.training = 0.9</code>, if all groups have &gt;= 10 members.
+Otherwise, training.set scales automatically to the largest proportion
+that still ensures all groups will be present in both training
 and validation sets.
 See <span class="pkg">adegenet</span> documentation for more details.</p></li>
-<li><p><code>folder</code>: (optional) The name of the folder created in the working 
+<li><p><code>folder</code>: (optional) The name of the folder created in the working
 directory to save the files/results. Default: <code>folder = NULL</code> will create
 the folder for you with data and time.</p></li>
 <li><p><code>filename</code>: (optional) The name of the file written to the directory.
-Use the extension ".txt" at the end. 
+Use the extension ".txt" at the end.
 Several info will be appended to the name of the file.
 Default <code>assignment_data.txt</code>.</p></li>
-<li><p><code>keep.gsi.files</code>: (logical, optional) With the default, 
-the intermediate input and output gsi_sim files will be deleted from the 
-directory when finished processing. I you decide to keep the files, with 
-<code>keep.gsi.files = TRUE</code>, remember to allocate a large chunk of the disk 
+<li><p><code>keep.gsi.files</code>: (logical, optional) With the default,
+the intermediate input and output gsi_sim files will be deleted from the
+directory when finished processing. I you decide to keep the files, with
+<code>keep.gsi.files = TRUE</code>, remember to allocate a large chunk of the disk
 space for the analysis.
 Default: <code>keep.gsi.files = FALSE</code></p></li>
 <li><p><code>random.seed</code>: (integer, optional) For reproducibility, set an integer
 that will be used inside function that requires randomness. With default,
 a random number is generated and printed in the appropriate output.
 Default: <code>random.seed = NULL</code>.</p></li>
+<li><p><code>full.y.range</code>: (logical, optional) By default the y axis print
+min and max values are determied  automatically from the data. It might
+be more usefull to see the full range of the scale from 0 to 100, in
+this case use <code>full.y.range = TRUE</code>. This can also be modified after
+running the analysis. See example below.
+Default: <code>full.y.range = FALSE</code>.</p></li>
 </ol>
 
     <h2 class="hasAnchor" id="assumptions"><a class="anchor" href="#assumptions"></a>Assumptions</h2>
@@ -469,10 +478,10 @@ Default: <code>random.seed = NULL</code>.</p></li>
 <li><p><strong>Individuals QC</strong>: Bad individual QC <strong>will bias</strong>
 the assignment results.</p><ul>
 <li><p><strong>remove duplicates samples: </strong> when found within the same strata,
-duplicates generate a false population signal, when they are found 
+duplicates generate a false population signal, when they are found
 between strata (yes, I've seen it),
 it's generating noise and the core population signal is diluted.</p></li>
-<li><p><strong>remove individual with outlier heterozygosity: </strong> 
+<li><p><strong>remove individual with outlier heterozygosity: </strong>
 unchecked, outlier individuals based on heterozygosity will generate false population
 signal when the sample as lower heterozygosity and match against several
 strata (week assignment) when the sample as higher heterozygosity.</p></li>
@@ -482,16 +491,16 @@ and presence of pattern of missingness.</p></li>
 </ul></li>
 <li><p><strong>Markers QC</strong>: Bad markers QC <strong>will bias</strong>
 the assignment results.</p><ul>
-<li><p><strong>low MAC</strong>: improper Minor Allele Count filtering generate noise. 
+<li><p><strong>low MAC</strong>: improper Minor Allele Count filtering generate noise.
 The LOO and THL methods, both removes samples during model construction,
 if MAC is too low, the population core signature is greatly impacted at each iteration.</p></li>
 <li><p><strong>Linkage disequilibrium</strong>: remove highly linked markers.</p></li>
-<li><p><strong>HWE</strong>: remove markers in very strong Hardy-Weinberg disequilibrium 
+<li><p><strong>HWE</strong>: remove markers in very strong Hardy-Weinberg disequilibrium
 likely artefactual and/or genotyping errors.</p></li>
 </ul></li>
 <li><p><strong>Strata</strong>: bad K selection will result in poor assingment results.</p></li>
 <li><p><strong>filtered data:</strong> Don't expect to filter your data here.
-<span class="pkg">radiator</span> was designed for this, and <code>filter_rad</code> will handle 
+<span class="pkg">radiator</span> was designed for this, and <code>filter_rad</code> will handle
 the issues mentioned above. By default, the function will only remove
 monomorphic markers and keep markers in common between strata.</p></li>
 </ol>
@@ -535,37 +544,25 @@ loci for population assignment: standard methods are upwardly biased.
 Molecular ecology resources 10, 4:701-710.</p>
 <p>Weir BS, Cockerham CC (1984) Estimating F-Statistics for the
 Analysis of Population Structure. Evolution, 38, 1358–1370.</p>
-<p>Jombart T, Devillard S, Balloux F. 
-Discriminant analysis of principal components: a new method for the analysis 
-of genetically structured populations. 
+<p>Jombart T, Devillard S, Balloux F.
+Discriminant analysis of principal components: a new method for the analysis
+of genetically structured populations.
 BMC Genet. 2010:11: 94. doi:10.1186/1471-2156-11-94</p>
-<p>Jombart T, Ahmed I. adegenet 1.3-1: new tools for the analysis 
-of genome-wide SNP data. 
+<p>Jombart T, Ahmed I. adegenet 1.3-1: new tools for the analysis
+of genome-wide SNP data.
 Bioinformatics. 2011:27: 3070–3071. doi:10.1093/bioinformatics/btr521</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a> and 
+    <div class='dont-index'><p><a href='https://github.com/eriqande/gsi_sim'>gsi_sim</a> and
 <a href='https://github.com/eriqande/rubias'>rubias</a></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#advance-mode">Advance mode</a></li>
-      <li><a href="#assumptions">Assumptions</a></li>
-      <li><a href="#life-cycle">Life cycle</a></li>
-      <li><a href="#references">References</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Thierry Gosselin <a href='mailto:thierrygosselin@icloud.com'>thierrygosselin@icloud.com</a> and Eric C. Anderson</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -576,7 +573,7 @@ Bioinformatics. 2011:27: 3070–3071. doi:10.1093/bioinformatics/btr521</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
