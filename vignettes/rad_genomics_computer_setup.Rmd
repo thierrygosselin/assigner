@@ -194,10 +194,10 @@ Copy/paste the line below in your `.bash_profile` file:
 PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
 ```
 
-After modifying your shell start up script always run the command `source .bash_profile` to reload it.
+After modifying your shell start up script always run the command `source ~/.bash_profile` to reload it.
 
 
-## Useful
+## Useful tools
 
 Below are useful but not essential software you will like to have on your mac.
 
@@ -290,13 +290,15 @@ sudo rm -R ~/Downloads/get-pip.py # to remove the downloaded file
 Make sure you have GCC and CLANG with OpenMP enabled.
 Several flavors available, check for the proper [link](http://releases.llvm.org/download.html)
 
-# Install R
+# Install [R](https://cran.r-project.org)
 
-To install R v3.6.1 **"Action of the Toes"** released on 2019-07-05 download the
+
+To install R v3.6.3 **"Holding the Windsock"** released on 2020-02-29 download the
 installer and follow the instructions
 ```{bash eval=FALSE}
+# for macOS
 cd Downloads
-wget https://cran.r-project.org/bin/macosx/R-3.6.1.pkg
+curl -O https://cran.r-project.org/bin/macosx/el-capitan/base/R-3.6.3.pkg
 ```
 
 
@@ -312,10 +314,42 @@ sudo rm -rf /Library/Frameworks/R.framework /Applications/R.app \
 To download RStudio, check this [link](https://www.rstudio.com/products/rstudio/download/#download)
 and download the installer for your OS.
 
+# Installing Libraries
+
+Below is how I setup most of my computers after a clean macOS install.
+1. Start with **devtools** and **tidyverse**
+
+```{r eval=FALSE}
+if (!require("devtools")) install.packages("devtools") # to install
+install.packages("tidyverse")
+```
+
+
+2. The gsl package is required by numerous packages and can cause some headaches...
+Don't install it from source.
+
+```{r eval=FALSE}
+install.packages("gsl")
+```
+
+
+If the console print this: `Do you want to install from sources the package which needs compilation? (Yes/no/cancel)`. Always aswer **no** unless of course you know what you are doing.
+
+3. Than, I install **grur** and **assigner** my packges with the higher number of dependencies, 
+this way it's installing automatically 90%
+of the packages I need (including **radiator**).
+
+```{r eval=FALSE}
+devtools::install_github("thierrygosselin/grur")
+devtools::install_github("thierrygosselin/assigner")
+```
 
 # Makevars file
 
-You need to tell R how to use the compilers. This might change from one package
+For some packages you might have to compile from source and 
+the use of different compiler is sometimes very useful.
+You need to tell R how to use the compilers. 
+This might change from one package
 to another. Nothing is simple, you know this by now...
 All this is done through R's **Makevars** file located in `~/.R/Makevars`.
 
@@ -338,23 +372,10 @@ SHLIB_OPENMP_CFLAGS = -fopenmp
 SHLIB_OPENMP_CXXFLAGS = -fopenmp
 SHLIB_OPENMP_FCFLAGS = -fopenmp
 SHLIB_OPENMP_FFLAGS = -fopenmp
-FLIBS=-L/usr/local/lib/gcc/x86_64-apple-darwin15.6.0/7.1.0/finclude # change according to your computer compiler version
+# change the nex line according to your computer compiler version (use gcc -v in terminal):
+FLIBS=-L/usr/local/lib/gcc/x86_64-apple-darwin19/9.2.0/finclude 
 CFLAGS=-mtune=native -g -O2 -Wall -pedantic -Wconversion
 CXXFLAGS=-mtune=native -g -O2 -Wall -pedantic -Wconversion
-```
-
-
-# Installing Libraries
-
-Below is how I setup most of my computers after a clean macOS install.
-I start with **devtools** and **tidyverse** than **grur** my packge with the 
-higher number of dependencies, this way it's installing automatically 90%
-of the packages I need (including **radiator**).
-```{r eval=FALSE}
-if (!require("devtools")) install.packages("devtools") # to install
-install.packages("tidyverse")
-devtools::install_github("thierrygosselin/grur")
-devtools::install_github("thierrygosselin/assigner")
 ```
 
 
@@ -383,7 +404,7 @@ to reinstall the problematic package.
 
 ## Error saying "https" not supported or disabled in libcurl
 
-### Installing OpenSSL
+### Installing [OpenSSL](www.openssl.org)
 
 Required if GCC compiler is used (TLS backend is then used). Not required if clang is used (securetransport backend is used).
 ```{bash eval=FALSE}
@@ -392,6 +413,7 @@ https://www.openssl.org/source/openssl-1.1.1.tar.gz
 
 #In Terminal
 cd Downloads
+curl -O https://www.openssl.org/source/openssl-1.1.1.tar.gz
 tar -zxvf openssl-1.1.1.tar.gz
 cd openssl-1.1.1
 ./config
@@ -406,19 +428,34 @@ sudo rm -R openssl*
 Check for the latest release of [curl](https://curl.haxx.se/download)
 ```{bash eval=FALSE}
 #Copy/paste in your browser
-https://curl.haxx.se/download/curl-7.61.1.tar.gz
+https://curl.haxx.se/download/curl-7.69.0.tar.gz
 # Terminal
 cd Downloads
-tar -zxvf curl-7.61.1.tar.gz
-cd curl-7.61.1
+tar -zxvf curl-7.69.0.tar.gz
+cd curl-7.69.0
+```
+
+The next step depends on the compulier used
+
+With **gcc**:
+```{bash eval=FALSE}
 ./configure --with-ssl # to enable https via OpenSSL and using GCC
-#CC="/usr/local/bin/clang" ./configure --without-ssl --with-darwinssl # to install via clang
+```
+Note: with macOS 10.15 this give me an error `configure: error: OpenSSL libs and/or directories were not found where specified!`
+
+If this is the case, use **clang**:
+```{bash eval=FALSE}
+CC="/usr/local/bin/clang"
+./configure --without-ssl --with-darwinssl # to install via clang
+```
+
+
+```{bash eval=FALSE}
 make -j12 #change with your number of CPU
 sudo make install
 cd ..
 sudo rm -R curl*
 ```
-
 
 ## Linux related problem
 
@@ -567,6 +604,22 @@ Sys.setenv(LD_LIBRARY_PATH="/usr/local/lib64/R/lib::/lib:/usr/local/lib64:/usr/l
 Instead of using `Sys.setenv` each time you have a similar problem,
 you could add the [environment variables](https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html) `LD_LIBRARY_PATH` to your `.Renviron file`. [This is discussed in another problem above](#Renviron).
 
+## Error with `C stacks usage`
+```{r, eval=FALSE}
+Error: C stack usage  7971092 is too close to the limit
+```
+
+So far, I haven't found the cure to this computer-specific problem.
+
+**Potential solutions:**
+
+- Make sure you have enough RAM on your computer for the dataset you want to analyze (16GB is the bare minimum these days for small-medium RADseq dataset). 
+- Closing all windows/app running in the background somtimes help.
+- Updating to the latest version of R, RStudio and libraries.
+- Not a fan of upgrading to latest version, use [Packrat](https://rstudio.github.io/packrat/).
+- Follow the guidelines to prepare your computer in this vignette, from the start...
+
+
 ## Google is your next best friend...
 
 # Specific librairies installation
@@ -578,18 +631,19 @@ Download the latest github release of Allan Strand's **rmetasim**
 ```{bash eval=FALSE}
 cd ~/Downloads
 wget --no-check-certificate https://github.com/stranda/rmetasim/archive/master.zip
+curl -O https://github.com/stranda/rmetasim/archive/master.zip
 unzip master.zip
 ```
 
 ### Modify the number of loci: MAXLOCI
 
-If you want to use more loci during your simulations (default is 1001),
+If you want to use more loci during your simulations (default is 10001),
 you need to modify rmetasim before compiling.
-With a text editor [e.g. BBEdit with macOS](http://gbs-cloud-tutorial.readthedocs.io/en/latest/03_computer_setup.html#install-textwrangler), modify the `const.h` file in the `src` folder: `rmetasim-master/src/const.h`.
+With a text editor, modify the `const.h` file in the `src` folder: `rmetasim-master/src/const.h`.
 Navigate to **lane 33** and change the integer to the desired maximum number of loci. Or do this in the Terminal:
 
 ```{bash eval=FALSE}
-sed -i -e 's/#define MAXLOCI               1001/#define MAXLOCI               20000/g' rmetasim-master/src/const.h
+sed -i -e 's/#define MAXLOCI               10001/#define MAXLOCI               20000/g' rmetasim-master/src/const.h
 ```
 
 ### Makevars configuration {#Makevars_config}
@@ -641,7 +695,7 @@ CPPFLAGS+=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 ### Compile
 ```{bash eval=FALSE}
 R CMD INSTALL "rmetasim-master" # Terminal command
-sudo rm -R rmetasim-master master.zip # to remove the folders no longer required
+sudo rm -R rmetasim* # to remove the folders no longer required
 ```
 
 ## `XGBoost`
@@ -774,26 +828,39 @@ PKG_CFLAGS= -O3 -Wall -pipe -pedantic -std=gnu99 -fopenmp
 PKG_CXXFLAGS=-fopenmp -std=c++11
 FC=/usr/local/bin/gfortran
 F77=/usr/local/bin/gfortran
+LDFLAGS=-L/usr/local/lib
+PKG_LIBS = "-liconv"
 ```
 
 ### Download and install
 From the Terminal run these steps to download and compile randomForestSRC:
 ```{bash eval=FALSE}
 cd ~/Downloads
-curl -O https://cran.r-project.org/src/contrib/randomForestSRC_4.6-14.tar.gz
-tar -zxvf randomForestSRC_4.6-14.tar.gz
+curl -O https://cran.r-project.org/src/contrib/randomForestSRC_2.9.3.tar.gz
+tar -zxvf randomForestSRC_2.9.3.tar.gz
 cd randomForestSRC
+```
+
+Make sure you have autoconf installed:
+```{bash eval=FALSE}
+# in Terminal
+cd ~/Downloads
 autoconf
-cd ..
+```
+
+Should output: `autoconf: error: no input file`, 
+if not, install following the [steps here](#useful).
+
+```{bash eval=FALSE}
+# in Terminal
+cd ~/Downloads/randomForestSRC
+autoconf
+cd ~/Downloads
 R CMD INSTALL --preclean --clean randomForestSRC
 ```
 
 You want to make sure that this line is printed during execution of the previous command:
 `checking whether OpenMP will work in a package... yes` or `checking for /usr/local/bin/gcc option to support OpenMP... -fopenmp`
-
-If the compilation fails after `autoconf`, follow the first 3 steps in this
-[tutorial](http://gbs-cloud-tutorial.readthedocs.io/en/latest/07_start_from_new_image.html?highlight=autoconf#install-gbs-radseq-software-time-required-30min), to install `libsigsegv`, `m4` and `autoconf`. 
-
 
 ## `ranger`
 [ranger](https://github.com/imbs-hl/ranger) is easy to install.
@@ -807,12 +874,16 @@ install.packages("ranger")
 install.packages("missRanger")
 ```
 
+## `miceRanger`
+[miceRanger](https://github.com/FarrellDay/miceRanger) easy to install.
+```{r eval=FALSE}
+install.packages("miceRanger")
+```
 
 ## `pcaMethods`
 To install [pcaMethods](https://github.com/hredestig/pcaMethods), from bioconductor:
 ```{r eval=FALSE}
-source("https://bioconductor.org/biocLite.R")
-biocLite("pcaMethods")
+BiocManager::install("pcaMethods")
 ```
 
 ## `fastsimcoal2`
@@ -859,7 +930,7 @@ source ~/.bash_profile
 
 Remove the files in the folder:
 ```{bash, eval=FALSE}
-sudo rm -R fsc26_mac64*
+sudo rm -R ~/Downloads/fsc26_mac64*
 ```
 
 ## `COLONY`
@@ -870,14 +941,15 @@ To install [COLONY 30/07/2018, V2.0.6.5](https://www.zsl.org/science/software/co
 The old openmpi version (openmpi-1.6.5) is required, saddly.
 
 ```{bash macOS openmpi-1.6.5, eval=FALSE}
-cd Downloads
+cd ~/Downloads
 curl -O https://download.open-mpi.org/release/open-mpi/v1.6/openmpi-1.6.5.tar.gz
 tar -zxvf openmpi-1.6.5.tar.gz
 cd openmpi-1.6.5
 export TMPDIR=/tmp
-./configure F77=gfortran --prefix=/usr/local -openmp
+./configure F77=gfortran #--prefix=/usr/local -openmp # no longer work for some reason
 make -j 12
 sudo make install
+sudo rm -R ~/Downloads/openmpi*
 ```
 
 To download COLONY, follow instructions on Jinliang Wang [ZSL website](https://www.zsl.org/science/software/colony). The file you need to 
@@ -891,7 +963,7 @@ uncompress is named: `colony2.linux_.20180730.zip`.
 Several options are available depending on the compiler you have installed.
 
 
-# Useful
+# Useful {#useful}
 
 ## Update [Github](http://en.wikipedia.org/wiki/Github)
 
@@ -905,6 +977,7 @@ commands:
 ```{bash eval=FALSE}
 cd ~/Downloads
 wget http://ftp.gnu.org/gnu/autoconf/autoconf-latest.tar.gz
+curl -O http://ftp.gnu.org/gnu/autoconf/autoconf-latest.tar.gz
 tar -xvzf autoconf-latest.tar.gz
 cd autoconf-2.69
 ./configure
@@ -917,14 +990,14 @@ sudo rm -R ~/Downloads/autoconf-*
 2. Install Github
 
 ```{bash eval=FALSE}
-git --version      # show current git version installed
-which git          # returns where is git on your computer
+git --version                   # show current git version installed
+which git                       # returns where is git on your computer
 cd ~/Downloads
 git clone https://github.com/git/git # install the latest Git
 cd git
 make configure
 ./configure
-make
+make -j12
 sudo make install
 cd .. 
 sudo rm -R ~/Downloads/git/     # remove git folder

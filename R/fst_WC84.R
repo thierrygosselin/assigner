@@ -2,41 +2,41 @@
 
 #' @name fst_WC84
 
-#' @title A fast implementation of Weir and Cockerham (1984) Fst/Theta 
+#' @title A fast implementation of Weir and Cockerham (1984) Fst/Theta
 #' (overall and paiwise estimates)
 
-#' @description The function calculates Weir and Cockerham (1984) 
-#' Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
-#' confidence intervals based on bootstrap of markers (resampling with replacement). 
-#' The function gives identical results \emph{at the 9th decimal} when tested 
-#' against \code{genet.dist} in \code{hierfstat}. Using the 
-#' argument \code{snprelate = TRUE} will compute the Fst with 
+#' @description The function calculates Weir and Cockerham (1984)
+#' Fst for diploid genomes. Both overall and pairwise Fst can be estimated with
+#' confidence intervals based on bootstrap of markers (resampling with replacement).
+#' The function gives identical results \emph{at the 9th decimal} when tested
+#' against \code{genet.dist} in \code{hierfstat}. Using the
+#' argument \code{snprelate = TRUE} will compute the Fst with
 #' \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}. This implementation
 #' gives slightly upward bias values but provided the fastest computations I know,
-#' but it doesn't compute confidence intervals, for now. 
-#' For an R implementation, \code{\link{fst_WC84}} is very fast. 
-#' The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
+#' but it doesn't compute confidence intervals, for now.
+#' For an R implementation, \code{\link{fst_WC84}} is very fast.
+#' The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr},
 #' \pkg{parallel} and \pkg{SNPRelate}.
-#' The impact of unbalanced design on estimates can be tested by using the 
+#' The impact of unbalanced design on estimates can be tested by using the
 #' subsample argument (see advance mode section).
-#' 
+#'
 #' \emph{Special concerns for genome-wide estimate and filtering bias}
-#' 
-#' During computation, the function first starts by keeping only the polymorphic 
-#' markers in common between the populations. Keep this in mind when filtering 
-#' your markers to use this function characteristic strategically to get 
-#' better genome-wide estimate. This is even more important when your project 
-#' involves more than 2 populations that evolved more by neutral processes 
+#'
+#' During computation, the function first starts by keeping only the polymorphic
+#' markers in common between the populations. Keep this in mind when filtering
+#' your markers to use this function characteristic strategically to get
+#' better genome-wide estimate. This is even more important when your project
+#' involves more than 2 populations that evolved more by neutral processes
 #' (e.g. genetic drift) than by natural selection (see the vignette for more details).
 
-#' @note \strong{Negative Fst} are technical artifact of the computation 
-#' (see Roesti el al. 2012) and are automatically replaced with zero inside 
+#' @note \strong{Negative Fst} are technical artifact of the computation
+#' (see Roesti el al. 2012) and are automatically replaced with zero inside
 #' this function.
-#' 
+#'
 #' \strong{Why no p-values ?}
-#' 
+#'
 #' There is no null hypothesis testing with \emph{P}-values.
-#' Confidence intervals provided with the \emph{F}-statistics 
+#' Confidence intervals provided with the \emph{F}-statistics
 #' enables more reliable conclusions about the biological trends in the data.
 
 #' @param data A tidy data frame object in the global environment or
@@ -47,61 +47,61 @@
 #' whitelist of markers, blacklist of individuals and genotypes.
 
 #' @param snprelate (optional, logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
-#' to compute the Fst. 
+#' to compute the Fst.
 #' It's the fastest computation I've seen so far!
-#' 
+#'
 #' However, testing with different RADseq datasets as shown several upward bias
-#' with \code{SNPRelate::snpgdsFst} (last version tested was v.1.16.0). 
+#' with \code{SNPRelate::snpgdsFst} (last version tested was v.1.16.0).
 #' I compared the results with assigner, hierfstat and strataG
 #' (results available upon request).
 #' The SNPRelate author as not given me good reason to belive the issue is fully
 #' resolved, consequently, the option is no longer available, until further notice.
 #' Default: \code{snprelate = FALSE}
 
-#' @param pop.levels (optional, string) This refers to the levels in a factor. In this 
+#' @param pop.levels (optional, string) This refers to the levels in a factor. In this
 #' case, the id of the pop.
-#' Use this argument to have the pop ordered your way instead of the default 
-#' alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
-#' instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
+#' Use this argument to have the pop ordered your way instead of the default
+#' alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")}
+#' instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}.
 #' Default: \code{pop.levels = NULL}.
 
 #' @param strata (optional, data frame) A tab delimited file with 2 columns with header:
 #' \code{INDIVIDUALS} and \code{STRATA}.
 #' If a \code{strata} file is specified, the strata file will have
-#' precedence over any grouping found input file (\code{data}). 
+#' precedence over any grouping found input file (\code{data}).
 #' The \code{STRATA} column can be any hierarchical grouping.
 #' Default: \code{strata = NULL}.
 
 
-#' @param pairwise (optional, logical) With \code{pairwise = TRUE}, the 
-#' pairwise WC84 Fst is calculated between populations. 
+#' @param pairwise (optional, logical) With \code{pairwise = TRUE}, the
+#' pairwise WC84 Fst is calculated between populations.
 #' Default: \code{pairwise = FALSE}.
 
-#' @param ci (optional, logical) Compute bootstrapped confidence intervals. 
+#' @param ci (optional, logical) Compute bootstrapped confidence intervals.
 #' Default: \code{ci = FALSE}.
 
-#' @param iteration.ci (optional, integer) The number of iterations for 
-#' the boostraps (resampling with replacement of markers). 
+#' @param iteration.ci (optional, integer) The number of iterations for
+#' the boostraps (resampling with replacement of markers).
 #' Default: \code{iteration.ci = 100}.
 
-#' @param quantiles.ci (optional, double) 
-#' The quantiles for the bootstrapped confidence intervals. 
+#' @param quantiles.ci (optional, double)
+#' The quantiles for the bootstrapped confidence intervals.
 #' Default: \code{quantiles.ci = c(0.025,0.975)}.
 
-#' @param digits (optional, integer) The number of decimal places to be used in 
+#' @param digits (optional, integer) The number of decimal places to be used in
 #' results.
 #' Default: \code{digits = 9}.
 
-#' @param parallel.core (optional, integer) The number of core for parallel computation 
+#' @param parallel.core (optional, integer) The number of core for parallel computation
 #' of pairwise Fst.
 #' Default: \code{parallel.core = parallel::detectCores() - 1}.
 
-#' @param verbose (optional, logical) \code{verbose = TRUE} to be chatty 
-#' during execution. 
+#' @param verbose (optional, logical) \code{verbose = TRUE} to be chatty
+#' during execution.
 #' Default: \code{verbose = FALSE}.
 
 
-#' @param filename (optional, character) Give filename prefix, this will trigger 
+#' @param filename (optional, character) Give filename prefix, this will trigger
 #' saving results in a directory.
 #' Default: \code{filename = NULL}.
 
@@ -115,23 +115,23 @@
 #' \item \code{filter.monomorphic} (logical, optional) By default monomorphic
 #' markers present in the dataset are removed (and it should stay that way...).
 #' Default: \code{filter.monomorphic = TRUE}.
-#' 
-#' \item \code{holdout.samples} (optional, data frame) Samples that don't participate in the Fst 
+#'
+#' \item \code{holdout.samples} (optional, data frame) Samples that don't participate in the Fst
 #' computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
 #' This argument is used inside assignment analysis.
 #' Default: \code{holdout.samples = NULL}.
-#' 
-#' \item \code{subsample} (Integer or character) 
+#'
+#' \item \code{subsample} (Integer or character)
 #' With \code{subsample = 36}, 36 individuals in each populations are chosen
-#' randomly to represent the dataset. With \code{subsample = "min"}, the 
+#' randomly to represent the dataset. With \code{subsample = "min"}, the
 #' minimum number of individual/population found in the data is used automatically.
 #' Default is no subsampling, \code{subsample = NULL}.
-#' \item \code{iteration.subsample} (Integer) The number of iterations to repeat 
+#' \item \code{iteration.subsample} (Integer) The number of iterations to repeat
 #' subsampling.
 #' With \code{subsample = 20} and \code{iteration.subsample = 10},
 #' 20 individuals/populations will be randomly chosen 10 times.
 #' Default: \code{iteration.subsample = 1}.
-#' 
+#'
 #' \item \code{heatmap.fst} to generate an heatmap with the Fst values in
 #' lower matrix and CI in the upper matrix.
 #' Default: \code{heatmap.fst = FALSE}.
@@ -146,12 +146,12 @@
 #' \itemize{
 #'  \item \code{$subsampling.individuals}: the combinations of individuals and subsamples,
 #'  \item \code{$sigma.loc}: the variance components per locus, with
-#'       (\code{lsiga}: among populations, 
+#'       (\code{lsiga}: among populations,
 #'       \code{lsigb}: among individuals within populations,
 #'       \code{lsigw}: within individuals)
 #'  \item \code{$fst.markers}: the fst by markers,
 #'  \item \code{$fst.ranked}: the fst ranked,
-#'  \item \code{$fst.overall}: the mean fst overall markers and the number of markers 
+#'  \item \code{$fst.overall}: the mean fst overall markers and the number of markers
 #'  \item \code{$fis.markers}: the fis by markers,
 #'  \item \code{$fis.overall}: the mean fis overall markers and the number of markers,
 #'  \item \code{$fst.plot}: the histogram of the overall Fst per markers,
@@ -170,45 +170,45 @@
 #' @examples
 #' \dontrun{
 #' wombat.fst.pairwise <- fst_WC84(
-#'     data = "wombat.filtered.tidy.tsv", 
+#'     data = "wombat.filtered.tidy.tsv",
 #'     pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
 #'     pairwise = TRUE,
-#'     ci = TRUE, 
-#'     iteration.ci = 10000, 
+#'     ci = TRUE,
+#'     iteration.ci = 10000,
 #'     quantiles.ci = c(0.025,0.975),
 #'     parallel.core = 8,
 #'     verbose = TRUE,
 #'     filename = "wombat",
 #'     heatmap.fst = TRUE
 #' )
-#' 
+#'
 #' # To get the overall Fst estimate:
 #' wombat.fst.pairwise$fst.overall
-#' 
+#'
 #' # To get the Fst plot:
 #' wombat.fst.pairwise$fst.plot
-#' 
+#'
 #' #To get the pairwise Fst values with confidence intervals in a data frame:
 #' df <- wombat.fst.pairwise$pairwise.fst
 #' }
 
-#' @references Excoffier L, Smouse PE, Quattro JM. 
-#' Analysis of molecular variance inferred from metric distances among 
-#' DNA haplotypes: application to human mitochondrial DNA restriction data. 
+#' @references Excoffier L, Smouse PE, Quattro JM.
+#' Analysis of molecular variance inferred from metric distances among
+#' DNA haplotypes: application to human mitochondrial DNA restriction data.
 #' Genetics. 1992;131: 479-491.
-#' @references Meirmans PG, Van Tienderen PH (2004) genotype and genodive: 
-#' two programs for the analysis of genetic diversity of asexual organisms. 
+#' @references Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
+#' two programs for the analysis of genetic diversity of asexual organisms.
 #' Molecular Ecology Notes, 4, 792-794.
-#' @references Michalakis Y, Excoffier L. 
-#' A generic estimation of population 
-#' subdivision using distances between alleles with special reference for 
-#' microsatellite loci. 
-#' Genetics. 1996;142: 1061-1064. 
+#' @references Michalakis Y, Excoffier L.
+#' A generic estimation of population
+#' subdivision using distances between alleles with special reference for
+#' microsatellite loci.
+#' Genetics. 1996;142: 1061-1064.
 #' @references Weir BS, Cockerham CC (1984) Estimating F-Statistics for the
-#' Analysis of Population Structure. 
+#' Analysis of Population Structure.
 #' Evolution, 38, 1358-1370.
 #' @references Roesti M, Salzburger W, Berner D. (2012)
-#' Uninformative polymorphisms bias genome scans for signatures of selection. 
+#' Uninformative polymorphisms bias genome scans for signatures of selection.
 #' BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x
 #' @references Zheng X, Levine D, Shen J, Gogarten SM, Laurie C, Weir BS.
 #' A high-performance computing toolset for relatedness and principal component
@@ -217,18 +217,18 @@
 
 #' @seealso
 #' From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive} manual:
-#' \emph{'In general, rather than to test differentiation between all pairs of 
+#' \emph{'In general, rather than to test differentiation between all pairs of
 #' populations,
-#' it is advisable to perform an overall test of population differentiation, 
-#' possibly using a hierarchical population structure, (see AMOVA)'}. 
+#' it is advisable to perform an overall test of population differentiation,
+#' possibly using a hierarchical population structure, (see AMOVA)'}.
 #' To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 #' or \code{Phi_st_Meirmans} in \code{mmod}.
-#' 
+#'
 #' \href{https://github.com/jgx65/hierfstat/}{hierfstat}
-#' 
-#' For Fisher's exact test and p-values per markers 
+#'
+#' For Fisher's exact test and p-values per markers
 #' see \code{mmod} \code{diff_test}.
-#' 
+#'
 #' \strong{Vignette for this function:} \href{https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0}{how to do the pairwise and overall Fst with confidence intervals and build the phylogenetic tree}
 
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
@@ -238,7 +238,7 @@ fst_WC84 <- function(
   data,
   snprelate = FALSE,
   strata = NULL,
-  pop.levels = NULL, 
+  pop.levels = NULL,
   pairwise = FALSE,
   ci = FALSE,
   iteration.ci = 100,
@@ -266,7 +266,7 @@ fst_WC84 <- function(
   # verbose = TRUE
   # filename = "coral_fst"
   # heatmap.fst = FALSE
-  
+
   # fst.snprelate <- NULL # remove after bias test
   # gds.file.connection <- NULL
   if (verbose) {
@@ -274,7 +274,7 @@ fst_WC84 <- function(
     cat("############################# assigner::fst_WC84 ###############################\n")
     cat("################################################################################\n")
   }
-  
+
   # Cleanup---------------------------------------------------------------------
   file.date <- format(Sys.time(), "%Y%m%d@%H%M")
   if (verbose) message("Execution date/time: ", file.date)
@@ -289,20 +289,20 @@ fst_WC84 <- function(
   on.exit(timing <- proc.time() - timing, add = TRUE)
   on.exit(if (verbose) message("\nComputation time, overall: ", round(timing[[3]]), " sec"), add = TRUE)
   on.exit(if (verbose) cat("############################# fst_WC84 completed ###############################\n"), add = TRUE)
-  
+
   # Function call and dotslist -------------------------------------------------
   rad.dots <- radiator::radiator_dots(
     func.name = as.list(sys.call())[[1]],
     fd = rlang::fn_fmls_names(),
     args.list = as.list(environment()),
-    dotslist = rlang::dots_list(..., .homonyms = "error", .check_assign = TRUE), 
+    dotslist = rlang::dots_list(..., .homonyms = "error", .check_assign = TRUE),
     keepers = c("filter.monomorphic", "holdout.samples", "subsample",
                 "iteration.subsample", "heatmap.fst", "blacklist.id"),
     verbose = FALSE
   )
   dots.filename <- stringi::stri_join("assigner_fst_WC84_args_", file.date, ".tsv")
   # currently not saved
-  
+
   # Checking for missing and/or default arguments ------------------------------
   if (missing(data)) rlang::abort("data is missing")
   if (!ci && heatmap.fst) {
@@ -311,7 +311,7 @@ fst_WC84 <- function(
   }
   if (!filter.monomorphic) {
     message("filter.monomorphic = FALSE... not a good idea, but lets do it...")
-  } 
+  }
   # filename & folder ----------------------------------------------------------
   if (!is.null(filename)) {
     filename <- stringi::stri_join(filename, "_fst_WC84")
@@ -322,8 +322,8 @@ fst_WC84 <- function(
   } else {
     path.folder <- NULL
   }
-  
-  
+
+
   if (snprelate) {
     # Check that snprelate is installed
     if (!"SNPRelate" %in% utils::installed.packages()[,"Package"]) {
@@ -343,14 +343,14 @@ fst_WC84 <- function(
   # } else {
   #   message("Fst computations with assigner built-in function")
   # }
-  
+
   # Import data ---------------------------------------------------------------
   if (verbose) message("Importing data")
   input <- radiator::tidy_wide(data = data, import.metadata = TRUE)
-  
+
   if (!rlang::has_name(input, "GT")) {
     input <- radiator::calibrate_alleles(
-      data =input, 
+      data =input,
       parallel.core = parallel.core
     ) %$% input
   }
@@ -358,7 +358,7 @@ fst_WC84 <- function(
   suppressWarnings(
     input %<>% dplyr::select(dplyr::one_of(want))# remove unnecessary columns
   )
-  
+
   # Strata----------------------------------------------------------------------
   strata.df <- radiator::read_strata(
     strata = strata,
@@ -366,73 +366,73 @@ fst_WC84 <- function(
     blacklist.id = blacklist.id,
     pop.levels = NULL,
     verbose = verbose) %$% strata
-  
+
   # population levels and strata------------------------------------------------
   if (!is.null(strata)) {
     input <- radiator::join_strata(
       data = input, strata = strata.df, pop.id = TRUE, verbose = FALSE)
-  } 
-  
+  }
+
   if (!rlang::has_name(input, "POP_ID") && rlang::has_name(input, "STRATA")) {
     input %<>% dplyr::rename(POP_ID = STRATA)
   }
-  
+
   if (is.null(pop.levels)) {
     pop.levels <- unique(input$POP_ID)
   }
-  
+
   input %<>%
-    dplyr::mutate(POP_ID = factor(x = POP_ID, levels = pop.levels)) %>% 
+    dplyr::mutate(POP_ID = factor(x = POP_ID, levels = pop.levels)) %>%
     dplyr::arrange(POP_ID)
-  
+
   strata <- strata.df <- radiator::generate_strata(data = input, pop.id = TRUE)
-  
+
   # subsampling data------------------------------------------------------------
   # create the subsampling list
   if (is.null(subsample)) {
     iteration.subsample <- 1
   } else {
     if (subsample == "min") {
-      subsample <- strata.df %>% 
-        dplyr::group_by(POP_ID) %>% 
-        dplyr::tally(.) %>% 
-        dplyr::filter(n == min(n)) %>% 
-        dplyr::ungroup(.) %>% 
-        dplyr::select(n) %>% 
+      subsample <- strata.df %>%
+        dplyr::group_by(POP_ID) %>%
+        dplyr::tally(.) %>%
+        dplyr::filter(n == min(n)) %>%
+        dplyr::ungroup(.) %>%
+        dplyr::select(n) %>%
         purrr::flatten_int(.)
     }
   }
-  
+
   subsample.list <- purrr::map(# map_df ?
     .x = 1:iteration.subsample,
     .f = subsampling_data,
     strata = strata.df,
     subsample = subsample
   )
-  
+
   # keep track of subsampling individuals and write to directory
   if (!is.null(subsample)) {
     if (verbose) message("Subsampling: selected")
     subsampling.individuals <- dplyr::bind_rows(subsample.list)
     readr::write_tsv(
-      x = subsampling.individuals, 
-      path = "assigner_fst_WC84_subsampling_individuals.tsv", 
-      col_names = TRUE, 
+      x = subsampling.individuals,
+      path = "assigner_fst_WC84_subsampling_individuals.tsv",
+      col_names = TRUE,
       append = FALSE
     )
     res$subsampling.individuals <- subsampling.individuals
-    
+
     # Note to myself: is this necessary ? Simplify...
     if (!is.null(filename)) {
       readr::write_tsv(
-        x = res$subsampling.individuals, 
+        x = res$subsampling.individuals,
         path = file.path(path.folder, "subsampling.individuals.tsv"))
     }
   } # End subsampling
-  
+
   # unused objects
   subsampling.individuals <- NULL
-  
+
   # Calculations ----------------------------------------------------------------
   subsample.fst <- purrr::map(
     .x = subsample.list,
@@ -452,71 +452,71 @@ fst_WC84 <- function(
     verbose = verbose
   )
   subsample.list <- NULL
-  
+
   # Compile subsampling results ------------------------------------------------
   if (is.null(subsample)) {
     subsample.fst <- purrr::flatten(subsample.fst)
-    
+
     # sigma.loc
     res$sigma.loc <- subsample.fst$sigma.loc
-    if (!is.null(filename) && is.data.frame(res$sigma.loc)) { 
+    if (!is.null(filename) && is.data.frame(res$sigma.loc)) {
       readr::write_tsv(
-        x = res$sigma.loc, 
+        x = res$sigma.loc,
         path = file.path(path.folder, "sigma.loc.tsv"))
     }
-    
+
     # fst.markers
     res$fst.markers <- subsample.fst$fst.markers
-    if (!is.null(filename) && is.data.frame(res$fst.markers)) { 
+    if (!is.null(filename) && is.data.frame(res$fst.markers)) {
       readr::write_tsv(
-        x = res$fst.markers, 
+        x = res$fst.markers,
         path = file.path(path.folder, "fst.markers.tsv"))
     }
     # fst.ranked
     res$fst.ranked <- subsample.fst$fst.ranked
-    if (!is.null(filename) && is.data.frame(res$fst.ranked)) { 
+    if (!is.null(filename) && is.data.frame(res$fst.ranked)) {
       readr::write_tsv(
-        x = res$fst.ranked, 
+        x = res$fst.ranked,
         path = file.path(path.folder, "fst.ranked.tsv"))
     }
-    
+
     # fst.overall
     res$fst.overall <- subsample.fst$fst.overall
-    if (!is.null(filename) && is.data.frame(res$fst.overall)) { 
+    if (!is.null(filename) && is.data.frame(res$fst.overall)) {
       readr::write_tsv(
-        x = res$fst.overall, 
+        x = res$fst.overall,
         path = file.path(path.folder, "fst.overall.tsv"))
     }
     # fis.markers
     res$fis.markers <- subsample.fst$fis.markers
     if (!is.null(filename) && is.data.frame(res$fis.markers)) {
       readr::write_tsv(
-        x = res$fis.markers, 
+        x = res$fis.markers,
         path = file.path(path.folder, "fis.markers.tsv"))
     }
     # fis.overall
     res$fis.overall <- subsample.fst$fis.overall
-    if (!is.null(filename) && is.data.frame(res$fis.overall)) {  
+    if (!is.null(filename) && is.data.frame(res$fis.overall)) {
       readr::write_tsv(
-        x = res$fis.overall, 
+        x = res$fis.overall,
         path = file.path(path.folder, "fis.overall.tsv"))
     }
     # fst.plot
     res$fst.plot <- subsample.fst$fst.plot
-    if (!is.null(filename)) {  
+    if (!is.null(filename)) {
       ggplot2::ggsave(
-        filename = file.path(path.folder, "fst.plot.pdf"), 
+        filename = file.path(path.folder, "fst.plot.pdf"),
         plot = res$fst.plot,
         width = 15, height = 10,
         dpi = 300, units = "cm", device = "pdf", limitsize = FALSE,
         useDingbats = FALSE)
     }
-    
+
     # pairwise.fst
     res$pairwise.fst <- subsample.fst$pairwise.fst
-    if (!is.null(filename) && is.data.frame(res$pairwise.fst)) {  
+    if (!is.null(filename) && is.data.frame(res$pairwise.fst)) {
       readr::write_tsv(
-        x = res$pairwise.fst, 
+        x = res$pairwise.fst,
         path = file.path(path.folder, "pairwise.fst.tsv"))
     }
     # pairwise.fst.upper.matrix
@@ -535,7 +535,7 @@ fst_WC84 <- function(
     }
     # pairwise.fst.ci.matrix
     res$pairwise.fst.ci.matrix <- subsample.fst$pairwise.fst.ci.matrix
-    if (!is.null(filename)) { 
+    if (!is.null(filename)) {
       pairwise.fst.ci.matrix <- res$pairwise.fst.ci.matrix
       saveRDS(pairwise.fst.ci.matrix, file = file.path(path.folder, "pairwise.fst.ci.matrix.RData"))
       pairwise.fst.ci.matrix <- NULL
@@ -545,18 +545,18 @@ fst_WC84 <- function(
     # test <- subsample.fst[1]
     subsample.fst.transposed <- purrr::transpose(subsample.fst)
     # names(subsample.fst.transposed)
-    
+
     # sigma.loc
     res$sigma.loc.subsample <- subsample.fst.transposed[["sigma.loc"]]
     if (!is.null(filename) && is.data.frame(res$sigma.loc.subsample)) {
       readr::write_tsv(
-        x = dplyr::bind_rows(res$sigma.loc.subsample), 
+        x = dplyr::bind_rows(res$sigma.loc.subsample),
         path = file.path(path.folder, "sigma.loc.tsv"))
     }
-    
+
     # fst.markers
-    res$fst.markers.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fst.markers"]]) %>% 
-      dplyr::group_by(MARKERS) %>% 
+    res$fst.markers.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fst.markers"]]) %>%
+      dplyr::group_by(MARKERS) %>%
       dplyr::summarise(
         MEAN = mean(FST),
         SE = sqrt(stats::var(FST)/length(FST)),
@@ -566,19 +566,19 @@ fst_WC84 <- function(
         QUANTILE25 = stats::quantile(FST, 0.25),
         QUANTILE75 = stats::quantile(FST, 0.75),
         ITERATIONS = length(FST)
-      ) %>% 
+      ) %>%
       dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = round, digits = digits)
-    
+
     if (!is.null(filename) && is.data.frame(res$fst.markers.subsample)) {
       readr::write_tsv(
-        x = res$fst.markers.subsample, 
+        x = res$fst.markers.subsample,
         path = file.path(path.folder, "fst.markers.tsv"))
     }
     # fst.ranked
     res$fst.ranked.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fst.ranked"]])
     if (!is.null(filename) && is.data.frame(res$fst.ranked.subsample)) {
       readr::write_tsv(
-        x = res$fst.ranked.subsample, 
+        x = res$fst.ranked.subsample,
         path = file.path(path.folder, "fst.ranked.tsv"))
     }
     # fst.overall
@@ -593,17 +593,17 @@ fst_WC84 <- function(
         QUANTILE75 = stats::quantile(FST, 0.75),
         ITERATIONS = length(FST),
         N_MARKERS_MEAN = mean(N_MARKERS)
-      ) %>% 
+      ) %>%
       dplyr::mutate_all(.tbl = ., .funs = round, digits = digits)
-    
+
     if (!is.null(filename) && is.data.frame(res$fst.overall.subsample)) {
       readr::write_tsv(
-        x = res$fst.overall.subsample, 
+        x = res$fst.overall.subsample,
         path = file.path(path.folder, "fst.overall.tsv"))
     }
     # fis.markers
-    res$fis.markers.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fis.markers"]]) %>% 
-      dplyr::group_by(MARKERS) %>% 
+    res$fis.markers.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fis.markers"]]) %>%
+      dplyr::group_by(MARKERS) %>%
       dplyr::summarise(
         MEAN = mean(FIS),
         SE = sqrt(stats::var(FIS)/length(FIS)),
@@ -613,11 +613,11 @@ fst_WC84 <- function(
         QUANTILE25 = stats::quantile(FIS, 0.25),
         QUANTILE75 = stats::quantile(FIS, 0.75),
         ITERATIONS = length(FIS)
-      ) %>% 
+      ) %>%
       dplyr::mutate_if(.tbl = ., .predicate =  is.numeric, .funs = round, digits = digits)
     if (!is.null(filename) && is.data.frame(res$fis.markers.subsample)) {
       readr::write_tsv(
-        x = res$fis.markers.subsample, 
+        x = res$fis.markers.subsample,
         path = file.path(path.folder, "fis.markers.tsv"))
     }
     # fis.overall
@@ -632,38 +632,38 @@ fst_WC84 <- function(
         QUANTILE75 = stats::quantile(FIS, 0.75),
         ITERATIONS = length(FIS),
         N_MARKERS_MEAN = mean(N_MARKERS)
-      ) %>% 
+      ) %>%
       dplyr::mutate_all(.tbl = ., .funs = round, digits = digits)
     if (!is.null(filename) && is.data.frame(res$fis.overall.subsample)) {
       readr::write_tsv(
-        x = res$fis.overall.subsample, 
+        x = res$fis.overall.subsample,
         path = file.path(path.folder, "fis.overall.tsv"))
     }
-    
+
     # fst.plot
     res$fst.plot.subsample <- subsample.fst.transposed[["fst.plot"]]
-    
+
     # pairwise.fst
     res$pairwise.fst.subsample <- subsample.fst.transposed[["pairwise.fst"]]
-    
+
     # pairwise.fst.mean
-    res$pairwise.fst.subsample.mean <- dplyr::bind_rows(res$pairwise.fst.subsample) %>% 
-      dplyr::group_by(POP1, POP2) %>% 
-      dplyr::summarise_all(.tbl = ., .funs = mean, na.rm = TRUE) %>% 
+    res$pairwise.fst.subsample.mean <- dplyr::bind_rows(res$pairwise.fst.subsample) %>%
+      dplyr::group_by(POP1, POP2) %>%
+      dplyr::summarise_all(.tbl = ., .funs = mean, na.rm = TRUE) %>%
       dplyr::mutate(ITERATIONS = rep(iteration.subsample, n()))
-    
+
     if (!is.null(filename) && is.data.frame(res$pairwise.fst.subsample.mean)) {
       readr::write_tsv(
-        x = res$pairwise.fst.subsample.mean, 
+        x = res$pairwise.fst.subsample.mean,
         path = file.path(path.folder, "pairwise.fst.tsv"))
     }
     # pairwise.fst.upper.matrix
     res$pairwise.fst.upper.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.upper.matrix"]]
-    
+
     # pairwise.fst.upper.matrix.mean
-    res$pairwise.fst.upper.matrix.subsample.mean <- res$pairwise.fst.subsample.mean %>% 
-      dplyr::select(POP1, POP2, FST) %>% 
-      tidyr::spread(data = ., POP2, FST, fill = "", drop = FALSE) %>% 
+    res$pairwise.fst.upper.matrix.subsample.mean <- res$pairwise.fst.subsample.mean %>%
+      dplyr::select(POP1, POP2, FST) %>%
+      tidyr::spread(data = ., POP2, FST, fill = "", drop = FALSE) %>%
       dplyr::rename(POP = POP1)
     rn <- res$pairwise.fst.upper.matrix.subsample.mean$POP # rownames
     res$pairwise.fst.upper.matrix.subsample.mean <- as.matrix(res$pairwise.fst.upper.matrix.subsample.mean[,-1])# make matrix without first column
@@ -675,16 +675,16 @@ fst_WC84 <- function(
     }
     # pairwise.fst.full.matrix
     res$pairwise.fst.full.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.full.matrix"]]
-    
+
     # pairwise.fst.full.matrix.mean
     res$pairwise.fst.full.matrix.subsample.mean <- res$pairwise.fst.upper.matrix.subsample.mean # bk of upper.mat.fst
     lower.mat.fst <- t(res$pairwise.fst.full.matrix.subsample.mean) # transpose
-    
-    
+
+
     # merge upper and lower matrix
-    res$pairwise.fst.full.matrix.subsample.mean[lower.tri(res$pairwise.fst.full.matrix.subsample.mean)] <- lower.mat.fst[lower.tri(lower.mat.fst)] 
+    res$pairwise.fst.full.matrix.subsample.mean[lower.tri(res$pairwise.fst.full.matrix.subsample.mean)] <- lower.mat.fst[lower.tri(lower.mat.fst)]
     diag(res$pairwise.fst.full.matrix.subsample.mean) <- "0"
-    
+
     if (!is.null(filename)) {
       pairwise.fst.full.matrix.subsample.mean <- res$pairwise.fst.full.matrix.subsample.mean
       saveRDS(pairwise.fst.full.matrix.subsample.mean, file = file.path(path.folder, "pairwise.fst.full.matrix.RData"))
@@ -693,19 +693,19 @@ fst_WC84 <- function(
     if (ci) {
       # pairwise.fst.ci.matrix
       res$pairwise.fst.ci.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.ci.matrix"]]
-      
+
       # pairwise.fst.ci.matrix.mean
-      lower.mat.ci.sub <- res$pairwise.fst.subsample.mean %>% 
-        dplyr::select(POP1, POP2, CI_LOW, CI_HIGH) %>% 
-        tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>% 
-        tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>% 
+      lower.mat.ci.sub <- res$pairwise.fst.subsample.mean %>%
+        dplyr::select(POP1, POP2, CI_LOW, CI_HIGH) %>%
+        tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>%
+        tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>%
         dplyr::rename(POP = POP1)
-      
+
       cn <- colnames(lower.mat.ci.sub) # bk of colnames
       lower.mat.ci.sub <- t(lower.mat.ci.sub[,-1]) # transpose
       colnames(lower.mat.ci.sub) <- cn[-1] # colnames - POP
       lower.mat.ci.sub = as.matrix(lower.mat.ci.sub) # matrix
-      
+
       # merge upper and lower matrix
       pairwise.fst.ci.matrix.sub <- res$pairwise.fst.upper.matrix.subsample.mean # bk upper.mat.fst
       pairwise.fst.ci.matrix.sub[lower.tri(pairwise.fst.ci.matrix.sub)] <- lower.mat.ci.sub[lower.tri(lower.mat.ci.sub)]
@@ -720,18 +720,18 @@ fst_WC84 <- function(
       res$pairwise.fst.ci.matrix.subsample.mean <- "confidence intervals not selected"
     }
   }
-  
+
   # heatmap.fst ----------------------------------------------------------------
   if (heatmap.fst) {
     if (verbose) message("Generating heatmap fst...")
     res$heatmap.fst <- heatmap_fst(
-      pairwise.fst.full.matrix = res$pairwise.fst.full.matrix, 
-      pairwise.fst.ci.matrix = res$pairwise.fst.ci.matrix, 
-      digits = digits, 
+      pairwise.fst.full.matrix = res$pairwise.fst.full.matrix,
+      pairwise.fst.ci.matrix = res$pairwise.fst.ci.matrix,
+      digits = digits,
       path.folder = path.folder,
       filename = filename)
   }
-  
+
   # End -------------------------------------------------------------------
   if (verbose) {
     cat("################################### RESULTS ####################################\n")
@@ -775,13 +775,13 @@ compute_fst <- function(
   # path.folder = NULL
   ## x = data.genotyped
   # x <- dplyr::filter(data, GT != "000000")
-  
+
   # Removing monomorphic markers------------------------------------------------
   x <- radiator::filter_monomorphic(data = x, internal = TRUE, verbose = FALSE, path.folder = path.folder)
-  
+
   # number of marker used for computation
   n.markers <- length(unique(x$MARKERS))
-  
+
   # count.locus <- dplyr::group_by(.data = x, MARKERS) %>%
   #   dplyr::summarise(
   #     NPL = length(unique(as.character(POP_ID))),# number of populations per locus
@@ -799,21 +799,21 @@ compute_fst <- function(
   # } else {
   #   count.locus %<>% dplyr::select(-MARKERS1)
   # }
-  
+
   if (!identical(count.locus$MARKERS...1, count.locus$MARKERS...3)) {
     rlang::abort("contact author")
   } else {
     count.locus %<>% dplyr::select(-MARKERS...3, MARKERS = MARKERS...1)
   }
-  
+
   # count.locus.pop <- dplyr::count(x, POP_ID, MARKERS, name = "NIPL") %>%
   #   dplyr::mutate(NIPL_SQ = NIPL ^ 2) %>%
   #   dplyr::group_by(MARKERS) %>%
   #   dplyr::summarise(NIPL_SQ_SUM = sum(NIPL_SQ, na.rm = TRUE)) %>%
   #   dplyr::full_join(count.locus, by = "MARKERS") %>%
   #   dplyr::mutate(NC = (NIL - NIPL_SQ_SUM / NIL) / (NPL - 1))#correction
-  
-  
+
+
   # faster:
   count.locus.pop <- suppressMessages(
     dplyr::bind_cols(
@@ -828,11 +828,11 @@ compute_fst <- function(
     rlang::abort("contact author")
   } else {
     count.locus.pop %<>%
-      dplyr::select(-MARKERS...4, MARKERS = MARKERS...1) %>% 
+      dplyr::select(-MARKERS...4, MARKERS = MARKERS...1) %>%
       dplyr::mutate(NC = (NIL - NIPL_SQ_SUM / NIL) / (NPL - 1))#correction
   }
   count.locus <- NULL
-  
+
   # numbers corrected
   if (n.markers > 30000) {
     allele.locus <- radiator::separate_gt(
@@ -855,12 +855,12 @@ compute_fst <- function(
       parallel.core = 1
     )
   }
-  
+
   correction <- dplyr::distinct(.data = allele.locus, MARKERS, ALLELES) %>%
     dplyr::full_join(count.locus.pop, by = "MARKERS") %>%
     dplyr::arrange(MARKERS, ALLELES)
   count.locus.pop <- NULL
-  
+
   freq.alleles <- dplyr::count(x = allele.locus, MARKERS, ALLELES, POP_ID) %>%
     tidyr::complete(data = ., POP_ID, tidyr::nesting(MARKERS, ALLELES), fill = list(n = 0)) %>%
     dplyr::group_by(MARKERS, POP_ID) %>%
@@ -873,12 +873,12 @@ compute_fst <- function(
     dplyr::full_join(correction, by = c("MARKERS", "ALLELES")) %>%
     dplyr::arrange(MARKERS, POP_ID)
   correction <- allele.locus <- NULL
-  
+
   fst.stats.prep <- dplyr::mutate(
     .data = x,
     het = dplyr::if_else(stringi::stri_sub(GT, 1, 3) != stringi::stri_sub(GT, 4, 6), 1, 0)
   )
-  
+
   if (n.markers > 30000) {
     fst.stats.prep %<>% radiator::separate_gt(
       x =.,
@@ -900,7 +900,7 @@ compute_fst <- function(
       parallel.core = 1
     )
   }
-  
+
   fst.stats.prep %<>%
     dplyr::select(-ALLELE_GROUP) %>%
     dplyr::group_by(MARKERS, POP_ID, ALLELES) %>%
@@ -932,7 +932,7 @@ compute_fst <- function(
     ) %>%
     dplyr::ungroup(.)
   freq.alleles <- NULL
-  
+
   # variance components of allele frequencies for each allele
   # siga: among populations
   # sigb: among individuals within/between populations
@@ -950,7 +950,7 @@ compute_fst <- function(
   # lsiga: among populations
   # lsigb: among individuals within/between populations
   # lsigw: within individuals
-  
+
   sigma.loc <- sigma.loc.alleles %>%
     dplyr::group_by(MARKERS) %>%
     dplyr::summarise(
@@ -959,7 +959,7 @@ compute_fst <- function(
       lsigw = round(sum(sigw, na.rm = TRUE), digits)
     ) %>%
     dplyr::ungroup(.)
-  
+
   fst.fis.markers <- sigma.loc %>%
     dplyr::group_by(MARKERS) %>%
     dplyr::summarise(
@@ -968,7 +968,7 @@ compute_fst <- function(
     ) %>%
     dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0)) %>%
     dplyr::ungroup(.)
-  
+
   fst.fis.overall <- sigma.loc.alleles %>%
     dplyr::summarise(
       tsiga = sum(siga, na.rm = TRUE),
@@ -982,7 +982,7 @@ compute_fst <- function(
     dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
   # add new column with number of markers
   fst.fis.overall$N_MARKERS <- n.markers
-  
+
   # Confidence Intervals -----------------------------------------------------
   # over loci for the overall Fst estimate
   if (ci) {
@@ -1006,12 +1006,12 @@ compute_fst <- function(
                         digits)
       )
   }
-  
+
   # Fst markers  -------------------------------------------------------------
   fst.markers <- fst.fis.markers %>%
     dplyr::select(MARKERS, FST) %>%
     dplyr::arrange(MARKERS)
-  
+
   # Ranked fst   -------------------------------------------------------------
   fst.ranked <- fst.markers %>%
     dplyr::arrange(dplyr::desc(FST)) %>%
@@ -1020,7 +1020,7 @@ compute_fst <- function(
       RANKING = seq(from = 1, to = n()),
       QUARTILE = dplyr::ntile(FST,10)
     )
-  
+
   # Fst overall  -------------------------------------------------------------
   if (ci) {
     fst.overall <- fst.fis.overall %>%
@@ -1030,14 +1030,14 @@ compute_fst <- function(
     fst.overall <- fst.fis.overall %>%
       dplyr::select(FST, N_MARKERS)
   }
-  
+
   # Fis markers  -------------------------------------------------------------
   fis.markers <- dplyr::select(.data = fst.fis.markers, MARKERS, FIS) %>%
     dplyr::arrange(MARKERS)
-  
+
   # Fis overall   ------------------------------------------------------------
   fis.overall <- dplyr::select(.data = fst.fis.overall, FIS, N_MARKERS)
-  
+
   # Plot -----------------------------------------------------------------------
   fst.plot <- ggplot2::ggplot(fst.markers, ggplot2::aes(x = FST, na.rm = TRUE)) +
     ggplot2::geom_histogram(binwidth = 0.01) +
@@ -1050,7 +1050,7 @@ compute_fst <- function(
       legend.title = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"),
       legend.text = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"),
       strip.text.x = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"))
-  
+
   # Results ------------------------------------------------------------------
   res <- list(
     sigma.loc = sigma.loc,
@@ -1072,40 +1072,40 @@ compute_fst <- function(
 #' @keywords internal
 
 pairwise_fst <- function(
-  list.pair, 
+  list.pair,
   pop.pairwise = NULL,
   # unique.markers.pop = NULL,
   data.genotyped = NULL,
-  ci = FALSE, 
-  iteration.ci = 100, 
-  quantiles.ci = c(0.025,0.975), 
+  ci = FALSE,
+  iteration.ci = 100,
+  quantiles.ci = c(0.025,0.975),
   digits = 9,
   path.folder = path.folder
 ) {
-  
+
   pop.select <- stringi::stri_join(purrr::flatten(pop.pairwise[list.pair]))
   data.select <- data.genotyped %>%
     dplyr::filter(POP_ID %in% pop.select) %>%
     dplyr::mutate(POP_ID = droplevels(x = POP_ID))
-  
+
   # common markers
   common.set <- intersect(
     unique(data.select$MARKERS[data.select$POP_ID == pop.select[1]]),
     unique(data.select$MARKERS[data.select$POP_ID == pop.select[2]])
   )
-  
+
   data.select %<>% dplyr::filter(MARKERS %in% common.set)
   common.set <- NULL
-  
-  fst.select <- tibble::tibble(POP1 = pop.select[1], POP2 = pop.select[2]) %>% 
+
+  fst.select <- tibble::tibble(POP1 = pop.select[1], POP2 = pop.select[2]) %>%
     dplyr::bind_cols(
       compute_fst(
-        x = data.select, 
-        ci = ci, 
+        x = data.select,
+        ci = ci,
         iteration.ci = iteration.ci,
-        quantiles.ci = quantiles.ci, 
+        quantiles.ci = quantiles.ci,
         digits = digits,
-        path.folder = path.folder) %$% 
+        path.folder = path.folder) %$%
         fst.overall
     )
   data.select <- pop.select <- NULL
@@ -1121,20 +1121,20 @@ pairwise_fst <- function(
 # @keywords internal
 
 # pairwise_fst_snprelate <- function(pop.pairwise, data, strata, unique.markers.pop) {
-#   
+#
 #   strata.df <- dplyr::filter(.data = strata, POP_ID %in% pop.pairwise) %>% # filter the pop
 #     dplyr::mutate(POP_ID = droplevels(POP_ID)) # remove unnecessary factors
-#   
+#
 #   # markers in common between pair of pop
-#   set1 <- unique.markers.pop %>% 
-#     dplyr::filter(POP_ID == pop.pairwise[1]) %>% 
+#   set1 <- unique.markers.pop %>%
+#     dplyr::filter(POP_ID == pop.pairwise[1]) %>%
 #     dplyr::select(MARKERS)
-#   set2 <- unique.markers.pop %>% 
-#     dplyr::filter(POP_ID == pop.pairwise[2]) %>% 
+#   set2 <- unique.markers.pop %>%
+#     dplyr::filter(POP_ID == pop.pairwise[2]) %>%
 #     dplyr::select(MARKERS)
-#   common.set <- dplyr::intersect(set1, set2) %>% 
+#   common.set <- dplyr::intersect(set1, set2) %>%
 #     dplyr::arrange(MARKERS)
-#   
+#
 #   # fst.snprelate <- NULL
 #   fst.snprelate <- SNPRelate::snpgdsFst(
 #     gdsobj = data,
@@ -1161,28 +1161,28 @@ pairwise_fst <- function(
 #' @keywords internal
 
 boot_ci <- function(x, sigma.loc.alleles, digits = 9){
-  
-  markers.list <- sigma.loc.alleles %>% 
-    dplyr::ungroup(.) %>% 
-    dplyr::distinct(MARKERS) %>% 
+
+  markers.list <- sigma.loc.alleles %>%
+    dplyr::ungroup(.) %>%
+    dplyr::distinct(MARKERS) %>%
     dplyr::arrange(MARKERS)
-  
-  subsample.markers <- markers.list %>% 
-    dplyr::sample_n(tbl = ., size = nrow(markers.list), replace = TRUE) %>% 
+
+  subsample.markers <- markers.list %>%
+    dplyr::sample_n(tbl = ., size = nrow(markers.list), replace = TRUE) %>%
     dplyr::arrange(MARKERS)
-  
-  fst.fis.overall.iterations <- sigma.loc.alleles %>% 
-    dplyr::right_join(subsample.markers, by = "MARKERS") %>% 
+
+  fst.fis.overall.iterations <- sigma.loc.alleles %>%
+    dplyr::right_join(subsample.markers, by = "MARKERS") %>%
     dplyr::ungroup(.) %>%
     dplyr::summarise(
       tsiga = sum(siga, na.rm = TRUE),
       tsigb = sum(sigb, na.rm = TRUE),
       tsigw = sum(sigw, na.rm = TRUE)
-    ) %>% 
+    ) %>%
     dplyr::summarise(
       FST = round(tsiga/(tsiga + tsigb + tsigw), digits),
       FIS = round(tsigb/(tsigb + tsigw), digits)
-    ) %>% 
+    ) %>%
     dplyr::mutate(
       ITERATIONS = rep(x, n()),
       FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0)
@@ -1214,46 +1214,46 @@ fst_subsample <- function(
   verbose = FALSE
 ) {
   res <- list()# create list to store results
-  
+
   # Managing subsampling -------------------------------------------------------
   # x <- subsample.list[[1]] # test
   subsample.id <- unique(x$SUBSAMPLE)
-  
+
   if (!is.null(subsample)) {
     if (verbose) message("Analyzing subsample: ", subsample.id)
   }
-  
+
   # Keep only the subsample
   input <- dplyr::semi_join(input, x, by = c("POP_ID", "INDIVIDUALS"))
   x <- NULL #unused object
-  
-  
+
+
   # SNPRelate and other prep ---------------------------------------------------
   # if (snprelate) {
   #   message("Detect if data is biallelic")
   #   biallelic <- radiator::detect_biallelic_markers(data = input)
-  #   
+  #
   #   if (!biallelic) {
   #     warning("Data is not biallelic = cannot run assigner with SNPRelate Fst function")
   #     message("Continuing the Fst computations with built in function...")
   #     snprelate <- FALSE
   #   }
-  #   
+  #
   #   # if holdout set, removes individuals
   #   if (!is.null(holdout.samples)) {
   #     message("Removing holdout individuals\nFst computation...")
   #     input <- dplyr::filter(.data = input, !INDIVIDUALS %in% holdout.samples)
   #   }
-  #   
-  #   unique.markers.pop <- input %>% 
+  #
+  #   unique.markers.pop <- input %>%
   #     dplyr::filter(!is.na(GT_BIN)) %>%
   #     dplyr::distinct(MARKERS, POP_ID)
-  #   
+  #
   # } else {
   # genotyped data and holdout sample
-  data.genotyped <- dplyr::select(.data = input, MARKERS, POP_ID, INDIVIDUALS, GT) %>% 
+  data.genotyped <- dplyr::select(.data = input, MARKERS, POP_ID, INDIVIDUALS, GT) %>%
     dplyr::filter(GT != "000000")
-  
+
   # if holdout set, removes individuals
   if (!is.null(holdout.samples)) {
     message("Removing holdout individuals\nFst computation...")
@@ -1261,27 +1261,27 @@ fst_subsample <- function(
   }
   #No longer necessary: duplicate the dataset during parallel process...
   # unique.markers.pop <- dplyr::distinct(.data = data.genotyped, MARKERS, POP_ID)
-  
+
   # Compute global Fst ---------------------------------------------------------
   # if (snprelate) {
   #   if (verbose) message("Generating GDS format...")
-  #   
+  #
   #   strata.df <- dplyr::distinct(gds.genotypes, POP_ID, INDIVIDUALS) %>%
   #     dplyr::mutate(POP_ID = factor(POP_ID))
-  #   
+  #
   #   snp.id <- dplyr::distinct(.data = gds.genotypes, MARKERS) %>%
   #     dplyr::arrange(MARKERS) %>%
   #     purrr::flatten_chr(.)
-  #   
+  #
   #   gds.genotypes <- suppressWarnings(
   #     dplyr::select(.data = gds.genotypes, MARKERS, INDIVIDUALS, GT_BIN) %>%
-  #       dplyr::group_by(MARKERS) %>% 
-  #       tidyr::spread(data = ., key = INDIVIDUALS, value = GT_BIN) %>% 
+  #       dplyr::group_by(MARKERS) %>%
+  #       tidyr::spread(data = ., key = INDIVIDUALS, value = GT_BIN) %>%
   #       dplyr::arrange(MARKERS) %>%
-  #       tibble::column_to_rownames(df = ., var = "MARKERS") %>% 
+  #       tibble::column_to_rownames(df = ., var = "MARKERS") %>%
   #       data.matrix(.)
-  #   )  
-  #   
+  #   )
+  #
   #   # gds.data <- NULL
   #   SNPRelate::snpgdsCreateGeno(
   #     gds.fn = "assigner.gds",
@@ -1297,7 +1297,7 @@ fst_subsample <- function(
   #     compress.geno = "",
   #     other.vars = NULL
   #   )
-  #   
+  #
   #   # Compute the global Fst
   #   if (verbose) message("Global fst calculation")
   #   gds.file.connection <- SNPRelate::snpgdsOpen("assigner.gds")
@@ -1314,25 +1314,25 @@ fst_subsample <- function(
   #     with.id = FALSE,
   #     verbose = FALSE
   #   )$Fst
-  #   
-  #   fst.overall <- tibble::tibble(FST = round(fst.snprelate, digits)) %>% 
+  #
+  #   fst.overall <- tibble::tibble(FST = round(fst.snprelate, digits)) %>%
   #     dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0))
-  #   
+  #
   #   res$fst.overall <- fst.overall
-  #   
+  #
   #   # close SNPRelate connection if no more computation with SNPRelate
   #   if (!pairwise) {
   #     SNPRelate::snpgdsClose(gds.file.connection)
   #   }
-  
-  
+
+
   # } else {
   if (verbose) message("Global fst calculation")
   global.res <- compute_fst(
-    x = data.genotyped, 
-    ci = ci, 
-    iteration.ci = iteration.ci, 
-    quantiles.ci = quantiles.ci, 
+    x = data.genotyped,
+    ci = ci,
+    iteration.ci = iteration.ci,
+    quantiles.ci = quantiles.ci,
     digits = digits,
     path.folder = path.folder
   )
@@ -1345,16 +1345,16 @@ fst_subsample <- function(
   res$fst.plot <- global.res$fst.plot
   global.res <- NULL # unsused object
   # }
-  
+
   # Compute pairwise Fst -------------------------------------------------------
   if (pairwise) {
     if (verbose) message("Pairwise fst calculation")
-    
+
     if (!is.factor(input$POP_ID)) input$POP_ID <- factor(input$POP_ID)
     pop.list <- levels(input$POP_ID) # pop list
     # all combination of populations
-    pop.pairwise <- utils::combn(pop.list, 2, simplify = FALSE) 
-    
+    pop.pairwise <- utils::combn(pop.list, 2, simplify = FALSE)
+
     # if (snprelate) {
     #   fst.all.pop <- purrr::map(
     #     .x = pop.pairwise,
@@ -1364,94 +1364,94 @@ fst_subsample <- function(
     #     unique.markers.pop = unique.markers.pop
     #   )
     #   # Table with Fst
-    #   pairwise.fst <- t(data.frame(pop.pairwise)) %>% 
+    #   pairwise.fst <- t(data.frame(pop.pairwise)) %>%
     #     tibble::as_tibble(.) %>%
-    #     dplyr::bind_cols(dplyr::bind_rows(fst.all.pop)) %>% 
-    #     dplyr::rename(POP1 = V1, POP2 = V2, FST = Fst) %>% 
+    #     dplyr::bind_cols(dplyr::bind_rows(fst.all.pop)) %>%
+    #     dplyr::rename(POP1 = V1, POP2 = V2, FST = Fst) %>%
     #     dplyr::mutate(
     #       POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
     #       POP2 = factor(POP2, levels = pop.list, ordered = TRUE),
     #       FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0),
     #       FST = round(FST, digits)
     #     )
-    #   
+    #
     #   # close SNPRelate connection
     #   SNPRelate::snpgdsClose(gds.file.connection)
-    
+
     # } else {
     # Fst for all pairwise populations
     list.pair <- 1:length(pop.pairwise)
     # list.pair <- 5 #  test
     fst.all.pop <- .assigner_parallel(
       # fst.all.pop <- mclapply(
-      X = list.pair, 
-      FUN = pairwise_fst, 
-      mc.preschedule = FALSE, 
-      mc.silent = FALSE, 
+      X = list.pair,
+      FUN = pairwise_fst,
+      mc.preschedule = FALSE,
+      mc.silent = FALSE,
       mc.cores = parallel.core,
       pop.pairwise = pop.pairwise,
       # unique.markers.pop = unique.markers.pop,
       data.genotyped = data.genotyped,
-      ci = ci, 
-      iteration.ci = iteration.ci, 
+      ci = ci,
+      iteration.ci = iteration.ci,
       quantiles.ci = quantiles.ci,
       path.folder = path.folder
     )
     # Table with Fst
-    pairwise.fst <- dplyr::bind_rows(fst.all.pop) %>% 
+    pairwise.fst <- dplyr::bind_rows(fst.all.pop) %>%
       dplyr::mutate(
         POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
         POP2 = factor(POP2, levels = pop.list, ordered = TRUE),
         N_MARKERS = as.integer(N_MARKERS)
-      ) %>% 
+      ) %>%
       dplyr::mutate_if(.predicate = is.numeric, .funs = round, digits = digits)
     # }#End pairwise Fst
-    
+
     # Matrix--------------------------------------------------------------------
-    upper.mat.fst <- pairwise.fst %>% 
-      dplyr::select(POP1, POP2, FST) %>% 
-      tidyr::spread(data = ., POP2, FST, fill = "", drop = FALSE) %>% 
+    upper.mat.fst <- pairwise.fst %>%
+      dplyr::select(POP1, POP2, FST) %>%
+      tidyr::spread(data = ., POP2, FST, fill = "", drop = FALSE) %>%
       dplyr::rename(POP = POP1)
     rn <- upper.mat.fst$POP # rownames
     upper.mat.fst <- as.matrix(upper.mat.fst[,-1])# make matrix without first column
     rownames(upper.mat.fst) <- rn
-    
-    # get the full matrix with identical lower and upper diagonal 
+
+    # get the full matrix with identical lower and upper diagonal
     # the diagonal is filled with 0
-    
+
     full.mat.fst <- upper.mat.fst # bk of upper.mat.fst
     lower.mat.fst <- t(full.mat.fst) # transpose
     # merge upper and lower matrix
-    full.mat.fst[lower.tri(full.mat.fst)] <- lower.mat.fst[lower.tri(lower.mat.fst)] 
+    full.mat.fst[lower.tri(full.mat.fst)] <- lower.mat.fst[lower.tri(lower.mat.fst)]
     diag(full.mat.fst) <- "0"
-    
+
     if (ci) {
       # bind upper and lower diagonal of matrix
-      lower.mat.ci <- pairwise.fst %>% 
-        dplyr::select(POP1, POP2, CI_LOW, CI_HIGH) %>% 
-        tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>% 
-        tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>% 
+      lower.mat.ci <- pairwise.fst %>%
+        dplyr::select(POP1, POP2, CI_LOW, CI_HIGH) %>%
+        tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>%
+        tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>%
         dplyr::rename(POP = POP1)
-      
+
       cn <- colnames(lower.mat.ci) # bk of colnames
       lower.mat.ci <- t(lower.mat.ci[,-1]) # transpose
       colnames(lower.mat.ci) <- cn[-1] # colnames - POP
       lower.mat.ci = as.matrix(lower.mat.ci) # matrix
-      
+
       # merge upper and lower matrix
       pairwise.fst.ci.matrix <- upper.mat.fst # bk upper.mat.fst
       pairwise.fst.ci.matrix[lower.tri(pairwise.fst.ci.matrix)] <- lower.mat.ci[lower.tri(lower.mat.ci)]
     } else {
       pairwise.fst.ci.matrix <- "confidence intervals not selected"
     }
-    
+
   } else {
     pairwise.fst <- "pairwise fst not selected"
     upper.mat.fst <- "pairwise fst not selected"
     full.mat.fst <- "pairwise fst not selected"
     pairwise.fst.ci.matrix <- "pairwise fst not selected"
   }
-  
+
   res$pairwise.fst <- pairwise.fst
   res$pairwise.fst.upper.matrix <- upper.mat.fst
   res$pairwise.fst.full.matrix <- full.mat.fst
@@ -1464,8 +1464,8 @@ fst_subsample <- function(
 #' @description Function that generate an Heatmap of Fst and CI values
 #' @param pairwise.fst.full.matrix (object or path).
 #' @param pairwise.fst.ci.matrix (object or path).
-#' @param n.s (optional, logical) To have an * when the Fst value is not 
-#' significative (0 is the lower bound of the CI).
+#' @param n.s (optional, logical) To have an * when the Fst value is not
+#' significant (0 is the lower bound of the CI).
 #' Default: \code{n.s = TRUE}.
 #' @param digits (optional, integer) The number of digits showed in the heatmap.
 #' Default: \code{digits = 5}.
@@ -1477,7 +1477,7 @@ fst_subsample <- function(
 #' Default: \code{color.high = "red"}.
 #' @param text.size (optional, integer) Size of the values.
 #' Default: \code{text.size = 2}.
-#' @param plot.size (optional, integer) By default the size is 
+#' @param plot.size (optional, integer) By default the size is
 #' \code{the number of strata * 2} in cm.
 #' Default: \code{plot.size = NULL}.
 #' @param path.folder (optional, character)
@@ -1488,118 +1488,119 @@ fst_subsample <- function(
 #' @export
 # @keywords internal
 heatmap_fst <- function(
-  pairwise.fst.full.matrix, 
-  pairwise.fst.ci.matrix, 
-  n.s = TRUE, 
-  digits = 5, 
-  color.low = "blue", 
-  color.mid = "yellow", 
+  pairwise.fst.full.matrix,
+  pairwise.fst.ci.matrix,
+  n.s = TRUE,
+  digits = 5,
+  color.low = "blue",
+  color.mid = "yellow",
   color.high = "red",
   text.size = 4,
   plot.size = NULL,
   path.folder = NULL,
   filename = NULL
 ) {
-  
+
   # ## test
   # ## pairwise.fst.full.matrix
   # ## pairwise.fst.ci.matrix
-  # n.s = TRUE 
-  # digits = 5 
-  # color.low = "blue" 
-  # color.mid = "yellow" 
+  # n.s = TRUE
+  # digits = 5
+  # color.low = "blue"
+  # color.mid = "yellow"
   # color.high = "red"
   # text.size = 4
   # plot.size = 40
   # filename = NULL
   # path.folder = NULL
-  
+
   if (missing(pairwise.fst.full.matrix) || missing(pairwise.fst.ci.matrix)) {
     rlang::abort("pairwise.fst.full.matrix and/or pairwise.fst.ci.matrix are missing")
   }
   if (is.vector(pairwise.fst.full.matrix)) {
-    data.fst <- readRDS(pairwise.fst.full.matrix) 
+    data.fst <- readRDS(pairwise.fst.full.matrix)
   } else {
     data.fst <- pairwise.fst.full.matrix
   }
-  
+
   if (is.vector(pairwise.fst.ci.matrix)) {
     data.ci <- readRDS(pairwise.fst.ci.matrix)
   } else {
     data.ci <- pairwise.fst.ci.matrix
   }
-  
+
   pop.levels <- colnames(data.fst)
-  
+
   data.fst %<>%
     radiator::distance2tibble(
-      x = ., 
-      remove.diag = FALSE, 
-      na.diag = TRUE, 
-      remove.lower = FALSE, 
-      relative = FALSE, 
+      x = .,
+      remove.diag = FALSE,
+      na.diag = TRUE,
+      remove.lower = FALSE,
+      relative = FALSE,
       pop.levels = pop.levels
-    ) %>% 
+    ) %>%
     magrittr::set_colnames(x = ., value = c("POP1", "POP2", "FST"))
-  
+
   inv.levels <- rev(levels(data.fst$POP2))
   # pop.levels <- levels(data.fst$POP2)
+  rounder <- function(x, digits) round(as.numeric(x), digits)
   if (max(stringi::stri_length(data.fst$FST), na.rm = TRUE) != digits) {
     round.num <- TRUE
-    rounder <- function(x, digits) round(as.numeric(x), digits)
   } else {
     round.num <- FALSE
   }
-  
+
   if (n.s) round.num <- TRUE
-  
+
   data.ci %<>%
     radiator::distance2tibble(
-      x = ., 
-      remove.diag = FALSE, 
+      x = .,
+      remove.diag = FALSE,
       na.diag = TRUE,
-      remove.lower = FALSE, 
+      remove.lower = FALSE,
       relative = FALSE,
-      distance.class.double = FALSE, 
+      distance.class.double = FALSE,
       pop.levels = pop.levels
-    ) %>% 
+    ) %>%
     magrittr::set_colnames(x = ., value = c("POP1", "POP2", "CI"))
-  
-  
+
+
   data.fst %<>% dplyr::left_join(data.ci, by = c("POP1", "POP2"))
-  # median.fst <- median(x = data.fst$FST, na.rm = TRUE)
+   # median.fst <- median(x = data.fst$FST, na.rm = TRUE)
   mean.fst <- mean(x = data.fst$FST, na.rm = TRUE)
   min.fst <- min(x = data.fst$FST, na.rm = TRUE)
   max.fst <- max(x = data.fst$FST, na.rm = TRUE)
-  data.fst$POP2 <- factor(x = as.character(data.fst$POP2), 
+  data.fst$POP2 <- factor(x = as.character(data.fst$POP2),
                           levels = inv.levels, ordered = TRUE)
-  
+
   # data without CI for the lower diag
   if (n.s || round.num) {
     data.ci <- dplyr::filter(data.fst, stringi::stri_detect_fixed(str = CI, pattern = " - ")) %>%
-      tidyr::separate(data = ., col = CI, into = c("LOW", "HIGH"), sep = " - ") %>% 
-      dplyr::mutate_at(.tbl = ., .vars = c("FST", "LOW", "HIGH"), .funs = rounder, digits = digits) %>% 
-      dplyr::mutate(NS = dplyr::if_else(LOW == 0, TRUE, FALSE)) %>% 
-      dplyr::mutate_at(.tbl = ., .vars = c("LOW", "HIGH"), .funs = format, scientific = FALSE) %>% 
+      tidyr::separate(data = ., col = CI, into = c("LOW", "HIGH"), sep = " - ") %>%
+      dplyr::mutate_at(.tbl = ., .vars = c("FST", "LOW", "HIGH"), .funs = rounder, digits = digits) %>%
+      dplyr::mutate(NS = dplyr::if_else(LOW == 0, TRUE, FALSE)) %>%
+      dplyr::mutate_at(.tbl = ., .vars = c("LOW", "HIGH"), .funs = format, scientific = FALSE) %>%
       tidyr::unite(data = ., col = CI, c("LOW", "HIGH"), sep = "\n")
-    ns <- dplyr::distinct(data.ci, POP1, POP2, NS) %>% 
-      dplyr::rename(POP3 = POP2, POP2 = POP1) %>% 
-      dplyr::rename(POP1 = POP3)
+    ns <- dplyr::distinct(data.ci, POP1, POP2, NS) %>%
+      dplyr::rename(POP3 = POP2, POP2 = POP1) %>%
+      dplyr::rename(POP1 = POP3) %>%
+      dplyr::mutate(POP1 = as.character(POP1), POP2 = as.character(POP2))
     data.ci %<>% dplyr::select(-NS)
-    # data.fst 
+    # data.fst
     suppressWarnings(
-      data.fst %<>% 
+      data.fst %<>%
         dplyr::filter(!stringi::stri_detect_fixed(str = CI, pattern = " - ") | is.na(CI)) %>%
         dplyr::mutate_at(.tbl = ., .vars = c("FST", "CI"), .funs = rounder, digits = digits) %>%
-        dplyr::mutate_at(.tbl = ., .vars = c("CI"), .funs = format, scientific = FALSE) %>% 
+        dplyr::mutate_at(.tbl = ., .vars = c("CI"), .funs = format, scientific = FALSE) %>%
         dplyr::left_join(ns, by = c("POP1", "POP2"))
     )
-    
+
     if (n.s) {
       suppressWarnings(
-        data.fst %<>% 
+        data.fst %<>%
           dplyr::mutate(CI = dplyr::if_else(NS, paste0(CI, "*"), CI), NS = NULL)
-        # dplyr::mutate_at(.tbl = ., .vars = "FST", .funs = format, scientific = FALSE) %>% 
+        # dplyr::mutate_at(.tbl = ., .vars = "FST", .funs = format, scientific = FALSE) %>%
         # dplyr::mutate(FST = dplyr::if_else(NS, paste0(FST, "*"), FST), NS = NULL)
       )
     }
@@ -1608,18 +1609,18 @@ heatmap_fst <- function(
     data.fst$POP2 <- factor(x = as.character(data.fst$POP2), levels = inv.levels, ordered = TRUE)
     data.fst$POP1 <- factor(x = as.character(data.fst$POP1), levels = pop.levels, ordered = TRUE)
   }
-  
+
   heatmap.fst <- ggplot2::ggplot(
     data = data.fst, ggplot2::aes(x = POP1, y = POP2, fill = FST)
-  ) + 
+  ) +
     ggplot2::geom_tile(color = "white") +
-    ggplot2::geom_text(ggplot2::aes(x = POP1, y = POP2, label = CI), 
+    ggplot2::geom_text(ggplot2::aes(x = POP1, y = POP2, label = CI),
                        color = "black", size = text.size, na.rm = TRUE) +
     ggplot2::scale_fill_gradient2(
       low = color.low,
       mid = color.mid,
       high = color.high,
-      # midpoint = median.fst, 
+      # midpoint = median.fst,
       midpoint = mean.fst,
       na.value = "white",
       limit = NULL,
@@ -1635,41 +1636,41 @@ heatmap_fst <- function(
       axis.text.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold")
     )
   print(heatmap.fst)
-  
+
   if (!is.null(filename)) {
     if (is.null(path.folder)) path.folder <- getwd()
-    
+
     if (digits > 5) {
       mult.fact <- 3
     } else {
       mult.fact <- 2
     }
     if (is.null(plot.size)) plot.size <- max(20, length(levels(data.fst$POP1)) * mult.fact)
-    
+
     heatmap.pdf <- stringi::stri_join(filename, "_heatmap.fst.pdf")
     heatmap.png <- stringi::stri_join(filename, "_heatmap.fst.png")
-    
+
     ggplot2::ggsave(
       filename = file.path(path.folder, heatmap.png),
       plot = heatmap.fst,
-      width = plot.size, 
+      width = plot.size,
       height = plot.size,
-      dpi = 200, 
-      units = "cm", 
-      device = "png", 
+      dpi = 200,
+      units = "cm",
+      device = "png",
       limitsize = FALSE)
-    
+
     ggplot2::ggsave(
       filename = file.path(path.folder, heatmap.pdf),
       plot = heatmap.fst,
-      width = plot.size, 
+      width = plot.size,
       height = plot.size,
-      dpi = 300, 
-      units = "cm", 
-      device = "pdf", 
+      dpi = 300,
+      units = "cm",
+      device = "pdf",
       limitsize = FALSE,
       useDingbats = FALSE)
-    
+
   }
   return(heatmap.fst)
 }#End heatmap_fst

@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2020-03-04" />
+<meta name="date" content="2020-08-31" />
 
 <title>RADseq genomics in R</title>
 
@@ -1511,7 +1511,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">RADseq genomics in R</h1>
 <h3 class="subtitle">computer setup</h3>
-<h4 class="date">2020-03-04</h4>
+<h4 class="date">2020-08-31</h4>
 
 </div>
 
@@ -1612,10 +1612,10 @@ clang -v</code></pre>
 <p>To modify, you can use <a href="http://www.barebones.com/products/bbedit/index.html">BBEdit</a> to open or make and modify hidden items (using the option <em>Show hidden items</em> on the open file screen). With Linux, use Vi!</p>
 <p>Copy/paste the line below in your <code>.bash_profile</code> file:</p>
 <pre class="bash"><code>PATH=&quot;$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin&quot;</code></pre>
-<p>After modifying your shell start up script always run the command <code>source .bash_profile</code> to reload it.</p>
+<p>After modifying your shell start up script always run the command <code>source ~/.bash_profile</code> to reload it.</p>
 </div>
-<div id="useful" class="section level2">
-<h2>Useful</h2>
+<div id="useful-tools" class="section level2">
+<h2>Useful tools</h2>
 <p>Below are useful but not essential software you will like to have on your mac.</p>
 <div id="wget-utility" class="section level3">
 <h3><a href="https://www.gnu.org/software/wget/">wget</a> utility</h3>
@@ -1638,7 +1638,7 @@ sudo make install</code></pre>
 <p>Now the wget part…</p>
 <p>First look for the <em>.tar.gz</em> file with the latest release (currently: wget2-1.99.2.tar.gz) in this <a href="%3Chttp://ftp.gnu.org/gnu/wget/">folder</a>, Modify (if you need to), Copy &amp; Paste the commands below (one line at a time):</p>
 <pre class="bash"><code>cd ~/Downloads
-# change the '-x.xx.tar.gz' number below with the latest release version.
+# change the &#39;-x.xx.tar.gz&#39; number below with the latest release version.
 curl -O http://ftp.gnu.org/gnu/wget/wget2-1.99.2.tar.gz
 tar -zxvf wget2-1.99.2.tar.gz
 cd wget2-1.99.2
@@ -1671,10 +1671,11 @@ sudo python get-pip.py</code></pre>
 <p>Make sure you have GCC and CLANG with OpenMP enabled. Several flavors available, check for the proper <a href="http://releases.llvm.org/download.html">link</a></p>
 </div>
 <div id="install-r" class="section level1">
-<h1>Install R</h1>
-<p>To install R v3.6.1 <strong>“Action of the Toes”</strong> released on 2019-07-05 download the installer and follow the instructions</p>
-<pre class="bash"><code>cd Downloads
-wget https://cran.r-project.org/bin/macosx/R-3.6.1.pkg</code></pre>
+<h1>Install <a href="https://cran.r-project.org">R</a></h1>
+<p>To install R v3.6.3 <strong>“Holding the Windsock”</strong> released on 2020-02-29 download the installer and follow the instructions</p>
+<pre class="bash"><code># for macOS
+cd Downloads
+curl -O https://cran.r-project.org/bin/macosx/el-capitan/base/R-3.6.3.pkg</code></pre>
 <p><strong>To remove R completely from macOS</strong></p>
 <pre class="bash"><code>sudo rm -rf /Library/Frameworks/R.framework /Applications/R.app \
 /usr/bin/R /usr/bin/Rscript</code></pre>
@@ -1683,9 +1684,25 @@ wget https://cran.r-project.org/bin/macosx/R-3.6.1.pkg</code></pre>
 <h1>Rstudio</h1>
 <p>To download RStudio, check this <a href="https://www.rstudio.com/products/rstudio/download/#download">link</a> and download the installer for your OS.</p>
 </div>
+<div id="installing-libraries" class="section level1">
+<h1>Installing Libraries</h1>
+<p>Below is how I setup most of my computers after a clean macOS install. 1. Start with <strong>devtools</strong> and <strong>tidyverse</strong></p>
+<pre class="r"><code>if (!require(&quot;devtools&quot;)) install.packages(&quot;devtools&quot;) # to install
+install.packages(&quot;tidyverse&quot;)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>The gsl package is required by numerous packages and can cause some headaches… Don’t install it from source.</li>
+</ol>
+<pre class="r"><code>install.packages(&quot;gsl&quot;)</code></pre>
+<p>If the console print this: <code>Do you want to install from sources the package which needs compilation? (Yes/no/cancel)</code>. Always aswer <strong>no</strong> unless of course you know what you are doing.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Than, I install <strong>grur</strong> and <strong>assigner</strong> my packges with the higher number of dependencies, this way it’s installing automatically 90% of the packages I need (including <strong>radiator</strong>).</li>
+</ol>
+<pre class="r"><code>devtools::install_github(&quot;thierrygosselin/grur&quot;)
+devtools::install_github(&quot;thierrygosselin/assigner&quot;)</code></pre>
+</div>
 <div id="makevars-file" class="section level1">
 <h1>Makevars file</h1>
-<p>You need to tell R how to use the compilers. This might change from one package to another. Nothing is simple, you know this by now… All this is done through R’s <strong>Makevars</strong> file located in <code>~/.R/Makevars</code>.</p>
+<p>For some packages you might have to compile from source and the use of different compiler is sometimes very useful. You need to tell R how to use the compilers. This might change from one package to another. Nothing is simple, you know this by now… All this is done through R’s <strong>Makevars</strong> file located in <code>~/.R/Makevars</code>.</p>
 <p>To modify or create the file, the fastest way is to use the package <a href="https://usethis.r-lib.org">usethis</a> (it’s installed automatically with <code>devtools</code>):</p>
 <pre class="r"><code>usethis::edit_r_makevars()</code></pre>
 <p><strong>Makevars content required:</strong></p>
@@ -1701,17 +1718,10 @@ SHLIB_OPENMP_CFLAGS = -fopenmp
 SHLIB_OPENMP_CXXFLAGS = -fopenmp
 SHLIB_OPENMP_FCFLAGS = -fopenmp
 SHLIB_OPENMP_FFLAGS = -fopenmp
-FLIBS=-L/usr/local/lib/gcc/x86_64-apple-darwin15.6.0/7.1.0/finclude # change according to your computer compiler version
+# change the nex line according to your computer compiler version (use gcc -v in terminal):
+FLIBS=-L/usr/local/lib/gcc/x86_64-apple-darwin19/9.2.0/finclude 
 CFLAGS=-mtune=native -g -O2 -Wall -pedantic -Wconversion
 CXXFLAGS=-mtune=native -g -O2 -Wall -pedantic -Wconversion</code></pre>
-</div>
-<div id="installing-libraries" class="section level1">
-<h1>Installing Libraries</h1>
-<p>Below is how I setup most of my computers after a clean macOS install. I start with <strong>devtools</strong> and <strong>tidyverse</strong> than <strong>grur</strong> my packge with the higher number of dependencies, this way it’s installing automatically 90% of the packages I need (including <strong>radiator</strong>).</p>
-<pre class="r"><code>if (!require(&quot;devtools&quot;)) install.packages(&quot;devtools&quot;) # to install
-install.packages(&quot;tidyverse&quot;)
-devtools::install_github(&quot;thierrygosselin/grur&quot;)
-devtools::install_github(&quot;thierrygosselin/assigner&quot;)</code></pre>
 </div>
 <div id="Installation_problems" class="section level1">
 <h1>Installation problems</h1>
@@ -1719,7 +1729,7 @@ devtools::install_github(&quot;thierrygosselin/assigner&quot;)</code></pre>
 <pre class="r"><code>#Warning: cannot remove prior installation of package ‘stringi’</code></pre>
 <p>To solve this problem, delete manually the problematic package in the installation folder (on mac: <code>/Library/Frameworks/R.framework/Resources/library</code>) or in the <code>Terminal</code>:</p>
 <pre class="bash"><code>sudo rm -R /Library/Frameworks/R.framework/Resources/library/package_name
-# Changing 'package_name' to the problematic package.
+# Changing &#39;package_name&#39; to the problematic package.
 # Reinstall the package.</code></pre>
 <ul>
 <li><p>Using the latest version of R, RStudio and packages is recommended. If your heart start pounding just at the thought of having to install a new R version, you should have a look at <a href="https://www.rstudio.com/resources/webinars/managing-package-dependencies-in-r-with-packrat/">packrat</a>.</p></li>
@@ -1728,13 +1738,14 @@ devtools::install_github(&quot;thierrygosselin/assigner&quot;)</code></pre>
 <div id="error-saying-https-not-supported-or-disabled-in-libcurl" class="section level2">
 <h2>Error saying “https” not supported or disabled in libcurl</h2>
 <div id="installing-openssl" class="section level3">
-<h3>Installing OpenSSL</h3>
+<h3>Installing <a href="www.openssl.org">OpenSSL</a></h3>
 <p>Required if GCC compiler is used (TLS backend is then used). Not required if clang is used (securetransport backend is used).</p>
 <pre class="bash"><code>#In browser
 https://www.openssl.org/source/openssl-1.1.1.tar.gz
 
 #In Terminal
 cd Downloads
+curl -O https://www.openssl.org/source/openssl-1.1.1.tar.gz
 tar -zxvf openssl-1.1.1.tar.gz
 cd openssl-1.1.1
 ./config
@@ -1748,14 +1759,19 @@ sudo rm -R openssl*</code></pre>
 <h3>Installing <a href="https://curl.haxx.se/download">curl</a></h3>
 <p>Check for the latest release of <a href="https://curl.haxx.se/download">curl</a></p>
 <pre class="bash"><code>#Copy/paste in your browser
-https://curl.haxx.se/download/curl-7.61.1.tar.gz
+https://curl.haxx.se/download/curl-7.69.0.tar.gz
 # Terminal
 cd Downloads
-tar -zxvf curl-7.61.1.tar.gz
-cd curl-7.61.1
-./configure --with-ssl # to enable https via OpenSSL and using GCC
-#CC=&quot;/usr/local/bin/clang&quot; ./configure --without-ssl --with-darwinssl # to install via clang
-make -j12 #change with your number of CPU
+tar -zxvf curl-7.69.0.tar.gz
+cd curl-7.69.0</code></pre>
+<p>The next step depends on the compulier used</p>
+<p>With <strong>gcc</strong>:</p>
+<pre class="bash"><code>./configure --with-ssl # to enable https via OpenSSL and using GCC</code></pre>
+<p>Note: with macOS 10.15 this give me an error <code>configure: error: OpenSSL libs and/or directories were not found where specified!</code></p>
+<p>If this is the case, use <strong>clang</strong>:</p>
+<pre class="bash"><code>CC=&quot;/usr/local/bin/clang&quot;
+./configure --without-ssl --with-darwinssl # to install via clang</code></pre>
+<pre class="bash"><code>make -j12 #change with your number of CPU
 sudo make install
 cd ..
 sudo rm -R curl*</code></pre>
@@ -1790,7 +1806,7 @@ sudo nano .Renviron</code></pre>
 <pre class="bash"><code>clang++ -std=gnu++11 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG  -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/Rcpp/include&quot; -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/progress/include&quot; -I/usr/local/include  -Imio/include -DWIN32_LEAN_AND_MEAN -Ispdlog/include -fPIC  -Wall -g -O2 -c gen.cc -o gen.o
 clang++ -std=gnu++11 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG  -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/Rcpp/include&quot; -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/progress/include&quot; -I/usr/local/include  -Imio/include -DWIN32_LEAN_AND_MEAN -Ispdlog/include -fPIC  -Wall -g -O2 -c index_collection.cc -o index_collection.o
 /usr/local/bin/clang -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG  -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/Rcpp/include&quot; -I&quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/progress/include&quot; -I/usr/local/include   -fPIC  -I/usr/local/include -c localtime.c -o localtime.o
-localtime.c:42:10: fatal error: 'string.h' file not found
+localtime.c:42:10: fatal error: &#39;string.h&#39; file not found
 #include &lt;string.h&gt;
 ^~~~~~~~~~</code></pre>
 <p><strong>With macOS:</strong></p>
@@ -1820,13 +1836,13 @@ localtime.c:42:10: fatal error: 'string.h' file not found
 <h2>Error in <code>.DynamicClusterCall</code></h2>
 <p>If you have a PC and you’re getting this error or closely related error:</p>
 <pre class="bash"><code># Error in .DynamicClusterCall(cl, length(cl), .fun = function(.proc_idx,  :
-# One of the nodes produced an error: Can not open file 'FILE PATH'. The process cannot access the file because it # is being used by another process.</code></pre>
+# One of the nodes produced an error: Can not open file &#39;FILE PATH&#39;. The process cannot access the file because it # is being used by another process.</code></pre>
 <p><strong>Solution:</strong> Use <code>parallel.core = 1</code> in the function generating the error.</p>
 </div>
 <div id="error-during-install-when-numerous-of-packages-are-updated" class="section level2">
 <h2>Error during install when numerous of packages are updated:</h2>
 <pre class="bash"><code># Error in get0(oNam, envir = ns) :
-# lazy-load database '/Library/Frameworks/R.framework/Versions/3.5/Resources/library/callr/R/callr.rdb' is corrupt
+# lazy-load database &#39;/Library/Frameworks/R.framework/Versions/3.5/Resources/library/callr/R/callr.rdb&#39; is corrupt
 # In addition: Warning message:
 # In get0(oNam, envir = ns) : internal error -3 in R_decompress1</code></pre>
 <p><strong>Solution:</strong></p>
@@ -1839,7 +1855,7 @@ localtime.c:42:10: fatal error: 'string.h' file not found
 <h2>Error with <code>dyn.load</code></h2>
 <p>Here is an example below:</p>
 <pre class="bash"><code>Error in dyn.load(file, DLLpath = DLLpath, ...) : 
-  unable to load shared object '/home/rstudio/R/x86_64-pc-linux-gnu-library/3.6/units/libs/units.so':
+  unable to load shared object &#39;/home/rstudio/R/x86_64-pc-linux-gnu-library/3.6/units/libs/units.so&#39;:
   libudunits2.so.0: cannot open shared object file: No such file or directory
 Calls: &lt;Anonymous&gt; ... asNamespace -&gt; loadNamespace -&gt; library.dynam -&gt; dyn.load
 Execution halted</code></pre>
@@ -1862,6 +1878,19 @@ Sys.setenv(LD_LIBRARY_PATH=&quot;/usr/local/lib/&quot;)
 <p><strong>Long-term solution:</strong></p>
 <p>Instead of using <code>Sys.setenv</code> each time you have a similar problem, you could add the <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html">environment variables</a> <code>LD_LIBRARY_PATH</code> to your <code>.Renviron file</code>. <a href="#Renviron">This is discussed in another problem above</a>.</p>
 </div>
+<div id="error-with-c-stacks-usage" class="section level2">
+<h2>Error with <code>C stacks usage</code></h2>
+<pre class="r"><code>Error: C stack usage  7971092 is too close to the limit</code></pre>
+<p>So far, I haven’t found the cure to this computer-specific problem.</p>
+<p><strong>Potential solutions:</strong></p>
+<ul>
+<li>Make sure you have enough RAM on your computer for the dataset you want to analyze (16GB is the bare minimum these days for small-medium RADseq dataset).</li>
+<li>Closing all windows/app running in the background somtimes help.</li>
+<li>Updating to the latest version of R, RStudio and libraries.</li>
+<li>Not a fan of upgrading to latest version, use <a href="https://rstudio.github.io/packrat/">Packrat</a>.</li>
+<li>Follow the guidelines to prepare your computer in this vignette, from the start…</li>
+</ul>
+</div>
 <div id="google-is-your-next-best-friend" class="section level2">
 <h2>Google is your next best friend…</h2>
 </div>
@@ -1875,12 +1904,13 @@ Sys.setenv(LD_LIBRARY_PATH=&quot;/usr/local/lib/&quot;)
 <p>Download the latest github release of Allan Strand’s <strong>rmetasim</strong></p>
 <pre class="bash"><code>cd ~/Downloads
 wget --no-check-certificate https://github.com/stranda/rmetasim/archive/master.zip
+curl -O https://github.com/stranda/rmetasim/archive/master.zip
 unzip master.zip</code></pre>
 </div>
 <div id="modify-the-number-of-loci-maxloci" class="section level3">
 <h3>Modify the number of loci: MAXLOCI</h3>
-<p>If you want to use more loci during your simulations (default is 1001), you need to modify rmetasim before compiling. With a text editor <a href="http://gbs-cloud-tutorial.readthedocs.io/en/latest/03_computer_setup.html#install-textwrangler">e.g. BBEdit with macOS</a>, modify the <code>const.h</code> file in the <code>src</code> folder: <code>rmetasim-master/src/const.h</code>. Navigate to <strong>lane 33</strong> and change the integer to the desired maximum number of loci. Or do this in the Terminal:</p>
-<pre class="bash"><code>sed -i -e 's/#define MAXLOCI               1001/#define MAXLOCI               20000/g' rmetasim-master/src/const.h</code></pre>
+<p>If you want to use more loci during your simulations (default is 10001), you need to modify rmetasim before compiling. With a text editor, modify the <code>const.h</code> file in the <code>src</code> folder: <code>rmetasim-master/src/const.h</code>. Navigate to <strong>lane 33</strong> and change the integer to the desired maximum number of loci. Or do this in the Terminal:</p>
+<pre class="bash"><code>sed -i -e &#39;s/#define MAXLOCI               10001/#define MAXLOCI               20000/g&#39; rmetasim-master/src/const.h</code></pre>
 </div>
 <div id="Makevars_config" class="section level3">
 <h3>Makevars configuration</h3>
@@ -1920,7 +1950,7 @@ CPPFLAGS+=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk</code></
 <div id="compile" class="section level3">
 <h3>Compile</h3>
 <pre class="bash"><code>R CMD INSTALL &quot;rmetasim-master&quot; # Terminal command
-sudo rm -R rmetasim-master master.zip # to remove the folders no longer required</code></pre>
+sudo rm -R rmetasim* # to remove the folders no longer required</code></pre>
 </div>
 </div>
 <div id="xgboost" class="section level2">
@@ -1989,7 +2019,7 @@ https://cmake.org/files/v3.12/cmake-3.12.2-Darwin-x86_64.dmg
 # double-click on the disk image and follow instructions</code></pre>
 <p>To add CMake to the PATH:</p>
 <pre class="bash"><code>PATH=&quot;/Applications/CMake.app/Contents/bin&quot;:&quot;$PATH&quot;
-# Or, to install symlinks to '/usr/local/bin', run:
+# Or, to install symlinks to &#39;/usr/local/bin&#39;, run:
 sudo &quot;/Applications/CMake.app/Contents/bin/cmake-gui&quot; --install
 # Or, to install symlinks to another directory, run:
 sudo &quot;/Applications/CMake.app/Contents/bin/cmake-gui&quot; --install=/path/to/bin
@@ -2021,20 +2051,28 @@ CXXFLAGS=-g -O3 -Wall -pedantic -std=c++11 -mtune=native -pipe
 PKG_CFLAGS= -O3 -Wall -pipe -pedantic -std=gnu99 -fopenmp
 PKG_CXXFLAGS=-fopenmp -std=c++11
 FC=/usr/local/bin/gfortran
-F77=/usr/local/bin/gfortran</code></pre>
+F77=/usr/local/bin/gfortran
+LDFLAGS=-L/usr/local/lib
+PKG_LIBS = &quot;-liconv&quot;</code></pre>
 </div>
 <div id="download-and-install" class="section level3">
 <h3>Download and install</h3>
 <p>From the Terminal run these steps to download and compile randomForestSRC:</p>
 <pre class="bash"><code>cd ~/Downloads
-curl -O https://cran.r-project.org/src/contrib/randomForestSRC_4.6-14.tar.gz
-tar -zxvf randomForestSRC_4.6-14.tar.gz
-cd randomForestSRC
+curl -O https://cran.r-project.org/src/contrib/randomForestSRC_2.9.3.tar.gz
+tar -zxvf randomForestSRC_2.9.3.tar.gz
+cd randomForestSRC</code></pre>
+<p>Make sure you have autoconf installed:</p>
+<pre class="bash"><code># in Terminal
+cd ~/Downloads
+autoconf</code></pre>
+<p>Should output: <code>autoconf: error: no input file</code>, if not, install following the <a href="#useful">steps here</a>.</p>
+<pre class="bash"><code># in Terminal
+cd ~/Downloads/randomForestSRC
 autoconf
-cd ..
+cd ~/Downloads
 R CMD INSTALL --preclean --clean randomForestSRC</code></pre>
 <p>You want to make sure that this line is printed during execution of the previous command: <code>checking whether OpenMP will work in a package... yes</code> or <code>checking for /usr/local/bin/gcc option to support OpenMP... -fopenmp</code></p>
-<p>If the compilation fails after <code>autoconf</code>, follow the first 3 steps in this <a href="http://gbs-cloud-tutorial.readthedocs.io/en/latest/07_start_from_new_image.html?highlight=autoconf#install-gbs-radseq-software-time-required-30min">tutorial</a>, to install <code>libsigsegv</code>, <code>m4</code> and <code>autoconf</code>.</p>
 </div>
 </div>
 <div id="ranger" class="section level2">
@@ -2047,11 +2085,15 @@ R CMD INSTALL --preclean --clean randomForestSRC</code></pre>
 <p><a href="https://github.com/mayer79/missRanger">missRanger</a> is also very easy to install.</p>
 <pre class="r"><code>install.packages(&quot;missRanger&quot;)</code></pre>
 </div>
+<div id="miceranger" class="section level2">
+<h2><code>miceRanger</code></h2>
+<p><a href="https://github.com/FarrellDay/miceRanger">miceRanger</a> easy to install.</p>
+<pre class="r"><code>install.packages(&quot;miceRanger&quot;)</code></pre>
+</div>
 <div id="pcamethods" class="section level2">
 <h2><code>pcaMethods</code></h2>
 <p>To install <a href="https://github.com/hredestig/pcaMethods">pcaMethods</a>, from bioconductor:</p>
-<pre class="r"><code>source(&quot;https://bioconductor.org/biocLite.R&quot;)
-biocLite(&quot;pcaMethods&quot;)</code></pre>
+<pre class="r"><code>BiocManager::install(&quot;pcaMethods&quot;)</code></pre>
 </div>
 <div id="fastsimcoal2" class="section level2">
 <h2><code>fastsimcoal2</code></h2>
@@ -2084,7 +2126,7 @@ fsc26</code></pre>
 <p>If that doesn’t work, do:</p>
 <pre class="bash"><code>source ~/.bash_profile</code></pre>
 <p>Remove the files in the folder:</p>
-<pre class="bash"><code>sudo rm -R fsc26_mac64*</code></pre>
+<pre class="bash"><code>sudo rm -R ~/Downloads/fsc26_mac64*</code></pre>
 </div>
 </div>
 <div id="colony" class="section level2">
@@ -2093,14 +2135,15 @@ fsc26</code></pre>
 <div id="macos-2" class="section level3">
 <h3>MacOS</h3>
 <p>The old openmpi version (openmpi-1.6.5) is required, saddly.</p>
-<pre class="bash"><code>cd Downloads
+<pre class="bash"><code>cd ~/Downloads
 curl -O https://download.open-mpi.org/release/open-mpi/v1.6/openmpi-1.6.5.tar.gz
 tar -zxvf openmpi-1.6.5.tar.gz
 cd openmpi-1.6.5
 export TMPDIR=/tmp
-./configure F77=gfortran --prefix=/usr/local -openmp
+./configure F77=gfortran #--prefix=/usr/local -openmp # no longer work for some reason
 make -j 12
-sudo make install</code></pre>
+sudo make install
+sudo rm -R ~/Downloads/openmpi*</code></pre>
 <p>To download COLONY, follow instructions on Jinliang Wang <a href="https://www.zsl.org/science/software/colony">ZSL website</a>. The file you need to uncompress is named: <code>colony2.mac_.20180730.zip</code>.</p>
 </div>
 <div id="linux-2" class="section level3">
@@ -2110,7 +2153,7 @@ sudo make install</code></pre>
 </div>
 </div>
 </div>
-<div id="useful-1" class="section level1">
+<div id="useful" class="section level1">
 <h1>Useful</h1>
 <div id="update-github" class="section level2">
 <h2>Update <a href="http://en.wikipedia.org/wiki/Github">Github</a></h2>
@@ -2120,6 +2163,7 @@ sudo make install</code></pre>
 </ol>
 <pre class="bash"><code>cd ~/Downloads
 wget http://ftp.gnu.org/gnu/autoconf/autoconf-latest.tar.gz
+curl -O http://ftp.gnu.org/gnu/autoconf/autoconf-latest.tar.gz
 tar -xvzf autoconf-latest.tar.gz
 cd autoconf-2.69
 ./configure
@@ -2130,14 +2174,14 @@ sudo rm -R ~/Downloads/autoconf-*</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Install Github</li>
 </ol>
-<pre class="bash"><code>git --version      # show current git version installed
-which git          # returns where is git on your computer
+<pre class="bash"><code>git --version                   # show current git version installed
+which git                       # returns where is git on your computer
 cd ~/Downloads
 git clone https://github.com/git/git # install the latest Git
 cd git
 make configure
 ./configure
-make
+make -j12
 sudo make install
 cd .. 
 sudo rm -R ~/Downloads/git/     # remove git folder
@@ -2216,7 +2260,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

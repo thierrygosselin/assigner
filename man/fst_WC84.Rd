@@ -2,7 +2,7 @@
 % Please edit documentation in R/fst_WC84.R
 \name{fst_WC84}
 \alias{fst_WC84}
-\title{A fast implementation of Weir and Cockerham (1984) Fst/Theta 
+\title{A fast implementation of Weir and Cockerham (1984) Fst/Theta
 (overall and paiwise estimates)}
 \usage{
 fst_WC84(
@@ -30,11 +30,11 @@ You can also use this function to filter your dataset using
 whitelist of markers, blacklist of individuals and genotypes.}
 
 \item{snprelate}{(optional, logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
-to compute the Fst. 
+to compute the Fst.
 It's the fastest computation I've seen so far!
 
 However, testing with different RADseq datasets as shown several upward bias
-with \code{SNPRelate::snpgdsFst} (last version tested was v.1.16.0). 
+with \code{SNPRelate::snpgdsFst} (last version tested was v.1.16.0).
 I compared the results with assigner, hierfstat and strataG
 (results available upon request).
 The SNPRelate author as not given me good reason to belive the issue is fully
@@ -44,46 +44,46 @@ Default: \code{snprelate = FALSE}}
 \item{strata}{(optional, data frame) A tab delimited file with 2 columns with header:
 \code{INDIVIDUALS} and \code{STRATA}.
 If a \code{strata} file is specified, the strata file will have
-precedence over any grouping found input file (\code{data}). 
+precedence over any grouping found input file (\code{data}).
 The \code{STRATA} column can be any hierarchical grouping.
 Default: \code{strata = NULL}.}
 
-\item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
+\item{pop.levels}{(optional, string) This refers to the levels in a factor. In this
 case, the id of the pop.
-Use this argument to have the pop ordered your way instead of the default 
-alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
-instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
+Use this argument to have the pop ordered your way instead of the default
+alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")}
+instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}.
 Default: \code{pop.levels = NULL}.}
 
-\item{pairwise}{(optional, logical) With \code{pairwise = TRUE}, the 
-pairwise WC84 Fst is calculated between populations. 
+\item{pairwise}{(optional, logical) With \code{pairwise = TRUE}, the
+pairwise WC84 Fst is calculated between populations.
 Default: \code{pairwise = FALSE}.}
 
-\item{ci}{(optional, logical) Compute bootstrapped confidence intervals. 
+\item{ci}{(optional, logical) Compute bootstrapped confidence intervals.
 Default: \code{ci = FALSE}.}
 
-\item{iteration.ci}{(optional, integer) The number of iterations for 
-the boostraps (resampling with replacement of markers). 
+\item{iteration.ci}{(optional, integer) The number of iterations for
+the boostraps (resampling with replacement of markers).
 Default: \code{iteration.ci = 100}.}
 
-\item{quantiles.ci}{(optional, double) 
-The quantiles for the bootstrapped confidence intervals. 
+\item{quantiles.ci}{(optional, double)
+The quantiles for the bootstrapped confidence intervals.
 Default: \code{quantiles.ci = c(0.025,0.975)}.}
 
-\item{digits}{(optional, integer) The number of decimal places to be used in 
+\item{digits}{(optional, integer) The number of decimal places to be used in
 results.
 Default: \code{digits = 9}.}
 
-\item{filename}{(optional, character) Give filename prefix, this will trigger 
+\item{filename}{(optional, character) Give filename prefix, this will trigger
 saving results in a directory.
 Default: \code{filename = NULL}.}
 
-\item{parallel.core}{(optional, integer) The number of core for parallel computation 
+\item{parallel.core}{(optional, integer) The number of core for parallel computation
 of pairwise Fst.
 Default: \code{parallel.core = parallel::detectCores() - 1}.}
 
-\item{verbose}{(optional, logical) \code{verbose = TRUE} to be chatty 
-during execution. 
+\item{verbose}{(optional, logical) \code{verbose = TRUE} to be chatty
+during execution.
 Default: \code{verbose = FALSE}.}
 
 \item{...}{other parameters passed to the function.}
@@ -94,12 +94,12 @@ When sumsample is selected the objects end with \code{.subsample}.
 \itemize{
  \item \code{$subsampling.individuals}: the combinations of individuals and subsamples,
  \item \code{$sigma.loc}: the variance components per locus, with
-      (\code{lsiga}: among populations, 
+      (\code{lsiga}: among populations,
       \code{lsigb}: among individuals within populations,
       \code{lsigw}: within individuals)
  \item \code{$fst.markers}: the fst by markers,
  \item \code{$fst.ranked}: the fst ranked,
- \item \code{$fst.overall}: the mean fst overall markers and the number of markers 
+ \item \code{$fst.overall}: the mean fst overall markers and the number of markers
  \item \code{$fis.markers}: the fis by markers,
  \item \code{$fis.overall}: the mean fis overall markers and the number of markers,
  \item \code{$fst.plot}: the histogram of the overall Fst per markers,
@@ -114,39 +114,39 @@ When sumsample is selected the objects end with \code{.subsample}.
 }
 }
 \description{
-The function calculates Weir and Cockerham (1984) 
-Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
-confidence intervals based on bootstrap of markers (resampling with replacement). 
-The function gives identical results \emph{at the 9th decimal} when tested 
-against \code{genet.dist} in \code{hierfstat}. Using the 
-argument \code{snprelate = TRUE} will compute the Fst with 
+The function calculates Weir and Cockerham (1984)
+Fst for diploid genomes. Both overall and pairwise Fst can be estimated with
+confidence intervals based on bootstrap of markers (resampling with replacement).
+The function gives identical results \emph{at the 9th decimal} when tested
+against \code{genet.dist} in \code{hierfstat}. Using the
+argument \code{snprelate = TRUE} will compute the Fst with
 \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}. This implementation
 gives slightly upward bias values but provided the fastest computations I know,
-but it doesn't compute confidence intervals, for now. 
-For an R implementation, \code{\link{fst_WC84}} is very fast. 
-The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr}, 
+but it doesn't compute confidence intervals, for now.
+For an R implementation, \code{\link{fst_WC84}} is very fast.
+The computations takes advantage of \pkg{dplyr}, \pkg{tidyr}, \pkg{purrr},
 \pkg{parallel} and \pkg{SNPRelate}.
-The impact of unbalanced design on estimates can be tested by using the 
+The impact of unbalanced design on estimates can be tested by using the
 subsample argument (see advance mode section).
 
 \emph{Special concerns for genome-wide estimate and filtering bias}
 
-During computation, the function first starts by keeping only the polymorphic 
-markers in common between the populations. Keep this in mind when filtering 
-your markers to use this function characteristic strategically to get 
-better genome-wide estimate. This is even more important when your project 
-involves more than 2 populations that evolved more by neutral processes 
+During computation, the function first starts by keeping only the polymorphic
+markers in common between the populations. Keep this in mind when filtering
+your markers to use this function characteristic strategically to get
+better genome-wide estimate. This is even more important when your project
+involves more than 2 populations that evolved more by neutral processes
 (e.g. genetic drift) than by natural selection (see the vignette for more details).
 }
 \note{
-\strong{Negative Fst} are technical artifact of the computation 
-(see Roesti el al. 2012) and are automatically replaced with zero inside 
+\strong{Negative Fst} are technical artifact of the computation
+(see Roesti el al. 2012) and are automatically replaced with zero inside
 this function.
 
 \strong{Why no p-values ?}
 
 There is no null hypothesis testing with \emph{P}-values.
-Confidence intervals provided with the \emph{F}-statistics 
+Confidence intervals provided with the \emph{F}-statistics
 enables more reliable conclusions about the biological trends in the data.
 }
 \section{Advance mode}{
@@ -159,17 +159,17 @@ enables more reliable conclusions about the biological trends in the data.
 markers present in the dataset are removed (and it should stay that way...).
 Default: \code{filter.monomorphic = TRUE}.
 
-\item \code{holdout.samples} (optional, data frame) Samples that don't participate in the Fst 
+\item \code{holdout.samples} (optional, data frame) Samples that don't participate in the Fst
 computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
 This argument is used inside assignment analysis.
 Default: \code{holdout.samples = NULL}.
 
-\item \code{subsample} (Integer or character) 
+\item \code{subsample} (Integer or character)
 With \code{subsample = 36}, 36 individuals in each populations are chosen
-randomly to represent the dataset. With \code{subsample = "min"}, the 
+randomly to represent the dataset. With \code{subsample = "min"}, the
 minimum number of individual/population found in the data is used automatically.
 Default is no subsampling, \code{subsample = NULL}.
-\item \code{iteration.subsample} (Integer) The number of iterations to repeat 
+\item \code{iteration.subsample} (Integer) The number of iterations to repeat
 subsampling.
 With \code{subsample = 20} and \code{iteration.subsample = 10},
 20 individuals/populations will be randomly chosen 10 times.
@@ -186,11 +186,11 @@ analysis using \code{\link{heatmap_fst}}.
 \examples{
 \dontrun{
 wombat.fst.pairwise <- fst_WC84(
-    data = "wombat.filtered.tidy.tsv", 
+    data = "wombat.filtered.tidy.tsv",
     pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
     pairwise = TRUE,
-    ci = TRUE, 
-    iteration.ci = 10000, 
+    ci = TRUE,
+    iteration.ci = 10000,
     quantiles.ci = c(0.025,0.975),
     parallel.core = 8,
     verbose = TRUE,
@@ -209,27 +209,27 @@ df <- wombat.fst.pairwise$pairwise.fst
 }
 }
 \references{
-Excoffier L, Smouse PE, Quattro JM. 
-Analysis of molecular variance inferred from metric distances among 
-DNA haplotypes: application to human mitochondrial DNA restriction data. 
+Excoffier L, Smouse PE, Quattro JM.
+Analysis of molecular variance inferred from metric distances among
+DNA haplotypes: application to human mitochondrial DNA restriction data.
 Genetics. 1992;131: 479-491.
 
-Meirmans PG, Van Tienderen PH (2004) genotype and genodive: 
-two programs for the analysis of genetic diversity of asexual organisms. 
+Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
+two programs for the analysis of genetic diversity of asexual organisms.
 Molecular Ecology Notes, 4, 792-794.
 
-Michalakis Y, Excoffier L. 
-A generic estimation of population 
-subdivision using distances between alleles with special reference for 
-microsatellite loci. 
+Michalakis Y, Excoffier L.
+A generic estimation of population
+subdivision using distances between alleles with special reference for
+microsatellite loci.
 Genetics. 1996;142: 1061-1064.
 
 Weir BS, Cockerham CC (1984) Estimating F-Statistics for the
-Analysis of Population Structure. 
+Analysis of Population Structure.
 Evolution, 38, 1358-1370.
 
 Roesti M, Salzburger W, Berner D. (2012)
-Uninformative polymorphisms bias genome scans for signatures of selection. 
+Uninformative polymorphisms bias genome scans for signatures of selection.
 BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x
 
 Zheng X, Levine D, Shen J, Gogarten SM, Laurie C, Weir BS.
@@ -239,16 +239,16 @@ doi:10.1093/bioinformatics/bts606
 }
 \seealso{
 From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive} manual:
-\emph{'In general, rather than to test differentiation between all pairs of 
+\emph{'In general, rather than to test differentiation between all pairs of
 populations,
-it is advisable to perform an overall test of population differentiation, 
-possibly using a hierarchical population structure, (see AMOVA)'}. 
+it is advisable to perform an overall test of population differentiation,
+possibly using a hierarchical population structure, (see AMOVA)'}.
 To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 or \code{Phi_st_Meirmans} in \code{mmod}.
 
 \href{https://github.com/jgx65/hierfstat/}{hierfstat}
 
-For Fisher's exact test and p-values per markers 
+For Fisher's exact test and p-values per markers
 see \code{mmod} \code{diff_test}.
 
 \strong{Vignette for this function:} \href{https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0}{how to do the pairwise and overall Fst with confidence intervals and build the phylogenetic tree}

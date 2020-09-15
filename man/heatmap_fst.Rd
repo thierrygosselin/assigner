@@ -23,8 +23,8 @@ heatmap_fst(
 
 \item{pairwise.fst.ci.matrix}{(object or path).}
 
-\item{n.s}{(optional, logical) To have an * when the Fst value is not 
-significative (0 is the lower bound of the CI).
+\item{n.s}{(optional, logical) To have an * when the Fst value is not
+significant (0 is the lower bound of the CI).
 Default: \code{n.s = TRUE}.}
 
 \item{digits}{(optional, integer) The number of digits showed in the heatmap.
@@ -42,7 +42,7 @@ Default: \code{color.high = "red"}.}
 \item{text.size}{(optional, integer) Size of the values.
 Default: \code{text.size = 2}.}
 
-\item{plot.size}{(optional, integer) By default the size is 
+\item{plot.size}{(optional, integer) By default the size is
 \code{the number of strata * 2} in cm.
 Default: \code{plot.size = NULL}.}
 
