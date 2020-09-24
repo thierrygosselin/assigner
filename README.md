@@ -1,5 +1,5 @@
 
-# assigner <img src="docs/logo.png" align="right" alt="" />
+# assigner <a href='http://thierrygosselin.github.io/assigner/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 

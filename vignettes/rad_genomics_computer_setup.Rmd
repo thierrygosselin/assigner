@@ -1015,7 +1015,7 @@ your track pad or mouse on a folder and choose Services -> New Terminal at
 Folder!
 
 ```{r terminal_folder_shortcut.png, echo=FALSE}
-knitr::include_graphics("/Users/thierry/Library/Mobile Documents/com~apple~CloudDocs/r_packages/radiator/vignettes/terminal_folder_shortcut.png")
+knitr::include_graphics("terminal_folder_shortcut.png")
 ```
 
 ## Shortcut to folder path
@@ -1023,7 +1023,7 @@ knitr::include_graphics("/Users/thierry/Library/Mobile Documents/com~apple~Cloud
 Open the Automator application (it's on all MAC...). 
 
 ```{r automator.png, echo=FALSE}
-knitr::include_graphics("/Users/thierry/Library/Mobile Documents/com~apple~CloudDocs/r_packages/radiator/vignettes/automator.png")
+knitr::include_graphics("automator.png")
 ```
 
 ```{bash eval=FALSE}
@@ -1036,7 +1036,7 @@ You should have something similar to the image below:
 ```
 
 ```{r copy_path.png, echo=FALSE}
-knitr::include_graphics("/Users/thierry/Library/Mobile Documents/com~apple~CloudDocs/r_packages/radiator/vignettes/copy_path.png")
+knitr::include_graphics("copy_path.png")
 ```
 
 ```{bash eval=FALSE}
