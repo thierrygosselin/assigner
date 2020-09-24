@@ -1,5 +1,5 @@
 pandoc: 2.7.3
-pkgdown: 1.5.1
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   assignment.whitelists: assignment.whitelists.html
@@ -7,6 +7,6 @@ articles:
   get_started: get_started.html
   life_cycle: life_cycle.html
   rad_genomics_computer_setup: rad_genomics_computer_setup.html
-  fst_comparisons: web_only/fst_comparisons.html
-last_built: 2020-07-03T18:37Z
+  web_only/fst_comparisons: fst_comparisons.html
+last_built: 2020-09-24T15:00Z
 

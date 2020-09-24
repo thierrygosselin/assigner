@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>A fast implementation of Weir and Cockerham (1984) Fst/Theta 
+<title>A fast implementation of Weir and Cockerham (1984) Fst/Theta
 (overall and paiwise estimates) — fst_WC84 • assigner</title>
 
 <!-- favicons -->
@@ -47,28 +47,28 @@
 
 
 
-<meta property="og:title" content="A fast implementation of Weir and Cockerham (1984) Fst/Theta 
+<meta property="og:title" content="A fast implementation of Weir and Cockerham (1984) Fst/Theta
 (overall and paiwise estimates) — fst_WC84" />
-<meta property="og:description" content="The function calculates Weir and Cockerham (1984) 
-Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
-confidence intervals based on bootstrap of markers (resampling with replacement). 
-The function gives identical results at the 9th decimal when tested 
-against genet.dist in hierfstat. Using the 
-argument snprelate = TRUE will compute the Fst with 
+<meta property="og:description" content="The function calculates Weir and Cockerham (1984)
+Fst for diploid genomes. Both overall and pairwise Fst can be estimated with
+confidence intervals based on bootstrap of markers (resampling with replacement).
+The function gives identical results at the 9th decimal when tested
+against genet.dist in hierfstat. Using the
+argument snprelate = TRUE will compute the Fst with
 SNPRelate. This implementation
 gives slightly upward bias values but provided the fastest computations I know,
-but it doesn't compute confidence intervals, for now. 
-For an R implementation, fst_WC84 is very fast. 
-The computations takes advantage of dplyr, tidyr, purrr, 
+but it doesn't compute confidence intervals, for now.
+For an R implementation, fst_WC84 is very fast.
+The computations takes advantage of dplyr, tidyr, purrr,
 parallel and SNPRelate.
-The impact of unbalanced design on estimates can be tested by using the 
+The impact of unbalanced design on estimates can be tested by using the
 subsample argument (see advance mode section).
 Special concerns for genome-wide estimate and filtering bias
-During computation, the function first starts by keeping only the polymorphic 
-markers in common between the populations. Keep this in mind when filtering 
-your markers to use this function characteristic strategically to get 
-better genome-wide estimate. This is even more important when your project 
-involves more than 2 populations that evolved more by neutral processes 
+During computation, the function first starts by keeping only the polymorphic
+markers in common between the populations. Keep this in mind when filtering
+your markers to use this function characteristic strategically to get
+better genome-wide estimate. This is even more important when your project
+involves more than 2 populations that evolved more by neutral processes
 (e.g. genetic drift) than by natural selection (see the vignette for more details)." />
 <meta property="og:image" content="/logo.png" />
 
@@ -171,50 +171,50 @@ involves more than 2 populations that evolved more by neutral processes
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>A fast implementation of Weir and Cockerham (1984) Fst/Theta 
+    <h1>A fast implementation of Weir and Cockerham (1984) Fst/Theta
 (overall and paiwise estimates)</h1>
     <small class="dont-index">Source: <a href='https://github.com/thierrygosselin/assigner/blob/master/R/fst_WC84.R'><code>R/fst_WC84.R</code></a></small>
     <div class="hidden name"><code>fst_WC84.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function calculates Weir and Cockerham (1984) 
-Fst for diploid genomes. Both overall and pairwise Fst can be estimated with 
-confidence intervals based on bootstrap of markers (resampling with replacement). 
-The function gives identical results <em>at the 9th decimal</em> when tested 
-against <code>genet.dist</code> in <code>hierfstat</code>. Using the 
-argument <code>snprelate = TRUE</code> will compute the Fst with 
+    <p>The function calculates Weir and Cockerham (1984)
+Fst for diploid genomes. Both overall and pairwise Fst can be estimated with
+confidence intervals based on bootstrap of markers (resampling with replacement).
+The function gives identical results <em>at the 9th decimal</em> when tested
+against <code>genet.dist</code> in <code>hierfstat</code>. Using the
+argument <code>snprelate = TRUE</code> will compute the Fst with
 <a href='https://github.com/zhengxwen/SNPRelate'>SNPRelate</a>. This implementation
 gives slightly upward bias values but provided the fastest computations I know,
-but it doesn't compute confidence intervals, for now. 
-For an R implementation, <code>fst_WC84</code> is very fast. 
-The computations takes advantage of <span class="pkg">dplyr</span>, <span class="pkg">tidyr</span>, <span class="pkg">purrr</span>, 
+but it doesn't compute confidence intervals, for now.
+For an R implementation, <code>fst_WC84</code> is very fast.
+The computations takes advantage of <span class="pkg">dplyr</span>, <span class="pkg">tidyr</span>, <span class="pkg">purrr</span>,
 <span class="pkg">parallel</span> and <span class="pkg">SNPRelate</span>.
-The impact of unbalanced design on estimates can be tested by using the 
+The impact of unbalanced design on estimates can be tested by using the
 subsample argument (see advance mode section).</p>
 <p><em>Special concerns for genome-wide estimate and filtering bias</em></p>
-<p>During computation, the function first starts by keeping only the polymorphic 
-markers in common between the populations. Keep this in mind when filtering 
-your markers to use this function characteristic strategically to get 
-better genome-wide estimate. This is even more important when your project 
-involves more than 2 populations that evolved more by neutral processes 
+<p>During computation, the function first starts by keeping only the polymorphic
+markers in common between the populations. Keep this in mind when filtering
+your markers to use this function characteristic strategically to get
+better genome-wide estimate. This is even more important when your project
+involves more than 2 populations that evolved more by neutral processes
 (e.g. genetic drift) than by natural selection (see the vignette for more details).</p>
     </div>
 
     <pre class="usage"><span class='fu'>fst_WC84</span>(
-  <span class='no'>data</span>,
-  <span class='kw'>snprelate</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>strata</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>pop.levels</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>pairwise</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>iteration.ci</span> <span class='kw'>=</span> <span class='fl'>100</span>,
-  <span class='kw'>quantiles.ci</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.025</span>, <span class='fl'>0.975</span>),
-  <span class='kw'>digits</span> <span class='kw'>=</span> <span class='fl'>9</span>,
-  <span class='kw'>filename</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>parallel.core</span> <span class='kw'>=</span> <span class='kw pkg'>parallel</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span>() - <span class='fl'>2</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>...</span>
+  <span class='kw'>data</span>,
+  snprelate = <span class='fl'>FALSE</span>,
+  strata = <span class='kw'>NULL</span>,
+  pop.levels = <span class='kw'>NULL</span>,
+  pairwise = <span class='fl'>FALSE</span>,
+  ci = <span class='fl'>FALSE</span>,
+  iteration.ci = <span class='fl'>100</span>,
+  quantiles.ci = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.025</span>, <span class='fl'>0.975</span>),
+  digits = <span class='fl'>9</span>,
+  filename = <span class='kw'>NULL</span>,
+  parallel.core = <span class='kw'>parallel</span>::<span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span>() <span class='op'>-</span> <span class='fl'>2</span>,
+  verbose = <span class='fl'>FALSE</span>,
+  <span class='kw'>...</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -232,10 +232,10 @@ whitelist of markers, blacklist of individuals and genotypes.</p></td>
     <tr>
       <th>snprelate</th>
       <td><p>(optional, logical) Use <a href='https://github.com/zhengxwen/SNPRelate'>SNPRelate</a>
-to compute the Fst. 
+to compute the Fst.
 It's the fastest computation I've seen so far!</p>
 <p>However, testing with different RADseq datasets as shown several upward bias
-with <code><a href='https://rdrr.io/pkg/SNPRelate/man/snpgdsFst.html'>SNPRelate::snpgdsFst</a></code> (last version tested was v.1.16.0). 
+with <code><a href='https://rdrr.io/pkg/SNPRelate/man/snpgdsFst.html'>SNPRelate::snpgdsFst</a></code> (last version tested was v.1.16.0).
 I compared the results with assigner, hierfstat and strataG
 (results available upon request).
 The SNPRelate author as not given me good reason to belive the issue is fully
@@ -247,64 +247,64 @@ Default: <code>snprelate = FALSE</code></p></td>
       <td><p>(optional, data frame) A tab delimited file with 2 columns with header:
 <code>INDIVIDUALS</code> and <code>STRATA</code>.
 If a <code>strata</code> file is specified, the strata file will have
-precedence over any grouping found input file (<code>data</code>). 
+precedence over any grouping found input file (<code>data</code>).
 The <code>STRATA</code> column can be any hierarchical grouping.
 Default: <code>strata = NULL</code>.</p></td>
     </tr>
     <tr>
       <th>pop.levels</th>
-      <td><p>(optional, string) This refers to the levels in a factor. In this 
+      <td><p>(optional, string) This refers to the levels in a factor. In this
 case, the id of the pop.
-Use this argument to have the pop ordered your way instead of the default 
-alphabetical or numerical order. e.g. <code>pop.levels = c("QUE", "ONT", "ALB")</code> 
-instead of the default <code>pop.levels = c("ALB", "ONT", "QUE")</code>. 
+Use this argument to have the pop ordered your way instead of the default
+alphabetical or numerical order. e.g. <code>pop.levels = c("QUE", "ONT", "ALB")</code>
+instead of the default <code>pop.levels = c("ALB", "ONT", "QUE")</code>.
 Default: <code>pop.levels = NULL</code>.</p></td>
     </tr>
     <tr>
       <th>pairwise</th>
-      <td><p>(optional, logical) With <code>pairwise = TRUE</code>, the 
-pairwise WC84 Fst is calculated between populations. 
+      <td><p>(optional, logical) With <code>pairwise = TRUE</code>, the
+pairwise WC84 Fst is calculated between populations.
 Default: <code>pairwise = FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>ci</th>
-      <td><p>(optional, logical) Compute bootstrapped confidence intervals. 
+      <td><p>(optional, logical) Compute bootstrapped confidence intervals.
 Default: <code>ci = FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>iteration.ci</th>
-      <td><p>(optional, integer) The number of iterations for 
-the boostraps (resampling with replacement of markers). 
+      <td><p>(optional, integer) The number of iterations for
+the boostraps (resampling with replacement of markers).
 Default: <code>iteration.ci = 100</code>.</p></td>
     </tr>
     <tr>
       <th>quantiles.ci</th>
-      <td><p>(optional, double) 
-The quantiles for the bootstrapped confidence intervals. 
+      <td><p>(optional, double)
+The quantiles for the bootstrapped confidence intervals.
 Default: <code>quantiles.ci = c(0.025,0.975)</code>.</p></td>
     </tr>
     <tr>
       <th>digits</th>
-      <td><p>(optional, integer) The number of decimal places to be used in 
+      <td><p>(optional, integer) The number of decimal places to be used in
 results.
 Default: <code>digits = 9</code>.</p></td>
     </tr>
     <tr>
       <th>filename</th>
-      <td><p>(optional, character) Give filename prefix, this will trigger 
+      <td><p>(optional, character) Give filename prefix, this will trigger
 saving results in a directory.
 Default: <code>filename = NULL</code>.</p></td>
     </tr>
     <tr>
       <th>parallel.core</th>
-      <td><p>(optional, integer) The number of core for parallel computation 
+      <td><p>(optional, integer) The number of core for parallel computation
 of pairwise Fst.
 Default: <code>parallel.core = parallel::detectCores() - 1</code>.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>(optional, logical) <code>verbose = TRUE</code> to be chatty 
-during execution. 
+      <td><p>(optional, logical) <code>verbose = TRUE</code> to be chatty
+during execution.
 Default: <code>verbose = FALSE</code>.</p></td>
     </tr>
     <tr>
@@ -319,7 +319,7 @@ Default: <code>verbose = FALSE</code>.</p></td>
 When sumsample is selected the objects end with <code>.subsample</code>.</p><ul>
 <li><p><code>$subsampling.individuals</code>: the combinations of individuals and subsamples,</p></li>
 <li><p><code>$sigma.loc</code>: the variance components per locus, with
-      (<code>lsiga</code>: among populations, 
+      (<code>lsiga</code>: among populations,
       <code>lsigb</code>: among individuals within populations,
       <code>lsigw</code>: within individuals)</p></li>
 <li><p><code>$fst.markers</code>: the fst by markers,</p></li>
@@ -340,12 +340,12 @@ When sumsample is selected the objects end with <code>.subsample</code>.</p><ul>
 
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
-    <p><strong>Negative Fst</strong> are technical artifact of the computation 
-(see Roesti el al. 2012) and are automatically replaced with zero inside 
+    <p><strong>Negative Fst</strong> are technical artifact of the computation
+(see Roesti el al. 2012) and are automatically replaced with zero inside
 this function.</p>
 <p><strong>Why no p-values ?</strong></p>
 <p>There is no null hypothesis testing with <em>P</em>-values.
-Confidence intervals provided with the <em>F</em>-statistics 
+Confidence intervals provided with the <em>F</em>-statistics
 enables more reliable conclusions about the biological trends in the data.</p>
     <h2 class="hasAnchor" id="advance-mode"><a class="anchor" href="#advance-mode"></a>Advance mode</h2>
 
@@ -356,16 +356,16 @@ enables more reliable conclusions about the biological trends in the data.</p>
 <li><p><code>filter.monomorphic</code> (logical, optional) By default monomorphic
 markers present in the dataset are removed (and it should stay that way...).
 Default: <code>filter.monomorphic = TRUE</code>.</p></li>
-<li><p><code>holdout.samples</code> (optional, data frame) Samples that don't participate in the Fst 
+<li><p><code>holdout.samples</code> (optional, data frame) Samples that don't participate in the Fst
 computation (supplementary). Data frame with one column <code>INDIVIDUALS</code>.
 This argument is used inside assignment analysis.
 Default: <code>holdout.samples = NULL</code>.</p></li>
-<li><p><code>subsample</code> (Integer or character) 
+<li><p><code>subsample</code> (Integer or character)
 With <code>subsample = 36</code>, 36 individuals in each populations are chosen
-randomly to represent the dataset. With <code>subsample = "min"</code>, the 
+randomly to represent the dataset. With <code>subsample = "min"</code>, the
 minimum number of individual/population found in the data is used automatically.
 Default is no subsampling, <code>subsample = NULL</code>.</p></li>
-<li><p><code>iteration.subsample</code> (Integer) The number of iterations to repeat 
+<li><p><code>iteration.subsample</code> (Integer) The number of iterations to repeat
 subsampling.
 With <code>subsample = 20</code> and <code>iteration.subsample = 10</code>,
 20 individuals/populations will be randomly chosen 10 times.
@@ -379,23 +379,23 @@ analysis using <code><a href='heatmap_fst.html'>heatmap_fst</a></code>.</p></li>
 
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Excoffier L, Smouse PE, Quattro JM. 
-Analysis of molecular variance inferred from metric distances among 
-DNA haplotypes: application to human mitochondrial DNA restriction data. 
+    <p>Excoffier L, Smouse PE, Quattro JM.
+Analysis of molecular variance inferred from metric distances among
+DNA haplotypes: application to human mitochondrial DNA restriction data.
 Genetics. 1992;131: 479-491.</p>
-<p>Meirmans PG, Van Tienderen PH (2004) genotype and genodive: 
-two programs for the analysis of genetic diversity of asexual organisms. 
+<p>Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
+two programs for the analysis of genetic diversity of asexual organisms.
 Molecular Ecology Notes, 4, 792-794.</p>
-<p>Michalakis Y, Excoffier L. 
-A generic estimation of population 
-subdivision using distances between alleles with special reference for 
-microsatellite loci. 
+<p>Michalakis Y, Excoffier L.
+A generic estimation of population
+subdivision using distances between alleles with special reference for
+microsatellite loci.
 Genetics. 1996;142: 1061-1064.</p>
 <p>Weir BS, Cockerham CC (1984) Estimating F-Statistics for the
-Analysis of Population Structure. 
+Analysis of Population Structure.
 Evolution, 38, 1358-1370.</p>
 <p>Roesti M, Salzburger W, Berner D. (2012)
-Uninformative polymorphisms bias genome scans for signatures of selection. 
+Uninformative polymorphisms bias genome scans for signatures of selection.
 BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x</p>
 <p>Zheng X, Levine D, Shen J, Gogarten SM, Laurie C, Weir BS.
 A high-performance computing toolset for relatedness and principal component
@@ -404,41 +404,45 @@ doi:10.1093/bioinformatics/bts606</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>From <a href='http://www.bentleydrummer.nl/software/software/GenoDive.html'>GenoDive</a> manual:
-<em>'In general, rather than to test differentiation between all pairs of 
+<em>'In general, rather than to test differentiation between all pairs of
 populations,
-it is advisable to perform an overall test of population differentiation, 
-possibly using a hierarchical population structure, (see AMOVA)'</em>. 
+it is advisable to perform an overall test of population differentiation,
+possibly using a hierarchical population structure, (see AMOVA)'</em>.
 To compute an AMOVA, use <a href='http://www.bentleydrummer.nl/software/software/GenoDive.html'>GenoDive</a>
 or <code>Phi_st_Meirmans</code> in <code>mmod</code>.</p>
 <p><a href='https://github.com/jgx65/hierfstat/'>hierfstat</a></p>
-<p>For Fisher's exact test and p-values per markers 
+<p>For Fisher's exact test and p-values per markers
 see <code>mmod</code> <code>diff_test</code>.</p>
 <p><strong>Vignette for this function:</strong> <a href='https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0'>how to do the pairwise and overall Fst with confidence intervals and build the phylogenetic tree</a></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Thierry Gosselin <a href='mailto:thierrygosselin@icloud.com'>thierrygosselin@icloud.com</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>wombat.fst.pairwise</span> <span class='kw'>&lt;-</span> <span class='fu'>fst_WC84</span>(
-    <span class='kw'>data</span> <span class='kw'>=</span> <span class='st'>"wombat.filtered.tidy.tsv"</span>,
-    <span class='kw'>pop.levels</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ATL"</span>, <span class='st'>"MLE"</span>, <span class='st'>"BIS"</span>, <span class='st'>"PMO"</span>, <span class='st'>"SOL"</span>, <span class='st'>"TAS"</span>, <span class='st'>"ECU"</span>),
-    <span class='kw'>pairwise</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-    <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-    <span class='kw'>iteration.ci</span> <span class='kw'>=</span> <span class='fl'>10000</span>,
-    <span class='kw'>quantiles.ci</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.025</span>,<span class='fl'>0.975</span>),
-    <span class='kw'>parallel.core</span> <span class='kw'>=</span> <span class='fl'>8</span>,
-    <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-    <span class='kw'>filename</span> <span class='kw'>=</span> <span class='st'>"wombat"</span>,
-    <span class='kw'>heatmap.fst</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='kw'>wombat.fst.pairwise</span> <span class='op'>&lt;-</span> <span class='fu'>fst_WC84</span>(
+    data = <span class='st'>"wombat.filtered.tidy.tsv"</span>,
+    pop.levels = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ATL"</span>, <span class='st'>"MLE"</span>, <span class='st'>"BIS"</span>, <span class='st'>"PMO"</span>, <span class='st'>"SOL"</span>, <span class='st'>"TAS"</span>, <span class='st'>"ECU"</span>),
+    pairwise = <span class='fl'>TRUE</span>,
+    ci = <span class='fl'>TRUE</span>,
+    iteration.ci = <span class='fl'>10000</span>,
+    quantiles.ci = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.025</span>,<span class='fl'>0.975</span>),
+    parallel.core = <span class='fl'>8</span>,
+    verbose = <span class='fl'>TRUE</span>,
+    filename = <span class='st'>"wombat"</span>,
+    heatmap.fst = <span class='fl'>TRUE</span>
 )
 
 <span class='co'># To get the overall Fst estimate:</span>
-<span class='no'>wombat.fst.pairwise</span>$<span class='no'>fst.overall</span>
+<span class='kw'>wombat.fst.pairwise</span><span class='op'>$</span><span class='kw'>fst.overall</span>
 
 <span class='co'># To get the Fst plot:</span>
-<span class='no'>wombat.fst.pairwise</span>$<span class='no'>fst.plot</span>
+<span class='kw'>wombat.fst.pairwise</span><span class='op'>$</span><span class='kw'>fst.plot</span>
 
 <span class='co'>#To get the pairwise Fst values with confidence intervals in a data frame:</span>
-<span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='no'>wombat.fst.pairwise</span>$<span class='no'>pairwise.fst</span>
-}</div></pre>
+<span class='kw'>df</span> <span class='op'>&lt;-</span> <span class='kw'>wombat.fst.pairwise</span><span class='op'>$</span><span class='kw'>pairwise.fst</span>
+}
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -454,7 +458,7 @@ see <code>mmod</code> <code>diff_test</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

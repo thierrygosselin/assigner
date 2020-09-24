@@ -110,7 +110,7 @@
       <h1 data-toc-skip>get started using assigner</h1>
                         <h4 class="author">Thierry Gosselin</h4>
             
-            <h4 class="date">2020-07-03</h4>
+            <h4 class="date">2020-09-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/thierrygosselin/assigner/blob/master/vignettes/get_started.Rmd"><code>vignettes/get_started.Rmd</code></a></small>
       <div class="hidden name"><code>get_started.Rmd</code></div>
@@ -139,14 +139,18 @@
 </li>
 <li>load assigner</li>
 </ul>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">assigner</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="http://thierrygosselin.github.io/assigner">assigner</a></span>)
+</pre></div>
 <p>By default, the working directory is where the file for this vignette is. To change: <code><a href="https://rdrr.io/r/base/getwd.html">setwd("new path here")</a></code></p>
 </div>
 <div id="data-1-high-structure" class="section level1">
 <h1 class="hasAnchor">
 <a href="#data-1-high-structure" class="anchor"></a>Data 1: high structure</h1>
 <p>For this exercise, we use the first dataset included in assigner. It’s a simulated dataset generated with <a href="https://thierrygosselin.github.io/grur/reference/simulate_rad.html">grur</a>. Details of the dataset are available using: <code><a href="../reference/data_assigner_sim_01.html">?assigner::data_assigner_sim_01</a></code>.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">data</span> <span class="kw">&lt;-</span> <span class="no">data_assigner_sim_01</span></pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="kw">data</span> <span class="op">&lt;-</span> <span class="kw">data_assigner_sim_01</span>
+</pre></div>
 </div>
 <div id="analysis-using-thl-with-gsi_sim" class="section level1">
 <h1 class="hasAnchor">
@@ -160,16 +164,19 @@
 <li>the process of taking a subsample of individuals (holdout and training set) to train the model and conduct the assigment analysis with <strong>gsi_sim</strong> is repeated 5 times (<code>iteration.method = 5</code>).</li>
 </ul>
 <p><code>gsi_sim</code> is not distributed with <strong>assigner</strong>, follow the <a href="http://thierrygosselin.github.io/assigner/">install instruction</a>, here for my mac it’s:</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="kw pkg">assigner</span><span class="kw ns">::</span><span class="fu"><a href="../reference/install_gsi_sim.html">install_gsi_sim</a></span>(<span class="kw">fromSource</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="kw">assigner</span>::<span class="fu"><a href="../reference/install_gsi_sim.html">install_gsi_sim</a></span>(fromSource = <span class="fl">TRUE</span>)
+</pre></div>
 <div id="no-subsampling" class="section level2">
 <h2 class="hasAnchor">
 <a href="#no-subsampling" class="anchor"></a>no subsampling</h2>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">test1</span> <span class="kw">&lt;-</span> <span class="kw pkg">assigner</span><span class="kw ns">::</span><span class="fu"><a href="../reference/assignment_ngs.html">assignment_ngs</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">data</span>,
-  <span class="kw">assignment.analysis</span> <span class="kw">=</span> <span class="st">"gsi_sim"</span>,
-  <span class="kw">markers.sampling</span> <span class="kw">=</span> <span class="st">"ranked"</span>,
-  <span class="kw">thl</span> <span class="kw">=</span> <span class="fl">0.2</span>,
-  <span class="kw">iteration.method</span> <span class="kw">=</span> <span class="fl">5</span>
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="kw">test1</span> <span class="op">&lt;-</span> <span class="kw">assigner</span>::<span class="fu"><a href="../reference/assignment_ngs.html">assignment_ngs</a></span>(
+  data = <span class="kw">data</span>,
+  assignment.analysis = <span class="st">"gsi_sim"</span>,
+  markers.sampling = <span class="st">"ranked"</span>, 
+  thl = <span class="fl">0.2</span>,
+  iteration.method = <span class="fl">5</span>
 )
 <span class="co">#&gt;################################################################################</span>
 <span class="co">#&gt;########################## assigner::assignment_ngs ############################</span>
@@ -185,60 +192,72 @@
 <span class="co">#&gt;Starting parallel computations, for progress monitor activity in folder...</span>
 <span class="co">#&gt;</span>
 <span class="co">#&gt;Computation time, overall: 7 sec</span>
-<span class="co">#&gt;########################## assignment_ngs completed ############################</span></pre></body></html></div>
+<span class="co">#&gt;########################## assignment_ngs completed ############################</span>
+</pre></div>
 <p>By default, the function uses all the markers and all my CPUs - 1, to change this last behavior use the argument <code>parallel.core</code>.</p>
 <p>The most important information that you’ll probably want to see are both returned in the working directory and the object. Not much is kept in the object <code>test1</code>, because disk space is cheap, memory is not!</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">test1</span>)
-<span class="co">#&gt;[1] "assignment"      "assignment.plot"</span></pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">test1</span>)
+<span class="co">#&gt;[1] "assignment"      "assignment.plot"</span>
+</pre></div>
 <p>Written in the working directory under <code>assignment_analysis_method_ranked_date@time</code>, where <code>date@time</code> is the date and time the function was run:</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"># 01_radiator_tidy_genomic: folder
-# assigner_assignment_ngs_args_20190501@1102.tsv: tibble, file
-# assignment_1: folder
-# assignment_2: folder
-# assignment_3: folder
-# assignment_4: folder
-# assignment_5: folder
-# assignment.plot.pdf: figure
-# assignment.ranked.results.iterations.raw.tsv: tibble, file
-# assignment.ranked.results.iterations.summary.tsv: tibble, file
-# assignment.results.summary.stats.tsv: tibble, file
-# holdout.individuals.tsv: tibble, file</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="co"># 01_radiator_tidy_genomic: folder</span>
+<span class="co"># assigner_assignment_ngs_args_20190501@1102.tsv: tibble, file</span>
+<span class="co"># assignment_1: folder</span>
+<span class="co"># assignment_2: folder</span>
+<span class="co"># assignment_3: folder</span>
+<span class="co"># assignment_4: folder</span>
+<span class="co"># assignment_5: folder</span>
+<span class="co"># assignment.plot.pdf: figure</span>
+<span class="co"># assignment.ranked.results.iterations.raw.tsv: tibble, file</span>
+<span class="co"># assignment.ranked.results.iterations.summary.tsv: tibble, file</span>
+<span class="co"># assignment.results.summary.stats.tsv: tibble, file</span>
+<span class="co"># holdout.individuals.tsv: tibble, file</span>
+</pre></div>
 <p>These folders and files are detailed in the function documentation under <a href="http://thierrygosselin.github.io/assigner/reference/assignment_ngs.html#value">value</a> returned by the function.</p>
 <p>To see the figure:</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">test1</span>$<span class="no">plot.assignment</span></pre></body></html></div>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assignment_thl_test1.png"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit">
+<span class="kw">test1</span><span class="op">$</span><span class="kw">plot.assignment</span>
+</pre></div>
+<p><img src="assignment_thl_test1.png"></p>
 <p>By default, the figure display the range of the data, to change this behavior and see the full range for the y axis:</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">test1</span>$<span class="no">plot.assignment</span> + <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">100</span>))</pre></body></html></div>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assignment_thl_test1_full_range.png"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="kw">test1</span><span class="op">$</span><span class="kw">plot.assignment</span> <span class="op">+</span> <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(limits = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">100</span>)) 
+</pre></div>
+<p><img src="assignment_thl_test1_full_range.png"></p>
 <ul>
 <li>assignment is very high for all populations (the points are mean values and the error bar represent the SE based on the 5 iterations).</li>
 <li>the horizontal facet display a <code>1</code>, because subsampling of the samples was not used, only 1 set was calculated with all samples. An example below will show something different.</li>
 <li>the x-axis display the number of marker used <code>497</code>. Using <code><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">dplyr::n_distinct(data$MARKERS)</a></code> shows that the dataset contains 500 markers, as description of the dataset suggest, so why a lower number was used? By default, the function will keep only polymorphic markers in common between strata/pops (<a href="http://thierrygosselin.github.io/assigner/reference/assignment_ngs.html#assumptions">doc</a>). Removing samples from the original simulated data, and low MAC result in losing 3 markers. If you want to clean the data before running the function:</li>
 </ul>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">data</span> <span class="kw">%&lt;&gt;%</span>
-  <span class="kw pkg">radiator</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/radiator/man/filter_monomorphic.html">filter_monomorphic</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="no">.</span>) <span class="kw">%&gt;%</span>
-  <span class="kw pkg">radiator</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/radiator/man/filter_common_markers.html">filter_common_markers</a></span>(<span class="kw">data</span> <span class="kw">=</span> <span class="no">.</span>)
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="kw">data</span> <span class="op">%&lt;&gt;%</span> 
+  <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/filter_monomorphic.html">filter_monomorphic</a></span>(data = <span class="kw">.</span>) <span class="op">%&gt;%</span>
+  <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/filter_common_markers.html">filter_common_markers</a></span>(data = <span class="kw">.</span>)
 <span class="co">#&gt;Filter monomorphic markers</span>
 <span class="co">#&gt;Number of individuals / strata / chrom / locus / SNP:</span>
 <span class="co">#&gt;    Blacklisted: 0 / 0 / NA / NA / 3</span>
 <span class="co">#&gt;</span>
 <span class="co">#&gt;Filter common markers:</span>
 <span class="co">#&gt;Number of individuals / strata / chrom / locus / SNP:</span>
-<span class="co">#&gt;    Blacklisted: 0 / 0 / 0 / 0 / 0</span></pre></body></html></div>
+<span class="co">#&gt;    Blacklisted: 0 / 0 / 0 / 0 / 0</span>
+</pre></div>
 </div>
 <div id="with-subsampling" class="section level2">
 <h2 class="hasAnchor">
 <a href="#with-subsampling" class="anchor"></a>with subsampling</h2>
 <p>For the second test, we will test several marker numbers and use the subsampling arguments to select 30 individuals in each strata (repeating this 3 times).</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">test2</span> <span class="kw">&lt;-</span> <span class="kw pkg">assigner</span><span class="kw ns">::</span><span class="fu"><a href="../reference/assignment_ngs.html">assignment_ngs</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">data</span>,
-  <span class="kw">assignment.analysis</span> <span class="kw">=</span> <span class="st">"gsi_sim"</span>,
-  <span class="kw">markers.sampling</span> <span class="kw">=</span> <span class="st">"ranked"</span>,
-  <span class="kw">thl</span> <span class="kw">=</span> <span class="fl">0.2</span>,
-  <span class="kw">iteration.method</span> <span class="kw">=</span> <span class="fl">5</span>,
-  <span class="kw">marker.number</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">300</span>, <span class="fl">400</span>, <span class="st">"all"</span>),
-  <span class="kw">subsample</span> <span class="kw">=</span> <span class="fl">30</span>,
-  <span class="kw">iteration.subsample</span> <span class="kw">=</span> <span class="fl">3</span>
+<div class="sourceCode" id="cb10"><pre class="downlit">
+<span class="kw">test2</span> <span class="op">&lt;-</span> <span class="kw">assigner</span>::<span class="fu"><a href="../reference/assignment_ngs.html">assignment_ngs</a></span>(
+  data = <span class="kw">data</span>,
+  assignment.analysis = <span class="st">"gsi_sim"</span>,
+  markers.sampling = <span class="st">"ranked"</span>, 
+  thl = <span class="fl">0.2</span>,
+  iteration.method = <span class="fl">5</span>, 
+  marker.number = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">300</span>, <span class="fl">400</span>, <span class="st">"all"</span>),
+  subsample = <span class="fl">30</span>, 
+  iteration.subsample = <span class="fl">3</span>
 )
 <span class="co">#&gt; ################################################################################</span>
 <span class="co">#&gt; ########################## assigner::assignment_ngs ############################</span>
@@ -269,67 +288,82 @@
 <span class="co">#&gt; Starting parallel computations, for progress monitor activity in folder...</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Computation time, overall: 19 sec</span>
-<span class="co">#&gt; ########################## assignment_ngs completed ############################</span></pre></body></html></div>
+<span class="co">#&gt; ########################## assignment_ngs completed ############################</span>
+</pre></div>
 <p>The object generated is similar to the analysis witout subsampling. The output folder is different. The subsample folders have the same content as the output of the analysis witout subsampling.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"># 01_radiator_tidy_genomic: folder
-# assigner_assignment_ngs_args_20190501@1540.tsv: tibble, file
-# assignment.plot.pdf: figure
-# assignment.ranked.results.summary.stats.all.subsamples.tsv: tibble, file
-# assignment.results.summary.stats.tsv: tibble, file
-# subsample_1: folder
-# subsample_2: folder
-# subsample_3: folder
-# subsampling_individuals.tsv: tibble, file</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="co"># 01_radiator_tidy_genomic: folder</span>
+<span class="co"># assigner_assignment_ngs_args_20190501@1540.tsv: tibble, file</span>
+<span class="co"># assignment.plot.pdf: figure</span>
+<span class="co"># assignment.ranked.results.summary.stats.all.subsamples.tsv: tibble, file</span>
+<span class="co"># assignment.results.summary.stats.tsv: tibble, file</span>
+<span class="co"># subsample_1: folder</span>
+<span class="co"># subsample_2: folder</span>
+<span class="co"># subsample_3: folder</span>
+<span class="co"># subsampling_individuals.tsv: tibble, file</span>
+</pre></div>
 <p>To view the figure:</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">test2</span>$<span class="no">plot.assignment</span> + <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">100</span>))</pre></body></html></div>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assignment_thl_test2.png"></p>
+<div class="sourceCode" id="cb12"><pre class="downlit">
+<span class="kw">test2</span><span class="op">$</span><span class="kw">plot.assignment</span> <span class="op">+</span> <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(limits = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">100</span>)) 
+</pre></div>
+<p><img src="assignment_thl_test2.png"></p>
 <ul>
 <li>The last vertical and horizontal facets are the mean assignment for all the subsampling iterations and mean assignment over populations, respectively.</li>
 <li>With the last plot, in the lower right corner, corresponding to the overall average (subsampling and strata/pops).</li>
 <li>the number of markers doesn’t affect the assignment analysis, the top 100 markers are as good as using all the 497 markers. Keep in mind that this is rarely the case with real datasets…</li>
 </ul>
 <p>This dataset as a high overall Fst value:</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="kw pkg">assigner</span><span class="kw ns">::</span><span class="fu"><a href="../reference/fst_WC84.html">fst_WC84</a></span>(<span class="no">data</span>) <span class="kw">%$%</span> <span class="no">fst.overall</span>$<span class="no">FST</span>
-<span class="co">#&gt;[1] 0.39603</span></pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="kw">assigner</span>::<span class="fu"><a href="../reference/fst_WC84.html">fst_WC84</a></span>(<span class="kw">data</span>) <span class="op">%$%</span> <span class="kw">fst.overall</span><span class="op">$</span><span class="kw">FST</span>
+<span class="co">#&gt;[1] 0.39603</span>
+</pre></div>
 <p>The look of the membership probabilities with <code>adegenet</code> dapc analysis would show something similar to this:</p>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/membership_dataset1.png"></p>
+<p><img src="membership_dataset1.png"></p>
 </div>
 </div>
 <div id="data-2-low-structure" class="section level1">
 <h1 class="hasAnchor">
 <a href="#data-2-low-structure" class="anchor"></a>Data 2: low structure</h1>
 <p>Let’s try the same analysis, but this time with a dataset with lower Fst. It’s a simulated dataset generated with <a href="https://thierrygosselin.github.io/grur/reference/simulate_rad.html">grur</a>. Details of the dataset are available using: <code><a href="../reference/data_assigner_sim_02.html">?assigner::data_assigner_sim_02</a></code>.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">data</span> <span class="kw">&lt;-</span> <span class="no">data_assigner_sim_02</span></pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit">
+<span class="kw">data</span> <span class="op">&lt;-</span> <span class="kw">data_assigner_sim_02</span>
+</pre></div>
 </div>
 <div id="analysis-using-thl-with-gsi_sim-1" class="section level1">
 <h1 class="hasAnchor">
 <a href="#analysis-using-thl-with-gsi_sim-1" class="anchor"></a>Analysis using THL with <code>gsi_sim</code>
 </h1>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">test3</span> <span class="kw">&lt;-</span> <span class="kw pkg">assigner</span><span class="kw ns">::</span><span class="fu"><a href="../reference/assignment_ngs.html">assignment_ngs</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">data</span>,
-  <span class="kw">assignment.analysis</span> <span class="kw">=</span> <span class="st">"gsi_sim"</span>,
-  <span class="kw">markers.sampling</span> <span class="kw">=</span> <span class="st">"ranked"</span>,
-  <span class="kw">thl</span> <span class="kw">=</span> <span class="fl">0.2</span>,
-  <span class="kw">iteration.method</span> <span class="kw">=</span> <span class="fl">5</span>,
-  <span class="kw">marker.number</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">300</span>, <span class="fl">400</span>, <span class="st">"all"</span>),
-  <span class="kw">subsample</span> <span class="kw">=</span> <span class="fl">30</span>,
-  <span class="kw">iteration.subsample</span> <span class="kw">=</span> <span class="fl">3</span>
-)</pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit">
+<span class="kw">test3</span> <span class="op">&lt;-</span> <span class="kw">assigner</span>::<span class="fu"><a href="../reference/assignment_ngs.html">assignment_ngs</a></span>(
+  data = <span class="kw">data</span>,
+  assignment.analysis = <span class="st">"gsi_sim"</span>,
+  markers.sampling = <span class="st">"ranked"</span>, 
+  thl = <span class="fl">0.2</span>,
+  iteration.method = <span class="fl">5</span>, 
+  marker.number = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">300</span>, <span class="fl">400</span>, <span class="st">"all"</span>),
+  subsample = <span class="fl">30</span>, 
+  iteration.subsample = <span class="fl">3</span>
+)
+</pre></div>
 <p>To view the figure:</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">test3</span>$<span class="no">plot.assignment</span> + <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">100</span>))
+<div class="sourceCode" id="cb16"><pre class="downlit">
+<span class="kw">test3</span><span class="op">$</span><span class="kw">plot.assignment</span> <span class="op">+</span> <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(limits = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">100</span>)) 
 <span class="co"># &lt;img src="assignment_thl_test3.png"&gt;: works</span>
 <span class="co">#![](assignment_thl_test3.png): works</span>
-<span class="co">#knitr::include_graphics("assignment_thl_test3.png"):works</span></pre></body></html></div>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assignment_thl_test3.png" width="282"></p>
+<span class="co">#knitr::include_graphics("assignment_thl_test3.png"):works</span>
+</pre></div>
+<p><img src="assignment_thl_test3.png" width="282"></p>
 <ul>
 <li>Very different overall results…</li>
 <li>For the assignment analysis of species exhibiting overall low structure, using more markers will, generally, help the assingnment (if the data is filtered correctly…)</li>
 </ul>
 <p>This is the overall Fst value:</p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="kw pkg">assigner</span><span class="kw ns">::</span><span class="fu"><a href="../reference/fst_WC84.html">fst_WC84</a></span>(<span class="no">data</span>) <span class="kw">%$%</span> <span class="no">fst.overall</span>$<span class="no">FST</span>
-<span class="co">#&gt;[1] 0.001320833</span></pre></body></html></div>
+<div class="sourceCode" id="cb17"><pre class="downlit">
+<span class="kw">assigner</span>::<span class="fu"><a href="../reference/fst_WC84.html">fst_WC84</a></span>(<span class="kw">data</span>) <span class="op">%$%</span> <span class="kw">fst.overall</span><span class="op">$</span><span class="kw">FST</span>
+<span class="co">#&gt;[1] 0.001320833</span>
+</pre></div>
 <p>This is the membership probabilities with <code>adegenet</code> dapc analysis:</p>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/membership_dataset2.png"></p>
+<p><img src="membership_dataset2.png"></p>
 <p>The populations are very admixed because of the high migration rate used during the simulations.</p>
 </div>
 <div id="analysis-using-loo-with-gsi_sim" class="section level1">
@@ -337,11 +371,12 @@
 <a href="#analysis-using-loo-with-gsi_sim" class="anchor"></a>Analysis using LOO with gsi_sim</h1>
 <p>Let’s try using the <em>Leave-One-Out</em> cross-validation technique with dataset2. With this method, there is no potential bias during marker selection, you can used all the markers with <code>marker.number = "all"</code> or a string of marker numbers like the example above, but here, there’s no point in using less markers randomly.</p>
 <p>The <em>Leave-One-Out</em> method means that the allele frequencies are calculated without the sample being assigned. This is repeated for each sample.</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">test4</span> <span class="kw">&lt;-</span> <span class="kw pkg">assigner</span><span class="kw ns">::</span><span class="fu"><a href="../reference/assignment_ngs.html">assignment_ngs</a></span>(
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">data</span>,
-  <span class="kw">assignment.analysis</span> <span class="kw">=</span> <span class="st">"gsi_sim"</span>,
-  <span class="kw">markers.sampling</span> <span class="kw">=</span> <span class="st">"random"</span>,
-  <span class="kw">marker.number</span> <span class="kw">=</span> <span class="st">"all"</span>
+<div class="sourceCode" id="cb18"><pre class="downlit">
+<span class="kw">test4</span> <span class="op">&lt;-</span> <span class="kw">assigner</span>::<span class="fu"><a href="../reference/assignment_ngs.html">assignment_ngs</a></span>(
+  data = <span class="kw">data</span>,
+  assignment.analysis = <span class="st">"gsi_sim"</span>,
+  markers.sampling = <span class="st">"random"</span>, 
+  marker.number = <span class="st">"all"</span>
 )
 <span class="co">#&gt; ################################################################################</span>
 <span class="co">#&gt; ########################## assigner::assignment_ngs ############################</span>
@@ -356,10 +391,13 @@
 <span class="co">#&gt; Starting parallel computations, for progress monitor activity in folder...</span>
 <span class="co">#&gt; Summarizing the assignment analysis results by iterations and marker group</span>
 <span class="co">#&gt; Compiling results</span>
-<span class="co">#&gt; ########################## assignment_ngs completed ############################</span></pre></body></html></div>
+<span class="co">#&gt; ########################## assignment_ngs completed ############################</span>
+</pre></div>
 <p>To view the figure:</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">test4</span>$<span class="no">plot.assignment</span> + <span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="kw">limits</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">100</span>))</pre></body></html></div>
-<p><img src="../../../../../Mobile%20Documents/com~apple~CloudDocs/r_packages/assigner/vignettes/assignment_loo_test4.png" width="329"></p>
+<div class="sourceCode" id="cb19"><pre class="downlit">
+<span class="kw">test4</span><span class="op">$</span><span class="kw">plot.assignment</span> <span class="op">+</span> <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(limits = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">100</span>)) 
+</pre></div>
+<p><img src="assignment_loo_test4.png" width="329"></p>
 <p>Conclusion: not much to gain here by using the LOO…</p>
 </div>
   </div>
@@ -379,7 +417,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

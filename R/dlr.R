@@ -54,9 +54,9 @@
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
 dlr <- function(
-  data, 
-  strata, 
-  plots = FALSE, 
+  data,
+  strata,
+  plots = FALSE,
   filename = NULL,
   parallel.core = parallel::detectCores() - 1
 ) {
@@ -64,17 +64,17 @@ dlr <- function(
   cat("########################### assigner::Dlr #############################\n")
   cat("#######################################################################\n")
   timing <- proc.time()
-  
+
   if (missing(data)) stop("GenoDive file missing")
   if (missing(strata)) stop("Strata file missing")
-  
+
   # import and modify the assignment file form GenoDive-------------------------
   message("Importing GenoDive assignment results")
   temp.file <- suppressWarnings(
     suppressMessages(
       readr::read_table(
-        file = data, 
-        col_names = FALSE, 
+        file = data,
+        col_names = FALSE,
         skip_empty_rows = FALSE
       )
     )
@@ -82,7 +82,7 @@ dlr <- function(
   max.lines = nrow(temp.file) - 1
   skip.number <- which(stringi::stri_detect_fixed(str = temp.file$X1,
                                                   pattern = "membership")) + 1
-  
+
   assignment <- suppressMessages(
     suppressWarnings(
       readr::read_delim(
@@ -99,38 +99,47 @@ dlr <- function(
         INDIVIDUALS = Individual, POP_ID = Current, INFERRED = Inferred,
         LIK_MAX = Lik_max, LIK_HOME = Lik_home, LIK_RATIO = Lik_ratio)
   )
-  
+
   temp.file <- skip.number <- NULL
-  
+
   message("Importing strata file")
   strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = "cc")
-  
+
   if (!rlang::has_name(strata.df, "POP_ID") && rlang::has_name(strata.df, "STRATA")) {
     strata.df %<>% dplyr::rename(POP_ID = STRATA)
   }
-  
-  
+
+  assignment$INDIVIDUALS <- radiator::clean_ind_names(assignment$INDIVIDUALS)
+  assignment$POP_ID <- radiator::clean_ind_names(assignment$POP_ID)
+  assignment$INFERRED <- radiator::clean_ind_names(assignment$INFERRED)
+
   # check that same number of individuals and pop...
   if (!identical(sort(assignment$INDIVIDUALS), sort(strata.df$INDIVIDUALS))) {
     stop("Assignment file and strata don't have the same individuals")
   }
-  
+
   assignment.pop <- ncol(assignment) - 6
   strata.pop <- dplyr::n_distinct(strata.df$POP_ID)
   if (assignment.pop != strata.pop) stop("Assignment file and strata don't have the same number of populations")
-  
+
   fixed.header <- c("INDIVIDUALS", "POP_ID", "INFERRED", "LIK_MAX", "LIK_HOME", "LIK_RATIO")
-  header.pop <- purrr::discard(.x = colnames(assignment), .p = colnames(assignment) %in% fixed.header)
-  
+
+  header.pop <- purrr::discard(.x = colnames(assignment), .p = colnames(assignment) %in% fixed.header) %>%
+    radiator::clean_ind_names(x = .)
+
+
   get.pop <- strata.df %>%
-    dplyr::filter(INDIVIDUALS %in% header.pop)
-  
+    dplyr::filter(INDIVIDUALS %in% header.pop) %>%
+    dplyr::mutate(INDIVIDUALS = factor(x = INDIVIDUALS, levels = header.pop)) %>%
+    dplyr::arrange(INDIVIDUALS)
+
   strata.df <- NULL
-  
+
   # Change header for the real pop names
-  colnames(assignment) <- stringi::stri_replace_all_fixed(
-    str = colnames(assignment), pattern = get.pop$INDIVIDUALS, replacement = get.pop$POP_ID, vectorize_all = FALSE)
-  
+  colnames(assignment) <- c(fixed.header, get.pop$POP_ID )
+
+
+
   # Change POP_ID and inferred for the real pop name
   assignment %<>%
     dplyr::mutate(
@@ -139,12 +148,12 @@ dlr <- function(
       INFERRED = stringi::stri_replace_all_fixed(
         str = INFERRED, pattern = get.pop$INDIVIDUALS, replacement = get.pop$POP_ID, vectorize_all = FALSE)
     )
-  
+
   # check if some columns are filled with NA.. (small sample size...)
-  pop.prob <- assignment %>% 
-    purrr::keep(~all(is.na(.x))) %>% 
+  pop.prob <- assignment %>%
+    purrr::keep(~all(is.na(.x))) %>%
     names
-  
+
   if (length(pop.prob) > 0) {
     message("Problem with sample size too low for: ", paste0(pop.prob, collapse = ", "))
     message("Removing problematic strata")
@@ -152,14 +161,14 @@ dlr <- function(
       dplyr::select(-dplyr::one_of(pop.prob))
     get.pop %<>% dplyr::filter(!POP_ID %in% pop.prob)
   }
-  
-  
-  
+
+
+
   # All combination of populations----------------------------------------------
   message("Calculating Dlr...")
   pop.pairwise <- utils::combn(unique(get.pop$POP_ID), 2)
   # pop.pairwise <- matrix(pop.pairwise, nrow = 2)
-  
+
   # Dlr for all pairwise populations--------------------------------------------
   dlr.all.pop <- as.numeric()
   for (i in 1:ncol(pop.pairwise)) {
@@ -170,14 +179,14 @@ dlr <- function(
   }
   dlr.all.pop <- as.numeric(dlr.all.pop)
   # pop.pairwise <- NULL
-  
+
   # Table with Dlr--------------------------------------------------------------
   names.pairwise <- utils::combn(unique(get.pop$POP_ID), 2, paste, collapse = '-')
-  
+
   dlr.table <- tibble::tibble(PAIRWISE_POP = names.pairwise, DLR = dlr.all.pop) %>%
     dplyr::mutate(DLR = round(as.numeric(DLR), 2))
-  
-  
+
+
   # Dist and Matrix-------------------------------------------------------------
   dlr.dist <- stats::dist(1:length(unique(get.pop$POP_ID)))
   dlr.dist.matrix <- dlr.all.pop
@@ -185,10 +194,10 @@ dlr <- function(
   dlr.dist.matrix <- as.matrix(dlr.dist.matrix)
   colnames(dlr.dist.matrix) <- rownames(dlr.dist.matrix) <- unique(get.pop$POP_ID)
   dlr.dist.matrix <- stats::as.dist(dlr.dist.matrix)
-  
+
   dlr.matrix <- tibble::as_tibble(x = as.matrix(dlr.dist.matrix), rownames = "POP")
   # get.pop <- NULL
-  
+
   # create list of results -----------------------------------------------------
   res <- list(
     assignment = assignment,
@@ -201,10 +210,10 @@ dlr <- function(
     # all combination of individual pair
     pop.pairwise <- utils::combn(unique(get.pop$POP_ID), 2, simplify = FALSE)
     # names(pop.pairwise) <- pop.pairwise
-    
+
     # get the number of pairwise comp.
     number.pairwise <- length(pop.pairwise)
-    
+
     message("Generating ", number.pairwise, " Dlr plots...")
 
     # dlr.plots <- list()
@@ -228,7 +237,7 @@ dlr <- function(
     #   plot.dpi = NULL
     # ) %>%
     #   purrr::flatten(.)
-    
+
     dlr.plots <- purrr::map(
       .x = pop.pairwise,
       .f = plot_dlr,
@@ -245,11 +254,11 @@ dlr <- function(
       plot.dpi = NULL
     ) %>%
     purrr::flatten(.)
-    
-    
+
+
     res$dlr.plots <- dlr.plots
   }#End Dlr plots
-  
+
   # Write file to working directory --------------------------------------------
   if (is.null(filename)) {
     message("Writing files to directory: no")
@@ -257,7 +266,7 @@ dlr <- function(
     # saving table
     filename.table <- stringi::stri_join(filename, "table.tsv", sep = ".")
     readr::write_tsv(dlr.table, filename.table)
-    
+
     # saving matrix
     filename.matrix <- stringi::stri_join(filename, "matrix.tsv", sep = ".")
     readr::write_tsv(dlr.matrix, filename.matrix)
@@ -359,31 +368,31 @@ plot_dlr <- function(
   plot.width = NULL,
   plot.height = NULL,
   plot.dpi = NULL) {
-  
+
   if (missing(data)) stop("GenoDive file missing")
   if (missing(pop.pairwise)) stop("Missing pop.pairwise argument")
-  
+
   # import data ----------------------------------------------------------------
   assignment.select <- dplyr::rename(data, Populations = POP_ID)
-  
+
   POPA <- pop.pairwise[1]
   POPB <- pop.pairwise[2]
-  
+
   # Check that POPA and POPB are found in the data
   if (!POPA %in% colnames(assignment.select)) stop("POPA value is not in the assignment file")
   if (!POPB %in% colnames(assignment.select)) stop("POPB value is not in the assignment file")
-  
-  
+
+
   pop.select <- c(POPA, POPB)
   fixed.header <- c("INDIVIDUALS", "Populations", "INFERRED", "LIK_MAX", "LIK_HOME", "LIK_RATIO")
-  
+
   dlr.plot.name <- stringi::stri_join("dlr_plot_pop_", stringi::stri_join(pop.select, collapse = "_"))
-  
+
   assignment.select <- suppressWarnings(
     assignment.select %>%
       dplyr::filter(Populations %in% pop.select) %>%
       dplyr::select(dplyr::one_of(c(fixed.header, pop.select))))
-  
+
   scale.temp <- suppressWarnings(
     unique(
       dplyr::select(assignment.select,
@@ -392,7 +401,7 @@ plot_dlr <- function(
     ))
   min.scale <- min(scale.temp)
   max.scale <- max(scale.temp)
-  
+
   assignment.plot  <- ggplot2::ggplot(assignment.select, ggplot2::aes_string(x = POPA, y = POPB)) +
     ggplot2::geom_point(ggplot2::aes(fill = Populations, shape = Populations), na.rm = TRUE, alpha = 0.8, size = 4) +
     ggplot2::geom_abline(slope = 1) +
@@ -407,36 +416,36 @@ plot_dlr <- function(
       legend.text = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"),
       strip.text.y = ggplot2::element_text(angle = 0, size = 10, family = "Helvetica", face = "bold")
     )
-  
+
   if (is.null(dlr)) {
     assignment.plot <- assignment.plot
   } else {
     assignment.plot <- assignment.plot + ggplot2::annotate("text", x = x.dlr, y = y.dlr,
                                                            label = dlr, colour = "black")
   }
-  
+
   if (is.null(fst)) {
     assignment.plot <- assignment.plot
   } else {
     assignment.plot <- assignment.plot + ggplot2::annotate("text", x = x.fst, y = y.fst,
                                                            label = fst, colour = "black")
   }
-  
+
   if (plot.dlr) {
-    filename <- stringi::stri_join(dlr.plot.name, ".png")  
+    filename <- stringi::stri_join(dlr.plot.name, ".png")
     message("File written: ", filename)
-    
+
     if (is.null(plot.width)) plot.width <- 20
     if (is.null(plot.height)) plot.height <- 20
     if (is.null(plot.dpi)) plot.dpi <- 300
-    
+
     ggplot2::ggsave(
-      filename = filename, 
+      filename = filename,
       plot = assignment.plot,
-      width = plot.width, 
+      width = plot.width,
       height = plot.height,
-      dpi = plot.dpi, 
-      units = "cm", 
+      dpi = plot.dpi,
+      units = "cm",
       device = "png",
       limitsize = FALSE
     )
