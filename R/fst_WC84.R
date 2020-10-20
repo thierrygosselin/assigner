@@ -350,7 +350,7 @@ fst_WC84 <- function(
 
   if (!rlang::has_name(input, "GT")) {
     input <- radiator::calibrate_alleles(
-      data =input,
+      data = input,
       parallel.core = parallel.core
     ) %$% input
   }
@@ -377,9 +377,7 @@ fst_WC84 <- function(
     input %<>% dplyr::rename(POP_ID = STRATA)
   }
 
-  if (is.null(pop.levels)) {
-    pop.levels <- unique(input$POP_ID)
-  }
+  if (is.null(pop.levels)) pop.levels <- unique(input$POP_ID)
 
   input %<>%
     dplyr::mutate(POP_ID = factor(x = POP_ID, levels = pop.levels)) %>%
@@ -416,7 +414,7 @@ fst_WC84 <- function(
     subsampling.individuals <- dplyr::bind_rows(subsample.list)
     readr::write_tsv(
       x = subsampling.individuals,
-      path = "assigner_fst_WC84_subsampling_individuals.tsv",
+      file = "assigner_fst_WC84_subsampling_individuals.tsv",
       col_names = TRUE,
       append = FALSE
     )
@@ -426,7 +424,7 @@ fst_WC84 <- function(
     if (!is.null(filename)) {
       readr::write_tsv(
         x = res$subsampling.individuals,
-        path = file.path(path.folder, "subsampling.individuals.tsv"))
+        file = file.path(path.folder, "subsampling.individuals.tsv"))
     }
   } # End subsampling
 
@@ -462,7 +460,7 @@ fst_WC84 <- function(
     if (!is.null(filename) && is.data.frame(res$sigma.loc)) {
       readr::write_tsv(
         x = res$sigma.loc,
-        path = file.path(path.folder, "sigma.loc.tsv"))
+        file = file.path(path.folder, "sigma.loc.tsv"))
     }
 
     # fst.markers
@@ -470,14 +468,14 @@ fst_WC84 <- function(
     if (!is.null(filename) && is.data.frame(res$fst.markers)) {
       readr::write_tsv(
         x = res$fst.markers,
-        path = file.path(path.folder, "fst.markers.tsv"))
+        file = file.path(path.folder, "fst.markers.tsv"))
     }
     # fst.ranked
     res$fst.ranked <- subsample.fst$fst.ranked
     if (!is.null(filename) && is.data.frame(res$fst.ranked)) {
       readr::write_tsv(
         x = res$fst.ranked,
-        path = file.path(path.folder, "fst.ranked.tsv"))
+        file = file.path(path.folder, "fst.ranked.tsv"))
     }
 
     # fst.overall
@@ -485,21 +483,21 @@ fst_WC84 <- function(
     if (!is.null(filename) && is.data.frame(res$fst.overall)) {
       readr::write_tsv(
         x = res$fst.overall,
-        path = file.path(path.folder, "fst.overall.tsv"))
+        file = file.path(path.folder, "fst.overall.tsv"))
     }
     # fis.markers
     res$fis.markers <- subsample.fst$fis.markers
     if (!is.null(filename) && is.data.frame(res$fis.markers)) {
       readr::write_tsv(
         x = res$fis.markers,
-        path = file.path(path.folder, "fis.markers.tsv"))
+        file = file.path(path.folder, "fis.markers.tsv"))
     }
     # fis.overall
     res$fis.overall <- subsample.fst$fis.overall
     if (!is.null(filename) && is.data.frame(res$fis.overall)) {
       readr::write_tsv(
         x = res$fis.overall,
-        path = file.path(path.folder, "fis.overall.tsv"))
+        file = file.path(path.folder, "fis.overall.tsv"))
     }
     # fst.plot
     res$fst.plot <- subsample.fst$fst.plot
@@ -517,7 +515,7 @@ fst_WC84 <- function(
     if (!is.null(filename) && is.data.frame(res$pairwise.fst)) {
       readr::write_tsv(
         x = res$pairwise.fst,
-        path = file.path(path.folder, "pairwise.fst.tsv"))
+        file = file.path(path.folder, "pairwise.fst.tsv"))
     }
     # pairwise.fst.upper.matrix
     res$pairwise.fst.upper.matrix <- subsample.fst$pairwise.fst.upper.mat
@@ -551,7 +549,7 @@ fst_WC84 <- function(
     if (!is.null(filename) && is.data.frame(res$sigma.loc.subsample)) {
       readr::write_tsv(
         x = dplyr::bind_rows(res$sigma.loc.subsample),
-        path = file.path(path.folder, "sigma.loc.tsv"))
+        file = file.path(path.folder, "sigma.loc.tsv"))
     }
 
     # fst.markers
@@ -572,14 +570,14 @@ fst_WC84 <- function(
     if (!is.null(filename) && is.data.frame(res$fst.markers.subsample)) {
       readr::write_tsv(
         x = res$fst.markers.subsample,
-        path = file.path(path.folder, "fst.markers.tsv"))
+        file = file.path(path.folder, "fst.markers.tsv"))
     }
     # fst.ranked
     res$fst.ranked.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fst.ranked"]])
     if (!is.null(filename) && is.data.frame(res$fst.ranked.subsample)) {
       readr::write_tsv(
         x = res$fst.ranked.subsample,
-        path = file.path(path.folder, "fst.ranked.tsv"))
+        file = file.path(path.folder, "fst.ranked.tsv"))
     }
     # fst.overall
     res$fst.overall.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fst.overall"]]) %>%
@@ -599,7 +597,7 @@ fst_WC84 <- function(
     if (!is.null(filename) && is.data.frame(res$fst.overall.subsample)) {
       readr::write_tsv(
         x = res$fst.overall.subsample,
-        path = file.path(path.folder, "fst.overall.tsv"))
+        file = file.path(path.folder, "fst.overall.tsv"))
     }
     # fis.markers
     res$fis.markers.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fis.markers"]]) %>%
@@ -618,7 +616,7 @@ fst_WC84 <- function(
     if (!is.null(filename) && is.data.frame(res$fis.markers.subsample)) {
       readr::write_tsv(
         x = res$fis.markers.subsample,
-        path = file.path(path.folder, "fis.markers.tsv"))
+        file = file.path(path.folder, "fis.markers.tsv"))
     }
     # fis.overall
     res$fis.overall.subsample <- dplyr::bind_rows(subsample.fst.transposed[["fis.overall"]]) %>%
@@ -637,7 +635,7 @@ fst_WC84 <- function(
     if (!is.null(filename) && is.data.frame(res$fis.overall.subsample)) {
       readr::write_tsv(
         x = res$fis.overall.subsample,
-        path = file.path(path.folder, "fis.overall.tsv"))
+        file = file.path(path.folder, "fis.overall.tsv"))
     }
 
     # fst.plot
@@ -655,7 +653,7 @@ fst_WC84 <- function(
     if (!is.null(filename) && is.data.frame(res$pairwise.fst.subsample.mean)) {
       readr::write_tsv(
         x = res$pairwise.fst.subsample.mean,
-        path = file.path(path.folder, "pairwise.fst.tsv"))
+        file = file.path(path.folder, "pairwise.fst.tsv"))
     }
     # pairwise.fst.upper.matrix
     res$pairwise.fst.upper.matrix.subsample <- subsample.fst.transposed[["pairwise.fst.upper.matrix"]]
@@ -806,14 +804,6 @@ compute_fst <- function(
     count.locus %<>% dplyr::select(-MARKERS...3, MARKERS = MARKERS...1)
   }
 
-  # count.locus.pop <- dplyr::count(x, POP_ID, MARKERS, name = "NIPL") %>%
-  #   dplyr::mutate(NIPL_SQ = NIPL ^ 2) %>%
-  #   dplyr::group_by(MARKERS) %>%
-  #   dplyr::summarise(NIPL_SQ_SUM = sum(NIPL_SQ, na.rm = TRUE)) %>%
-  #   dplyr::full_join(count.locus, by = "MARKERS") %>%
-  #   dplyr::mutate(NC = (NIL - NIPL_SQ_SUM / NIL) / (NPL - 1))#correction
-
-
   # faster:
   count.locus.pop <- suppressMessages(
     dplyr::bind_cols(
@@ -821,7 +811,7 @@ compute_fst <- function(
       dplyr::count(x, POP_ID, MARKERS, name = "NIPL") %>%
         dplyr::mutate(NIPL_SQ = NIPL ^ 2) %>%
         dplyr::group_by(MARKERS) %>%
-        dplyr::summarise(NIPL_SQ_SUM = sum(NIPL_SQ, na.rm = TRUE))
+        dplyr::summarise(NIPL_SQ_SUM = sum(NIPL_SQ, na.rm = TRUE), .groups = "drop")
     )
   )
   if (!identical(count.locus.pop$MARKERS...1, count.locus.pop$MARKERS...4)) {
@@ -904,8 +894,7 @@ compute_fst <- function(
   fst.stats.prep %<>%
     dplyr::select(-ALLELE_GROUP) %>%
     dplyr::group_by(MARKERS, POP_ID, ALLELES) %>%
-    dplyr::summarise(MHO = length(het[het == 1])) %>%
-    dplyr::ungroup(.) %>%
+    dplyr::summarise(MHO = length(het[het == 1]), .groups = "drop") %>%
     tidyr::complete(data = ., POP_ID, tidyr::nesting(MARKERS, ALLELES), fill = list(MHO = 0)) %>%
     dplyr::arrange(MARKERS, ALLELES, POP_ID) %>%
     dplyr::full_join(freq.alleles, by = c("POP_ID", "MARKERS", "ALLELES")) %>%
@@ -942,9 +931,9 @@ compute_fst <- function(
     dplyr::summarise(
       siga = mean(siga, na.rm = TRUE),
       sigb = mean(sigb, na.rm = TRUE),
-      sigw = mean(sigw, na.rm = TRUE)
-    ) %>%
-    dplyr::ungroup(.)
+      sigw = mean(sigw, na.rm = TRUE),
+      .groups = "drop"
+    )
   fst.stats.prep <- NULL
   # variance components per locus
   # lsiga: among populations
@@ -956,15 +945,16 @@ compute_fst <- function(
     dplyr::summarise(
       lsiga = round(sum(siga, na.rm = TRUE), digits),
       lsigb = round(sum(sigb, na.rm = TRUE), digits),
-      lsigw = round(sum(sigw, na.rm = TRUE), digits)
-    ) %>%
-    dplyr::ungroup(.)
+      lsigw = round(sum(sigw, na.rm = TRUE), digits),
+      .groups = "drop"
+    )
 
   fst.fis.markers <- sigma.loc %>%
     dplyr::group_by(MARKERS) %>%
     dplyr::summarise(
       FST = round(lsiga/(lsiga + lsigb + lsigw), digits),
-      FIS = round(lsigb/(lsigb + lsigw), digits)
+      FIS = round(lsigb/(lsigb + lsigw), digits),
+      .groups = "keep"
     ) %>%
     dplyr::mutate(FST = dplyr::if_else(FST < 0, true = 0, false = FST, missing = 0)) %>%
     dplyr::ungroup(.)
