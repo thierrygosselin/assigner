@@ -1,8 +1,8 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with RADseq Data
-Version: 0.5.7
-Date: 2020-01-21
+Version: 0.5.8
+Date: 2020-10-20
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
@@ -15,21 +15,24 @@ Depends:
     R (>= 3.5.0)
 Imports:
     adegenet,
+    data.table,
     dplyr (>= 1.0.0),
+    furrr (>= 0.2.0),
     magrittr,
     radiator,
-    pbmcapply,
     tidyverse
 Suggests:
     BiocManager,
+    carrier,
     devtools,
+    future,
     ggplot2,
     knitr,
     modelr,
     parallel,
     png,
     purrr,
-    readr,
+    readr (>= 1.4.0),
     rlang,
     rmarkdown,
     stats,
@@ -41,7 +44,8 @@ Remotes: thierrygosselin/radiator
 License: GPL-3
 LazyLoad: yes
 LazyData: true
-VignetteBuilder: knitr
+VignetteBuilder: 
+    knitr
 RoxygenNote: 7.1.1
-URL: http://thierrygosselin.github.io/assigner/, https://github.com/thierrygosselin/assigner
+URL: http://thierrygosselin.github.io/assigner/
 BugReports: https://github.com/thierrygosselin/assigner/issues

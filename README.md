@@ -7,11 +7,12 @@
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
-[![packageversion](https://img.shields.io/badge/Package%20version-0.5.7-orange.svg)](commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2020--10--20-brightgreen.svg)](/commits/master)
 [![minimal R
 version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.5.8-orange.svg)](commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2020--10--20-brightgreen.svg)](/commits/master)
+[![R-CMD-check](https://github.com/thierrygosselin/assigner/workflows/R-CMD-check/badge.svg)](https://github.com/thierrygosselin/assigner/actions)
+[![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 <!-- badges: end -->
 
 The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*.

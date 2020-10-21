@@ -1,3 +1,8 @@
+# assigner 0.5.8 2020-10-20
+
+* Version bump because it updates numerous packages: `tidyr`, `readr`, using `future`, `carrier`.
+* GitHub actions to run the **R-CMD-check** on the 3 OS.
+
 # assigner 0.5.7 2020-01-21
 
 * Bug fix in heatmap: digits was fixed to 5 and when pop.levels = NULL, 

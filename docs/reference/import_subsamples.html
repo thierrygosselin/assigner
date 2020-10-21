@@ -47,7 +47,7 @@
 
 
 <meta property="og:title" content="Import individual's assignment results of different subsample folder. — import_subsamples" />
-<meta property="og:description" content="This function will import all the individual's assignment results 
+<meta property="og:description" content="This function will import all the individual's assignment results
 of different subsample folder into R." />
 <meta property="og:image" content="/logo.png" />
 
@@ -81,7 +81,7 @@ of different subsample folder into R." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
       </span>
     </div>
 
@@ -156,11 +156,11 @@ of different subsample folder into R." />
     </div>
 
     <div class="ref-description">
-    <p>This function will import all the individual's assignment results 
+    <p>This function will import all the individual's assignment results
 of different subsample folder into R.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>import_subsamples</span>(<span class='kw'>dir.path</span>, imputations = <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>import_subsamples</span><span class='op'>(</span><span class='va'>dir.path</span>, imputations <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -171,7 +171,7 @@ of different subsample folder into R.</p>
     </tr>
     <tr>
       <th>imputations</th>
-      <td><p>(logical) Was the data imputed or not. 
+      <td><p>(logical) Was the data imputed or not.
 Default: <code>imputations = FALSE</code></p></td>
     </tr>
     </table>
@@ -184,12 +184,12 @@ Default: <code>imputations = FALSE</code></p></td>
     <p>Thierry Gosselin <a href='mailto:thierrygosselin@icloud.com'>thierrygosselin@icloud.com</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='kw'>subsamples.data</span> <span class='op'>&lt;-</span> <span class='fu'>import_subsamples</span>(
-dir.path = <span class='st'>"assignment_analysis_method_random_imputations_rf_populations"</span>,
-imputations = <span class='fl'>TRUE</span>
-)
-}
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>subsamples.data</span> <span class='op'>&lt;-</span> <span class='fu'>import_subsamples</span><span class='op'>(</span>
+dir.path <span class='op'>=</span> <span class='st'>"assignment_analysis_method_random_imputations_rf_populations"</span>,
+imputations <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span>
+<span class='op'>}</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

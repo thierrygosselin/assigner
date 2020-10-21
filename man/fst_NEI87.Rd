@@ -23,33 +23,33 @@ fst_NEI87(
 )
 }
 \arguments{
-\item{data}{A file in the working directory or object in the global environment 
+\item{data}{A file in the working directory or object in the global environment
 in wide or long (tidy) formats. To import, the function uses internally
-\href{https://github.com/thierrygosselin/radiator}{radiator} 
+\href{https://github.com/thierrygosselin/radiator}{radiator}
 \code{\link[radiator]{tidy_wide}}. See details for more info.
 
 \emph{How to get a tidy data frame ?}
-\href{https://github.com/thierrygosselin/radiator}{radiator} 
-\code{\link[radiator]{tidy_genomic_data}} can transform 11 genomic data formats 
+\href{https://github.com/thierrygosselin/radiator}{radiator}
+\code{\link[radiator]{tidy_genomic_data}} can transform 11 genomic data formats
 in a tidy data frame (VCF, PLINK, genind, genlight, gtypes, genepop,
-stacks haplotype file, hierfstat, ...). 
+stacks haplotype file, hierfstat, ...).
 You can also use this function to filter your dataset using
 whitelist of markers, blacklist of individuals and genotypes.}
 
-\item{pop.levels}{(optional, string) This refers to the levels in a factor. In this 
+\item{pop.levels}{(optional, string) This refers to the levels in a factor. In this
 case, the id of the pop.
-Use this argument to have the pop ordered your way instead of the default 
-alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")} 
-instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}. 
+Use this argument to have the pop ordered your way instead of the default
+alphabetical or numerical order. e.g. \code{pop.levels = c("QUE", "ONT", "ALB")}
+instead of the default \code{pop.levels = c("ALB", "ONT", "QUE")}.
 Default: \code{pop.levels = NULL}.}
 
 \item{pop.labels}{(optional, string) Use this argument to rename/relabel
-your pop or combine your pop. e.g. To combine \code{"QUE"} and \code{"ONT"} 
+your pop or combine your pop. e.g. To combine \code{"QUE"} and \code{"ONT"}
 into a new pop called \code{"NEW"}:
-(1) First, define the levels for your pop with \code{pop.levels} argument: 
-\code{pop.levels = c("QUE", "ONT", "ALB")}. 
-(2) then, use \code{pop.labels} argument: 
-\code{pop.levels = c("NEW", "NEW", "ALB")}.#' 
+(1) First, define the levels for your pop with \code{pop.levels} argument:
+\code{pop.levels = c("QUE", "ONT", "ALB")}.
+(2) then, use \code{pop.labels} argument:
+\code{pop.levels = c("NEW", "NEW", "ALB")}.#'
 To rename \code{"QUE"} to \code{"TAS"}:
 \code{pop.labels = c("TAS", "ONT", "ALB")}.
 Default: \code{pop.labels = NULL}. If you find this too complicated, there is also the
@@ -58,51 +58,51 @@ Default: \code{pop.labels = NULL}. If you find this too complicated, there is al
 \item{strata}{(optional) A tab delimited file with 2 columns with header:
 \code{INDIVIDUALS} and \code{STRATA}.
 If a \code{strata} file is specified, the strata file will have
-precedence over any grouping found input file (\code{data}). 
+precedence over any grouping found input file (\code{data}).
 The \code{STRATA} column can be any hierarchical grouping.
 Default: \code{strata = NULL}.}
 
-\item{holdout.samples}{(optional) Samples that don't participate in the Fst 
+\item{holdout.samples}{(optional) Samples that don't participate in the Fst
 computation (supplementary). Data frame with one column \code{INDIVIDUALS}.
 Default: \code{holdout.samples = NULL}.}
 
-\item{pairwise}{(logical, optional) With \code{pairwise = TRUE}, the 
-pairwise NEI87 Fst is calculated between populations. 
+\item{pairwise}{(logical, optional) With \code{pairwise = TRUE}, the
+pairwise NEI87 Fst is calculated between populations.
 Default: \code{pairwise = FALSE}.}
 
-\item{ci}{(logical, optional) Compute bootstrapped confidence intervals. 
+\item{ci}{(logical, optional) Compute bootstrapped confidence intervals.
 Default: \code{ci = FALSE}.}
 
-\item{iteration.ci}{(integer, optional) The number of iterations for 
-the boostraps (resampling with replacement of markers). 
+\item{iteration.ci}{(integer, optional) The number of iterations for
+the boostraps (resampling with replacement of markers).
 Default: \code{iteration.ci = 100}.}
 
-\item{quantiles.ci}{(double, optional) 
-The quantiles for the bootstrapped confidence intervals. 
+\item{quantiles.ci}{(double, optional)
+The quantiles for the bootstrapped confidence intervals.
 Default: \code{quantiles.ci = c(0.025,0.975)}.}
 
-\item{subsample}{(Integer or character) 
+\item{subsample}{(Integer or character)
 With \code{subsample = 36}, 36 individuals in each populations are chosen
-randomly to represent the dataset. With \code{subsample = "min"}, the 
+randomly to represent the dataset. With \code{subsample = "min"}, the
 minimum number of individual/population found in the data is used automatically.
 Default is no subsampling, \code{subsample = NULL}.}
 
-\item{iteration.subsample}{(Integer) The number of iterations to repeat 
+\item{iteration.subsample}{(Integer) The number of iterations to repeat
 subsampling.
 With \code{subsample = 20} and \code{iteration.subsample = 10},
 20 individuals/populations will be randomly chosen 10 times.
 Default: \code{iteration.subsample = 1}.}
 
-\item{digits}{(optional, integer) The number of decimal places to be used in 
+\item{digits}{(optional, integer) The number of decimal places to be used in
 results.
 Default: \code{digits = 9}.}
 
-\item{parallel.core}{(optional) The number of core for parallel computation 
-of pairwise Fst. 
+\item{parallel.core}{(optional) The number of core for parallel computation
+of pairwise Fst.
 If not selected \code{detectCores() - 1} is used as default.}
 
-\item{verbose}{(logical, optional) \code{verbose = TRUE} to be chatty 
-during execution. 
+\item{verbose}{(logical, optional) \code{verbose = TRUE} to be chatty
+during execution.
 Default: \code{verbose = FALSE}.}
 
 \item{...}{other parameters passed to the function.}
@@ -129,50 +129,50 @@ When sumsample is selected the objects end with \code{.subsample}.
 }
 }
 \description{
-The function calculates for diploid genomes the classic Nei's Gst (1987), 
-Nei's G'st (prime), that comes with a correction for the bias that stems 
+The function calculates for diploid genomes the classic Nei's Gst (1987),
+Nei's G'st (prime), that comes with a correction for the bias that stems
 from sampling a limited number of populations. Also calculated is Jost's D,
 an index of population differentiation that is independent of the amount of
-within-population diversity (Jost, 2008). 
-Both overall and pairwise Fst can be estimated with 
-confidence intervals based on bootstrap of markers (resampling with replacement). 
-The function should give identical results \emph{at the 4th decimal} when tested 
-against \code{genet.dist} in \code{hierfstat} and with 
-the Fst computed in \code{Calculate Distances} or 
+within-population diversity (Jost, 2008).
+Both overall and pairwise Fst can be estimated with
+confidence intervals based on bootstrap of markers (resampling with replacement).
+The function should give identical results \emph{at the 4th decimal} when tested
+against \code{genet.dist} in \code{hierfstat} and with
+the Fst computed in \code{Calculate Distances} or
 \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}.
-The fastest computation is still 
-\href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}, 
-but here, the R solution computes confidence intervals and it's very fast. 
+The fastest computation is still
+\href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive},
+but here, the R solution computes confidence intervals and it's very fast.
 The computations takes advantage of \pkg{tidyverse} packages and \pkg{parallel}.
-The impact of unbalanced design on estimates can be tested by using the 
+The impact of unbalanced design on estimates can be tested by using the
 subsample argument.
 
 \emph{Special concerns for genome-wide estimate and filtering bias}
 
-During computation, the function first starts by keeping only the polymorphic 
-markers in common between the populations. Keep this in mind when filtering 
-your markers to use this function characteristic strategically to get 
-better genome-wide estimate. This is even more important when your project 
-involves more than 2 populations that evolved more by neutral processes 
+During computation, the function first starts by keeping only the polymorphic
+markers in common between the populations. Keep this in mind when filtering
+your markers to use this function characteristic strategically to get
+better genome-wide estimate. This is even more important when your project
+involves more than 2 populations that evolved more by neutral processes
 (e.g. genetic drift) than by natural selection (see the vignette for more details).
 }
 \details{
 \strong{Input data:}
- 
-To discriminate the long from the wide format, 
-the function \pkg{radiator} \code{\link[radiator]{tidy_wide}} searches 
+
+To discriminate the long from the wide format,
+the function \pkg{radiator} \code{\link[radiator]{tidy_wide}} searches
 for \code{MARKERS or LOCUS} in column names (TRUE = long format).
 The data frame is tab delimitted.
 \strong{Wide format:}
 The wide format cannot store metadata info.
-The wide format starts with these 2 id columns: 
-\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals), 
+The wide format starts with these 2 id columns:
+\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals),
 the remaining columns are the markers in separate columns storing genotypes.
 
 \strong{Long/Tidy format:}
-The long format is considered to be a tidy data frame and can store metadata info. 
+The long format is considered to be a tidy data frame and can store metadata info.
 (e.g. from a VCF see \pkg{radiator} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
-are required in the long format: \code{INDIVIDUALS}, \code{POP_ID}, 
+are required in the long format: \code{INDIVIDUALS}, \code{POP_ID},
 \code{MARKERS or LOCUS} and \code{GENOTYPE or GT}. The rest are considered metata info.
 
 \strong{2 genotypes formats are available:}
@@ -181,30 +181,30 @@ are required in the long format: \code{INDIVIDUALS}, \code{POP_ID},
 The separator can be any of these: \code{"/", ":", "_", "-", "."}.
 
 \emph{How to get a tidy data frame ?}
-\pkg{radiator} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats 
+\pkg{radiator} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats
 in a tidy data frame.
 }
 \note{
-\strong{Negative Fst} are technical artifact of the computation 
-(see Roesti el al. 2012) and are automatically replaced with zero inside 
+\strong{Negative Fst} are technical artifact of the computation
+(see Roesti el al. 2012) and are automatically replaced with zero inside
 this function.
 
 \strong{Why no p-values ?}
 
 There is no null hypothesis testing with \emph{P}-values.
-Confidence intervals provided with the \emph{F}-statistics 
+Confidence intervals provided with the \emph{F}-statistics
 enables more reliable conclusions about the biological trends in the data.
 }
 \examples{
 \dontrun{
 wombat.fst.pairwise <- fst_NEI87(
-data = "wombat.filtered.tidy.tsv", 
-sep = "/", 
+data = "wombat.filtered.tidy.tsv",
+sep = "/",
 pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
 holdout.samples = NULL,
 pairwise = TRUE,
-ci = TRUE, 
-iteration.ci = 10000, 
+ci = TRUE,
+iteration.ci = 10000,
 quantiles.ci = c(0.025,0.975),
 parallel.core = 8,
 verbose = TRUE
@@ -224,12 +224,12 @@ pairwise.fst.ci.df <- data.frame(pairwise.fst.ci.matrix) \%>\% add_rownames("POP
 Nei M. (1987) Molecular Evolutionary Genetics.
 Columbia University Press
 
-Meirmans PG, Van Tienderen PH (2004) genotype and genodive: 
-two programs for the analysis of genetic diversity of asexual organisms. 
+Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
+two programs for the analysis of genetic diversity of asexual organisms.
 Molecular Ecology Notes, 4, 792-794.
 
 Roesti M, Salzburger W, Berner D. (2012)
-Uninformative polymorphisms bias genome scans for signatures of selection. 
+Uninformative polymorphisms bias genome scans for signatures of selection.
 BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x
 
 Jost L. (2008)
@@ -238,9 +238,9 @@ Molecular Ecology. 17: 4015-4026.
 }
 \seealso{
 From \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive} manual:
-\emph{'In general, rather than to test differentiation between all pairs of 
+\emph{'In general, rather than to test differentiation between all pairs of
 populations,
-it is adviseable to perform an overall test of population differentiation, 
+it is adviseable to perform an overall test of population differentiation,
 possibly using a hierarchical population structure, (see AMOVA)'}
 
 To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
@@ -249,10 +249,10 @@ To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/Ge
 
 Link for \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
 
-For Fisher's exact test and p-values per markers 
+For Fisher's exact test and p-values per markers
 see \code{mmod} \code{diff_test}.
 
-\code{\link[radiator]{tidy_genomic_data}} to transform numerous genomic data 
+\code{\link[radiator]{tidy_genomic_data}} to transform numerous genomic data
 format in tidy data frames.
 }
 \author{

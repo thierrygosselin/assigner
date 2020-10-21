@@ -314,8 +314,7 @@ dlr_relative <- function(data, pop1, pop2){
       )
     ) %>%
     dplyr::group_by(POP_ID) %>%
-    dplyr::summarise(DLR_RELATIVE = (sum(RATIO) / length(RATIO) ^ 2)) %>%
-    dplyr::ungroup(.) %>%
+    dplyr::summarise(DLR_RELATIVE = (sum(RATIO) / length(RATIO) ^ 2), .groups = "drop") %>%
     dplyr::summarise(DLR_RELATIVE = sum(DLR_RELATIVE) / 2)
   return(dlr)
 }#End dlr_relative

@@ -9,14 +9,14 @@ import_subsamples(dir.path, imputations = FALSE)
 \arguments{
 \item{dir.path}{The path to the directory containing the subsample folders.}
 
-\item{imputations}{(logical) Was the data imputed or not. 
+\item{imputations}{(logical) Was the data imputed or not.
 Default: \code{imputations = FALSE}}
 }
 \value{
 A data frame of all the individual's assignment, with iterations and subsample.
 }
 \description{
-This function will import all the individual's assignment results 
+This function will import all the individual's assignment results
 of different subsample folder into R.
 }
 \examples{

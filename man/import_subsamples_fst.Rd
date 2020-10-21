@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{import_subsamples_fst}
 \alias{import_subsamples_fst}
-\title{Import the fst ranking from all the subsample runs inside 
+\title{Import the fst ranking from all the subsample runs inside
 an assignment folder.}
 \usage{
 import_subsamples_fst(dir.path)
@@ -14,7 +14,7 @@ import_subsamples_fst(dir.path)
 A data frame of all the Fst and ranking.
 }
 \description{
-This function will import all the fst ranking from all the 
+This function will import all the fst ranking from all the
 subsample runs inside an assignment folder.
 }
 \examples{

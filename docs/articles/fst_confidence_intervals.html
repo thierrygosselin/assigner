@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
       <h1 data-toc-skip>Pairwise and overall Fst with confidence intervals + building phylogenetic tree</h1>
                         <h4 class="author">Thierry Gosselin</h4>
             
-            <h4 class="date">2020-09-24</h4>
+            <h4 class="date">2020-10-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/thierrygosselin/assigner/blob/master/vignettes/fst_confidence_intervals.Rmd"><code>vignettes/fst_confidence_intervals.Rmd</code></a></small>
       <div class="hidden name"><code>fst_confidence_intervals.Rmd</code></div>
@@ -136,7 +136,7 @@
 <h1 class="hasAnchor">
 <a href="#special-concerns-for-genome-wide-estimate-and-filtering-bias" class="anchor"></a>Special concerns for genome-wide estimate and filtering bias</h1>
 <p>During computation, the function first starts by keeping only the polymorphic markers in common between the populations.</p>
-<p>When your project involves &gt; 2 populations that evolved more by neutral processes (e.g. genetic drift) than by natural selection, filtering to keep only the markers in common between your populations will drastically reduce the number of markers, and consequently your genome coverage for the estimate. Strategically, you should reduce the threshold of number of populations required to keep a marker (e.g. use a minimum of 2 populations genotyped for the markers to keep it). This is easily tested with <code><a href="https://rdrr.io/pkg/radiator/man/filter_common_markers.html">radiator::filter_common_markers</a></code> or in stacks population module.</p>
+<p>When your project involves &gt; 2 populations that evolved more by neutral processes (e.g. genetic drift) than by natural selection, filtering to keep only the markers in common between your populations will drastically reduce the number of markers, and consequently your genome coverage for the estimate. Strategically, you should reduce the threshold of number of populations required to keep a marker (e.g. use a minimum of 2 populations genotyped for the markers to keep it). This is easily tested with <code><a href="https://thierrygosselin.github.io/radiator/reference/filter_common_markers.html">radiator::filter_common_markers</a></code> or in stacks population module.</p>
 <p>The overall fst and fis estimates will have reduce genome-wide coverage, because the computation is conducted with shared markers accross all your populations. However, for the pairwise comparisons, the markers will be tallied automatically for the pair. This usually results in more legitimate markers (i.e. less filtering bias) being used during computation, providing better genome-wide estimates for that pair.</p>
 </div>
 <div id="workflow" class="section level1">
@@ -149,36 +149,32 @@
 <li>Clean your desk and remove the clutter in the global environment</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span>(list=<span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span>())
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></pre></div>
 <ol style="list-style-type: decimal">
 <li>Required libraries</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"pak"</span>)) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"pak"</span>)
-<span class="kw">pak</span>::<span class="fu">pkg_install</span>(<span class="st">"thierrygosselin/assigner"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="http://thierrygosselin.github.io/assigner">assigner</a></span>)
-</pre></div>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span>
+<span class="fu">pak</span><span class="fu">::</span><span class="fu">pkg_install</span><span class="op">(</span><span class="st">"thierrygosselin/assigner"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://thierrygosselin.github.io/assigner/">assigner</a></span><span class="op">)</span></pre></div>
 <ol style="list-style-type: decimal">
 <li>Get the data:</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">data.fst</span> <span class="op">&lt;-</span> <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(file = <span class="st">"https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz"</span>)
-</pre></div>
+<span class="va">data.fst</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/thierrygosselin/package_data/master/assigner_data_fst.tsv.gz"</span><span class="op">)</span></pre></div>
 </div>
 <div id="fst-calculations" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fst-calculations" class="anchor"></a>Fst calculations</h2>
 <p><code><a href="../reference/fst_WC84.html">assigner::fst_WC84</a></code> first run: overall and pairwise, but without boostrap (i.e. no confidence intervals). Get the function documentation with: <code>??assigner::fst_WC84</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="kw">fst</span> <span class="op">&lt;-</span> <span class="kw">assigner</span>::<span class="fu"><a href="../reference/fst_WC84.html">fst_WC84</a></span>(
-    data = <span class="kw">data.fst</span>, 
-    pop.levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),
-    pairwise = <span class="fl">TRUE</span>,
-    filename = <span class="st">"testing_fst"</span>, <span class="co">#will trigger the function to write the results in directory as well</span>
-    verbose = <span class="fl">TRUE</span>
-)
-</pre></div>
+<span class="va">fst</span> <span class="op">&lt;-</span> <span class="fu">assigner</span><span class="fu">::</span><span class="fu"><a href="../reference/fst_WC84.html">fst_WC84</a></span><span class="op">(</span>
+    data <span class="op">=</span> <span class="va">data.fst</span>, 
+    pop.levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span><span class="op">)</span>,
+    pairwise <span class="op">=</span> <span class="cn">TRUE</span>,
+    filename <span class="op">=</span> <span class="st">"testing_fst"</span>, <span class="co">#will trigger the function to write the results in directory as well</span>
+    verbose <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span></pre></div>
 </div>
 <div id="results" class="section level2">
 <h2 class="hasAnchor">
@@ -188,8 +184,7 @@
 <li>To view the content of <code>fst</code>:</li>
 </ol>
 <div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">fst</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">fst</span><span class="op">)</span></pre></div>
 <ol style="list-style-type: decimal">
 <li>Get access to specific content with <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code>:
 <ul>
@@ -209,8 +204,7 @@
 <li>To view the pairwise Fst values in a tibble with 4 columns:</li>
 </ol>
 <div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="kw">df</span> <span class="op">&lt;-</span> <span class="kw">fst</span><span class="op">$</span><span class="kw">pairwise.fst</span>
-</pre></div>
+<span class="va">df</span> <span class="op">&lt;-</span> <span class="va">fst</span><span class="op">$</span><span class="va">pairwise.fst</span></pre></div>
 <ol style="list-style-type: decimal">
 <li>
 <p>The first 10 parwise comparisons in <code>df</code></p>
@@ -290,10 +284,9 @@
 </ol>
 <div class="sourceCode" id="cb7"><pre class="downlit">
 <span class="co"># to see as a tibble:</span>
-<span class="kw">fst.matrix</span> <span class="op">&lt;-</span> <span class="kw">tibble</span>::<span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(<span class="kw">fst</span><span class="op">$</span><span class="kw">pairwise.fst.full.matrix</span>, rownames = <span class="st">"POP"</span>)
+<span class="va">fst.matrix</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">fst</span><span class="op">$</span><span class="va">pairwise.fst.full.matrix</span>, rownames <span class="op">=</span> <span class="st">"POP"</span><span class="op">)</span>
 <span class="co"># to keep matrix:</span>
-<span class="kw">fst.matrix</span> <span class="op">&lt;-</span> <span class="kw">fst</span><span class="op">$</span><span class="kw">pairwise.fst.full.matrix</span>
-</pre></div>
+<span class="va">fst.matrix</span> <span class="op">&lt;-</span> <span class="va">fst</span><span class="op">$</span><span class="va">pairwise.fst.full.matrix</span></pre></div>
 <ol style="list-style-type: decimal">
 <li>If you try to get the <code>pairwise.fst.ci.matrix</code>:</li>
 </ol>
@@ -303,35 +296,32 @@
 <li>So let’s make another run with <code>fst_WC84</code>, but this time will ask for the confidence intervals and the heatmap:</li>
 </ol>
 <div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="kw">fst.ci</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fst_WC84.html">fst_WC84</a></span>(data = <span class="kw">data.fst</span>, 
-    pop.levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span>),
-    pairwise = <span class="fl">TRUE</span>,
-    ci = <span class="fl">TRUE</span>, 
-    iteration.ci = <span class="fl">100</span>,
-    quantiles.ci = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>),
-    parallel.core = <span class="fl">12</span>,
-    heatmap.fst = <span class="fl">TRUE</span>,
-    filename = <span class="st">"testing_fst"</span>,
-    verbose = <span class="fl">TRUE</span>
-)
-</pre></div>
+<span class="va">fst.ci</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fst_WC84.html">fst_WC84</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data.fst</span>, 
+    pop.levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pop1"</span>, <span class="st">"pop2"</span>, <span class="st">"pop3"</span>, <span class="st">"pop4"</span>, <span class="st">"pop5"</span>, <span class="st">"pop6"</span>, <span class="st">"pop7"</span>, <span class="st">"pop8"</span>, <span class="st">"pop9"</span>, <span class="st">"pop10"</span>, <span class="st">"pop11"</span><span class="op">)</span>,
+    pairwise <span class="op">=</span> <span class="cn">TRUE</span>,
+    ci <span class="op">=</span> <span class="cn">TRUE</span>, 
+    iteration.ci <span class="op">=</span> <span class="fl">100</span>,
+    quantiles.ci <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span>,
+    parallel.core <span class="op">=</span> <span class="fl">12</span>,
+    heatmap.fst <span class="op">=</span> <span class="cn">TRUE</span>,
+    filename <span class="op">=</span> <span class="st">"testing_fst"</span>,
+    verbose <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span></pre></div>
 <pre><code>`fst.ci$pairwise.fst` is the tibble with the Fst values and now with the confidence intervals.</code></pre>
 <ol style="list-style-type: decimal">
 <li>Try again to get the matrix with fst and ci:</li>
 </ol>
 <div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="kw">fst.ci</span><span class="op">$</span><span class="kw">pairwise.fst.ci.matrix</span>
-</pre></div>
+<span class="va">fst.ci</span><span class="op">$</span><span class="va">pairwise.fst.ci.matrix</span></pre></div>
 <ol style="list-style-type: decimal">
 <li>To have this in a handy table for publication, we will create a new object <code>pairwise.fst.ci.df</code>:</li>
 </ol>
 <div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="kw">pairwise.fst.ci.df</span> <span class="op">&lt;-</span> <span class="kw">tibble</span>::<span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(<span class="kw">fst.ci</span><span class="op">$</span><span class="kw">pairwise.fst.ci.matrix</span>, rownames = <span class="st">"POP"</span>)
+<span class="va">pairwise.fst.ci.df</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">fst.ci</span><span class="op">$</span><span class="va">pairwise.fst.ci.matrix</span>, rownames <span class="op">=</span> <span class="st">"POP"</span><span class="op">)</span>
 <span class="co"># if you have numeric pop_id identifier you might have to do this to get proper column names:</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="kw">pairwise.fst.ci.df</span>) <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="kw">fst.ci</span><span class="op">$</span><span class="kw">pairwise.fst.ci.matrix</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">pairwise.fst.ci.df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">fst.ci</span><span class="op">$</span><span class="va">pairwise.fst.ci.matrix</span><span class="op">)</span>
 <span class="co"># to save:</span>
-<span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_tsv</a></span>(x = <span class="kw">pairwise.fst.ci.df</span>, path = <span class="st">"pairwise.fst.ci.df.tsv"</span>)
-</pre></div>
+<span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_tsv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">pairwise.fst.ci.df</span>, path <span class="op">=</span> <span class="st">"pairwise.fst.ci.df.tsv"</span><span class="op">)</span></pre></div>
 <ol style="list-style-type: decimal">
 <li>Or even better, use the heatmap of Fst and CI values…:
 <center>
@@ -349,61 +339,57 @@
 </ol>
 <div class="sourceCode" id="cb13"><pre class="downlit">
 <span class="co"># build the tree:</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="kw"><a href="http://ape-package.ird.fr">ape</a></span>)
-<span class="kw">tree</span> <span class="op">&lt;-</span> <span class="kw">ape</span>::<span class="fu"><a href="https://rdrr.io/pkg/ape/man/nj.html">nj</a></span>(X = <span class="kw">fst.matrix</span>) <span class="co"># fst.matrix as a matrix</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://ape-package.ird.fr/">ape</a></span><span class="op">)</span>
+<span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu">ape</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/nj.html">nj</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">fst.matrix</span><span class="op">)</span> <span class="co"># fst.matrix as a matrix</span>
 <span class="co"># for annotating bootstraps values on the tree:</span>
-<span class="kw">bootstrap.value</span> <span class="op">&lt;-</span> <span class="kw">ape</span>::<span class="fu"><a href="https://rdrr.io/pkg/ape/man/boot.phylo.html">boot.phylo</a></span>(
-    phy = <span class="kw">tree</span>, 
-    x = <span class="kw">fst.matrix</span>, 
-    FUN = <span class="fu">function</span>(<span class="kw">x</span>) <span class="kw">ape</span>::<span class="fu"><a href="https://rdrr.io/pkg/ape/man/nj.html">nj</a></span>(<span class="kw">x</span>), 
-    block = <span class="fl">1</span>, 
-    B = <span class="fl">10000</span>, 
-    trees = <span class="fl">FALSE</span>, 
-    rooted = <span class="fl">FALSE</span>
-    )
+<span class="va">bootstrap.value</span> <span class="op">&lt;-</span> <span class="fu">ape</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/boot.phylo.html">boot.phylo</a></span><span class="op">(</span>
+    phy <span class="op">=</span> <span class="va">tree</span>, 
+    x <span class="op">=</span> <span class="va">fst.matrix</span>, 
+    FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">ape</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/nj.html">nj</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, 
+    block <span class="op">=</span> <span class="fl">1</span>, 
+    B <span class="op">=</span> <span class="fl">10000</span>, 
+    trees <span class="op">=</span> <span class="cn">FALSE</span>, 
+    rooted <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span>
  <span class="co"># to get percentage values</span>
-<span class="kw">bootstrap.value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span>((<span class="kw">bootstrap.value</span><span class="op">/</span><span class="fl">10000</span>)<span class="op">*</span><span class="fl">100</span>, <span class="fl">0</span>)
-<span class="kw">bootstrap.value</span>
+<span class="va">bootstrap.value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">bootstrap.value</span><span class="op">/</span><span class="fl">10000</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span>, <span class="fl">0</span><span class="op">)</span>
+<span class="va">bootstrap.value</span>
 <span class="co"># to include in the tree</span>
-<span class="kw">tree</span><span class="op">$</span><span class="kw">node.label</span> <span class="op">&lt;-</span> <span class="kw">bootstrap.value</span> 
-</pre></div>
+<span class="va">tree</span><span class="op">$</span><span class="va">node.label</span> <span class="op">&lt;-</span> <span class="va">bootstrap.value</span> </pre></div>
 <ol style="list-style-type: decimal">
 <li>For a UPGMA tree:</li>
 </ol>
 <div class="sourceCode" id="cb14"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="kw">stats</span>)
-<span class="kw">tree</span> <span class="op">&lt;-</span> <span class="kw">ape</span>::<span class="fu"><a href="https://rdrr.io/pkg/ape/man/as.phylo.html">as.phylo</a></span>(<span class="kw">stats</span>::<span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span>(<span class="kw">stats</span>::<span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span>(<span class="kw">fst.matrix</span>), method = <span class="st">"average"</span>))
-<span class="kw">bootstrap.value</span> <span class="op">&lt;-</span> <span class="kw">ape</span>::<span class="fu"><a href="https://rdrr.io/pkg/ape/man/boot.phylo.html">boot.phylo</a></span>(phy = <span class="kw">tree</span>, x = <span class="kw">fst.matrix</span>, FUN = <span class="fu">function</span>(<span class="kw">xx</span>) <span class="kw">ape</span>::<span class="fu"><a href="https://rdrr.io/pkg/ape/man/as.phylo.html">as.phylo</a></span>(<span class="kw">stats</span>::<span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span>(<span class="kw">stats</span>::<span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span>(<span class="kw">xx</span>), method = <span class="st">"average"</span>)) , block = <span class="fl">1</span>, B = <span class="fl">10000</span>, trees = <span class="fl">FALSE</span>, rooted = <span class="fl">TRUE</span>) 
-<span class="kw">bootstrap.value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span>((<span class="kw">bootstrap.value</span><span class="op">/</span><span class="fl">10000</span>)<span class="op">*</span><span class="fl">100</span>, <span class="fl">0</span>)
-<span class="kw">bootstrap.value</span>
-<span class="kw">tree</span><span class="op">$</span><span class="kw">node.label</span> <span class="op">&lt;-</span> <span class="kw">bootstrap.value</span>
-</pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">stats</span><span class="op">)</span>
+<span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu">ape</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/as.phylo.html">as.phylo</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="va">fst.matrix</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">bootstrap.value</span> <span class="op">&lt;-</span> <span class="fu">ape</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/boot.phylo.html">boot.phylo</a></span><span class="op">(</span>phy <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">fst.matrix</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">xx</span><span class="op">)</span> <span class="fu">ape</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/as.phylo.html">as.phylo</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="va">xx</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span><span class="op">)</span> , block <span class="op">=</span> <span class="fl">1</span>, B <span class="op">=</span> <span class="fl">10000</span>, trees <span class="op">=</span> <span class="cn">FALSE</span>, rooted <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> 
+<span class="va">bootstrap.value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">bootstrap.value</span><span class="op">/</span><span class="fl">10000</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span>, <span class="fl">0</span><span class="op">)</span>
+<span class="va">bootstrap.value</span>
+<span class="va">tree</span><span class="op">$</span><span class="va">node.label</span> <span class="op">&lt;-</span> <span class="va">bootstrap.value</span></pre></div>
 <ol style="list-style-type: decimal">
 <li>To build the tree we will need to install </li>
 </ol>
 <div class="sourceCode" id="cb15"><pre class="downlit">
 <span class="co"># get the latest development version of ggtree:</span>
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"ggtree"</span>)) <span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"GuangchuangYu/ggtree"</span>)
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st">"ggtree"</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"GuangchuangYu/ggtree"</span><span class="op">)</span>
 <span class="co"># If it's not working, use the Bioconductor version:</span>
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, quietly = <span class="fl">TRUE</span>)) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)
-<span class="kw">BiocManager</span>::<span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"ggtree"</span>)
-</pre></div>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ggtree"</span><span class="op">)</span></pre></div>
 <ol style="list-style-type: decimal">
 <li><p>Several vignettes are available to get to know <a href="http://guangchuangyu.github.io/ggtree/">ggtree</a></p></li>
 <li><p>Build a very basic tree figure:</p></li>
 </ol>
 <div class="sourceCode" id="cb16"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="kw">ggtree</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="kw"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span>)
-<span class="kw">tree.figure</span> <span class="op">&lt;-</span> <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw">tree</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span>, <span class="kw">y</span>), ladderize = <span class="fl">TRUE</span>) <span class="op">+</span> 
-    <span class="kw">ggtree</span>::<span class="fu">geom_tree</span>() <span class="op">+</span> 
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">ggtree</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="va">tree.figure</span> <span class="op">&lt;-</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">tree</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span>, ladderize <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> 
+    <span class="fu">ggtree</span><span class="fu">::</span><span class="fu">geom_tree</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
     <span class="co"># geom_tiplab(size = 3, hjust = -0.05, vjust = 0.5)+ # for just the tip label</span>
-    <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html">geom_text</a></span>(<span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(label = <span class="kw">label</span>), size = <span class="fl">3</span>, hjust = <span class="op">-</span><span class="fl">0.05</span>, vjust = <span class="fl">0.5</span>) <span class="op">+</span> <span class="co"># for both tips and nodes</span>
-    <span class="kw">ggtree</span>::<span class="fu">theme_tree</span>() <span class="op">+</span> 
-    <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html">xlim</a></span>(<span class="fl">0</span>, <span class="fl">0.16</span>) <span class="co"># to allocate more space for tip labels (trial/error)</span>
-<span class="kw">tree.figure</span>
-<span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span>(filename = <span class="st">"assigner.fst.tree.example.pdf"</span>, width = <span class="fl">15</span>, height = <span class="fl">15</span>, dpi = <span class="fl">600</span>, units = <span class="st">"cm"</span>, useDingbats = <span class="fl">FALSE</span>)
-</pre></div>
+    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html">geom_text</a></span><span class="op">(</span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">label</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">3</span>, hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.05</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> <span class="co"># for both tips and nodes</span>
+    <span class="fu">ggtree</span><span class="fu">::</span><span class="fu">theme_tree</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
+    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html">xlim</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.16</span><span class="op">)</span> <span class="co"># to allocate more space for tip labels (trial/error)</span>
+<span class="va">tree.figure</span>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"assigner.fst.tree.example.pdf"</span>, width <span class="op">=</span> <span class="fl">15</span>, height <span class="op">=</span> <span class="fl">15</span>, dpi <span class="op">=</span> <span class="fl">600</span>, units <span class="op">=</span> <span class="st">"cm"</span>, useDingbats <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></pre></div>
 <p><img src="assigner_fst_tree_example.png" width="400"></p>
 </div>
 </div>

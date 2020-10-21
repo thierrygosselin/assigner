@@ -47,29 +47,29 @@
 
 
 <meta property="og:title" content="A fast implementation of Nei's 1987 Fst (overall and paiwise estimates) — fst_NEI87" />
-<meta property="og:description" content="The function calculates for diploid genomes the classic Nei's Gst (1987), 
-Nei's G'st (prime), that comes with a correction for the bias that stems 
+<meta property="og:description" content="The function calculates for diploid genomes the classic Nei's Gst (1987),
+Nei's G'st (prime), that comes with a correction for the bias that stems
 from sampling a limited number of populations. Also calculated is Jost's D,
 an index of population differentiation that is independent of the amount of
-within-population diversity (Jost, 2008). 
-Both overall and pairwise Fst can be estimated with 
-confidence intervals based on bootstrap of markers (resampling with replacement). 
-The function should give identical results at the 4th decimal when tested 
-against genet.dist in hierfstat and with 
-the Fst computed in Calculate Distances or 
+within-population diversity (Jost, 2008).
+Both overall and pairwise Fst can be estimated with
+confidence intervals based on bootstrap of markers (resampling with replacement).
+The function should give identical results at the 4th decimal when tested
+against genet.dist in hierfstat and with
+the Fst computed in Calculate Distances or
 GenoDive.
-The fastest computation is still 
-GenoDive, 
-but here, the R solution computes confidence intervals and it's very fast. 
+The fastest computation is still
+GenoDive,
+but here, the R solution computes confidence intervals and it's very fast.
 The computations takes advantage of tidyverse packages and parallel.
-The impact of unbalanced design on estimates can be tested by using the 
+The impact of unbalanced design on estimates can be tested by using the
 subsample argument.
 Special concerns for genome-wide estimate and filtering bias
-During computation, the function first starts by keeping only the polymorphic 
-markers in common between the populations. Keep this in mind when filtering 
-your markers to use this function characteristic strategically to get 
-better genome-wide estimate. This is even more important when your project 
-involves more than 2 populations that evolved more by neutral processes 
+During computation, the function first starts by keeping only the polymorphic
+markers in common between the populations. Keep this in mind when filtering
+your markers to use this function characteristic strategically to get
+better genome-wide estimate. This is even more important when your project
+involves more than 2 populations that evolved more by neutral processes
 (e.g. genetic drift) than by natural selection (see the vignette for more details)." />
 <meta property="og:image" content="/logo.png" />
 
@@ -103,7 +103,7 @@ involves more than 2 populations that evolved more by neutral processes
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
       </span>
     </div>
 
@@ -178,85 +178,85 @@ involves more than 2 populations that evolved more by neutral processes
     </div>
 
     <div class="ref-description">
-    <p>The function calculates for diploid genomes the classic Nei's Gst (1987), 
-Nei's G'st (prime), that comes with a correction for the bias that stems 
+    <p>The function calculates for diploid genomes the classic Nei's Gst (1987),
+Nei's G'st (prime), that comes with a correction for the bias that stems
 from sampling a limited number of populations. Also calculated is Jost's D,
 an index of population differentiation that is independent of the amount of
-within-population diversity (Jost, 2008). 
-Both overall and pairwise Fst can be estimated with 
-confidence intervals based on bootstrap of markers (resampling with replacement). 
-The function should give identical results <em>at the 4th decimal</em> when tested 
-against <code>genet.dist</code> in <code>hierfstat</code> and with 
-the Fst computed in <code>Calculate Distances</code> or 
+within-population diversity (Jost, 2008).
+Both overall and pairwise Fst can be estimated with
+confidence intervals based on bootstrap of markers (resampling with replacement).
+The function should give identical results <em>at the 4th decimal</em> when tested
+against <code>genet.dist</code> in <code>hierfstat</code> and with
+the Fst computed in <code>Calculate Distances</code> or
 <a href='http://www.bentleydrummer.nl/software/software/GenoDive.html'>GenoDive</a>.
-The fastest computation is still 
-<a href='http://www.bentleydrummer.nl/software/software/GenoDive.html'>GenoDive</a>, 
-but here, the R solution computes confidence intervals and it's very fast. 
+The fastest computation is still
+<a href='http://www.bentleydrummer.nl/software/software/GenoDive.html'>GenoDive</a>,
+but here, the R solution computes confidence intervals and it's very fast.
 The computations takes advantage of <span class="pkg">tidyverse</span> packages and <span class="pkg">parallel</span>.
-The impact of unbalanced design on estimates can be tested by using the 
+The impact of unbalanced design on estimates can be tested by using the
 subsample argument.</p>
 <p><em>Special concerns for genome-wide estimate and filtering bias</em></p>
-<p>During computation, the function first starts by keeping only the polymorphic 
-markers in common between the populations. Keep this in mind when filtering 
-your markers to use this function characteristic strategically to get 
-better genome-wide estimate. This is even more important when your project 
-involves more than 2 populations that evolved more by neutral processes 
+<p>During computation, the function first starts by keeping only the polymorphic
+markers in common between the populations. Keep this in mind when filtering
+your markers to use this function characteristic strategically to get
+better genome-wide estimate. This is even more important when your project
+involves more than 2 populations that evolved more by neutral processes
 (e.g. genetic drift) than by natural selection (see the vignette for more details).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fst_NEI87</span>(
-  <span class='kw'>data</span>,
-  pop.levels = <span class='kw'>NULL</span>,
-  pop.labels = <span class='kw'>NULL</span>,
-  strata = <span class='kw'>NULL</span>,
-  holdout.samples = <span class='kw'>NULL</span>,
-  pairwise = <span class='fl'>FALSE</span>,
-  ci = <span class='fl'>FALSE</span>,
-  iteration.ci = <span class='fl'>100</span>,
-  quantiles.ci = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.025</span>, <span class='fl'>0.975</span>),
-  subsample = <span class='kw'>NULL</span>,
-  iteration.subsample = <span class='fl'>1</span>,
-  digits = <span class='fl'>9</span>,
-  parallel.core = <span class='kw'>parallel</span>::<span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span>() <span class='op'>-</span> <span class='fl'>1</span>,
-  verbose = <span class='fl'>FALSE</span>,
-  <span class='kw'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>fst_NEI87</span><span class='op'>(</span>
+  <span class='va'>data</span>,
+  pop.levels <span class='op'>=</span> <span class='cn'>NULL</span>,
+  pop.labels <span class='op'>=</span> <span class='cn'>NULL</span>,
+  strata <span class='op'>=</span> <span class='cn'>NULL</span>,
+  holdout.samples <span class='op'>=</span> <span class='cn'>NULL</span>,
+  pairwise <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  ci <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  iteration.ci <span class='op'>=</span> <span class='fl'>100</span>,
+  quantiles.ci <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.025</span>, <span class='fl'>0.975</span><span class='op'>)</span>,
+  subsample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  iteration.subsample <span class='op'>=</span> <span class='fl'>1</span>,
+  digits <span class='op'>=</span> <span class='fl'>9</span>,
+  parallel.core <span class='op'>=</span> <span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>1</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>A file in the working directory or object in the global environment 
+      <td><p>A file in the working directory or object in the global environment
 in wide or long (tidy) formats. To import, the function uses internally
-<a href='https://github.com/thierrygosselin/radiator'>radiator</a> 
-<code><a href='https://rdrr.io/pkg/radiator/man/tidy_wide.html'>tidy_wide</a></code>. See details for more info.</p>
+<a href='https://github.com/thierrygosselin/radiator'>radiator</a>
+<code><a href='https://thierrygosselin.github.io/radiator/reference/tidy_wide.html'>tidy_wide</a></code>. See details for more info.</p>
 <p><em>How to get a tidy data frame ?</em>
-<a href='https://github.com/thierrygosselin/radiator'>radiator</a> 
-<code><a href='https://rdrr.io/pkg/radiator/man/tidy_genomic_data.html'>tidy_genomic_data</a></code> can transform 11 genomic data formats 
+<a href='https://github.com/thierrygosselin/radiator'>radiator</a>
+<code><a href='https://thierrygosselin.github.io/radiator/reference/tidy_genomic_data.html'>tidy_genomic_data</a></code> can transform 11 genomic data formats
 in a tidy data frame (VCF, PLINK, genind, genlight, gtypes, genepop,
-stacks haplotype file, hierfstat, ...). 
+stacks haplotype file, hierfstat, ...).
 You can also use this function to filter your dataset using
 whitelist of markers, blacklist of individuals and genotypes.</p></td>
     </tr>
     <tr>
       <th>pop.levels</th>
-      <td><p>(optional, string) This refers to the levels in a factor. In this 
+      <td><p>(optional, string) This refers to the levels in a factor. In this
 case, the id of the pop.
-Use this argument to have the pop ordered your way instead of the default 
-alphabetical or numerical order. e.g. <code>pop.levels = c("QUE", "ONT", "ALB")</code> 
-instead of the default <code>pop.levels = c("ALB", "ONT", "QUE")</code>. 
+Use this argument to have the pop ordered your way instead of the default
+alphabetical or numerical order. e.g. <code>pop.levels = c("QUE", "ONT", "ALB")</code>
+instead of the default <code>pop.levels = c("ALB", "ONT", "QUE")</code>.
 Default: <code>pop.levels = NULL</code>.</p></td>
     </tr>
     <tr>
       <th>pop.labels</th>
       <td><p>(optional, string) Use this argument to rename/relabel
-your pop or combine your pop. e.g. To combine <code>"QUE"</code> and <code>"ONT"</code> 
+your pop or combine your pop. e.g. To combine <code>"QUE"</code> and <code>"ONT"</code>
 into a new pop called <code>"NEW"</code>:
-(1) First, define the levels for your pop with <code>pop.levels</code> argument: 
-<code>pop.levels = c("QUE", "ONT", "ALB")</code>. 
-(2) then, use <code>pop.labels</code> argument: 
-<code>pop.levels = c("NEW", "NEW", "ALB")</code>.#' 
+(1) First, define the levels for your pop with <code>pop.levels</code> argument:
+<code>pop.levels = c("QUE", "ONT", "ALB")</code>.
+(2) then, use <code>pop.labels</code> argument:
+<code>pop.levels = c("NEW", "NEW", "ALB")</code>.#'
 To rename <code>"QUE"</code> to <code>"TAS"</code>:
 <code>pop.labels = c("TAS", "ONT", "ALB")</code>.
 Default: <code>pop.labels = NULL</code>. If you find this too complicated, there is also the
@@ -267,50 +267,50 @@ Default: <code>pop.labels = NULL</code>. If you find this too complicated, there
       <td><p>(optional) A tab delimited file with 2 columns with header:
 <code>INDIVIDUALS</code> and <code>STRATA</code>.
 If a <code>strata</code> file is specified, the strata file will have
-precedence over any grouping found input file (<code>data</code>). 
+precedence over any grouping found input file (<code>data</code>).
 The <code>STRATA</code> column can be any hierarchical grouping.
 Default: <code>strata = NULL</code>.</p></td>
     </tr>
     <tr>
       <th>holdout.samples</th>
-      <td><p>(optional) Samples that don't participate in the Fst 
+      <td><p>(optional) Samples that don't participate in the Fst
 computation (supplementary). Data frame with one column <code>INDIVIDUALS</code>.
 Default: <code>holdout.samples = NULL</code>.</p></td>
     </tr>
     <tr>
       <th>pairwise</th>
-      <td><p>(logical, optional) With <code>pairwise = TRUE</code>, the 
-pairwise NEI87 Fst is calculated between populations. 
+      <td><p>(logical, optional) With <code>pairwise = TRUE</code>, the
+pairwise NEI87 Fst is calculated between populations.
 Default: <code>pairwise = FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>ci</th>
-      <td><p>(logical, optional) Compute bootstrapped confidence intervals. 
+      <td><p>(logical, optional) Compute bootstrapped confidence intervals.
 Default: <code>ci = FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>iteration.ci</th>
-      <td><p>(integer, optional) The number of iterations for 
-the boostraps (resampling with replacement of markers). 
+      <td><p>(integer, optional) The number of iterations for
+the boostraps (resampling with replacement of markers).
 Default: <code>iteration.ci = 100</code>.</p></td>
     </tr>
     <tr>
       <th>quantiles.ci</th>
-      <td><p>(double, optional) 
-The quantiles for the bootstrapped confidence intervals. 
+      <td><p>(double, optional)
+The quantiles for the bootstrapped confidence intervals.
 Default: <code>quantiles.ci = c(0.025,0.975)</code>.</p></td>
     </tr>
     <tr>
       <th>subsample</th>
-      <td><p>(Integer or character) 
+      <td><p>(Integer or character)
 With <code>subsample = 36</code>, 36 individuals in each populations are chosen
-randomly to represent the dataset. With <code>subsample = "min"</code>, the 
+randomly to represent the dataset. With <code>subsample = "min"</code>, the
 minimum number of individual/population found in the data is used automatically.
 Default is no subsampling, <code>subsample = NULL</code>.</p></td>
     </tr>
     <tr>
       <th>iteration.subsample</th>
-      <td><p>(Integer) The number of iterations to repeat 
+      <td><p>(Integer) The number of iterations to repeat
 subsampling.
 With <code>subsample = 20</code> and <code>iteration.subsample = 10</code>,
 20 individuals/populations will be randomly chosen 10 times.
@@ -318,20 +318,20 @@ Default: <code>iteration.subsample = 1</code>.</p></td>
     </tr>
     <tr>
       <th>digits</th>
-      <td><p>(optional, integer) The number of decimal places to be used in 
+      <td><p>(optional, integer) The number of decimal places to be used in
 results.
 Default: <code>digits = 9</code>.</p></td>
     </tr>
     <tr>
       <th>parallel.core</th>
-      <td><p>(optional) The number of core for parallel computation 
-of pairwise Fst. 
+      <td><p>(optional) The number of core for parallel computation
+of pairwise Fst.
 If not selected <code>detectCores() - 1</code> is used as default.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>(logical, optional) <code>verbose = TRUE</code> to be chatty 
-during execution. 
+      <td><p>(logical, optional) <code>verbose = TRUE</code> to be chatty
+during execution.
 Default: <code>verbose = FALSE</code>.</p></td>
     </tr>
     <tr>
@@ -363,46 +363,46 @@ When sumsample is selected the objects end with <code>.subsample</code>.</p><ul>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><strong>Input data:</strong></p> 
-<p>To discriminate the long from the wide format, 
-the function <span class="pkg">radiator</span> <code><a href='https://rdrr.io/pkg/radiator/man/tidy_wide.html'>tidy_wide</a></code> searches 
+    <p><strong>Input data:</strong></p>
+<p>To discriminate the long from the wide format,
+the function <span class="pkg">radiator</span> <code><a href='https://thierrygosselin.github.io/radiator/reference/tidy_wide.html'>tidy_wide</a></code> searches
 for <code>MARKERS or LOCUS</code> in column names (TRUE = long format).
 The data frame is tab delimitted.
 <strong>Wide format:</strong>
 The wide format cannot store metadata info.
-The wide format starts with these 2 id columns: 
-<code>INDIVIDUALS</code>, <code>POP_ID</code> (that refers to any grouping of individuals), 
+The wide format starts with these 2 id columns:
+<code>INDIVIDUALS</code>, <code>POP_ID</code> (that refers to any grouping of individuals),
 the remaining columns are the markers in separate columns storing genotypes.</p>
 <p><strong>Long/Tidy format:</strong>
-The long format is considered to be a tidy data frame and can store metadata info. 
+The long format is considered to be a tidy data frame and can store metadata info.
 (e.g. from a VCF see <span class="pkg">radiator</span> <code>tidy_genomic_data</code>). A minimum of 4 columns
-are required in the long format: <code>INDIVIDUALS</code>, <code>POP_ID</code>, 
+are required in the long format: <code>INDIVIDUALS</code>, <code>POP_ID</code>,
 <code>MARKERS or LOCUS</code> and <code>GENOTYPE or GT</code>. The rest are considered metata info.</p>
 <p><strong>2 genotypes formats are available:</strong>
 6 characters no separator: e.g. <code>001002 of 111333</code> (for heterozygote individual).
 6 characters WITH separator: e.g. <code>001/002 of 111/333</code> (for heterozygote individual).
 The separator can be any of these: <code>"/", ":", "_", "-", "."</code>.</p>
 <p><em>How to get a tidy data frame ?</em>
-<span class="pkg">radiator</span> <code>tidy_genomic_data</code> can transform 6 genomic data formats 
+<span class="pkg">radiator</span> <code>tidy_genomic_data</code> can transform 6 genomic data formats
 in a tidy data frame.</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
-    <p><strong>Negative Fst</strong> are technical artifact of the computation 
-(see Roesti el al. 2012) and are automatically replaced with zero inside 
+    <p><strong>Negative Fst</strong> are technical artifact of the computation
+(see Roesti el al. 2012) and are automatically replaced with zero inside
 this function.</p>
 <p><strong>Why no p-values ?</strong></p>
 <p>There is no null hypothesis testing with <em>P</em>-values.
-Confidence intervals provided with the <em>F</em>-statistics 
+Confidence intervals provided with the <em>F</em>-statistics
 enables more reliable conclusions about the biological trends in the data.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Nei M. (1987) Molecular Evolutionary Genetics.
 Columbia University Press</p>
-<p>Meirmans PG, Van Tienderen PH (2004) genotype and genodive: 
-two programs for the analysis of genetic diversity of asexual organisms. 
+<p>Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
+two programs for the analysis of genetic diversity of asexual organisms.
 Molecular Ecology Notes, 4, 792-794.</p>
 <p>Roesti M, Salzburger W, Berner D. (2012)
-Uninformative polymorphisms bias genome scans for signatures of selection. 
+Uninformative polymorphisms bias genome scans for signatures of selection.
 BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x</p>
 <p>Jost L. (2008)
 G(ST) and its relatives do not measure differentiation.
@@ -410,16 +410,16 @@ Molecular Ecology. 17: 4015-4026.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>From <a href='http://www.bentleydrummer.nl/software/software/GenoDive.html'>GenoDive</a> manual:
-<em>'In general, rather than to test differentiation between all pairs of 
+<em>'In general, rather than to test differentiation between all pairs of
 populations,
-it is adviseable to perform an overall test of population differentiation, 
+it is adviseable to perform an overall test of population differentiation,
 possibly using a hierarchical population structure, (see AMOVA)'</em></p>
 <p>To compute an AMOVA, use <a href='http://www.bentleydrummer.nl/software/software/GenoDive.html'>GenoDive</a></p>
 <p><a href='https://github.com/jgx65/hierfstat/'>hierfstat</a></p>
 <p>Link for <a href='http://www.bentleydrummer.nl/software/software/GenoDive.html'>GenoDive</a></p>
-<p>For Fisher's exact test and p-values per markers 
+<p>For Fisher's exact test and p-values per markers
 see <code>mmod</code> <code>diff_test</code>.</p>
-<p><code><a href='https://rdrr.io/pkg/radiator/man/tidy_genomic_data.html'>tidy_genomic_data</a></code> to transform numerous genomic data 
+<p><code><a href='https://thierrygosselin.github.io/radiator/reference/tidy_genomic_data.html'>tidy_genomic_data</a></code> to transform numerous genomic data
 format in tidy data frames.</p></div>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 

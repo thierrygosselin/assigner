@@ -14,14 +14,14 @@ install_gsi_sim(
 the binary or source}
 
 \item{fromSource}{If TRUE, download source, even if a binary is available.
-If FALSE, then it will download a precompiled binary, if available.  If a 
+If FALSE, then it will download a precompiled binary, if available.  If a
 binary is not available, then it will attempt to download the source.}
 }
 \description{
 If the system is Mac, or Windows, this function will
 download a precompiled binary from GitHub.  In other cases, or
 if fromSource == TRUE, this function will attempt to download
-the source code and compile the program from source and install 
+the source code and compile the program from source and install
 it.
 }
 \details{

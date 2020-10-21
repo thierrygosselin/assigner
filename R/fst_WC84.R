@@ -661,7 +661,7 @@ fst_WC84 <- function(
     # pairwise.fst.upper.matrix.mean
     res$pairwise.fst.upper.matrix.subsample.mean <- res$pairwise.fst.subsample.mean %>%
       dplyr::select(POP1, POP2, FST) %>%
-      tidyr::spread(data = ., POP2, FST, fill = "", drop = FALSE) %>%
+      assigner::rad_wide(x = ., formula = "POP1 ~ POP2", values_from = "FST", values_fill = "") %>%
       dplyr::rename(POP = POP1)
     rn <- res$pairwise.fst.upper.matrix.subsample.mean$POP # rownames
     res$pairwise.fst.upper.matrix.subsample.mean <- as.matrix(res$pairwise.fst.upper.matrix.subsample.mean[,-1])# make matrix without first column
@@ -696,7 +696,7 @@ fst_WC84 <- function(
       lower.mat.ci.sub <- res$pairwise.fst.subsample.mean %>%
         dplyr::select(POP1, POP2, CI_LOW, CI_HIGH) %>%
         tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>%
-        tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>%
+        assigner::rad_wide(x = ., formula = "POP1 ~ POP2", values_from = "CI", values_fill = "") %>%
         dplyr::rename(POP = POP1)
 
       cn <- colnames(lower.mat.ci.sub) # bk of colnames
@@ -1061,10 +1061,9 @@ compute_fst <- function(
 #' @export
 #' @keywords internal
 
-pairwise_fst <- function(
+pairwise_fst <- carrier::crate(function(
   list.pair,
   pop.pairwise = NULL,
-  # unique.markers.pop = NULL,
   data.genotyped = NULL,
   ci = FALSE,
   iteration.ci = 100,
@@ -1072,6 +1071,9 @@ pairwise_fst <- function(
   digits = 9,
   path.folder = path.folder
 ) {
+  `%>%` <- magrittr::`%>%`
+  `%<>%` <- magrittr::`%<>%`
+  `%$%` <- magrittr::`%$%`
 
   pop.select <- stringi::stri_join(purrr::flatten(pop.pairwise[list.pair]))
   data.select <- data.genotyped %>%
@@ -1089,7 +1091,7 @@ pairwise_fst <- function(
 
   fst.select <- tibble::tibble(POP1 = pop.select[1], POP2 = pop.select[2]) %>%
     dplyr::bind_cols(
-      compute_fst(
+      assigner::compute_fst(
         x = data.select,
         ci = ci,
         iteration.ci = iteration.ci,
@@ -1100,7 +1102,7 @@ pairwise_fst <- function(
     )
   data.select <- pop.select <- NULL
   return(fst.select)
-} # End pairwise_fst
+}) # End pairwise_fst
 
 # pairwise_fst_snprelate--------------------------------------------------------
 
@@ -1370,25 +1372,41 @@ fst_subsample <- function(
 
     # } else {
     # Fst for all pairwise populations
-    list.pair <- 1:length(pop.pairwise)
+    list.pair <- seq_len(length(pop.pairwise))
     # list.pair <- 5 #  test
-    fst.all.pop <- .assigner_parallel(
-      # fst.all.pop <- mclapply(
-      X = list.pair,
-      FUN = pairwise_fst,
-      mc.preschedule = FALSE,
-      mc.silent = FALSE,
-      mc.cores = parallel.core,
+    fst.all.pop <- assigner_future(
+      .x = list.pair,
+      .f = pairwise_fst,
+      flat.future = "dfr",
+      split.vec = FALSE,
+      split.with = NULL,
+      parallel.core = parallel.core,
       pop.pairwise = pop.pairwise,
-      # unique.markers.pop = unique.markers.pop,
       data.genotyped = data.genotyped,
       ci = ci,
       iteration.ci = iteration.ci,
       quantiles.ci = quantiles.ci,
       path.folder = path.folder
     )
+
+
+    # fst.all.pop <- .assigner_parallel(
+    #   # fst.all.pop <- mclapply(
+    #   X = list.pair,
+    #   FUN = pairwise_fst,
+    #   mc.preschedule = FALSE,
+    #   mc.silent = FALSE,
+    #   mc.cores = parallel.core,
+    #   pop.pairwise = pop.pairwise,
+    #   # unique.markers.pop = unique.markers.pop,
+    #   data.genotyped = data.genotyped,
+    #   ci = ci,
+    #   iteration.ci = iteration.ci,
+    #   quantiles.ci = quantiles.ci,
+    #   path.folder = path.folder
+    # )
     # Table with Fst
-    pairwise.fst <- dplyr::bind_rows(fst.all.pop) %>%
+    pairwise.fst <- fst.all.pop %>%
       dplyr::mutate(
         POP1 = factor(POP1, levels = pop.list, ordered = TRUE),
         POP2 = factor(POP2, levels = pop.list, ordered = TRUE),
@@ -1400,7 +1418,7 @@ fst_subsample <- function(
     # Matrix--------------------------------------------------------------------
     upper.mat.fst <- pairwise.fst %>%
       dplyr::select(POP1, POP2, FST) %>%
-      tidyr::spread(data = ., POP2, FST, fill = "", drop = FALSE) %>%
+      assigner::rad_wide(x = ., formula = "POP1 ~ POP2", values_from = "FST", values_fill = "") %>%
       dplyr::rename(POP = POP1)
     rn <- upper.mat.fst$POP # rownames
     upper.mat.fst <- as.matrix(upper.mat.fst[,-1])# make matrix without first column
@@ -1420,7 +1438,7 @@ fst_subsample <- function(
       lower.mat.ci <- pairwise.fst %>%
         dplyr::select(POP1, POP2, CI_LOW, CI_HIGH) %>%
         tidyr::unite(data = ., CI, CI_LOW, CI_HIGH, sep = " - ") %>%
-        tidyr::spread(data = ., POP2, CI, fill = "", drop = FALSE) %>%
+        assigner::rad_wide(x = ., formula = "POP1 ~ POP2", values_from = "CI", values_fill = "") %>%
         dplyr::rename(POP = POP1)
 
       cn <- colnames(lower.mat.ci) # bk of colnames

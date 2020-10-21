@@ -102,7 +102,7 @@ involves more than 2 populations that evolved more by neutral processes
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
       </span>
     </div>
 
@@ -201,21 +201,21 @@ involves more than 2 populations that evolved more by neutral processes
 (e.g. genetic drift) than by natural selection (see the vignette for more details).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fst_WC84</span>(
-  <span class='kw'>data</span>,
-  snprelate = <span class='fl'>FALSE</span>,
-  strata = <span class='kw'>NULL</span>,
-  pop.levels = <span class='kw'>NULL</span>,
-  pairwise = <span class='fl'>FALSE</span>,
-  ci = <span class='fl'>FALSE</span>,
-  iteration.ci = <span class='fl'>100</span>,
-  quantiles.ci = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.025</span>, <span class='fl'>0.975</span>),
-  digits = <span class='fl'>9</span>,
-  filename = <span class='kw'>NULL</span>,
-  parallel.core = <span class='kw'>parallel</span>::<span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span>() <span class='op'>-</span> <span class='fl'>2</span>,
-  verbose = <span class='fl'>FALSE</span>,
-  <span class='kw'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>fst_WC84</span><span class='op'>(</span>
+  <span class='va'>data</span>,
+  snprelate <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  strata <span class='op'>=</span> <span class='cn'>NULL</span>,
+  pop.levels <span class='op'>=</span> <span class='cn'>NULL</span>,
+  pairwise <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  ci <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  iteration.ci <span class='op'>=</span> <span class='fl'>100</span>,
+  quantiles.ci <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.025</span>, <span class='fl'>0.975</span><span class='op'>)</span>,
+  digits <span class='op'>=</span> <span class='fl'>9</span>,
+  filename <span class='op'>=</span> <span class='cn'>NULL</span>,
+  parallel.core <span class='op'>=</span> <span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>2</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -419,29 +419,29 @@ see <code>mmod</code> <code>diff_test</code>.</p>
     <p>Thierry Gosselin <a href='mailto:thierrygosselin@icloud.com'>thierrygosselin@icloud.com</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='kw'>wombat.fst.pairwise</span> <span class='op'>&lt;-</span> <span class='fu'>fst_WC84</span>(
-    data = <span class='st'>"wombat.filtered.tidy.tsv"</span>,
-    pop.levels = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ATL"</span>, <span class='st'>"MLE"</span>, <span class='st'>"BIS"</span>, <span class='st'>"PMO"</span>, <span class='st'>"SOL"</span>, <span class='st'>"TAS"</span>, <span class='st'>"ECU"</span>),
-    pairwise = <span class='fl'>TRUE</span>,
-    ci = <span class='fl'>TRUE</span>,
-    iteration.ci = <span class='fl'>10000</span>,
-    quantiles.ci = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.025</span>,<span class='fl'>0.975</span>),
-    parallel.core = <span class='fl'>8</span>,
-    verbose = <span class='fl'>TRUE</span>,
-    filename = <span class='st'>"wombat"</span>,
-    heatmap.fst = <span class='fl'>TRUE</span>
-)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>wombat.fst.pairwise</span> <span class='op'>&lt;-</span> <span class='fu'>fst_WC84</span><span class='op'>(</span>
+    data <span class='op'>=</span> <span class='st'>"wombat.filtered.tidy.tsv"</span>,
+    pop.levels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ATL"</span>, <span class='st'>"MLE"</span>, <span class='st'>"BIS"</span>, <span class='st'>"PMO"</span>, <span class='st'>"SOL"</span>, <span class='st'>"TAS"</span>, <span class='st'>"ECU"</span><span class='op'>)</span>,
+    pairwise <span class='op'>=</span> <span class='cn'>TRUE</span>,
+    ci <span class='op'>=</span> <span class='cn'>TRUE</span>,
+    iteration.ci <span class='op'>=</span> <span class='fl'>10000</span>,
+    quantiles.ci <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.025</span>,<span class='fl'>0.975</span><span class='op'>)</span>,
+    parallel.core <span class='op'>=</span> <span class='fl'>8</span>,
+    verbose <span class='op'>=</span> <span class='cn'>TRUE</span>,
+    filename <span class='op'>=</span> <span class='st'>"wombat"</span>,
+    heatmap.fst <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span>
 
 <span class='co'># To get the overall Fst estimate:</span>
-<span class='kw'>wombat.fst.pairwise</span><span class='op'>$</span><span class='kw'>fst.overall</span>
+<span class='va'>wombat.fst.pairwise</span><span class='op'>$</span><span class='va'>fst.overall</span>
 
 <span class='co'># To get the Fst plot:</span>
-<span class='kw'>wombat.fst.pairwise</span><span class='op'>$</span><span class='kw'>fst.plot</span>
+<span class='va'>wombat.fst.pairwise</span><span class='op'>$</span><span class='va'>fst.plot</span>
 
 <span class='co'>#To get the pairwise Fst values with confidence intervals in a data frame:</span>
-<span class='kw'>df</span> <span class='op'>&lt;-</span> <span class='kw'>wombat.fst.pairwise</span><span class='op'>$</span><span class='kw'>pairwise.fst</span>
-}
+<span class='va'>df</span> <span class='op'>&lt;-</span> <span class='va'>wombat.fst.pairwise</span><span class='op'>$</span><span class='va'>pairwise.fst</span>
+<span class='op'>}</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

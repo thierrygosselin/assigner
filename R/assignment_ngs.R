@@ -578,7 +578,7 @@ assignment_ngs <- function(
   }
 
   readr::write_tsv(
-    x = res, path = file.path(directory, filename.res),
+    x = res, file = file.path(directory, filename.res),
     col_names = TRUE, append = FALSE
   )
 
@@ -629,7 +629,7 @@ assignment_ngs <- function(
     res.overall <- NULL # unused objects
     filename <- "assignment.results.summary.stats.tsv"
     readr::write_tsv(
-      x = res, path = file.path(directory, filename),
+      x = res, file = file.path(directory, filename),
       col_names = TRUE, append = FALSE
     )
   } # End summary of the subsampling iterations
@@ -698,7 +698,7 @@ generate_subsamples <- function(
   if (!is.null(subsample)) {
     readr::write_tsv(
       x = dplyr::bind_rows(subsample.list),
-      path = file.path(path.folder, "subsampling_individuals.tsv"),
+      file = file.path(path.folder, "subsampling_individuals.tsv"),
       col_names = TRUE,
       append = FALSE
     )
@@ -821,7 +821,7 @@ assignment_subsamples <- function(
     # Write the results to the working directory
     readr::write_tsv(
       x = tibble::as_tibble(dplyr::bind_rows(marker.random.list)),
-      path = file.path(directory.subsample, "markers.random.tsv"),
+      file = file.path(directory.subsample, "markers.random.tsv"),
       col_names = TRUE, append = FALSE
     )
     message("Starting parallel computations, for progress monitor activity in folder...")
@@ -830,10 +830,13 @@ assignment_subsamples <- function(
     names(marker.random.list) <- marker.random.list
 
     assignment.res <- NULL
-    assignment.res <- suppressWarnings(
-      .assigner_parallel_mc(#.assigner_parallel(
-        X = marker.random.list,
-        FUN = assignment_random,
+    assignment.res <- assigner_future(
+        .x = marker.random.list,
+        .f = assignment_random,
+        flat.future = "dfr",
+        split.vec = FALSE,
+        split.with = NULL,
+        parallel.core = parallel.core,
         assignment.analysis = assignment.analysis,
         input = input,
         genind.object = genind.object,
@@ -845,14 +848,34 @@ assignment_subsamples <- function(
         filename = filename,
         adegenet.n.rep = adegenet.n.rep,
         adegenet.training = adegenet.training,
-        holdout = NULL,
-        mc.preschedule = FALSE,
-        mc.silent = FALSE,
-        mc.cleanup = TRUE,
-        mc.cores = parallel.core
-      ) %>%
-        dplyr::bind_rows(.)
-    )
+        holdout = NULL
+      )
+    # assignment.res <- suppressWarnings(
+    #   .assigner_parallel_mc(#.assigner_parallel(
+    #     X = marker.random.list,
+    #     FUN = assignment_random,
+    #     assignment.analysis = assignment.analysis,
+    #     input = input,
+    #     genind.object = genind.object,
+    #     strata = strata,
+    #     directory.subsample = directory.subsample,
+    #     keep.gsi.files = keep.gsi.files,
+    #     markers.sampling = markers.sampling,
+    #     subsample.id = subsample.id,
+    #     filename = filename,
+    #     adegenet.n.rep = adegenet.n.rep,
+    #     adegenet.training = adegenet.training,
+    #     holdout = NULL,
+    #     mc.preschedule = FALSE,
+    #     mc.silent = FALSE,
+    #     mc.cleanup = TRUE,
+    #     mc.cores = parallel.core
+    #   ) %>%
+    #     dplyr::bind_rows(.)
+    # )
+
+
+
 
     # Compiling the results
     message("Compiling results")
@@ -883,7 +906,7 @@ assignment_subsamples <- function(
       }
       readr::write_tsv(
         x = assignment.res,
-        path = file.path(directory.subsample,filename.assignment.res),
+        file = file.path(directory.subsample,filename.assignment.res),
         col_names = TRUE,
         append = FALSE
       )
@@ -899,7 +922,7 @@ assignment_subsamples <- function(
       }
       readr::write_tsv(
         x = assignment.res,
-        path = file.path(directory.subsample,filename.assignment.res),
+        file = file.path(directory.subsample,filename.assignment.res),
         col_names = TRUE, append = FALSE
       )
     }
@@ -966,7 +989,7 @@ assignment_subsamples <- function(
       )
       readr::write_tsv(
         x = assignment.summary.stats,
-        path = file.path(directory.subsample, filename.assignment.sum),
+        file = file.path(directory.subsample, filename.assignment.sum),
         col_names = TRUE, append = FALSE
       )
     }
@@ -999,12 +1022,13 @@ assignment_subsamples <- function(
 
     # bug with arguments that must have names
     names(iterations.list) <- iterations.list
-
-    # assignment.res <- .assigner_parallel(
-    assignment.res.summary <- suppressWarnings(
-      .assigner_parallel_mc(
-        X = iterations.list,
-        FUN = assignment_ranking,
+    assignment.res.summary <- assigner_future(
+        .x = iterations.list,
+        .f = assignment_ranking,
+        flat.future = "dfr",
+        split.vec = FALSE,
+        split.with = NULL,
+        parallel.core = parallel.core,
         thl = thl,
         input = input,
         holdout.individuals = holdout.individuals,
@@ -1019,16 +1043,40 @@ assignment_subsamples <- function(
         adegenet.n.rep = adegenet.n.rep,
         adegenet.training = adegenet.training,
         filename = filename,
-        keep.gsi.files = keep.gsi.files,
-        mc.preschedule = FALSE,
-        mc.silent = FALSE,
-        mc.cleanup = FALSE,
-        mc.cores = parallel.core
+        keep.gsi.files = keep.gsi.files
       ) %>%
-        dplyr::bind_rows() %>%
         dplyr::mutate(SUBSAMPLE = subsample.id) %>%
         dplyr::arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER)
-    )
+
+    # assignment.res <- .assigner_parallel(
+    # assignment.res.summary <- suppressWarnings(
+    #   .assigner_parallel_mc(
+    #     X = iterations.list,
+    #     FUN = assignment_ranking,
+    #     thl = thl,
+    #     input = input,
+    #     holdout.individuals = holdout.individuals,
+    #     directory.subsample = directory.subsample,
+    #     marker.number = marker.number,
+    #     assignment.analysis = assignment.analysis,
+    #     genind.object = genind.object,
+    #     strata = strata,
+    #     markers.sampling = markers.sampling,
+    #     subsample.id = subsample.id,
+    #     adegenet.dapc.opt = adegenet.dapc.opt,
+    #     adegenet.n.rep = adegenet.n.rep,
+    #     adegenet.training = adegenet.training,
+    #     filename = filename,
+    #     keep.gsi.files = keep.gsi.files,
+    #     mc.preschedule = FALSE,
+    #     mc.silent = FALSE,
+    #     mc.cleanup = FALSE,
+    #     mc.cores = parallel.core
+    #   ) %>%
+    #     dplyr::bind_rows() %>%
+    #     dplyr::mutate(SUBSAMPLE = subsample.id) %>%
+    #     dplyr::arrange(CURRENT, INDIVIDUALS, MARKER_NUMBER)
+    # )
 
     # assignment results
     if (is.null(subsample)) {
@@ -1045,7 +1093,7 @@ assignment_subsamples <- function(
     }
     readr::write_tsv(
       x = assignment.res.summary,
-      path = file.path(directory.subsample, filename.assignment.res),
+      file = file.path(directory.subsample, filename.assignment.res),
       col_names = TRUE, append = FALSE
     )
 
@@ -1101,7 +1149,7 @@ assignment_subsamples <- function(
       }
       readr::write_tsv(
         x = assignment.res.summary.prep,
-        path = file.path(directory.subsample,filename.assignment.res.sum),
+        file = file.path(directory.subsample,filename.assignment.res.sum),
         col_names = TRUE, append = FALSE
       )
 
@@ -1140,7 +1188,7 @@ assignment_subsamples <- function(
         subsample.id, ".tsv")
       readr::write_tsv(
         x = assignment.summary.stats,
-        path = file.path(directory.subsample,filename.assignment.sum),
+        file = file.path(directory.subsample,filename.assignment.sum),
         col_names = TRUE, append = FALSE
       )
     }
@@ -1155,7 +1203,7 @@ assignment_subsamples <- function(
 #' @rdname assignment_ranking
 #' @export
 #' @keywords internal
-assignment_ranking <- function(
+assignment_ranking <- carrier::crate(function(
   iterations.list = NULL,
   thl = NULL,
   input = NULL,
@@ -1173,6 +1221,10 @@ assignment_ranking <- function(
   filename = NULL,
   keep.gsi.files = NULL
 ) {
+  `%>%` <- magrittr::`%>%`
+  `%<>%` <- magrittr::`%<>%`
+  `%$%` <- magrittr::`%$%`
+
   i <- iterations.list
   # i <- iterations.list[[1]]
 
@@ -1206,7 +1258,7 @@ assignment_ranking <- function(
 
   readr::write_tsv(
     x = fst.ranked,
-    path = file.path(i.folder, stringi::stri_join("fst.ranked_", i, ".tsv", sep = "")),
+    file = file.path(i.folder, stringi::stri_join("fst.ranked_", i, ".tsv", sep = "")),
     col_names = TRUE,
     append = FALSE
   )
@@ -1217,7 +1269,7 @@ assignment_ranking <- function(
   assignment.res <- suppressWarnings(
     purrr::map_df(
       .x = marker.number,
-      .f = assignment_marker_loop,
+      .f = assigner::assignment_marker_loop,
       assignment.analysis = assignment.analysis,
       fst.ranked = fst.ranked,
       i = i,
@@ -1239,13 +1291,13 @@ assignment_ranking <- function(
   message("Summarizing the assignment analysis results by iterations and marker group")
   readr::write_tsv(
     x = assignment.res,
-    path = file.path(i.folder, stringi::stri_join("assignment_", i, ".tsv")),
+    file = file.path(i.folder, stringi::stri_join("assignment_", i, ".tsv")),
     col_names = TRUE,
     append = FALSE
   )
   holdout <- fst.ranked <- fst.ranked.imp <- i <- NULL
   return(assignment.res)
-}  # End assignment_ranking
+})  # End assignment_ranking
 
 # assignment_marker_loop--------------------------------------------------------
 #' @title assignment_marker_loop
@@ -1288,7 +1340,7 @@ assignment_marker_loop <- function(
   )
 
   if (assignment.analysis == "gsi_sim") {
-    assignment <- assignment_gsi_sim(
+    assignment <- assigner::assignment_gsi_sim(
       input = input,
       strata = strata,
       select.markers = select.markers,
@@ -1305,7 +1357,7 @@ assignment_marker_loop <- function(
 
 
   if (assignment.analysis == "adegenet") {
-    assignment <- assignment_adegenet(
+    assignment <- assigner::assignment_adegenet(
       data = genind.object,
       select.markers = select.markers,
       adegenet.dapc.opt = adegenet.dapc.opt,
@@ -1608,7 +1660,7 @@ marker_selection <- function(
 #' @rdname assignment_random
 #' @export
 #' @keywords internal
-assignment_random <- function(
+assignment_random <- carrier::crate(function(
   x, # the list of dataframe with random markers previously marker.random.list
   assignment.analysis = "gsi_sim",
   input = NULL,
@@ -1623,6 +1675,10 @@ assignment_random <- function(
   adegenet.training = 0.9,
   holdout = NULL
 ) {
+  `%>%` <- magrittr::`%>%`
+  `%<>%` <- magrittr::`%<>%`
+  `%$%` <- magrittr::`%$%`
+
   x <- tibble::as_tibble(x)
   # x <- marker.random.list[[1]]
   i <- as.integer(unique(x$ITERATIONS))      # iteration
@@ -1649,7 +1705,7 @@ assignment_random <- function(
   )
 
   if (assignment.analysis == "gsi_sim") {
-    assignment <- assignment_gsi_sim(
+    assignment <- assigner::assignment_gsi_sim(
       input = input,
       strata = strata,
       select.markers = select.markers,
@@ -1663,7 +1719,7 @@ assignment_random <- function(
     )
   }
   if (assignment.analysis == "adegenet") {
-    assignment <- assignment_adegenet(
+    assignment <- assigner::assignment_adegenet(
       data = genind.object,
       select.markers = select.markers,
       adegenet.dapc.opt = "optim.a.score",
@@ -1677,7 +1733,7 @@ assignment_random <- function(
   message("Summarizing the assignment analysis results by iterations and marker group")
   readr::write_tsv(
     x = assignment,
-    path = file.path(i.folder, stringi::stri_join("assignment_", i, ".tsv")),
+    file = file.path(i.folder, stringi::stri_join("assignment_", i, ".tsv")),
     col_names = TRUE,
     append = FALSE
   )
@@ -1685,7 +1741,7 @@ assignment_random <- function(
   # unused objects
   x <- i <- m <- select.markers <- filename <- NULL
   return(assignment)
-}#End assignment_random
+})#End assignment_random
 
 # assigner_stats--------------------------------------------------------------
 #' @title assigner_stats
@@ -1877,7 +1933,7 @@ generate_holdhout <- function(
 
   readr::write_tsv(
     x = res$holdout.individuals,
-    path = file.path(path.folder, "holdout.individuals.tsv"),
+    file = file.path(path.folder, "holdout.individuals.tsv"),
     col_names = TRUE,
     append = FALSE
   )

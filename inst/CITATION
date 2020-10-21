@@ -3,9 +3,9 @@ citHeader("To cite assigner in publications use:")
 citEntry(
 entry="Manual",
 title = "assigner: Assignment Analysis with GBS/RAD Data using R",
-year = "2019",
+year = "2020",
 author = personList(as.person("Thierry Gosselin")),
 url = "https://github.com/thierrygosselin/assigner",
 doi = "10.5281/zenodo.592677",
-textVersion = paste("Gosselin, T, Anderson, E. C., Bradbury, I. (2019). assigner: Assignment Analysis with GBS/RAD Data using R. R package version 0.5.6. http://thierrygosselin.github.io/assigner/. doi : 10.5281/zenodo.592677")
+textVersion = paste("Gosselin, T, Anderson, E. C., Bradbury, I. (2020). assigner: Assignment Analysis with GBS/RAD Data using R. R package version 0.5.8. http://thierrygosselin.github.io/assigner/. doi : 10.5281/zenodo.592677")
 )

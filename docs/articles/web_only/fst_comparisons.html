@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
       </span>
     </div>
 
@@ -113,7 +113,7 @@
 </h3>
                         <h4 class="author">Thierry Gosselin</h4>
             
-            <h4 class="date">2020-09-24</h4>
+            <h4 class="date">2020-10-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/thierrygosselin/assigner/blob/master/vignettes/web_only/fst_comparisons.Rmd"><code>vignettes/web_only/fst_comparisons.Rmd</code></a></small>
       <div class="hidden name"><code>fst_comparisons.Rmd</code></div>
@@ -126,25 +126,22 @@
 <h1 class="hasAnchor">
 <a href="#prepare-your-r-session" class="anchor"></a>Prepare your R session</h1>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span>(list = <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span>()) <span class="co"># clean workspace</span>
+<span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># clean workspace</span>
 <span class="co"># install required packages</span>
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"diveRsity"</span>)) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"diveRsity"</span>)
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"hierfstat"</span>)) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"hierfstat"</span>)
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"StAMPP"</span>)) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"StAMPP"</span>)
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st"><a href="https://github.com/EricArcher/strataG">"strataG"</a></span>)) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"strataG"</span>)
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st"><a href="http://github.com/zhengxwen/SNPRelate">"SNPRelate"</a></span>)) {
-  <span class="co">if</span>(<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"BiocManager"</span>)) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)
-  <span class="kw">BiocManager</span>::<span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"SNPRelate"</span>)
-}
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"ggcorrplot"</span>)) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"ggcorrplot"</span>)
-</pre></div>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st">"diveRsity"</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"diveRsity"</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st"><a href="https://www.r-project.org">"hierfstat"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"hierfstat"</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st">"StAMPP"</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"StAMPP"</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st"><a href="https://github.com/EricArcher/strataG">"strataG"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"strataG"</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st"><a href="http://github.com/zhengxwen/SNPRelate">"SNPRelate"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+  <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"SNPRelate"</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st">"ggcorrplot"</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"ggcorrplot"</span><span class="op">)</span></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st"><a href="https://remotes.r-lib.org">"remotes"</a></span>)) <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"remotes"</span>)
-</pre></div>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org">"remotes"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></pre></div>
 <pre><code>## Loading required package: remotes</code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st"><a href="http://thierrygosselin.github.io/assigner">"assigner"</a></span>)) <span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"thierrygosselin/assigner"</span>)
-</pre></div>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st"><a href="http://thierrygosselin.github.io/assigner/">"assigner"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"thierrygosselin/assigner"</span><span class="op">)</span></pre></div>
 <pre><code>## Loading required package: assigner</code></pre>
 <pre><code>## Registered S3 method overwritten by 'spdep':
 ##   method   from
@@ -154,15 +151,14 @@
 <p><strong>Versions of packages and software:</strong></p>
 <div class="sourceCode" id="cb7"><pre class="downlit">
 <span class="co"># Check packages versions</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span>(<span class="st">'assigner'</span>) <span class="co"># 0.5.6.</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span>(<span class="st">'diveRsity'</span>) <span class="co"># 1.9.90</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span>(<span class="st">'hierfstat'</span>) <span class="co"># 0.4.22</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span>(<span class="st">'stAMPP'</span>) <span class="co"># 1.5.1</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span>(<span class="st">'strataG'</span>) <span class="co"># 2.0.2</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span>(<span class="st">'SNPRelate'</span>) <span class="co"># 1.18.0</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">'assigner'</span><span class="op">)</span> <span class="co"># 0.5.6.</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">'diveRsity'</span><span class="op">)</span> <span class="co"># 1.9.90</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">'hierfstat'</span><span class="op">)</span> <span class="co"># 0.4.22</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">'stAMPP'</span><span class="op">)</span> <span class="co"># 1.5.1</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">'strataG'</span><span class="op">)</span> <span class="co"># 2.0.2</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">'SNPRelate'</span><span class="op">)</span> <span class="co"># 1.18.0</span>
 <span class="co">#GenoDive: 2.27</span>
-<span class="co"># VCFtools.: 0.1.17</span>
-</pre></div>
+<span class="co"># VCFtools.: 0.1.17</span></pre></div>
 <p>Put this <strong>Rmd notebook</strong> in the same directory as the data or use <code><a href="https://rdrr.io/r/base/getwd.html">setwd("/YOUR/NEW/PATH/HERE/")</a></code>, to change the working directory.</p>
 </div>
 <div id="goal-of-this-exercise" class="section level1">
@@ -200,32 +196,30 @@
 <a href="#empirical-dataset-1" class="anchor"></a>Empirical dataset</h2>
 <div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="co"># radiator is installed automatically with assigner</span>
-<span class="kw">sunflower.filtered</span> <span class="op">&lt;-</span> <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/genomic_converter.html">genomic_converter</a></span>(
-  data = <span class="st">"sunflower.vcf"</span>, 
-  strata = <span class="st">"sunflower.strata.tsv"</span>, 
-  output = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(
+<span class="va">sunflower.filtered</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/genomic_converter.html">genomic_converter</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="st">"sunflower.vcf"</span>, 
+  strata <span class="op">=</span> <span class="st">"sunflower.strata.tsv"</span>, 
+  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
     <span class="st">"genepop"</span>, <span class="co"># for GenoDive and diveRsity</span>
     <span class="st">"gtypes"</span>, <span class="co"># for strataG</span>
     <span class="st">"genlight"</span>, <span class="co"># for StAMPP</span>
     <span class="st">"hierfstat"</span>, <span class="co"># for Hierfstat</span>
     <span class="st">"snprelate"</span> <span class="co"># for SNPRelate</span>
-  )
-) <span class="op">%&gt;%</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://tibble.tidyverse.org/reference/glimpse.html">glimpse</a></span>()
-</pre></div>
+  <span class="op">)</span>
+<span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="op">)</span></pre></div>
 <p>VCF stats:</p>
 <ul>
 <li>the original number of markers is 34258.</li>
-<li>by default, <code><a href="https://rdrr.io/pkg/radiator/man/genomic_converter.html">radiator::genomic_converter</a></code> will only keep polymorphic markers in common between the strata.</li>
+<li>by default, <code><a href="https://thierrygosselin.github.io/radiator/reference/genomic_converter.html">radiator::genomic_converter</a></code> will only keep polymorphic markers in common between the strata.</li>
 <li>15973 biallelic markers are recovered.</li>
 <li>Number of populations: 9</li>
 <li>Number of individuals: 88</li>
 </ul>
 <p>The <code>sunflower.filtered</code> object is a list with several objects inside:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">sunflower.filtered</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">sunflower.filtered</span><span class="op">)</span>
 <span class="co">#&gt; [1] "hierfstat" "gtypes"    "genlight"  "snprelate" "tidy.data"</span>
-<span class="co"># the tidy dataset is used by assigner</span>
-</pre></div>
+<span class="co"># the tidy dataset is used by assigner</span></pre></div>
 <p>The function also produced a folder with several files, including:</p>
 <ul>
 <li>the genepop file</li>
@@ -246,51 +240,49 @@
 <h3 class="hasAnchor">
 <a href="#sim_01" class="anchor"></a>sim_01</h3>
 <div class="sourceCode" id="cb10"><pre class="downlit">
-<span class="kw">data_assigner_sim_01</span> <span class="op">%&lt;&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(POP_ID = <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(x = <span class="kw">POP_ID</span>, levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP_1"</span>, <span class="st">"POP_2"</span>, <span class="st">"POP_3"</span>, <span class="st">"POP_4"</span>, <span class="st">"POP_5"</span>))) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">POP_ID</span>)
+<span class="va">data_assigner_sim_01</span> <span class="op">%&lt;&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>POP_ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">POP_ID</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP_1"</span>, <span class="st">"POP_2"</span>, <span class="st">"POP_3"</span>, <span class="st">"POP_4"</span>, <span class="st">"POP_5"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP_ID</span><span class="op">)</span>
 
-<span class="kw">sim.data1</span> <span class="op">&lt;-</span> <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/genomic_converter.html">genomic_converter</a></span>(
-  data = <span class="kw">data_assigner_sim_01</span>, 
-  output = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(
+<span class="va">sim.data1</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/genomic_converter.html">genomic_converter</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">data_assigner_sim_01</span>, 
+  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
     <span class="st">"genepop"</span>, <span class="co"># for GenoDive and diveRsity</span>
     <span class="st">"gtypes"</span>, <span class="co"># for strataG</span>
     <span class="st">"genlight"</span>, <span class="co"># for StAMPP</span>
     <span class="st">"hierfstat"</span>, <span class="co"># for Hierfstat</span>
     <span class="st">"snprelate"</span> <span class="co"># for SNPRelate</span>
-  ),
-  filename = <span class="st">"sim01"</span>,
-  path.folder = <span class="st">"fst_sim01"</span>,
-  internal = <span class="fl">TRUE</span>,
-  verbose = <span class="fl">FALSE</span>
-)
-<span class="kw">sim.data1</span><span class="op">$</span><span class="kw">tidy.data</span> <span class="op">%&lt;&gt;%</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">POP_ID</span>)
-</pre></div>
+  <span class="op">)</span>,
+  filename <span class="op">=</span> <span class="st">"sim01"</span>,
+  path.folder <span class="op">=</span> <span class="st">"fst_sim01"</span>,
+  internal <span class="op">=</span> <span class="cn">TRUE</span>,
+  verbose <span class="op">=</span> <span class="cn">FALSE</span>
+<span class="op">)</span>
+<span class="va">sim.data1</span><span class="op">$</span><span class="va">tidy.data</span> <span class="op">%&lt;&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP_ID</span><span class="op">)</span></pre></div>
 </div>
 <div id="sim_02" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sim_02" class="anchor"></a>sim_02</h3>
 <div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="kw">data_assigner_sim_02</span> <span class="op">%&lt;&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(POP_ID = <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(x = <span class="kw">POP_ID</span>, levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP_1"</span>, <span class="st">"POP_2"</span>, <span class="st">"POP_3"</span>, <span class="st">"POP_4"</span>, <span class="st">"POP_5"</span>))) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">POP_ID</span>)
+<span class="va">data_assigner_sim_02</span> <span class="op">%&lt;&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>POP_ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">POP_ID</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP_1"</span>, <span class="st">"POP_2"</span>, <span class="st">"POP_3"</span>, <span class="st">"POP_4"</span>, <span class="st">"POP_5"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP_ID</span><span class="op">)</span>
 
-<span class="kw">sim.data2</span> <span class="op">&lt;-</span> <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/genomic_converter.html">genomic_converter</a></span>(
-  data = <span class="kw">data_assigner_sim_02</span>, 
-  output = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(
+<span class="va">sim.data2</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/genomic_converter.html">genomic_converter</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">data_assigner_sim_02</span>, 
+  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
     <span class="st">"genepop"</span>, <span class="co"># for GenoDive and diveRsity</span>
     <span class="st">"gtypes"</span>, <span class="co"># for strataG</span>
     <span class="st">"genlight"</span>, <span class="co"># for StAMPP</span>
     <span class="st">"hierfstat"</span>, <span class="co"># for Hierfstat</span>
     <span class="st">"snprelate"</span> <span class="co"># for SNPRelate</span>
-  ),
-  filename = <span class="st">"sim02"</span>,
-  path.folder = <span class="st">"fst_sim02"</span>,
-  internal = <span class="fl">TRUE</span>,
-  verbose = <span class="fl">FALSE</span>
-)
-<span class="kw">sim.data2</span><span class="op">$</span><span class="kw">tidy.data</span> <span class="op">%&lt;&gt;%</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">POP_ID</span>)
-</pre></div>
+  <span class="op">)</span>,
+  filename <span class="op">=</span> <span class="st">"sim02"</span>,
+  path.folder <span class="op">=</span> <span class="st">"fst_sim02"</span>,
+  internal <span class="op">=</span> <span class="cn">TRUE</span>,
+  verbose <span class="op">=</span> <span class="cn">FALSE</span>
+<span class="op">)</span>
+<span class="va">sim.data2</span><span class="op">$</span><span class="va">tidy.data</span> <span class="op">%&lt;&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP_ID</span><span class="op">)</span></pre></div>
 </div>
 </div>
 </div>
@@ -303,60 +295,58 @@
 <a href="#empirical-dataset-2" class="anchor"></a>Empirical dataset</h2>
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="co"># ETA ~ 30 min on my MBP, so yes, you have time for coffee...</span>
-<span class="kw">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">sunflower.filtered</span><span class="op">$</span><span class="kw">tidy.data</span><span class="op">$</span><span class="kw">POP_ID</span>))<span class="co"># pop string</span>
+<span class="va">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">$</span><span class="va">POP_ID</span><span class="op">)</span><span class="op">)</span><span class="co"># pop string</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(
-  <span class="kw">hierfstat.fst</span> <span class="op">&lt;-</span> <span class="kw">hierfstat</span>::<span class="fu">pairwise.WCfst</span>(
-    dat = <span class="kw">sunflower.filtered</span><span class="op">$</span><span class="kw">hierfstat</span>, 
-    diploid = <span class="fl">TRUE</span>
-  ) <span class="op">%&gt;%</span> 
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span>
+  <span class="va">hierfstat.fst</span> <span class="op">&lt;-</span> <span class="fu">hierfstat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/hierfstat/man/pairwise.WCfst.html">pairwise.WCfst</a></span><span class="op">(</span>
+    dat <span class="op">=</span> <span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">hierfstat</span>, 
+    diploid <span class="op">=</span> <span class="cn">TRUE</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="co"># The result need some work</span>
     <span class="co"># We transform the matrix into a useful tibble:</span>
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-    <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-      x = <span class="kw">.</span>, remove.diag = <span class="fl">TRUE</span>, remove.lower = <span class="fl">TRUE</span>, na.diag = <span class="fl">TRUE</span>, relative = <span class="fl">FALSE</span>
-    ) <span class="op">%&gt;%</span> 
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"HIERFSTAT"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">POP1</span>, <span class="kw">POP2</span>)
-)
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+      x <span class="op">=</span> <span class="va">.</span>, remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, na.diag <span class="op">=</span> <span class="cn">TRUE</span>, relative <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"HIERFSTAT"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP1</span>, <span class="va">POP2</span><span class="op">)</span>
+<span class="op">)</span>
 <span class="co">#&gt; 1233.880sec ~20 min</span>
-<span class="kw">hierfstat.fst</span>
-</pre></div>
+<span class="va">hierfstat.fst</span></pre></div>
 </div>
 <div id="simulated-datasets-2" class="section level2">
 <h2 class="hasAnchor">
 <a href="#simulated-datasets-2" class="anchor"></a>Simulated datasets</h2>
 <div class="sourceCode" id="cb13"><pre class="downlit">
-<span class="kw">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">sim.data1</span><span class="op">$</span><span class="kw">tidy.data</span><span class="op">$</span><span class="kw">POP_ID</span>))<span class="co"># pop string</span>
-<span class="kw">hierfstat.sim01.fst</span> <span class="op">&lt;-</span> <span class="kw">hierfstat</span>::<span class="fu">pairwise.WCfst</span>(
-    dat = <span class="kw">sim.data1</span><span class="op">$</span><span class="kw">hierfstat</span>, 
-    diploid = <span class="fl">TRUE</span>
-  ) <span class="op">%&gt;%</span> 
+<span class="va">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">sim.data1</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">$</span><span class="va">POP_ID</span><span class="op">)</span><span class="op">)</span><span class="co"># pop string</span>
+<span class="va">hierfstat.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">hierfstat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/hierfstat/man/pairwise.WCfst.html">pairwise.WCfst</a></span><span class="op">(</span>
+    dat <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">hierfstat</span>, 
+    diploid <span class="op">=</span> <span class="cn">TRUE</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="co"># The result need some work</span>
     <span class="co"># We transform the matrix into a useful tibble:</span>
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-    <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-      x = <span class="kw">.</span>, remove.diag = <span class="fl">TRUE</span>, remove.lower = <span class="fl">TRUE</span>, na.diag = <span class="fl">TRUE</span>, relative = <span class="fl">FALSE</span>
-    ) <span class="op">%&gt;%</span> 
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"HIERFSTAT_SIM01"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">POP1</span>, <span class="kw">POP2</span>)
-<span class="kw">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">sim.data2</span><span class="op">$</span><span class="kw">tidy.data</span><span class="op">$</span><span class="kw">POP_ID</span>))<span class="co"># pop string</span>
-  <span class="kw">hierfstat.sim02.fst</span> <span class="op">&lt;-</span> <span class="kw">hierfstat</span>::<span class="fu">pairwise.WCfst</span>(
-    dat = <span class="kw">sim.data2</span><span class="op">$</span><span class="kw">hierfstat</span>, 
-    diploid = <span class="fl">TRUE</span>
-  ) <span class="op">%&gt;%</span> 
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+      x <span class="op">=</span> <span class="va">.</span>, remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, na.diag <span class="op">=</span> <span class="cn">TRUE</span>, relative <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"HIERFSTAT_SIM01"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP1</span>, <span class="va">POP2</span><span class="op">)</span>
+<span class="va">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">sim.data2</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">$</span><span class="va">POP_ID</span><span class="op">)</span><span class="op">)</span><span class="co"># pop string</span>
+  <span class="va">hierfstat.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">hierfstat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/hierfstat/man/pairwise.WCfst.html">pairwise.WCfst</a></span><span class="op">(</span>
+    dat <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">hierfstat</span>, 
+    diploid <span class="op">=</span> <span class="cn">TRUE</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="co"># The result need some work</span>
     <span class="co"># We transform the matrix into a useful tibble:</span>
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-    <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-      x = <span class="kw">.</span>, remove.diag = <span class="fl">TRUE</span>, remove.lower = <span class="fl">TRUE</span>, na.diag = <span class="fl">TRUE</span>, relative = <span class="fl">FALSE</span>
-    ) <span class="op">%&gt;%</span> 
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"HIERFSTAT_SIM02"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">POP1</span>, <span class="kw">POP2</span>)
-</pre></div>
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+      x <span class="op">=</span> <span class="va">.</span>, remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, na.diag <span class="op">=</span> <span class="cn">TRUE</span>, relative <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"HIERFSTAT_SIM02"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP1</span>, <span class="va">POP2</span><span class="op">)</span></pre></div>
 </div>
 </div>
 <div id="stratag" class="section level1">
@@ -367,50 +357,48 @@
 <h2 class="hasAnchor">
 <a href="#empirical-dataset-3" class="anchor"></a>Empirical dataset</h2>
 <div class="sourceCode" id="cb14"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(
-  <span class="kw">stratag.fst</span> <span class="op">&lt;-</span> <span class="kw">strataG</span>::<span class="fu"><a href="https://rdrr.io/pkg/strataG/man/popStructTest.html">popStructTest</a></span>(
-    g = <span class="kw">sunflower.filtered</span><span class="op">$</span><span class="kw">gtypes</span>, 
-    stats = <span class="st">"fst"</span>, 
-    type = <span class="st">"both"</span>, 
-    quietly = <span class="fl">TRUE</span>, 
-    max.cores = <span class="kw">parallel</span>::<span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() <span class="op">-</span> <span class="fl">1</span>, 
-    nrep = <span class="fl">0</span>, 
-    keep.null = <span class="fl">FALSE</span>, 
-    write.output = <span class="fl">FALSE</span>) <span class="op">%$%</span>
-    <span class="kw">pairwise</span><span class="op">$</span><span class="kw">result</span> <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(POP1 = <span class="kw">strata.1</span>, POP2 = <span class="kw">strata.2</span>, STRATAG = <span class="kw">Fst</span>)
-)
-<span class="kw">stratag.fst</span>
-<span class="co">#&gt;657.377sec ~ 11 min</span>
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span>
+  <span class="va">stratag.fst</span> <span class="op">&lt;-</span> <span class="fu">strataG</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/strataG/man/popStructTest.html">popStructTest</a></span><span class="op">(</span>
+    g <span class="op">=</span> <span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">gtypes</span>, 
+    stats <span class="op">=</span> <span class="st">"fst"</span>, 
+    type <span class="op">=</span> <span class="st">"both"</span>, 
+    quietly <span class="op">=</span> <span class="cn">TRUE</span>, 
+    max.cores <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>, 
+    nrep <span class="op">=</span> <span class="fl">0</span>, 
+    keep.null <span class="op">=</span> <span class="cn">FALSE</span>, 
+    write.output <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%$%</span>
+    <span class="va">pairwise</span><span class="op">$</span><span class="va">result</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span>POP1 <span class="op">=</span> <span class="va">strata.1</span>, POP2 <span class="op">=</span> <span class="va">strata.2</span>, STRATAG <span class="op">=</span> <span class="va">Fst</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="va">stratag.fst</span>
+<span class="co">#&gt;657.377sec ~ 11 min</span></pre></div>
 </div>
 <div id="simulated-datasets-3" class="section level2">
 <h2 class="hasAnchor">
 <a href="#simulated-datasets-3" class="anchor"></a>Simulated datasets</h2>
 <div class="sourceCode" id="cb15"><pre class="downlit">
-<span class="kw">stratag.sim01.fst</span> <span class="op">&lt;-</span> <span class="kw">strataG</span>::<span class="fu"><a href="https://rdrr.io/pkg/strataG/man/popStructTest.html">popStructTest</a></span>(
-    g = <span class="kw">sim.data1</span><span class="op">$</span><span class="kw">gtypes</span>, 
-    stats = <span class="st">"fst"</span>, 
-    type = <span class="st">"both"</span>, 
-    quietly = <span class="fl">TRUE</span>, 
-    max.cores = <span class="kw">parallel</span>::<span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() <span class="op">-</span> <span class="fl">1</span>, 
-    nrep = <span class="fl">0</span>, 
-    keep.null = <span class="fl">FALSE</span>, 
-    write.output = <span class="fl">FALSE</span>) <span class="op">%$%</span>
-    <span class="kw">pairwise</span><span class="op">$</span><span class="kw">result</span> <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(POP1 = <span class="kw">strata.1</span>, POP2 = <span class="kw">strata.2</span>, STRATAG_SIM01 = <span class="kw">Fst</span>)
-<span class="kw">stratag.sim02.fst</span> <span class="op">&lt;-</span> <span class="kw">strataG</span>::<span class="fu"><a href="https://rdrr.io/pkg/strataG/man/popStructTest.html">popStructTest</a></span>(
-    g = <span class="kw">sim.data2</span><span class="op">$</span><span class="kw">gtypes</span>, 
-    stats = <span class="st">"fst"</span>, 
-    type = <span class="st">"both"</span>, 
-    quietly = <span class="fl">TRUE</span>, 
-    max.cores = <span class="kw">parallel</span>::<span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() <span class="op">-</span> <span class="fl">1</span>, 
-    nrep = <span class="fl">0</span>, 
-    keep.null = <span class="fl">FALSE</span>, 
-    write.output = <span class="fl">FALSE</span>) <span class="op">%$%</span>
-    <span class="kw">pairwise</span><span class="op">$</span><span class="kw">result</span> <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(POP1 = <span class="kw">strata.1</span>, POP2 = <span class="kw">strata.2</span>, STRATAG_SIM02 = <span class="kw">Fst</span>)
-</pre></div>
+<span class="va">stratag.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">strataG</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/strataG/man/popStructTest.html">popStructTest</a></span><span class="op">(</span>
+    g <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">gtypes</span>, 
+    stats <span class="op">=</span> <span class="st">"fst"</span>, 
+    type <span class="op">=</span> <span class="st">"both"</span>, 
+    quietly <span class="op">=</span> <span class="cn">TRUE</span>, 
+    max.cores <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>, 
+    nrep <span class="op">=</span> <span class="fl">0</span>, 
+    keep.null <span class="op">=</span> <span class="cn">FALSE</span>, 
+    write.output <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%$%</span>
+    <span class="va">pairwise</span><span class="op">$</span><span class="va">result</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span>POP1 <span class="op">=</span> <span class="va">strata.1</span>, POP2 <span class="op">=</span> <span class="va">strata.2</span>, STRATAG_SIM01 <span class="op">=</span> <span class="va">Fst</span><span class="op">)</span>
+<span class="va">stratag.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">strataG</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/strataG/man/popStructTest.html">popStructTest</a></span><span class="op">(</span>
+    g <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">gtypes</span>, 
+    stats <span class="op">=</span> <span class="st">"fst"</span>, 
+    type <span class="op">=</span> <span class="st">"both"</span>, 
+    quietly <span class="op">=</span> <span class="cn">TRUE</span>, 
+    max.cores <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>, 
+    nrep <span class="op">=</span> <span class="fl">0</span>, 
+    keep.null <span class="op">=</span> <span class="cn">FALSE</span>, 
+    write.output <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%$%</span>
+    <span class="va">pairwise</span><span class="op">$</span><span class="va">result</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span>POP1 <span class="op">=</span> <span class="va">strata.1</span>, POP2 <span class="op">=</span> <span class="va">strata.2</span>, STRATAG_SIM02 <span class="op">=</span> <span class="va">Fst</span><span class="op">)</span></pre></div>
 </div>
 </div>
 <div id="diversity" class="section level1">
@@ -424,101 +412,99 @@
 <h2 class="hasAnchor">
 <a href="#empirical-dataset-4" class="anchor"></a>Empirical dataset</h2>
 <div class="sourceCode" id="cb16"><pre class="downlit">
-<span class="kw">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">sunflower.filtered</span><span class="op">$</span><span class="kw">tidy.data</span><span class="op">$</span><span class="kw">POP_ID</span>)) <span class="co"># pop string</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(
-  <span class="kw">diversity.fst</span> <span class="op">&lt;-</span> <span class="kw">diveRsity</span>::<span class="fu">diffCalc</span>(
-    infile = <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span>(
-      path = <span class="st">"."</span>, 
-      pattern = <span class="st">"_genepop.gen"</span>, 
-      full.names = <span class="fl">TRUE</span>,
-      recursive = <span class="fl">TRUE</span>
-    ), 
-    outfile = <span class="st">"sunflower_diversity_output"</span>, 
-    fst = <span class="fl">TRUE</span>,
-    pairwise = <span class="fl">TRUE</span>,
-    para = <span class="fl">TRUE</span>
-  ) <span class="op">%$%</span>
-    <span class="kw">pairwise</span> <span class="op">%$%</span>
-    <span class="kw">Fst</span> <span class="op">%&gt;%</span> 
+<span class="va">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">$</span><span class="va">POP_ID</span><span class="op">)</span><span class="op">)</span> <span class="co"># pop string</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span>
+  <span class="va">diversity.fst</span> <span class="op">&lt;-</span> <span class="fu">diveRsity</span><span class="fu">::</span><span class="fu">diffCalc</span><span class="op">(</span>
+    infile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span>
+      path <span class="op">=</span> <span class="st">"."</span>, 
+      pattern <span class="op">=</span> <span class="st">"_genepop.gen"</span>, 
+      full.names <span class="op">=</span> <span class="cn">TRUE</span>,
+      recursive <span class="op">=</span> <span class="cn">TRUE</span>
+    <span class="op">)</span>, 
+    outfile <span class="op">=</span> <span class="st">"sunflower_diversity_output"</span>, 
+    fst <span class="op">=</span> <span class="cn">TRUE</span>,
+    pairwise <span class="op">=</span> <span class="cn">TRUE</span>,
+    para <span class="op">=</span> <span class="cn">TRUE</span>
+  <span class="op">)</span> <span class="op">%$%</span>
+    <span class="va">pairwise</span> <span class="op">%$%</span>
+    <span class="va">Fst</span> <span class="op">%&gt;%</span> 
     <span class="co"># The result need some work</span>
     <span class="co"># We transform the matrix into a useful tibble:</span>
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-    <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-      x = <span class="kw">.</span>, 
-      remove.diag = <span class="fl">TRUE</span>, 
-      remove.lower = <span class="fl">FALSE</span>, <span class="co"># FALSE because their's only the lower diag</span>
-      na.diag = <span class="fl">TRUE</span>, 
-      relative = <span class="fl">FALSE</span>
-    ) <span class="op">%&gt;%</span> 
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+      x <span class="op">=</span> <span class="va">.</span>, 
+      remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+      remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># FALSE because their's only the lower diag</span>
+      na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+      relative <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="co"># we switch the POP id column here to match the others</span>
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"DIVERSITY"</span>))
-)
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"DIVERSITY"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span>
 <span class="co">#&gt; 42.711 sec Wow! this is very fast, plus other distances are automatically generated!</span>
-<span class="kw">diversity.fst</span>
-</pre></div>
+<span class="va">diversity.fst</span></pre></div>
 </div>
 <div id="simulated-datasets-4" class="section level2">
 <h2 class="hasAnchor">
 <a href="#simulated-datasets-4" class="anchor"></a>Simulated datasets</h2>
 <div class="sourceCode" id="cb17"><pre class="downlit">
-<span class="kw">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">sim.data1</span><span class="op">$</span><span class="kw">tidy.data</span><span class="op">$</span><span class="kw">POP_ID</span>)) <span class="co"># pop string</span>
-<span class="kw">diversity.sim01.fst</span> <span class="op">&lt;-</span> <span class="kw">diveRsity</span>::<span class="fu">diffCalc</span>(
-  infile = <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span>(
-    path = <span class="st">"."</span>, 
-    pattern = <span class="st">"sim01_genepop.gen"</span>, 
-    full.names = <span class="fl">TRUE</span>,
-    recursive = <span class="fl">TRUE</span>
-  ), 
-  outfile = <span class="st">"sim_data1_diversity_output"</span>, 
-  fst = <span class="fl">TRUE</span>,
-  pairwise = <span class="fl">TRUE</span>,
-  para = <span class="fl">TRUE</span>
-) <span class="op">%$%</span>
-  <span class="kw">pairwise</span> <span class="op">%$%</span>
-  <span class="kw">Fst</span> <span class="op">%&gt;%</span> 
+<span class="va">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">sim.data1</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">$</span><span class="va">POP_ID</span><span class="op">)</span><span class="op">)</span> <span class="co"># pop string</span>
+<span class="va">diversity.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">diveRsity</span><span class="fu">::</span><span class="fu">diffCalc</span><span class="op">(</span>
+  infile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span>
+    path <span class="op">=</span> <span class="st">"."</span>, 
+    pattern <span class="op">=</span> <span class="st">"sim01_genepop.gen"</span>, 
+    full.names <span class="op">=</span> <span class="cn">TRUE</span>,
+    recursive <span class="op">=</span> <span class="cn">TRUE</span>
+  <span class="op">)</span>, 
+  outfile <span class="op">=</span> <span class="st">"sim_data1_diversity_output"</span>, 
+  fst <span class="op">=</span> <span class="cn">TRUE</span>,
+  pairwise <span class="op">=</span> <span class="cn">TRUE</span>,
+  para <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span> <span class="op">%$%</span>
+  <span class="va">pairwise</span> <span class="op">%$%</span>
+  <span class="va">Fst</span> <span class="op">%&gt;%</span> 
   <span class="co"># The result need some work</span>
   <span class="co"># We transform the matrix into a useful tibble:</span>
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-    x = <span class="kw">.</span>, 
-    remove.diag = <span class="fl">TRUE</span>, 
-    remove.lower = <span class="fl">FALSE</span>, <span class="co"># FALSE because their's only the lower diag</span>
-    na.diag = <span class="fl">TRUE</span>, 
-    relative = <span class="fl">FALSE</span>
-  ) <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">.</span>, 
+    remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># FALSE because their's only the lower diag</span>
+    na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    relative <span class="op">=</span> <span class="cn">FALSE</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="co"># we switch the POP id column here to match the others</span>
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"DIVERSITY_SIM01"</span>))
-<span class="kw">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">sim.data2</span><span class="op">$</span><span class="kw">tidy.data</span><span class="op">$</span><span class="kw">POP_ID</span>)) <span class="co"># pop string</span>
-<span class="kw">diversity.sim02.fst</span> <span class="op">&lt;-</span> <span class="kw">diveRsity</span>::<span class="fu">diffCalc</span>(
-  infile = <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span>(
-    path = <span class="st">"."</span>, 
-    pattern = <span class="st">"sim02_genepop.gen"</span>, 
-    full.names = <span class="fl">TRUE</span>,
-    recursive = <span class="fl">TRUE</span>
-  ),  
-  outfile = <span class="st">"sim_data2_diversity_output"</span>, 
-  fst = <span class="fl">TRUE</span>,
-  pairwise = <span class="fl">TRUE</span>,
-  para = <span class="fl">TRUE</span>
-) <span class="op">%$%</span>
-  <span class="kw">pairwise</span> <span class="op">%$%</span>
-  <span class="kw">Fst</span> <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"DIVERSITY_SIM01"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">sim.data2</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">$</span><span class="va">POP_ID</span><span class="op">)</span><span class="op">)</span> <span class="co"># pop string</span>
+<span class="va">diversity.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">diveRsity</span><span class="fu">::</span><span class="fu">diffCalc</span><span class="op">(</span>
+  infile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span>
+    path <span class="op">=</span> <span class="st">"."</span>, 
+    pattern <span class="op">=</span> <span class="st">"sim02_genepop.gen"</span>, 
+    full.names <span class="op">=</span> <span class="cn">TRUE</span>,
+    recursive <span class="op">=</span> <span class="cn">TRUE</span>
+  <span class="op">)</span>,  
+  outfile <span class="op">=</span> <span class="st">"sim_data2_diversity_output"</span>, 
+  fst <span class="op">=</span> <span class="cn">TRUE</span>,
+  pairwise <span class="op">=</span> <span class="cn">TRUE</span>,
+  para <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span> <span class="op">%$%</span>
+  <span class="va">pairwise</span> <span class="op">%$%</span>
+  <span class="va">Fst</span> <span class="op">%&gt;%</span> 
   <span class="co"># The result need some work</span>
   <span class="co"># We transform the matrix into a useful tibble:</span>
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-    x = <span class="kw">.</span>, 
-    remove.diag = <span class="fl">TRUE</span>, 
-    remove.lower = <span class="fl">FALSE</span>, <span class="co"># FALSE because their's only the lower diag</span>
-    na.diag = <span class="fl">TRUE</span>, 
-    relative = <span class="fl">FALSE</span>
-  ) <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">.</span>, 
+    remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># FALSE because their's only the lower diag</span>
+    na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    relative <span class="op">=</span> <span class="cn">FALSE</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="co"># we switch the POP id column here to match the others</span>
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"DIVERSITY_SIM02"</span>))
-</pre></div>
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"DIVERSITY_SIM02"</span><span class="op">)</span><span class="op">)</span></pre></div>
 </div>
 </div>
 <div id="snprelate" class="section level1">
@@ -533,102 +519,96 @@
 <a href="#empirical-dataset-5" class="anchor"></a>Empirical dataset</h2>
 <p>We need the strata</p>
 <div class="sourceCode" id="cb18"><pre class="downlit">
-<span class="kw">strata</span> <span class="op">&lt;-</span> <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/read_strata.html">read_strata</a></span>(strata = <span class="st">"sunflower.strata.tsv"</span>) <span class="op">%$%</span> <span class="kw">strata</span>
-</pre></div>
+<span class="va">strata</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/read_strata.html">read_strata</a></span><span class="op">(</span>strata <span class="op">=</span> <span class="st">"sunflower.strata.tsv"</span><span class="op">)</span> <span class="op">%$%</span> <span class="va">strata</span></pre></div>
 <p>Showing off the global Fst only:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(
-  <span class="kw">snprelate.fst</span> <span class="op">&lt;-</span> <span class="kw">SNPRelate</span>::<span class="fu"><a href="https://rdrr.io/pkg/SNPRelate/man/snpgdsFst.html">snpgdsFst</a></span>(
-    gdsobj = <span class="kw">sunflower.filtered</span><span class="op">$</span><span class="kw">snprelate</span>,
-    population = <span class="kw">strata</span><span class="op">$</span><span class="kw">STRATA</span>, <span class="co"># factors required</span>
-    sample.id = <span class="kw">strata</span><span class="op">$</span><span class="kw">INDIVIDUALS</span>,
-    snp.id = <span class="kw">NULL</span>,
-    method = <span class="st">"W&amp;C84"</span>,
-    remove.monosnp = <span class="fl">TRUE</span>,
-    maf = <span class="fl">NaN</span>,
-    missing.rate = <span class="fl">NaN</span>,
-    autosome.only = <span class="fl">FALSE</span>,
-    with.id = <span class="fl">FALSE</span>,
-    verbose = <span class="fl">TRUE</span>
-  )
-)
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span>
+  <span class="va">snprelate.fst</span> <span class="op">&lt;-</span> <span class="fu">SNPRelate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SNPRelate/man/snpgdsFst.html">snpgdsFst</a></span><span class="op">(</span>
+    gdsobj <span class="op">=</span> <span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">snprelate</span>,
+    population <span class="op">=</span> <span class="va">strata</span><span class="op">$</span><span class="va">STRATA</span>, <span class="co"># factors required</span>
+    sample.id <span class="op">=</span> <span class="va">strata</span><span class="op">$</span><span class="va">INDIVIDUALS</span>,
+    snp.id <span class="op">=</span> <span class="cn">NULL</span>,
+    method <span class="op">=</span> <span class="st">"W&amp;C84"</span>,
+    remove.monosnp <span class="op">=</span> <span class="cn">TRUE</span>,
+    maf <span class="op">=</span> <span class="cn">NaN</span>,
+    missing.rate <span class="op">=</span> <span class="cn">NaN</span>,
+    autosome.only <span class="op">=</span> <span class="cn">FALSE</span>,
+    with.id <span class="op">=</span> <span class="cn">FALSE</span>,
+    verbose <span class="op">=</span> <span class="cn">TRUE</span>
+  <span class="op">)</span>
+<span class="op">)</span>
 <span class="co">#&gt; 0.029sec wo!</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">snprelate.fst</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">snprelate.fst</span><span class="op">)</span>
 <span class="co">#&gt; snprelate.fst$Fst: weighted Fst estimate</span>
 <span class="co">#&gt; snprelate.fst$MeanFst: the average of Fst estimates across SNPs</span>
-<span class="co">#&gt; snprelate.fst$FstSNP: a vector of Fst for each SNP</span>
-</pre></div>
+<span class="co">#&gt; snprelate.fst$FstSNP: a vector of Fst for each SNP</span></pre></div>
 <p>Build a function to conduct pairwise Fst with SNPRelate:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit">
-<span class="kw">pairwise_fst_snprelate</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">pop.pairwise</span>, <span class="kw">data</span>, <span class="kw">strata</span>) {
-  <span class="kw">strata.temp</span> <span class="op">&lt;-</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(.data = <span class="kw">strata</span>, <span class="kw">STRATA</span> <span class="op">%in%</span> <span class="kw">pop.pairwise</span>) <span class="op">%&gt;%</span>
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(STRATA = <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html">droplevels</a></span>(<span class="kw">STRATA</span>))
+<span class="va">pairwise_fst_snprelate</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">pop.pairwise</span>, <span class="va">data</span>, <span class="va">strata</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">strata.temp</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span>.data <span class="op">=</span> <span class="va">strata</span>, <span class="va">STRATA</span> <span class="op">%in%</span> <span class="va">pop.pairwise</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>STRATA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html">droplevels</a></span><span class="op">(</span><span class="va">STRATA</span><span class="op">)</span><span class="op">)</span>
   
-  <span class="kw">fst</span> <span class="op">&lt;-</span> <span class="kw">SNPRelate</span>::<span class="fu"><a href="https://rdrr.io/pkg/SNPRelate/man/snpgdsFst.html">snpgdsFst</a></span>(
-    gdsobj = <span class="kw">data</span>,
-    population = <span class="kw">strata.temp</span><span class="op">$</span><span class="kw">STRATA</span>, <span class="co"># factors required</span>
-    sample.id = <span class="kw">strata.temp</span><span class="op">$</span><span class="kw">INDIVIDUALS</span>,
-    snp.id = <span class="kw">NULL</span>,
-    method = <span class="st">"W&amp;C84"</span>,
-    remove.monosnp = <span class="fl">TRUE</span>,
-    maf = <span class="fl">NaN</span>,
-    missing.rate = <span class="fl">NaN</span>,
-    autosome.only = <span class="fl">FALSE</span>,
-    with.id = <span class="fl">FALSE</span>,
-    verbose = <span class="fl">TRUE</span>
-  )
+  <span class="va">fst</span> <span class="op">&lt;-</span> <span class="fu">SNPRelate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SNPRelate/man/snpgdsFst.html">snpgdsFst</a></span><span class="op">(</span>
+    gdsobj <span class="op">=</span> <span class="va">data</span>,
+    population <span class="op">=</span> <span class="va">strata.temp</span><span class="op">$</span><span class="va">STRATA</span>, <span class="co"># factors required</span>
+    sample.id <span class="op">=</span> <span class="va">strata.temp</span><span class="op">$</span><span class="va">INDIVIDUALS</span>,
+    snp.id <span class="op">=</span> <span class="cn">NULL</span>,
+    method <span class="op">=</span> <span class="st">"W&amp;C84"</span>,
+    remove.monosnp <span class="op">=</span> <span class="cn">TRUE</span>,
+    maf <span class="op">=</span> <span class="cn">NaN</span>,
+    missing.rate <span class="op">=</span> <span class="cn">NaN</span>,
+    autosome.only <span class="op">=</span> <span class="cn">FALSE</span>,
+    with.id <span class="op">=</span> <span class="cn">FALSE</span>,
+    verbose <span class="op">=</span> <span class="cn">TRUE</span>
+  <span class="op">)</span>
   <span class="co">#prepare the results into a tibble:</span>
-  <span class="kw">fst</span> <span class="op">&lt;-</span> <span class="kw">tibble</span>::<span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span>(
-    POP1 = <span class="kw">pop.pairwise</span>[<span class="fl">1</span>], 
-    POP2 = <span class="kw">pop.pairwise</span>[<span class="fl">2</span>], 
-    SNPRELATE_MEAN = <span class="kw">fst</span><span class="op">$</span><span class="kw">MeanFst</span>,
-    SNPRELATE_WEIGHTED = <span class="kw">fst</span><span class="op">$</span><span class="kw">Fst</span>
-  )
-  <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="kw">fst</span>)
-}
-</pre></div>
+  <span class="va">fst</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>
+    POP1 <span class="op">=</span> <span class="va">pop.pairwise</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, 
+    POP2 <span class="op">=</span> <span class="va">pop.pairwise</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, 
+    SNPRELATE_MEAN <span class="op">=</span> <span class="va">fst</span><span class="op">$</span><span class="va">MeanFst</span>,
+    SNPRELATE_WEIGHTED <span class="op">=</span> <span class="va">fst</span><span class="op">$</span><span class="va">Fst</span>
+  <span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">fst</span><span class="op">)</span>
+<span class="op">}</span></pre></div>
 <p>To run we need all combination of populations:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit">
-<span class="kw">pop.pairwise</span> <span class="op">&lt;-</span> <span class="kw">utils</span>::<span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">strata</span><span class="op">$</span><span class="kw">STRATA</span>)), <span class="fl">2</span>, simplify = <span class="fl">FALSE</span>)
-</pre></div>
+<span class="va">pop.pairwise</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">strata</span><span class="op">$</span><span class="va">STRATA</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></pre></div>
 <p>Run the pairwise implementation:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(
-  <span class="kw">snprelate.fst</span> <span class="op">&lt;-</span> <span class="kw">purrr</span>::<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dfr</a></span>(
-    .x = <span class="kw">pop.pairwise</span>,
-    .f = <span class="kw">pairwise_fst_snprelate</span>,
-    data = <span class="kw">sunflower.filtered</span><span class="op">$</span><span class="kw">snprelate</span>,
-    strata = <span class="kw">strata</span>
-  )
-)
-<span class="co">#&gt; 0.245 sec that's the fastest so far!</span>
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span>
+  <span class="va">snprelate.fst</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dfr</a></span><span class="op">(</span>
+    .x <span class="op">=</span> <span class="va">pop.pairwise</span>,
+    .f <span class="op">=</span> <span class="va">pairwise_fst_snprelate</span>,
+    data <span class="op">=</span> <span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">snprelate</span>,
+    strata <span class="op">=</span> <span class="va">strata</span>
+  <span class="op">)</span>
+<span class="op">)</span>
+<span class="co">#&gt; 0.245 sec that's the fastest so far!</span></pre></div>
 </div>
 <div id="simulated-datasets-5" class="section level2">
 <h2 class="hasAnchor">
 <a href="#simulated-datasets-5" class="anchor"></a>Simulated datasets</h2>
 <div class="sourceCode" id="cb23"><pre class="downlit">
-<span class="kw">strata</span> <span class="op">&lt;-</span> <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/generate_strata.html">generate_strata</a></span>(data = <span class="kw">sim.data1</span><span class="op">$</span><span class="kw">tidy.data</span>) <span class="op">%&gt;%</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span>(STRATA = <span class="kw">POP_ID</span>)
-<span class="kw">pop.pairwise</span> <span class="op">&lt;-</span> <span class="kw">utils</span>::<span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">strata</span><span class="op">$</span><span class="kw">STRATA</span>)), <span class="fl">2</span>, simplify = <span class="fl">FALSE</span>)
-<span class="kw">snprelate.sim01.fst</span> <span class="op">&lt;-</span> <span class="kw">purrr</span>::<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dfr</a></span>(
-  .x = <span class="kw">pop.pairwise</span>,
-  .f = <span class="kw">pairwise_fst_snprelate</span>,
-  data = <span class="kw">sim.data1</span><span class="op">$</span><span class="kw">snprelate</span>,
-  strata = <span class="kw">strata</span>
-) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span>(SNPRELATE_MEAN_SIM01 = <span class="kw">SNPRELATE_MEAN</span>, SNPRELATE_WEIGHTED_SIM01 = <span class="kw">SNPRELATE_WEIGHTED</span>)
+<span class="va">strata</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/generate_strata.html">generate_strata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>STRATA <span class="op">=</span> <span class="va">POP_ID</span><span class="op">)</span>
+<span class="va">pop.pairwise</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">strata</span><span class="op">$</span><span class="va">STRATA</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">snprelate.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dfr</a></span><span class="op">(</span>
+  .x <span class="op">=</span> <span class="va">pop.pairwise</span>,
+  .f <span class="op">=</span> <span class="va">pairwise_fst_snprelate</span>,
+  data <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">snprelate</span>,
+  strata <span class="op">=</span> <span class="va">strata</span>
+<span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>SNPRELATE_MEAN_SIM01 <span class="op">=</span> <span class="va">SNPRELATE_MEAN</span>, SNPRELATE_WEIGHTED_SIM01 <span class="op">=</span> <span class="va">SNPRELATE_WEIGHTED</span><span class="op">)</span>
 
-<span class="kw">strata</span> <span class="op">&lt;-</span> <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/generate_strata.html">generate_strata</a></span>(data = <span class="kw">sim.data2</span><span class="op">$</span><span class="kw">tidy.data</span>) <span class="op">%&gt;%</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span>(STRATA = <span class="kw">POP_ID</span>)
-<span class="kw">pop.pairwise</span> <span class="op">&lt;-</span> <span class="kw">utils</span>::<span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">strata</span><span class="op">$</span><span class="kw">STRATA</span>)), <span class="fl">2</span>, simplify = <span class="fl">FALSE</span>)
-<span class="kw">snprelate.sim02.fst</span> <span class="op">&lt;-</span> <span class="kw">purrr</span>::<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dfr</a></span>(
-  .x = <span class="kw">pop.pairwise</span>,
-  .f = <span class="kw">pairwise_fst_snprelate</span>,
-  data = <span class="kw">sim.data2</span><span class="op">$</span><span class="kw">snprelate</span>,
-  strata = <span class="kw">strata</span>
-) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span>(SNPRELATE_MEAN_SIM02 = <span class="kw">SNPRELATE_MEAN</span>, SNPRELATE_WEIGHTED_SIM02 = <span class="kw">SNPRELATE_WEIGHTED</span>)
-</pre></div>
+<span class="va">strata</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/generate_strata.html">generate_strata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>STRATA <span class="op">=</span> <span class="va">POP_ID</span><span class="op">)</span>
+<span class="va">pop.pairwise</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">strata</span><span class="op">$</span><span class="va">STRATA</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">snprelate.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dfr</a></span><span class="op">(</span>
+  .x <span class="op">=</span> <span class="va">pop.pairwise</span>,
+  .f <span class="op">=</span> <span class="va">pairwise_fst_snprelate</span>,
+  data <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">snprelate</span>,
+  strata <span class="op">=</span> <span class="va">strata</span>
+<span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>SNPRELATE_MEAN_SIM02 <span class="op">=</span> <span class="va">SNPRELATE_MEAN</span>, SNPRELATE_WEIGHTED_SIM02 <span class="op">=</span> <span class="va">SNPRELATE_WEIGHTED</span><span class="op">)</span></pre></div>
 </div>
 </div>
 <div id="genodive" class="section level1">
@@ -646,23 +626,22 @@
 <div class="sourceCode" id="cb24"><pre class="downlit">
 <span class="co"># Import in R</span>
 <span class="co"># Add the proper columns and rows names</span>
-<span class="kw">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">sunflower.filtered</span><span class="op">$</span><span class="kw">tidy.data</span><span class="op">$</span><span class="kw">POP_ID</span>)) <span class="co"># pop string</span>
-<span class="kw">genodive.fst</span> <span class="op">&lt;-</span> <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(
-  file = <span class="st">"genodive.fst.tsv"</span>,
-  col_names = <span class="kw">pops</span>
-) <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/strataG/man/as.data.frame.gtypes.html">as.matrix</a></span>(<span class="kw">.</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-    x = <span class="kw">.</span>, 
-    remove.diag = <span class="fl">TRUE</span>, 
-    remove.lower = <span class="fl">TRUE</span>, <span class="co"># FALSE because their's only the lower diag</span>
-    na.diag = <span class="fl">TRUE</span>, 
-    relative = <span class="fl">FALSE</span>
-  ) <span class="op">%&gt;%</span> 
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"GENODIVE"</span>))
-<span class="kw">genodive.fst</span>
-</pre></div>
+<span class="va">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">$</span><span class="va">POP_ID</span><span class="op">)</span><span class="op">)</span> <span class="co"># pop string</span>
+<span class="va">genodive.fst</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span><span class="op">(</span>
+  file <span class="op">=</span> <span class="st">"genodive.fst.tsv"</span>,
+  col_names <span class="op">=</span> <span class="va">pops</span>
+<span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/strataG/man/as.data.frame.gtypes.html">as.matrix</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">.</span>, 
+    remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># FALSE because their's only the lower diag</span>
+    na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    relative <span class="op">=</span> <span class="cn">FALSE</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"GENODIVE"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">genodive.fst</span></pre></div>
 <p>Obviously, here the timing gets doesn’t reflect the whole process:</p>
 <ul>
 <li>the data as to be imported in GenoDive</li>
@@ -673,47 +652,46 @@
 <h2 class="hasAnchor">
 <a href="#simulated-datasets-6" class="anchor"></a>Simulated datasets</h2>
 <div class="sourceCode" id="cb25"><pre class="downlit">
-<span class="kw">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">sim.data1</span><span class="op">$</span><span class="kw">tidy.data</span><span class="op">$</span><span class="kw">POP_ID</span>)) <span class="co"># pop string</span>
-<span class="kw">genodive.sim01.fst</span> <span class="op">&lt;-</span> <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(
-  file = <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span>(
-      path = <span class="st">"."</span>, 
-      pattern = <span class="st">"genodive.sim01.fst.tsv"</span>, 
-      full.names = <span class="fl">TRUE</span>,
-      recursive = <span class="fl">TRUE</span>
-    ),
-  col_names = <span class="kw">pops</span>
-) <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/strataG/man/as.data.frame.gtypes.html">as.matrix</a></span>(<span class="kw">.</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-    x = <span class="kw">.</span>, 
-    remove.diag = <span class="fl">TRUE</span>, 
-    remove.lower = <span class="fl">TRUE</span>, <span class="co"># FALSE because their's only the lower diag</span>
-    na.diag = <span class="fl">TRUE</span>, 
-    relative = <span class="fl">FALSE</span>
-  ) <span class="op">%&gt;%</span> 
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"GENODIVE_SIM01"</span>))
-<span class="kw">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">sim.data2</span><span class="op">$</span><span class="kw">tidy.data</span><span class="op">$</span><span class="kw">POP_ID</span>)) <span class="co"># pop string</span>
-<span class="kw">genodive.sim02.fst</span> <span class="op">&lt;-</span> <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(
-  file = <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span>(
-      path = <span class="st">"."</span>, 
-      pattern = <span class="st">"genodive.sim02.fst.tsv"</span>, 
-      full.names = <span class="fl">TRUE</span>,
-      recursive = <span class="fl">TRUE</span>
-    ),
-  col_names = <span class="kw">pops</span>
-) <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/strataG/man/as.data.frame.gtypes.html">as.matrix</a></span>(<span class="kw">.</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span>(x = <span class="kw">.</span>, value = <span class="kw">pops</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-    x = <span class="kw">.</span>, 
-    remove.diag = <span class="fl">TRUE</span>, 
-    remove.lower = <span class="fl">TRUE</span>, <span class="co"># FALSE because their's only the lower diag</span>
-    na.diag = <span class="fl">TRUE</span>, 
-    relative = <span class="fl">FALSE</span>
-  ) <span class="op">%&gt;%</span> 
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"GENODIVE_SIM02"</span>))
-</pre></div>
+<span class="va">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">sim.data1</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">$</span><span class="va">POP_ID</span><span class="op">)</span><span class="op">)</span> <span class="co"># pop string</span>
+<span class="va">genodive.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span><span class="op">(</span>
+  file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span>
+      path <span class="op">=</span> <span class="st">"."</span>, 
+      pattern <span class="op">=</span> <span class="st">"genodive.sim01.fst.tsv"</span>, 
+      full.names <span class="op">=</span> <span class="cn">TRUE</span>,
+      recursive <span class="op">=</span> <span class="cn">TRUE</span>
+    <span class="op">)</span>,
+  col_names <span class="op">=</span> <span class="va">pops</span>
+<span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/strataG/man/as.data.frame.gtypes.html">as.matrix</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">.</span>, 
+    remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># FALSE because their's only the lower diag</span>
+    na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    relative <span class="op">=</span> <span class="cn">FALSE</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"GENODIVE_SIM01"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">sim.data2</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">$</span><span class="va">POP_ID</span><span class="op">)</span><span class="op">)</span> <span class="co"># pop string</span>
+<span class="va">genodive.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span><span class="op">(</span>
+  file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span>
+      path <span class="op">=</span> <span class="st">"."</span>, 
+      pattern <span class="op">=</span> <span class="st">"genodive.sim02.fst.tsv"</span>, 
+      full.names <span class="op">=</span> <span class="cn">TRUE</span>,
+      recursive <span class="op">=</span> <span class="cn">TRUE</span>
+    <span class="op">)</span>,
+  col_names <span class="op">=</span> <span class="va">pops</span>
+<span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/strataG/man/as.data.frame.gtypes.html">as.matrix</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">.</span>, 
+    remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># FALSE because their's only the lower diag</span>
+    na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    relative <span class="op">=</span> <span class="cn">FALSE</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"GENODIVE_SIM02"</span><span class="op">)</span><span class="op">)</span></pre></div>
 </div>
 </div>
 <div id="stampp" class="section level1">
@@ -724,71 +702,69 @@
 <h2 class="hasAnchor">
 <a href="#empirical-dataset-7" class="anchor"></a>Empirical dataset</h2>
 <div class="sourceCode" id="cb26"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(
-  <span class="kw">stampp.fst</span> <span class="op">&lt;-</span> <span class="kw">StAMPP</span>::<span class="fu">stamppFst</span>(
-    geno = <span class="kw">sunflower.filtered</span><span class="op">$</span><span class="kw">genlight</span>, 
-    nboots = <span class="fl">1</span>, 
-    percent = <span class="fl">95</span>, 
-    nclusters = <span class="kw">parallel</span>::<span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() <span class="op">-</span> <span class="fl">1</span>
-  ) <span class="op">%&gt;%</span> 
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span>
+  <span class="va">stampp.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span>
+    geno <span class="op">=</span> <span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">genlight</span>, 
+    nboots <span class="op">=</span> <span class="fl">1</span>, 
+    percent <span class="op">=</span> <span class="fl">95</span>, 
+    nclusters <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="co"># The distance matrix need some love</span>
     <span class="co"># if we want to compare it with the others:</span>
-    <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-      x = <span class="kw">.</span>, 
-      remove.diag = <span class="fl">TRUE</span>, 
-      remove.lower = <span class="fl">FALSE</span>, 
-      na.diag = <span class="fl">TRUE</span>, 
-      relative = <span class="fl">FALSE</span>
-    ) <span class="op">%&gt;%</span> 
+    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+      x <span class="op">=</span> <span class="va">.</span>, 
+      remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+      remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, 
+      na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+      relative <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="co"># we switch the POP id column here to match the others</span>
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"STAMPP"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">POP1</span>, <span class="kw">POP2</span>)
-)
-<span class="co">#&gt; 39.281 sec!</span>
-</pre></div>
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"STAMPP"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP1</span>, <span class="va">POP2</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="co">#&gt; 39.281 sec!</span></pre></div>
 </div>
 <div id="simulated-datasets-7" class="section level2">
 <h2 class="hasAnchor">
 <a href="#simulated-datasets-7" class="anchor"></a>Simulated datasets</h2>
 <div class="sourceCode" id="cb27"><pre class="downlit">
-<span class="kw">stampp.sim01.fst</span> <span class="op">&lt;-</span> <span class="kw">StAMPP</span>::<span class="fu">stamppFst</span>(
-    geno = <span class="kw">sim.data1</span><span class="op">$</span><span class="kw">genlight</span>, 
-    nboots = <span class="fl">1</span>, 
-    percent = <span class="fl">95</span>, 
-    nclusters = <span class="kw">parallel</span>::<span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() <span class="op">-</span> <span class="fl">1</span>
-  ) <span class="op">%&gt;%</span> 
+<span class="va">stampp.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span>
+    geno <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">genlight</span>, 
+    nboots <span class="op">=</span> <span class="fl">1</span>, 
+    percent <span class="op">=</span> <span class="fl">95</span>, 
+    nclusters <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="co"># The distance matrix need some love</span>
     <span class="co"># if we want to compare it with the others:</span>
-    <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-      x = <span class="kw">.</span>, 
-      remove.diag = <span class="fl">TRUE</span>, 
-      remove.lower = <span class="fl">FALSE</span>, 
-      na.diag = <span class="fl">TRUE</span>, 
-      relative = <span class="fl">FALSE</span>
-    ) <span class="op">%&gt;%</span> 
+    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+      x <span class="op">=</span> <span class="va">.</span>, 
+      remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+      remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, 
+      na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+      relative <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="co"># we switch the POP id column here to match the others</span>
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"STAMPP_SIM01"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">POP1</span>, <span class="kw">POP2</span>)
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"STAMPP_SIM01"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP1</span>, <span class="va">POP2</span><span class="op">)</span>
 
-<span class="kw">stampp.sim02.fst</span> <span class="op">&lt;-</span> <span class="kw">StAMPP</span>::<span class="fu">stamppFst</span>(
-    geno = <span class="kw">sim.data2</span><span class="op">$</span><span class="kw">genlight</span>, 
-    nboots = <span class="fl">1</span>, 
-    percent = <span class="fl">95</span>, 
-    nclusters = <span class="kw">parallel</span>::<span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() <span class="op">-</span> <span class="fl">1</span>
-  ) <span class="op">%&gt;%</span> 
+<span class="va">stampp.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span>
+    geno <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">genlight</span>, 
+    nboots <span class="op">=</span> <span class="fl">1</span>, 
+    percent <span class="op">=</span> <span class="fl">95</span>, 
+    nclusters <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="co"># The distance matrix need some love</span>
     <span class="co"># if we want to compare it with the others:</span>
-    <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-      x = <span class="kw">.</span>, 
-      remove.diag = <span class="fl">TRUE</span>, 
-      remove.lower = <span class="fl">FALSE</span>, 
-      na.diag = <span class="fl">TRUE</span>, 
-      relative = <span class="fl">FALSE</span>
-    ) <span class="op">%&gt;%</span> 
+    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+      x <span class="op">=</span> <span class="va">.</span>, 
+      remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+      remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, 
+      na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+      relative <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="co"># we switch the POP id column here to match the others</span>
-    <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"STAMPP_SIM02"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">POP1</span>, <span class="kw">POP2</span>)
-</pre></div>
+    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"STAMPP_SIM02"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP1</span>, <span class="va">POP2</span><span class="op">)</span></pre></div>
 </div>
 </div>
 <div id="vcftools" class="section level1">
@@ -799,9 +775,8 @@
 <h2 class="hasAnchor">
 <a href="#empirical-dataset-8" class="anchor"></a>Empirical dataset</h2>
 <div class="sourceCode" id="cb28"><pre class="downlit">
-<span class="kw">pop1</span> <span class="op">&lt;-</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">strata</span>, <span class="kw">STRATA</span> <span class="op">==</span> <span class="st">"G100"</span>) <span class="op">%&gt;%</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">INDIVIDUALS</span>) <span class="op">%&gt;%</span> <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_tsv</a></span>(x = <span class="kw">.</span>, path = <span class="st">"pop1.txt"</span>, col_names = <span class="fl">FALSE</span>)
-<span class="kw">pop2</span> <span class="op">&lt;-</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">strata</span>, <span class="kw">STRATA</span> <span class="op">==</span> <span class="st">"G102"</span>) <span class="op">%&gt;%</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">INDIVIDUALS</span>) <span class="op">%&gt;%</span> <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_tsv</a></span>(x = <span class="kw">.</span>, path = <span class="st">"pop2.txt"</span>, col_names = <span class="fl">FALSE</span>)
-</pre></div>
+<span class="va">pop1</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">strata</span>, <span class="va">STRATA</span> <span class="op">==</span> <span class="st">"G100"</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">INDIVIDUALS</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_tsv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, path <span class="op">=</span> <span class="st">"pop1.txt"</span>, col_names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">pop2</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">strata</span>, <span class="va">STRATA</span> <span class="op">==</span> <span class="st">"G102"</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">INDIVIDUALS</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_tsv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, path <span class="op">=</span> <span class="st">"pop2.txt"</span>, col_names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></pre></div>
 <p>the command used:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1"></a><span class="ex">vcftools</span> --vcf sunflower.vcf --weir-fst-pop pop1.txt --weir-fst-pop pop2.txt --out pop1_vs_pop2 </span>
 <span id="cb29-2"><a href="#cb29-2"></a><span class="co">#&gt; Fst between G100 and G102:</span></span>
@@ -823,44 +798,42 @@
 <h2 class="hasAnchor">
 <a href="#empirical-dataset-9" class="anchor"></a>Empirical dataset</h2>
 <div class="sourceCode" id="cb30"><pre class="downlit">
-<span class="kw">assigner.fst</span> <span class="op">&lt;-</span> <span class="kw">assigner</span>::<span class="fu"><a href="../../reference/fst_WC84.html">fst_WC84</a></span>(
-  data = <span class="kw">sunflower.filtered</span><span class="op">$</span><span class="kw">tidy.data</span>, 
-  pairwise = <span class="fl">TRUE</span>,
-  parallel.core = <span class="kw">parallel</span>::<span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() <span class="op">-</span> <span class="fl">1</span>,
-  verbose = <span class="fl">TRUE</span>
-) <span class="op">%$%</span>
-  <span class="kw">pairwise.fst</span> <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span>(ASSIGNER = <span class="kw">FST</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span><span class="kw">N_MARKERS</span>)
+<span class="va">assigner.fst</span> <span class="op">&lt;-</span> <span class="fu">assigner</span><span class="fu">::</span><span class="fu"><a href="../../reference/fst_WC84.html">fst_WC84</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">tidy.data</span>, 
+  pairwise <span class="op">=</span> <span class="cn">TRUE</span>,
+  parallel.core <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,
+  verbose <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span> <span class="op">%$%</span>
+  <span class="va">pairwise.fst</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>ASSIGNER <span class="op">=</span> <span class="va">FST</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">N_MARKERS</span><span class="op">)</span>
 <span class="co">#&gt; 49 sec</span>
-<span class="kw">assigner.fst</span>
-</pre></div>
+<span class="va">assigner.fst</span></pre></div>
 <p>Learn more about <code><a href="../../reference/fst_WC84.html">assigner::fst_WC84</a></code> with the dedicated <a href="http://thierrygosselin.github.io/assigner/articles/fst_confidence_intervals.html">vignette</a>.</p>
 </div>
 <div id="simulated-datasets-9" class="section level2">
 <h2 class="hasAnchor">
 <a href="#simulated-datasets-9" class="anchor"></a>Simulated datasets</h2>
 <div class="sourceCode" id="cb31"><pre class="downlit">
-<span class="kw">assigner.sim01.fst</span> <span class="op">&lt;-</span> <span class="kw">assigner</span>::<span class="fu"><a href="../../reference/fst_WC84.html">fst_WC84</a></span>(
-  data = <span class="kw">sim.data1</span><span class="op">$</span><span class="kw">tidy.data</span>, 
-  pairwise = <span class="fl">TRUE</span>,
-  parallel.core = <span class="kw">parallel</span>::<span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() <span class="op">-</span> <span class="fl">1</span>,
-  verbose = <span class="fl">TRUE</span>
-) <span class="op">%$%</span>
-  <span class="kw">pairwise.fst</span> <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span>(ASSIGNER_SIM01 = <span class="kw">FST</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span><span class="kw">N_MARKERS</span>)
+<span class="va">assigner.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">assigner</span><span class="fu">::</span><span class="fu"><a href="../../reference/fst_WC84.html">fst_WC84</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">tidy.data</span>, 
+  pairwise <span class="op">=</span> <span class="cn">TRUE</span>,
+  parallel.core <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,
+  verbose <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span> <span class="op">%$%</span>
+  <span class="va">pairwise.fst</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>ASSIGNER_SIM01 <span class="op">=</span> <span class="va">FST</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">N_MARKERS</span><span class="op">)</span>
 
-<span class="kw">assigner.sim02.fst</span> <span class="op">&lt;-</span> <span class="kw">assigner</span>::<span class="fu"><a href="../../reference/fst_WC84.html">fst_WC84</a></span>(
-  data = <span class="kw">sim.data2</span><span class="op">$</span><span class="kw">tidy.data</span>, 
-  pairwise = <span class="fl">TRUE</span>,
-  parallel.core = <span class="kw">parallel</span>::<span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() <span class="op">-</span> <span class="fl">1</span>,
-  verbose = <span class="fl">TRUE</span>
-) <span class="op">%$%</span>
-  <span class="kw">pairwise.fst</span> <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span>(ASSIGNER_SIM02 = <span class="kw">FST</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span><span class="kw">N_MARKERS</span>)
-</pre></div>
+<span class="va">assigner.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">assigner</span><span class="fu">::</span><span class="fu"><a href="../../reference/fst_WC84.html">fst_WC84</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">tidy.data</span>, 
+  pairwise <span class="op">=</span> <span class="cn">TRUE</span>,
+  parallel.core <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,
+  verbose <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span> <span class="op">%$%</span>
+  <span class="va">pairwise.fst</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>ASSIGNER_SIM02 <span class="op">=</span> <span class="va">FST</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">N_MARKERS</span><span class="op">)</span></pre></div>
 </div>
 </div>
 <div id="comparisons" class="section level1">
@@ -873,21 +846,19 @@
 <h3 class="hasAnchor">
 <a href="#generate-a-summary-tibble" class="anchor"></a>Generate a summary tibble</h3>
 <div class="sourceCode" id="cb32"><pre class="downlit">
-<span class="kw">fst.summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html">suppressWarnings</a></span>(
-  <span class="kw">assigner.fst</span> <span class="op">%&gt;%</span>
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">diversity.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">genodive.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">hierfstat.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">stampp.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">stratag.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">snprelate.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>))
-)
-</pre></div>
+<span class="va">fst.summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html">suppressWarnings</a></span><span class="op">(</span>
+  <span class="va">assigner.fst</span> <span class="op">%&gt;%</span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">diversity.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">genodive.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">hierfstat.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">stampp.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">stratag.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">snprelate.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span></pre></div>
 <p>If you haven’t run the codes above:</p>
 <div class="sourceCode" id="cb33"><pre class="downlit">
-<span class="kw">fst.summary</span> <span class="op">&lt;-</span> <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(file = <span class="st">"fst.summary.tsv"</span>, col_types = <span class="st">"ccnnnnnnnn"</span>)
-<span class="kw">fst.summary</span>
-</pre></div>
+<span class="va">fst.summary</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"fst.summary.tsv"</span>, col_types <span class="op">=</span> <span class="st">"ccnnnnnnnn"</span><span class="op">)</span>
+<span class="va">fst.summary</span></pre></div>
 <pre><code>## # A tibble: 36 x 10
 ##    POP1  POP2  ASSIGNER DIVERSITY GENODIVE HIERFSTAT STAMPP STRATAG
 ##    &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
@@ -905,8 +876,7 @@
 ## #   SNPRELATE_WEIGHTED &lt;dbl&gt;</code></pre>
 <p>If we highlight the first line, pops G100 and G102:</p>
 <div class="sourceCode" id="cb35"><pre class="downlit">
-<span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">fst.summary</span>, <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span>() <span class="op">==</span> <span class="fl">1L</span>)
-</pre></div>
+<span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">fst.summary</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1L</span><span class="op">)</span></pre></div>
 <pre><code>## # A tibble: 1 x 10
 ##   POP1  POP2  ASSIGNER DIVERSITY GENODIVE HIERFSTAT STAMPP STRATAG
 ##   &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
@@ -933,9 +903,8 @@
 </ul>
 <p>Let’s look at it globally with a correlation matrix:</p>
 <div class="sourceCode" id="cb37"><pre class="downlit">
-<span class="kw">fst.corr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(x = <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">fst.summary</span>, <span class="op">-</span><span class="kw">POP1</span>, <span class="op">-</span><span class="kw">POP2</span>)), <span class="fl">6</span>)
-<span class="kw">fst.corr</span>
-</pre></div>
+<span class="va">fst.corr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">fst.summary</span>, <span class="op">-</span><span class="va">POP1</span>, <span class="op">-</span><span class="va">POP2</span><span class="op">)</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span>
+<span class="va">fst.corr</span></pre></div>
 <pre><code>##                    ASSIGNER DIVERSITY GENODIVE HIERFSTAT   STAMPP  STRATAG
 ## ASSIGNER           1.000000  0.999998 0.997723  1.000000 0.999996 0.999996
 ## DIVERSITY          0.999998  1.000000 0.997635  0.999998 0.999995 0.999995
@@ -960,15 +929,14 @@
 <h3 class="hasAnchor">
 <a href="#generate-a-tibble-for-correlation-results" class="anchor"></a>Generate a tibble for correlation results</h3>
 <div class="sourceCode" id="cb39"><pre class="downlit">
-<span class="kw">fst.corr.tibble</span> <span class="op">&lt;-</span> <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-    x = <span class="kw">fst.corr</span>, 
-    na.diag = <span class="fl">TRUE</span>, 
-    relative = <span class="fl">FALSE</span>, 
-    pop.levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"HIERFSTAT"</span>, <span class="st">"STRATAG"</span>, <span class="st">"ASSIGNER"</span>, <span class="st">"DIVERSITY"</span>, <span class="st">"STAMPP"</span>, <span class="st">"GENODIVE"</span>, <span class="st">"SNPRELATE_MEAN"</span>, <span class="st">"SNPRELATE_WEIGHTED"</span>)) <span class="op">%&gt;%</span>
-      <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"ID1"</span>, <span class="st">"ID2"</span>, <span class="st">"CORRELATION"</span>)) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span>(<span class="kw">CORRELATION</span>))
-<span class="kw">fst.corr.tibble</span>
-</pre></div>
+<span class="va">fst.corr.tibble</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">fst.corr</span>, 
+    na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+    relative <span class="op">=</span> <span class="cn">FALSE</span>, 
+    pop.levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"HIERFSTAT"</span>, <span class="st">"STRATAG"</span>, <span class="st">"ASSIGNER"</span>, <span class="st">"DIVERSITY"</span>, <span class="st">"STAMPP"</span>, <span class="st">"GENODIVE"</span>, <span class="st">"SNPRELATE_MEAN"</span>, <span class="st">"SNPRELATE_WEIGHTED"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+      <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ID1"</span>, <span class="st">"ID2"</span>, <span class="st">"CORRELATION"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">CORRELATION</span><span class="op">)</span><span class="op">)</span>
+<span class="va">fst.corr.tibble</span></pre></div>
 <pre><code>## # A tibble: 28 x 3
 ##    ID1       ID2       CORRELATION
 ##    &lt;ord&gt;     &lt;ord&gt;           &lt;dbl&gt;
@@ -990,28 +958,26 @@
 <a href="#figure-of-results" class="anchor"></a>Figure of results</h3>
 <p>Let’s plot the results:</p>
 <div class="sourceCode" id="cb41"><pre class="downlit">
-<span class="kw">plot.fst</span> <span class="op">&lt;-</span> <span class="kw">fst.summary</span> <span class="op">%&gt;%</span> 
-  <span class="kw">tidyr</span>::<span class="fu"><a href="https://tidyr.tidyverse.org/reference/unite.html">unite</a></span>(data = <span class="kw">.</span>, col = <span class="kw">PAIRS</span>, <span class="kw">POP1</span>, <span class="kw">POP2</span>, sep = <span class="st">"-"</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">tidyr</span>::<span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span>(data = <span class="kw">.</span>, key = <span class="kw">SOFTWARE</span>, value = <span class="kw">FST</span>, <span class="op">-</span><span class="kw">PAIRS</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(
-    SOFTWARE = <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(
-      x = <span class="kw">SOFTWARE</span>, 
-      levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"HIERFSTAT"</span>, <span class="st">"ASSIGNER"</span>, <span class="st">"STAMPP"</span>, <span class="st">"STRATAG"</span>, <span class="st">"DIVERSITY"</span>, <span class="st">"GENODIVE"</span>, <span class="st">"SNPRELATE_WEIGHTED"</span>, <span class="st">"SNPRELATE_MEAN"</span>), ordered = <span class="fl">TRUE</span>))
+<span class="va">plot.fst</span> <span class="op">&lt;-</span> <span class="va">fst.summary</span> <span class="op">%&gt;%</span> 
+  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/unite.html">unite</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">.</span>, col <span class="op">=</span> <span class="va">PAIRS</span>, <span class="va">POP1</span>, <span class="va">POP2</span>, sep <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">.</span>, key <span class="op">=</span> <span class="va">SOFTWARE</span>, value <span class="op">=</span> <span class="va">FST</span>, <span class="op">-</span><span class="va">PAIRS</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
+    SOFTWARE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span>
+      x <span class="op">=</span> <span class="va">SOFTWARE</span>, 
+      levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"HIERFSTAT"</span>, <span class="st">"ASSIGNER"</span>, <span class="st">"STAMPP"</span>, <span class="st">"STRATAG"</span>, <span class="st">"DIVERSITY"</span>, <span class="st">"GENODIVE"</span>, <span class="st">"SNPRELATE_WEIGHTED"</span>, <span class="st">"SNPRELATE_MEAN"</span><span class="op">)</span>, ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
 
-<span class="kw">pairs.levels</span> <span class="op">&lt;-</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(<span class="kw">plot.fst</span>, <span class="kw">PAIRS</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span>(FST = <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">FST</span>, na.rm = <span class="fl">TRUE</span>)) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">FST</span>) <span class="op">%$%</span> 
-  <span class="kw">PAIRS</span>
-</pre></div>
+<span class="va">pairs.levels</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">plot.fst</span>, <span class="va">PAIRS</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>FST <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">FST</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">FST</span><span class="op">)</span> <span class="op">%$%</span> 
+  <span class="va">PAIRS</span></pre></div>
 <pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <div class="sourceCode" id="cb43"><pre class="downlit">
-<span class="kw">under.the.sea.palette</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"#1C2344"</span>, <span class="st">"#163D7D"</span>, <span class="st">"#118386"</span>, <span class="st">"#89D6D6"</span>, <span class="st">"#6E783D"</span>, <span class="st">"#FC564F"</span>, <span class="st">"#901546"</span>, <span class="st">"#FFD521"</span>)<span class="co">#, "#010101")</span>
-<span class="kw">plot.fst</span> <span class="op">%&lt;&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(PAIRS = <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(x = <span class="kw">PAIRS</span>, levels = <span class="kw">pairs.levels</span>, ordered = <span class="fl">TRUE</span>)) <span class="op">%&gt;%</span> 
-  <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(data = <span class="kw">.</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">FST</span>, y = <span class="kw">PAIRS</span>, colour = <span class="kw">SOFTWARE</span>)) <span class="op">+</span>
-  <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html">geom_jitter</a></span>(alpha = <span class="fl">0.8</span>) <span class="op">+</span>
-  <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span>(values = <span class="kw">under.the.sea.palette</span>)
-</pre></div>
+<span class="va">under.the.sea.palette</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#1C2344"</span>, <span class="st">"#163D7D"</span>, <span class="st">"#118386"</span>, <span class="st">"#89D6D6"</span>, <span class="st">"#6E783D"</span>, <span class="st">"#FC564F"</span>, <span class="st">"#901546"</span>, <span class="st">"#FFD521"</span><span class="op">)</span><span class="co">#, "#010101")</span>
+<span class="va">plot.fst</span> <span class="op">%&lt;&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>PAIRS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">PAIRS</span>, levels <span class="op">=</span> <span class="va">pairs.levels</span>, ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">.</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">FST</span>, y <span class="op">=</span> <span class="va">PAIRS</span>, colour <span class="op">=</span> <span class="va">SOFTWARE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html">geom_jitter</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">under.the.sea.palette</span><span class="op">)</span></pre></div>
 <p><img src="fst_comparisons_files/figure-html/plot%20the%20results-1.png" width="700"></p>
 </div>
 </div>
@@ -1023,21 +989,19 @@
 <a href="#sim_01-high-fst" class="anchor"></a>sim_01: high Fst</h3>
 <p><strong>Generate a summary tibble:</strong></p>
 <div class="sourceCode" id="cb44"><pre class="downlit">
-<span class="kw">fst.summary.sim01</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html">suppressWarnings</a></span>(
-  <span class="kw">assigner.sim01.fst</span> <span class="op">%&gt;%</span>
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">diversity.sim01.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">genodive.sim01.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">hierfstat.sim01.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">stampp.sim01.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">stratag.sim01.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">snprelate.sim01.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_if</a></span>(.tbl = <span class="kw">.</span>, .predicate = <span class="kw">is.numeric</span>, .funs = <span class="kw">round</span>, <span class="fl">4</span>)
-)
-</pre></div>
+<span class="va">fst.summary.sim01</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html">suppressWarnings</a></span><span class="op">(</span>
+  <span class="va">assigner.sim01.fst</span> <span class="op">%&gt;%</span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">diversity.sim01.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">genodive.sim01.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">hierfstat.sim01.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">stampp.sim01.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">stratag.sim01.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">snprelate.sim01.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_if</a></span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">.</span>, .predicate <span class="op">=</span> <span class="va">is.numeric</span>, .funs <span class="op">=</span> <span class="va">round</span>, <span class="fl">4</span><span class="op">)</span>
+<span class="op">)</span></pre></div>
 <div class="sourceCode" id="cb45"><pre class="downlit">
-<span class="kw">fst.summary.sim01</span> <span class="op">&lt;-</span> <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(file = <span class="st">"fst.summary.sim01.tsv"</span>, col_types = <span class="st">"ccnnnnnnnn"</span>)
-<span class="kw">fst.summary.sim01</span>
-</pre></div>
+<span class="va">fst.summary.sim01</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"fst.summary.sim01.tsv"</span>, col_types <span class="op">=</span> <span class="st">"ccnnnnnnnn"</span><span class="op">)</span>
+<span class="va">fst.summary.sim01</span></pre></div>
 <pre><code>## # A tibble: 10 x 10
 ##    POP1  POP2  ASSIGNER_SIM01 DIVERSITY_SIM01 GENODIVE_SIM01 HIERFSTAT_SIM01
 ##    &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;           &lt;dbl&gt;          &lt;dbl&gt;           &lt;dbl&gt;
@@ -1055,16 +1019,15 @@
 ## #   SNPRELATE_MEAN_SIM01 &lt;dbl&gt;, SNPRELATE_WEIGHTED_SIM01 &lt;dbl&gt;</code></pre>
 <p><strong>Generate the correlation tibble:</strong></p>
 <div class="sourceCode" id="cb47"><pre class="downlit">
-<span class="kw">fst.corr.tibble.sim01</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(x = <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">fst.summary.sim01</span>, <span class="op">-</span><span class="kw">POP1</span>, <span class="op">-</span><span class="kw">POP2</span>)), <span class="fl">6</span>) <span class="op">%&gt;%</span> 
- <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-  x = <span class="kw">.</span>, 
-  na.diag = <span class="fl">TRUE</span>, 
-  relative = <span class="fl">FALSE</span>, 
-  pop.levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"HIERFSTAT_SIM01"</span>, <span class="st">"STRATAG_SIM01"</span>, <span class="st">"ASSIGNER_SIM01"</span>, <span class="st">"DIVERSITY_SIM01"</span>, <span class="st">"STAMPP_SIM01"</span>, <span class="st">"GENODIVE_SIM01"</span>, <span class="st">"SNPRELATE_MEAN_SIM01"</span>, <span class="st">"SNPRELATE_WEIGHTED_SIM01"</span>)) <span class="op">%&gt;%</span>
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"ID1"</span>, <span class="st">"ID2"</span>, <span class="st">"CORRELATION_SIM01"</span>)) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span>(<span class="kw">CORRELATION_SIM01</span>))
-<span class="kw">fst.corr.tibble.sim01</span>
-</pre></div>
+<span class="va">fst.corr.tibble.sim01</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">fst.summary.sim01</span>, <span class="op">-</span><span class="va">POP1</span>, <span class="op">-</span><span class="va">POP2</span><span class="op">)</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+ <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+  x <span class="op">=</span> <span class="va">.</span>, 
+  na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+  relative <span class="op">=</span> <span class="cn">FALSE</span>, 
+  pop.levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"HIERFSTAT_SIM01"</span>, <span class="st">"STRATAG_SIM01"</span>, <span class="st">"ASSIGNER_SIM01"</span>, <span class="st">"DIVERSITY_SIM01"</span>, <span class="st">"STAMPP_SIM01"</span>, <span class="st">"GENODIVE_SIM01"</span>, <span class="st">"SNPRELATE_MEAN_SIM01"</span>, <span class="st">"SNPRELATE_WEIGHTED_SIM01"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ID1"</span>, <span class="st">"ID2"</span>, <span class="st">"CORRELATION_SIM01"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">CORRELATION_SIM01</span><span class="op">)</span><span class="op">)</span>
+<span class="va">fst.corr.tibble.sim01</span></pre></div>
 <pre><code>## # A tibble: 28 x 3
 ##    ID1             ID2             CORRELATION_SIM01
 ##    &lt;ord&gt;           &lt;ord&gt;                       &lt;dbl&gt;
@@ -1085,21 +1048,19 @@
 <a href="#sim_02-low-fst" class="anchor"></a>sim_02: low Fst</h3>
 <p><strong>Generate a summary tibble:</strong></p>
 <div class="sourceCode" id="cb49"><pre class="downlit">
-<span class="kw">fst.summary.sim02</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html">suppressWarnings</a></span>(
-  <span class="kw">assigner.sim02.fst</span> <span class="op">%&gt;%</span>
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">diversity.sim02.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">genodive.sim02.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">hierfstat.sim02.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">stampp.sim02.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">stratag.sim02.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span>(<span class="kw">snprelate.sim02.fst</span>, by = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POP1"</span>, <span class="st">"POP2"</span>)) <span class="op">%&gt;%</span> 
-    <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_if</a></span>(.tbl = <span class="kw">.</span>, .predicate = <span class="kw">is.numeric</span>, .funs = <span class="kw">round</span>, <span class="fl">4</span>)
-)
-</pre></div>
+<span class="va">fst.summary.sim02</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html">suppressWarnings</a></span><span class="op">(</span>
+  <span class="va">assigner.sim02.fst</span> <span class="op">%&gt;%</span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">diversity.sim02.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">genodive.sim02.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">hierfstat.sim02.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">stampp.sim02.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">stratag.sim02.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">snprelate.sim02.fst</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_if</a></span><span class="op">(</span>.tbl <span class="op">=</span> <span class="va">.</span>, .predicate <span class="op">=</span> <span class="va">is.numeric</span>, .funs <span class="op">=</span> <span class="va">round</span>, <span class="fl">4</span><span class="op">)</span>
+<span class="op">)</span></pre></div>
 <div class="sourceCode" id="cb50"><pre class="downlit">
-<span class="kw">fst.summary.sim02</span> <span class="op">&lt;-</span> <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(file = <span class="st">"fst.summary.sim02.tsv"</span>, col_types = <span class="st">"ccnnnnnnnn"</span>)
-<span class="kw">fst.summary.sim02</span>
-</pre></div>
+<span class="va">fst.summary.sim02</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"fst.summary.sim02.tsv"</span>, col_types <span class="op">=</span> <span class="st">"ccnnnnnnnn"</span><span class="op">)</span>
+<span class="va">fst.summary.sim02</span></pre></div>
 <pre><code>## # A tibble: 10 x 10
 ##    POP1  POP2  ASSIGNER_SIM02 DIVERSITY_SIM02 GENODIVE_SIM02 HIERFSTAT_SIM02
 ##    &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;           &lt;dbl&gt;          &lt;dbl&gt;           &lt;dbl&gt;
@@ -1117,16 +1078,15 @@
 ## #   SNPRELATE_MEAN_SIM02 &lt;dbl&gt;, SNPRELATE_WEIGHTED_SIM02 &lt;dbl&gt;</code></pre>
 <p><strong>Generate the correlation tibble:</strong></p>
 <div class="sourceCode" id="cb52"><pre class="downlit">
-<span class="kw">fst.corr.tibble.sim02</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(x = <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">fst.summary.sim02</span>, <span class="op">-</span><span class="kw">POP1</span>, <span class="op">-</span><span class="kw">POP2</span>)), <span class="fl">6</span>) <span class="op">%&gt;%</span> 
- <span class="kw">radiator</span>::<span class="fu"><a href="https://rdrr.io/pkg/radiator/man/distance2tibble.html">distance2tibble</a></span>(
-  x = <span class="kw">.</span>, 
-  na.diag = <span class="fl">TRUE</span>, 
-  relative = <span class="fl">FALSE</span>, 
-  pop.levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"HIERFSTAT_SIM02"</span>, <span class="st">"STRATAG_SIM02"</span>, <span class="st">"ASSIGNER_SIM02"</span>, <span class="st">"DIVERSITY_SIM02"</span>, <span class="st">"STAMPP_SIM02"</span>, <span class="st">"GENODIVE_SIM02"</span>, <span class="st">"SNPRELATE_MEAN_SIM02"</span>, <span class="st">"SNPRELATE_WEIGHTED_SIM02"</span>)) <span class="op">%&gt;%</span>
-  <span class="kw">magrittr</span>::<span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span>(x = <span class="kw">.</span>, value = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"ID1"</span>, <span class="st">"ID2"</span>, <span class="st">"CORRELATION_SIM02"</span>)) <span class="op">%&gt;%</span> 
-  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span>(<span class="kw">CORRELATION_SIM02</span>))
-<span class="kw">fst.corr.tibble.sim02</span>
-</pre></div>
+<span class="va">fst.corr.tibble.sim02</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">fst.summary.sim02</span>, <span class="op">-</span><span class="va">POP1</span>, <span class="op">-</span><span class="va">POP2</span><span class="op">)</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+ <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html">distance2tibble</a></span><span class="op">(</span>
+  x <span class="op">=</span> <span class="va">.</span>, 
+  na.diag <span class="op">=</span> <span class="cn">TRUE</span>, 
+  relative <span class="op">=</span> <span class="cn">FALSE</span>, 
+  pop.levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"HIERFSTAT_SIM02"</span>, <span class="st">"STRATAG_SIM02"</span>, <span class="st">"ASSIGNER_SIM02"</span>, <span class="st">"DIVERSITY_SIM02"</span>, <span class="st">"STAMPP_SIM02"</span>, <span class="st">"GENODIVE_SIM02"</span>, <span class="st">"SNPRELATE_MEAN_SIM02"</span>, <span class="st">"SNPRELATE_WEIGHTED_SIM02"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ID1"</span>, <span class="st">"ID2"</span>, <span class="st">"CORRELATION_SIM02"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">CORRELATION_SIM02</span><span class="op">)</span><span class="op">)</span>
+<span class="va">fst.corr.tibble.sim02</span></pre></div>
 <pre><code>## # A tibble: 28 x 3
 ##    ID1             ID2             CORRELATION_SIM02
 ##    &lt;ord&gt;           &lt;ord&gt;                       &lt;dbl&gt;
@@ -1149,10 +1109,9 @@
 <a href="#table-of-features" class="anchor"></a>Table of features</h1>
 <p>The table timing was produced using the empirical dataset.</p>
 <div class="sourceCode" id="cb54"><pre class="downlit">
-<span class="kw">summary.table</span> <span class="op">&lt;-</span> <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span>(file = <span class="st">"fst_comparisons_packages_features.tsv"</span>, col_types = <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/cols.html">cols</a></span>(.default = <span class="kw">readr</span>::<span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html">col_character</a></span>()))
-<span class="kw">knitr</span>::<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="kw">summary.table</span>) <span class="op">%&gt;%</span> 
-  <span class="kw">kableExtra</span>::<span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html">kable_styling</a></span>(bootstrap_options = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>), full_width = <span class="fl">FALSE</span>)
-</pre></div>
+<span class="va">summary.table</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_tsv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"fst_comparisons_packages_features.tsv"</span>, col_types <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/cols.html">cols</a></span><span class="op">(</span>.default <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html">col_character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">summary.table</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html">kable_styling</a></span><span class="op">(</span>bootstrap_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span><span class="op">)</span>, full_width <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></pre></div>
 <pre><code>## Warning in kableExtra::kable_styling(., bootstrap_options = c("striped", :
 ## Please specify format in kable. kableExtra can customize either HTML or LaTeX
 ## outputs. See https://haozhu233.github.io/kableExtra/ for details.</code></pre>
