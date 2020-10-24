@@ -1,3 +1,25 @@
+# assigner_function_header -----------------------------------------------------
+#' @title assigner_function_header
+#' @description Generate function header
+#' @rdname assigner_function_header
+#' @keywords internal
+#' @export
+assigner_function_header <- function(f.name = NULL, start = TRUE, verbose = TRUE) {
+  if (is.null(f.name)) invisible(NULL)
+  if (start) {
+    if (verbose) {
+      cat("################################################################################\n")
+      cat(paste0(stringi::stri_pad_both(str = paste0(" assigner::", f.name, " "), width = 80L, pad = "#"), "\n"))
+      cat("################################################################################\n")
+    }
+  } else {
+    if (verbose) {
+      cat(paste0(stringi::stri_pad_both(str = paste0(" completed ", f.name, " "), width = 80L, pad = "#"), "\n"))
+    }
+  }
+}# End assigner_function_header
+
+
 # Pipe operator ----------------------------------------------------------------
 #' @title Forward-pipe operator
 #' @description magrittr forward-pipe operator
@@ -70,7 +92,7 @@ subsampling_data <- function(
 
     if (subsample > 1) {# integer
       subsample.select <- strata %>%
-        dplyr::group_by(POP_ID) %>%
+        dplyr::group_by(STRATA_SEQ) %>%
         dplyr::sample_n(tbl = ., size = subsample, replace = FALSE) %>%
         dplyr::ungroup(.)# sampling individuals for each pop
     }
@@ -80,7 +102,7 @@ subsampling_data <- function(
         SUBSAMPLE = iteration.subsample,
         RANDOM_SEED_NUMBER = random.seed
       ) %>%
-      dplyr::arrange(POP_ID, INDIVIDUALS) %>%
+      dplyr::arrange(STRATA_SEQ, ID_SEQ) %>%
       dplyr::ungroup(.)
   }
   return(subsample.select)
@@ -370,6 +392,7 @@ parallel_core_opt <- function(parallel.core = NULL, max.core = NULL) {
 # @inheritParams future::availableCores
 #' @inheritParams future.apply::future_apply
 #' @rdname assigner_future
+#' @export
 #' @keywords internal
 assigner_future <- function(
   .x,
@@ -467,14 +490,14 @@ assigner_future <- function(
                     drop = {furrr::future_map}
   )
 
-  opts <- furrr::furrr_options(globals = FALSE)
+  opts <- furrr::furrr_options(globals = FALSE, seed = TRUE)
   if (length(list(...)) == 0) {
     .x %<>% rad_map(.x = ., .f = .f, .options = opts)
   } else {
     .x %<>% rad_map(.x = ., .f = .f, ..., .options = opts)
   }
   return(.x)
-}#End assigner_parallel
+}#End assigner_future
 
 
 # PIVOT-GATHER-CAST ------------------------------------------------------------
@@ -561,3 +584,27 @@ rad_wide <- function(
       tibble::as_tibble(.)
   }
 }#rad_wide
+
+
+# assigner_clock ---------------------------------------------------------------
+#' @title assigner_tic
+#' @description assigner tictoc function
+#' @rdname assigner_tic
+#' @keywords internal
+#' @export
+assigner_tic <- function(timing = proc.time()) {
+  invisible(timing)
+}# End assigner_tic
+
+#' @title assigner_toc
+#' @description assigner tictoc function
+#' @rdname assigner_toc
+#' @keywords internal
+#' @export
+assigner_toc <- function(
+  timing,
+  end.message = "Computation time, overall:",
+  verbose = TRUE
+) {
+  if (verbose) message("\n", end.message, " ", round((proc.time() - timing)[[3]]), " sec")
+}# End assigner_toc

@@ -247,7 +247,7 @@ Default: <code>snprelate = FALSE</code></p></td>
       <td><p>(optional, data frame) A tab delimited file with 2 columns with header:
 <code>INDIVIDUALS</code> and <code>STRATA</code>.
 If a <code>strata</code> file is specified, the strata file will have
-precedence over any grouping found input file (<code>data</code>).
+precedence over any grouping found data file (<code>data</code>).
 The <code>STRATA</code> column can be any hierarchical grouping.
 Default: <code>strata = NULL</code>.</p></td>
     </tr>
@@ -375,6 +375,11 @@ lower matrix and CI in the upper matrix.
 Default: <code>heatmap.fst = FALSE</code>.
 The heatmap can also be generated and more finetuned separately after the Fst
 analysis using <code><a href='heatmap_fst.html'>heatmap_fst</a></code>.</p></li>
+<li><p><code>calibrate.alleles</code> (logical)
+Un-calibrated alleles can bias estimate and by default the function expect that
+the REF/ALT alleles are calibrated. Using <code>calibrate.alleles = TRUE</code>,
+can take a bit more time.
+Default: <code>calibrate.alleles = FALSE</code>.</p></li>
 </ol>
 
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>

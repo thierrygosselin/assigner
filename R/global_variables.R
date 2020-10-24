@@ -39,7 +39,9 @@ if (getRversion() >= "2.15.1") {
       "filter.monomorphic", "LOW", "NS", "POP3", "blacklist.id",
       "holdout.samples", "ALLELE_GROUP", "MARKERS1", "fst.overall",
       "whitelist.markers", "random.seed", "folder", ".data", "MARKERS...1",
-      "MARKERS...3", "MARKERS...4"
+      "MARKERS...3", "MARKERS...4", "STRATA_SEQ", "ARGUMENTS", "VALUES",
+      "input", "HET", "calibrate.alleles", "iteration.subsample", "n",
+      "M_SEQ", "ID_SEQ", "1", "2", "where"
     )
   )
 }

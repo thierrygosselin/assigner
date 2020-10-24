@@ -44,7 +44,7 @@ Default: \code{snprelate = FALSE}}
 \item{strata}{(optional, data frame) A tab delimited file with 2 columns with header:
 \code{INDIVIDUALS} and \code{STRATA}.
 If a \code{strata} file is specified, the strata file will have
-precedence over any grouping found input file (\code{data}).
+precedence over any grouping found data file (\code{data}).
 The \code{STRATA} column can be any hierarchical grouping.
 Default: \code{strata = NULL}.}
 
@@ -180,6 +180,13 @@ lower matrix and CI in the upper matrix.
 Default: \code{heatmap.fst = FALSE}.
 The heatmap can also be generated and more finetuned separately after the Fst
 analysis using \code{\link{heatmap_fst}}.
+
+
+\item \code{calibrate.alleles} (logical)
+Un-calibrated alleles can bias estimate and by default the function expect that
+the REF/ALT alleles are calibrated. Using \code{calibrate.alleles = TRUE},
+can take a bit more time.
+Default: \code{calibrate.alleles = FALSE}.
 }
 }
 

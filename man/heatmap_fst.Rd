@@ -7,6 +7,7 @@
 heatmap_fst(
   pairwise.fst.full.matrix,
   pairwise.fst.ci.matrix,
+  pop.levels = NULL,
   n.s = TRUE,
   digits = 5,
   color.low = "blue",
@@ -22,6 +23,10 @@ heatmap_fst(
 \item{pairwise.fst.full.matrix}{(object or path).}
 
 \item{pairwise.fst.ci.matrix}{(object or path).}
+
+\item{pop.levels}{(optional, character, string) If not supplied,
+the order is set from the colnames of the full fst matrix.
+Default: \code{pop.levels = NULL}.}
 
 \item{n.s}{(optional, logical) To have an * when the Fst value is not
 significant (0 is the lower bound of the CI).

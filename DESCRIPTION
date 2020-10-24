@@ -2,7 +2,7 @@ Package: assigner
 Type: Package
 Title: Assignment Analysis with RADseq Data
 Version: 0.5.8
-Date: 2020-10-20
+Date: 2020-10-24
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
@@ -39,6 +39,7 @@ Suggests:
     stringi,
     tibble,
     tidyr,
+    tidyselect,
     utils
 Remotes: thierrygosselin/radiator
 License: GPL-3

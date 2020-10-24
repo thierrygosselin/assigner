@@ -6,7 +6,7 @@
 \usage{
 fst_subsample(
   x,
-  input,
+  data,
   snprelate = FALSE,
   strata = NULL,
   holdout.samples = NULL,
