@@ -340,7 +340,10 @@ fst_WC84 <- function(
 
   if (!rlang::has_name(data, "GT") || calibrate.alleles) {
     data %<>%
-      radiator::calibrate_alleles(data = ., parallel.core = parallel.core) %$%
+      radiator::calibrate_alleles(
+        data = .,
+        parallel.core = parallel.core
+      ) %$%
       input
   }
 
@@ -519,7 +522,7 @@ fst_WC84 <- function(
       m = markers.meta.bk,
       s = dplyr::distinct(strata.bk, POP_ID, STRATA_SEQ),
       subsample = TRUE
-      ) %>%
+    ) %>%
       purrr::flatten(.)
 
     # These are the objects:
@@ -607,7 +610,7 @@ fst_WC84 <- function(
         saveRDS(
           object = res$subsample$pairwise.fst.ci.matrix.mean,
           file = file.path(path.folder, "pairwise.fst.ci.matrix.RData")
-          )
+        )
       }
     }
   } # end of compiling subsample results
@@ -1265,9 +1268,9 @@ heatmap_fst <- function(
     pop.levels <- colnames(data.fst)
   }
   # else {
-    # if (length(pop.levels) != length(union(rownames(data.fst), colnames(data.fst)))) {
-      # rlang::abort(message = "Contact author, problem with strata levels in heatmap")
-    # }
+  # if (length(pop.levels) != length(union(rownames(data.fst), colnames(data.fst)))) {
+  # rlang::abort(message = "Contact author, problem with strata levels in heatmap")
+  # }
   # }
 
   data.fst %<>%
@@ -1497,7 +1500,7 @@ assigner_fst_stats <- function(
 
 fst_stats <- function(x, l, digits = 9L, m = NULL, s = NULL, subsample = FALSE) {
   res <- list()
-  message(x)
+  # message(x)
   want <- c("sigma.loc", "fst.markers", "fst.ranked", "fst.overall",
             "fis.markers", "fis.overall", "pairwise.fst")
 
@@ -1614,23 +1617,25 @@ change_matrix_strata <- function(x, s) {
   # x
   # class(colnames(x))
   # class(rownames(x))
-  colnames(x) %<>%
-    as.character(.) %>%
-    stringi::stri_replace_all_regex(
-      str = .,
-      pattern = paste0("^", as.character(s$STRATA_SEQ)),
-      replacement = as.character(s$POP_ID),
-      vectorize_all = FALSE
-    )
-  # colnames(x)
-  rownames(x) %<>%
-    as.character(.) %>%
-    stringi::stri_replace_all_regex(
-      str = .,
-      pattern = paste0("^", as.character(s$STRATA_SEQ)),
-      replacement = as.character(s$POP_ID),
-      vectorize_all = FALSE
-    )
+  if (length(dim(x)) > 1) {
+    colnames(x) %<>%
+      as.character(.) %>%
+      stringi::stri_replace_all_regex(
+        str = .,
+        pattern = paste0("^", as.character(s$STRATA_SEQ)),
+        replacement = as.character(s$POP_ID),
+        vectorize_all = FALSE
+      )
+    # colnames(x)
+    rownames(x) %<>%
+      as.character(.) %>%
+      stringi::stri_replace_all_regex(
+        str = .,
+        pattern = paste0("^", as.character(s$STRATA_SEQ)),
+        replacement = as.character(s$POP_ID),
+        vectorize_all = FALSE
+      )
+  }
   #
   return(x)
 }#change_matrix_strata
@@ -1642,10 +1647,10 @@ change_matrix_strata <- function(x, s) {
 #' @export
 #' @keywords internal
 match_markers_meta <- function(x, markers.meta) {
-    x  %<>%
-      dplyr::rename(M_SEQ = MARKERS) %>%
-      dplyr::left_join(markers.meta, by = "M_SEQ") %>%
-      dplyr::select(-M_SEQ)
+  x  %<>%
+    dplyr::rename(M_SEQ = MARKERS) %>%
+    dplyr::left_join(markers.meta, by = "M_SEQ") %>%
+    dplyr::select(-M_SEQ)
   return(x)
 }# End match_strata
 
