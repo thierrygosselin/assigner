@@ -11,7 +11,12 @@ compute_fst(
   quantiles.ci = c(0.025, 0.975),
   digits = 9,
   path.folder = NULL,
-  parallel.core = parallel::detectCores(.) - 2
+  parallel.core = parallel::detectCores(.) - 2,
+  p = NULL,
+  global = TRUE,
+  pairwise = FALSE,
+  temp.files = NULL,
+  ...
 )
 }
 \description{

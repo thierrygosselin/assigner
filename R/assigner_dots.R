@@ -30,7 +30,7 @@
 #' "write.tidy",
 #' "dart.sequence",
 #' "missing.memory",
-#' "internal", "heatmap.fst",
+#' "internal",
 #' "tidy.check",
 #' "tidy.vcf", "tidy.dart",
 #' "calibrate.alleles")}.
@@ -77,7 +77,6 @@ assigner_dots <- function(
     "dart.sequence",
     "internal",
     "tidy.check", "tidy.vcf", "tidy.dart",
-    "heatmap.fst",
     "gt", "gt.bin", "gt.vcf", "gt.vcf.nuc",
     "calibrate.alleles"
   ),
@@ -264,7 +263,7 @@ assign_defaults <- function(n, env.arg, verbose = TRUE) {
   # Arguments that default value is FALSE
   dots.false <- c("keep.allele.names", "calibrate.alleles", "long.ld.missing",
                   "detect.mixed.genomes", "detect.duplicate.genomes",
-                  "dp", "internal", "heatmap.fst", "wide", "filter.hwe")
+                  "dp", "internal", "wide", "filter.hwe")
   if (n %in% dots.true) v <- TRUE
   if (n %in% dots.false) v <- FALSE
 

@@ -18,7 +18,8 @@ fst_subsample(
   subsample = NULL,
   path.folder = NULL,
   parallel.core = parallel::detectCores() - 1,
-  verbose = FALSE
+  verbose = FALSE,
+  ...
 )
 }
 \description{

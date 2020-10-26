@@ -113,7 +113,7 @@
 </h3>
                         <h4 class="author">Thierry Gosselin</h4>
             
-            <h4 class="date">2020-10-24</h4>
+            <h4 class="date">2020-10-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/thierrygosselin/assigner/blob/master/vignettes/web_only/fst_comparisons.Rmd"><code>vignettes/web_only/fst_comparisons.Rmd</code></a></small>
       <div class="hidden name"><code>fst_comparisons.Rmd</code></div>
@@ -703,7 +703,7 @@
 <a href="#empirical-dataset-7" class="anchor"></a>Empirical dataset</h2>
 <div class="sourceCode" id="cb26"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span>
-  <span class="va">stampp.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span>
+  <span class="va">stampp.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/StAMPP/man/stamppFst.html">stamppFst</a></span><span class="op">(</span>
     geno <span class="op">=</span> <span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">genlight</span>, 
     nboots <span class="op">=</span> <span class="fl">1</span>, 
     percent <span class="op">=</span> <span class="fl">95</span>, 
@@ -728,7 +728,7 @@
 <h2 class="hasAnchor">
 <a href="#simulated-datasets-7" class="anchor"></a>Simulated datasets</h2>
 <div class="sourceCode" id="cb27"><pre class="downlit">
-<span class="va">stampp.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span>
+<span class="va">stampp.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/StAMPP/man/stamppFst.html">stamppFst</a></span><span class="op">(</span>
     geno <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">genlight</span>, 
     nboots <span class="op">=</span> <span class="fl">1</span>, 
     percent <span class="op">=</span> <span class="fl">95</span>, 
@@ -747,7 +747,7 @@
     <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/magrittr/man/aliases.html">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"STAMPP_SIM01"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
     <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP1</span>, <span class="va">POP2</span><span class="op">)</span>
 
-<span class="va">stampp.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span>
+<span class="va">stampp.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/StAMPP/man/stamppFst.html">stamppFst</a></span><span class="op">(</span>
     geno <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">genlight</span>, 
     nboots <span class="op">=</span> <span class="fl">1</span>, 
     percent <span class="op">=</span> <span class="fl">95</span>, 

@@ -14,6 +14,7 @@ fst_WC84(
   ci = FALSE,
   iteration.ci = 100,
   quantiles.ci = c(0.025, 0.975),
+  heatmap.fst = FALSE,
   digits = 9,
   filename = NULL,
   parallel.core = parallel::detectCores() - 2,
@@ -69,6 +70,12 @@ Default: \code{iteration.ci = 100}.}
 \item{quantiles.ci}{(optional, double)
 The quantiles for the bootstrapped confidence intervals.
 Default: \code{quantiles.ci = c(0.025,0.975)}.}
+
+\item{heatmap.fst}{(logical) Generate a heatmap with the Fst values in
+lower matrix and CI in the upper matrix.
+The heatmap can also be generated separately after the Fst
+analysis using the separate function: \code{\link{heatmap_fst}}.
+Default: \code{heatmap.fst = FALSE}.}
 
 \item{digits}{(optional, integer) The number of decimal places to be used in
 results.
@@ -174,12 +181,6 @@ subsampling.
 With \code{subsample = 20} and \code{iteration.subsample = 10},
 20 individuals/populations will be randomly chosen 10 times.
 Default: \code{iteration.subsample = 1}.
-
-\item \code{heatmap.fst} to generate an heatmap with the Fst values in
-lower matrix and CI in the upper matrix.
-Default: \code{heatmap.fst = FALSE}.
-The heatmap can also be generated and more finetuned separately after the Fst
-analysis using \code{\link{heatmap_fst}}.
 
 
 \item \code{calibrate.alleles} (logical)

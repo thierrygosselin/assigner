@@ -22,7 +22,7 @@ assigner_dots(
     "pop.select", "blacklist.id", "markers.info", "keep.allele.names", "keep.gds",
     "vcf.metadata", "vcf.stats", "wide", "whitelist.markers", "write.tidy",
     "missing.memory", "dart.sequence", "internal", "tidy.check", "tidy.vcf", "tidy.dart",
-    "heatmap.fst", "gt",      "gt.bin", "gt.vcf", "gt.vcf.nuc", "calibrate.alleles"),
+    "gt", "gt.bin", "gt.vcf",      "gt.vcf.nuc", "calibrate.alleles"),
   deprecated = NULL,
   verbose = TRUE
 )
@@ -59,7 +59,7 @@ Default: \code{keepers = c(
 "write.tidy",
 "dart.sequence",
 "missing.memory",
-"internal", "heatmap.fst",
+"internal",
 "tidy.check",
 "tidy.vcf", "tidy.dart",
 "calibrate.alleles")}.}

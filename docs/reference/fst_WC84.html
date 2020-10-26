@@ -210,6 +210,7 @@ involves more than 2 populations that evolved more by neutral processes
   ci <span class='op'>=</span> <span class='cn'>FALSE</span>,
   iteration.ci <span class='op'>=</span> <span class='fl'>100</span>,
   quantiles.ci <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.025</span>, <span class='fl'>0.975</span><span class='op'>)</span>,
+  heatmap.fst <span class='op'>=</span> <span class='cn'>FALSE</span>,
   digits <span class='op'>=</span> <span class='fl'>9</span>,
   filename <span class='op'>=</span> <span class='cn'>NULL</span>,
   parallel.core <span class='op'>=</span> <span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>2</span>,
@@ -282,6 +283,14 @@ Default: <code>iteration.ci = 100</code>.</p></td>
       <td><p>(optional, double)
 The quantiles for the bootstrapped confidence intervals.
 Default: <code>quantiles.ci = c(0.025,0.975)</code>.</p></td>
+    </tr>
+    <tr>
+      <th>heatmap.fst</th>
+      <td><p>(logical) Generate a heatmap with the Fst values in
+lower matrix and CI in the upper matrix.
+The heatmap can also be generated separately after the Fst
+analysis using the separate function: <code><a href='heatmap_fst.html'>heatmap_fst</a></code>.
+Default: <code>heatmap.fst = FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>digits</th>
@@ -370,11 +379,6 @@ subsampling.
 With <code>subsample = 20</code> and <code>iteration.subsample = 10</code>,
 20 individuals/populations will be randomly chosen 10 times.
 Default: <code>iteration.subsample = 1</code>.</p></li>
-<li><p><code>heatmap.fst</code> to generate an heatmap with the Fst values in
-lower matrix and CI in the upper matrix.
-Default: <code>heatmap.fst = FALSE</code>.
-The heatmap can also be generated and more finetuned separately after the Fst
-analysis using <code><a href='heatmap_fst.html'>heatmap_fst</a></code>.</p></li>
 <li><p><code>calibrate.alleles</code> (logical)
 Un-calibrated alleles can bias estimate and by default the function expect that
 the REF/ALT alleles are calibrated. Using <code>calibrate.alleles = TRUE</code>,

@@ -4,7 +4,7 @@
 \alias{boot_ci}
 \title{boot_ci}
 \usage{
-boot_ci(x, sigma.loc.alleles, digits = 9)
+boot_ci(x, fst.prep, digits = 9)
 }
 \description{
 Confidence interval function

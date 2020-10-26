@@ -12,7 +12,10 @@ pairwise_fst(
   iteration.ci = 100,
   quantiles.ci = c(0.025, 0.975),
   digits = 9,
-  path.folder = path.folder
+  path.folder = path.folder,
+  p = NULL,
+  temp.files = NULL,
+  ...
 )
 }
 \description{

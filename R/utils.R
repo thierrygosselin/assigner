@@ -384,7 +384,7 @@ parallel_core_opt <- function(parallel.core = NULL, max.core = NULL) {
   return(parallel.core.opt)
 }#End parallel_core_opt
 
-# using future and future.apply -------------------------------------------------
+# assigner_future: future and future.apply -------------------------------------
 #' @name assigner_future
 #' @title assigner parallel function
 #' @description Updating assigner to use future
@@ -491,8 +491,10 @@ assigner_future <- function(
   )
 
   opts <- furrr::furrr_options(globals = FALSE, seed = TRUE)
+
   if (length(list(...)) == 0) {
     .x %<>% rad_map(.x = ., .f = .f, .options = opts)
+
   } else {
     .x %<>% rad_map(.x = ., .f = .f, ..., .options = opts)
   }
@@ -557,10 +559,10 @@ rad_wide <- function(
   formula = NULL,
   names_from = NULL,
   values_from = NULL,
-  values_fill = NULL,
   sep = "_",
+  fun_aggregate = NULL,
+  values_fill = NULL,
   tidy = FALSE
-
 ){
   # tidyr
   if (tidy) {
@@ -572,16 +574,30 @@ rad_wide <- function(
         values_fill = values_fill
       )
   } else {# data.table
-    x  %>%
-      data.table::as.data.table(.) %>%
-      data.table::dcast.data.table(
-        data = .,
-        formula =  formula,
-        value.var = values_from,
-        sep = sep,
-        fill = values_fill
-      ) %>%
-      tibble::as_tibble(.)
+    if (is.null(fun_aggregate)) {
+      x  %>%
+        data.table::as.data.table(.) %>%
+        data.table::dcast.data.table(
+          data = .,
+          formula =  formula,
+          value.var = values_from,
+          sep = sep,
+          fill = values_fill
+        ) %>%
+        tibble::as_tibble(.)
+    } else {
+      x  %>%
+        data.table::as.data.table(.) %>%
+        data.table::dcast.data.table(
+          data = .,
+          formula =  formula,
+          value.var = values_from,
+          sep = sep,
+          fun.aggregate = fun_aggregate,
+          fill = values_fill
+        ) %>%
+        tibble::as_tibble(.)
+    }
   }
 }#rad_wide
 

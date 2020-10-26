@@ -10,13 +10,22 @@ developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repo
 [![minimal R
 version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.5.8-orange.svg)](commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2020--10--24-brightgreen.svg)](/commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2020--10--26-brightgreen.svg)](/commits/master)
 [![R-CMD-check](https://github.com/thierrygosselin/assigner/workflows/R-CMD-check/badge.svg)](https://github.com/thierrygosselin/assigner/actions)
 [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 <!-- badges: end -->
 
 The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*.
 It’s first use in french dates back to XIIIe.
+
+For the logo, I was inspired by the [Northern Atlantic
+Octupus](https://500px.com/photo/3885192/nature-a-reflexion-by-thierry-gosselin).
+I was fortunate to spent a lot of times with one during my PhD. These
+incredible creatures have 8 arms and [thousands of
+suckers](https://500px.com/photo/3885141/stuck-on-me-by-thierry-gosselin)
+that they can control independently. Octopus are really the best
+multitaskers. The logo was designed by the artist [Claude
+Thivierge](http://www.claudethivierge.com).
 
 Genomic datasets produced by next-generation sequencing techniques that
 reduce the size of the genome (e.g. genotype-by-sequencing (GBS) and
