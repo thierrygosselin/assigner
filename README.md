@@ -15,12 +15,12 @@ version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-
 [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 <!-- badges: end -->
 
-The name **assigner** |əˈsʌɪn| is rooted in the latin word *assignare*.
-It’s first use in french dates back to XIIIe.
+The name **assigner** |əˈsʌɪn| is rooted in the Latin word *assignare*.
+Its first use in French dates back to XIIIe.
 
 For the logo, I was inspired by the [Northern Atlantic
 Octupus](https://500px.com/photo/3885192/nature-a-reflexion-by-thierry-gosselin).
-I was fortunate to spent a lot of times with one during my PhD. These
+I was fortunate to spend a lot of times with one during my PhD. These
 incredible creatures have 8 arms and [thousands of
 suckers](https://500px.com/photo/3885141/stuck-on-me-by-thierry-gosselin)
 that they can control independently. Octopus are really the best
@@ -29,10 +29,10 @@ Thivierge](http://www.claudethivierge.com).
 
 Genomic datasets produced by next-generation sequencing techniques that
 reduce the size of the genome (e.g. genotype-by-sequencing (GBS) and
-restriction-site-associated DNA sequencing (RADseq)) have a huge numbers
+restriction-site-associated DNA sequencing (RADseq)) have a huge number
 of markers that hold great potential and promises for assignment
 analysis. After hitting the bioinformatic wall with the different
-workflows you’ll likely end up with several folders containing whitelist
+workflow, you’ll likely end up with several folders containing whitelist
 and blacklist of markers and individuals, data sets with various *de
 novo* and/or filtering parameters and … missing data. This reality of
 GBS/RADseq data is quite hard on GUI software traditionally used for
