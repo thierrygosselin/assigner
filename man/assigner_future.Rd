@@ -12,6 +12,7 @@ assigner_future(
   split.with = NULL,
   split.chunks = 4L,
   parallel.core = parallel::detectCores() - 1,
+  forking = FALSE,
   ...
 )
 }

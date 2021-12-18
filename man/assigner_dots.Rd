@@ -22,7 +22,7 @@ assigner_dots(
     "pop.select", "blacklist.id", "markers.info", "keep.allele.names", "keep.gds",
     "vcf.metadata", "vcf.stats", "wide", "whitelist.markers", "write.tidy",
     "missing.memory", "dart.sequence", "internal", "tidy.check", "tidy.vcf", "tidy.dart",
-    "gt", "gt.bin", "gt.vcf",      "gt.vcf.nuc", "calibrate.alleles"),
+    "gt", "gt.bin", "gt.vcf",      "gt.vcf.nuc", "calibrate.alleles", "forking"),
   deprecated = NULL,
   verbose = TRUE
 )
@@ -62,7 +62,9 @@ Default: \code{keepers = c(
 "internal",
 "tidy.check",
 "tidy.vcf", "tidy.dart",
-"calibrate.alleles")}.}
+"calibrate.alleles",
+"forking"
+)}.}
 
 \item{deprecated}{(optional) assigner's deprecated arguments.
 Default: \code{deprecated = NULL}.}

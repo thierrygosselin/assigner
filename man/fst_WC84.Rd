@@ -86,7 +86,7 @@ saving results in a directory.
 Default: \code{filename = NULL}.}
 
 \item{parallel.core}{(optional, integer) The number of core for parallel computation
-of pairwise Fst.
+of pairwise Fst. See also the advance mode section below.
 Default: \code{parallel.core = parallel::detectCores() - 1}.}
 
 \item{verbose}{(optional, logical) \code{verbose = TRUE} to be chatty
@@ -188,6 +188,16 @@ Un-calibrated alleles can bias estimate and by default the function expect that
 the REF/ALT alleles are calibrated. Using \code{calibrate.alleles = TRUE},
 can take a bit more time.
 Default: \code{calibrate.alleles = FALSE}.
+
+\item \code{forking} (logical)
+For macOS, forking is a much faster option, despite having the reputation of
+being unreliable in GUI environment like RStudio.
+The implementation in assigner is stable and up to 3-4 times faster.
+It's easier on memory.
+By default the function uses \code{multisession} from the future package
+to implement parallel processing. If you have macOS, test by toggling to
+\code{TRUE} this argument.
+Default: \code{forking = FALSE}.
 }
 }
 

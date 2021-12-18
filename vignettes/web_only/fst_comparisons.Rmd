@@ -14,56 +14,52 @@ editor_options:
   chunk_output_type: inline
 ---
 
+
+# Goal of this vignette
+
+Compare `assigner's` Fst calculations (using Weir and Cockerham, 1984)
+against alternatives. To make differences and bottlenecks really
+stand out we will use a simulated dataset and an empirical RADseq dataset 
+both with more than 10K markers. 
+
+
 # Prepare your R session
 
+- Highly recommended to clean your workspace: `rm(list = ls())`
+- Put this **Rmd notebook** in the same directory as the data
+- You might be interested in this package called [here](https://here.r-lib.org) or
+use `setwd("/YOUR/NEW/PATH/HERE/")`, to change the working directory. 
+
+- Install the R packages below
 ```{r Prepare your R session, eval = FALSE, echo = TRUE, warning=FALSE}
-rm(list = ls()) # clean workspace
 # install required packages
-if (!require("diveRsity")) install.packages("diveRsity")
-if (!require("hierfstat")) install.packages("hierfstat")
-if (!require("StAMPP")) install.packages("StAMPP")
-if (!require("strataG")) install.packages("strataG")
-if (!require("SNPRelate")) {
-  if(!require("BiocManager")) install.packages("BiocManager")
-  BiocManager::install("SNPRelate")
-}
+install.packages(c("diveRsity", "hierfstat", "StAMPP"))
+if (!require("devtools")) install.packages("devtools")
+devtools::install_github('ericarcher/strataG', build_vignettes = TRUE)
+if(!require("BiocManager")) install.packages("BiocManager")
+BiocManager::install(version = "3.12")
+BiocManager::install("SNPRelate")
 if (!require("ggcorrplot")) install.packages("ggcorrplot")
+devtools::install_github("thierrygosselin/assigner", build_vignettes = TRUE)
 ```
-
-
-```{r assigner}
-if (!require("remotes")) install.packages("remotes")
-if (!require("assigner")) remotes::install_github("thierrygosselin/assigner")
-```
-
-
-For macOS: [GenoDive](http://www.bentleydrummer.nl/software/software/GenoDive.html).
-
-VCFtools: [install instructions](https://vcftools.github.io) or [here](https://gbs-cloud-tutorial.readthedocs.io/en/latest/07_start_from_new_image.html#install-gbs-radseq-software-time-required-30min)
 
 
 **Versions of packages and software:**
 
 ```{r package version, eval = FALSE, echo = TRUE, warning=FALSE}
 # Check packages versions
-packageVersion('assigner') # 0.5.6.
+packageVersion('assigner') # 0.5.8
 packageVersion('diveRsity') # 1.9.90
-packageVersion('hierfstat') # 0.4.22
-packageVersion('stAMPP') # 1.5.1
-packageVersion('strataG') # 2.0.2
-packageVersion('SNPRelate') # 1.18.0
-#GenoDive: 2.27
-# VCFtools.: 0.1.17
+packageVersion('hierfstat') # 0.5.7
+packageVersion('stAMPP') # 1.6.1
+packageVersion('strataG') # 2.4.910
+packageVersion('SNPRelate') # 1.24.0
 ```
 
+**Optional software:**
 
-Put this **Rmd notebook** in the same directory as the data or use `setwd("/YOUR/NEW/PATH/HERE/")`, to change the working directory. 
-
-# Goal of this exercise
-
-Let's see how `assigner's` Fst calculations (using Weir and Cockerham, 1984)
-compares with alternatives. To make differences and bottlenecks really
-stand out we will use a RADseq dataset with **thousands of markers**. 
+- [GenoDive macOS only](http://www.bentleydrummer.nl/software/software/GenoDive.html) (v.3.04)
+- [VCFtools](https://vcftools.github.io) (v.0.1.17)
 
 # Datasets
 
@@ -99,6 +95,7 @@ We use [radiator::genomic_converter](https://thierrygosselin.github.io/radiator/
 ## Empirical dataset
 
 ```{r genomic converter, eval = FALSE, echo = TRUE}
+library(assigner)
 # radiator is installed automatically with assigner
 sunflower.filtered <- radiator::genomic_converter(
   data = "sunflower.vcf", 

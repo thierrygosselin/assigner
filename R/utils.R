@@ -191,7 +191,7 @@ import_subsamples <- function(dir.path, imputations = FALSE){
 #' @author Thierry Gosselin \email{thierrygosselin@@icloud.com}
 
 import_subsamples_fst <- function(dir.path){
-  if (missing (dir.path)) stop("dir.path argument missing")
+  if (missing(dir.path)) stop("dir.path argument missing")
 
   # sampling.method <- stri_detect_fixed(str = dir.path, pattern = "ranked") # looks for ranked
   # if (sampling.method == FALSE) stop("This function doesn't work for markers sampled randomly")
@@ -402,12 +402,16 @@ assigner_future <- function(
   split.with = NULL,
   split.chunks = 4L,
   parallel.core = parallel::detectCores() - 1,
+  forking = FALSE,
   ...
 ) {
+  os <- Sys.info()[['sysname']]
+  if (os == "Windows") forking <- FALSE
+
   opt.change <- getOption("width")
   options(width = 70)
   on.exit(options(width = opt.change), add = TRUE)
-  on.exit(if (parallel.core > 1L) future::plan(strategy = "sequential"), add = TRUE)
+  on.exit(if (parallel.core > 1L && !forking) future::plan(strategy = "sequential"), add = TRUE)
 
   # argument for flattening the results
   flat.future <- match.arg(
@@ -440,6 +444,7 @@ assigner_future <- function(
       .x %<>% split(x = ., f = sv)
     }
   }
+
   if (!is.null(split.with)) {
     # check
     if (length(split.with) != 1 || !is.character(split.with)) {
@@ -459,8 +464,6 @@ assigner_future <- function(
     }
   }
 
-
-
   if (parallel.core == 1L) {
     future::plan(strategy = "sequential")
   } else {
@@ -469,38 +472,90 @@ assigner_future <- function(
     if (lx < parallel.core) {
       future::plan(strategy = "multisession", workers = lx)
     } else {
-      future::plan(strategy = "multisession", workers = parallel.core)
+      if (!forking) future::plan(strategy = "multisession", workers = parallel.core)
     }
   }
 
-  # .x <- future.apply::future_apply(X = .x, FUN = .f, ...)
-  # capture dots
-  # d <- rlang::dots_list(..., .ignore_empty = "all", .preserve_empty = TRUE, .homonyms = "first")
-  # if (bind.rows) .x %<>% dplyr::bind_rows(.)
-
-
-
   # Run the function in parallel and account for dots-dots-dots argument
-  rad_map <- switch(flat.future,
-                    int = {furrr::future_map_int},
-                    chr = {furrr::future_map_chr},
-                    dfr = {furrr::future_map_dfr},
-                    dfc = {furrr::future_map_dfc},
-                    walk = {furrr::future_walk},
-                    drop = {furrr::future_map}
-  )
-
-  opts <- furrr::furrr_options(globals = FALSE, seed = TRUE)
-
-  if (length(list(...)) == 0) {
-    .x %<>% rad_map(.x = ., .f = .f, .options = opts)
-
+  if (forking) {
+    if (length(list(...)) == 0) {
+      rad_map <- switch(
+        flat.future,
+        int = {
+          .x %<>%
+            parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
+            purrr::flatten_int(.)
+        },
+        chr = {.x %<>%
+            parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
+            purrr::flatten_chr(.)
+        },
+        dfr = {
+          .x %<>%
+            parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
+            purrr::flatten_dfr(.)
+        },
+        dfc = {
+          .x %<>%
+            parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
+            purrr::flatten_dfc(.)
+        },
+        walk = {furrr::future_walk},
+        drop = {
+          .x %<>%
+            parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core)
+        }
+      )
+    } else {
+      rad_map <- switch(
+        flat.future,
+        int = {
+          .x %<>%
+            parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
+            purrr::flatten_int(.)
+        },
+        chr = {.x %<>%
+            parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
+            purrr::flatten_chr(.)
+        },
+        dfr = {
+          .x %<>%
+            parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
+            dplyr::bind_rows(.)
+            # purrr::flatten_dfr(.)
+        },
+        dfc = {
+          .x %<>%
+            parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
+            purrr::flatten_dfc(.)
+        },
+        walk = {furrr::future_walk},
+        drop = {
+          .x %<>%
+            parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core)
+        }
+      )
+    }
   } else {
-    .x %<>% rad_map(.x = ., .f = .f, ..., .options = opts)
+    rad_map <- switch(flat.future,
+                      int = {furrr::future_map_int},
+                      chr = {furrr::future_map_chr},
+                      dfr = {furrr::future_map_dfr},
+                      dfc = {furrr::future_map_dfc},
+                      walk = {furrr::future_walk},
+                      drop = {furrr::future_map}
+    )
+    p <- NULL
+    p <- progressr::progressor(along = .x)
+    opts <- furrr::furrr_options(globals = FALSE, seed = TRUE)
+    if (length(list(...)) == 0) {
+      .x %<>% rad_map(.x = ., .f = .f, .options = opts)
+    } else {
+      .x %<>% rad_map(.x = ., .f = .f, ..., .options = opts)
+    }
   }
   return(.x)
 }#End assigner_future
-
 
 # PIVOT-GATHER-CAST ------------------------------------------------------------
 # rationale for doing this is that i'm tired of using tidyverse or data.table semantics

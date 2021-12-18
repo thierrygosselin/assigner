@@ -99,7 +99,7 @@
 #' Default: \code{digits = 9}.
 
 #' @param parallel.core (optional, integer) The number of core for parallel computation
-#' of pairwise Fst.
+#' of pairwise Fst. See also the advance mode section below.
 #' Default: \code{parallel.core = parallel::detectCores() - 1}.
 
 #' @param verbose (optional, logical) \code{verbose = TRUE} to be chatty
@@ -144,6 +144,16 @@
 #' the REF/ALT alleles are calibrated. Using \code{calibrate.alleles = TRUE},
 #' can take a bit more time.
 #' Default: \code{calibrate.alleles = FALSE}.
+#'
+#' \item \code{forking} (logical)
+#' For macOS, forking is a much faster option, despite having the reputation of
+#' being unreliable in GUI environment like RStudio.
+#' The implementation in assigner is stable and up to 3-4 times faster.
+#' It's easier on memory.
+#' By default the function uses \code{multisession} from the future package
+#' to implement parallel processing. If you have macOS, test by toggling to
+#' \code{TRUE} this argument.
+#' Default: \code{forking = FALSE}.
 #' }
 
 
@@ -276,6 +286,7 @@ fst_WC84 <- function(
   # heatmap.fst = FALSE
   # filter.monomorphic=TRUE
   # calibrate.alleles = FALSE
+  # forking = FALSE
 
   # Cleanup---------------------------------------------------------------------
   assigner_function_header(f.name = "fst_WC84", verbose = verbose)
@@ -300,7 +311,7 @@ fst_WC84 <- function(
     dotslist = rlang::dots_list(..., .homonyms = "error", .check_assign = TRUE),
     keepers = c("filter.monomorphic", "holdout.samples", "subsample",
                 "iteration.subsample", "blacklist.id",
-                "calibrate.alleles"),
+                "calibrate.alleles", "forking"),
     verbose = FALSE
   )
   dots.filename <- stringi::stri_join("assigner_fst_WC84_args_", file.date, ".tsv")
@@ -340,12 +351,7 @@ fst_WC84 <- function(
   data %<>% radiator::tidy_wide(data = ., import.metadata = TRUE)
 
   if (!rlang::has_name(data, "GT") || calibrate.alleles) {
-    data %<>%
-      radiator::calibrate_alleles(
-        data = .,
-        parallel.core = parallel.core
-      ) %$%
-      input
+    data %<>% radiator::calibrate_alleles(data = ., gt = TRUE) %$% input
   }
 
   # Strata----------------------------------------------------------------------
@@ -395,6 +401,7 @@ fst_WC84 <- function(
   if (!is.null(subsample) && !is.numeric(subsample)) {
     heatmap.fst <- FALSE
     if (subsample == "min") {
+      subsample <- NULL
       subsample <- strata.bk %>%
         dplyr::group_by(STRATA_SEQ) %>%
         dplyr::tally(.) %>%
@@ -440,7 +447,8 @@ fst_WC84 <- function(
     subsample = subsample,
     path.folder = path.folder,
     parallel.core = parallel.core,
-    verbose = verbose
+    verbose = verbose,
+    forking = forking
   )
   subsample.list <- NULL
 
@@ -666,6 +674,7 @@ fst_subsample <- function(
   path.folder = NULL,
   parallel.core = parallel::detectCores() - 1,
   verbose = FALSE,
+  forking = FALSE,
   ...
 ) {
   # x <- subsample.list[[1]] # test
@@ -726,16 +735,39 @@ fst_subsample <- function(
     # Fst for all pairwise populations
     list.pair <- seq_len(npp)
 
+    # test with future.apply: turns out it's way too slow...
+    # progressr::with_progress({
+    #   future::plan(strategy = "multisession", workers = parallel.core)
+    #   p <- progressr::progressor(along = list.pair)
+    #   # opts <- furrr::furrr_options(globals = FALSE, seed = TRUE)
+    #   fst.all.pop <- future.apply::future_lapply(
+    #     X = list.pair,
+    #     FUN = pairwise_fst,
+    #     future.seed = TRUE,
+    #     # future.scheduling = 1.0,
+    #     pop.pairwise = pop.pairwise,
+    #     data = data,
+    #     ci = ci,
+    #     iteration.ci = iteration.ci,
+    #     quantiles.ci = quantiles.ci,
+    #     path.folder = path.folder,
+    #     p = p,
+    #     temp.files = temp.files
+    #   ) %>%
+    #     dplyr::bind_rows(.)
+    # })
+
     p <- NULL
-    progressr::with_progress({
-      p <- progressr::progressor(along = list.pair)
+    # forking <- TRUE
+    if (forking) {
       fst.all.pop <- assigner::assigner_future(
         .x = list.pair,
         .f = pairwise_fst,
         flat.future = "dfr",
         split.vec = FALSE,
         split.with = NULL,
-        parallel.core = min(10L, parallel.core),
+        parallel.core = parallel.core,#min(10L, parallel.core),
+        forking = TRUE,
         pop.pairwise = pop.pairwise,
         data = data,
         ci = ci,
@@ -745,7 +777,28 @@ fst_subsample <- function(
         p = p,
         temp.files = temp.files
       )
-    })
+    } else {
+      progressr::with_progress({
+        p <- progressr::progressor(along = list.pair)
+        fst.all.pop <- assigner::assigner_future(
+          .x = list.pair,
+          .f = pairwise_fst,
+          flat.future = "dfr",
+          split.vec = FALSE,
+          split.with = NULL,
+          parallel.core = parallel.core, #min(10L, parallel.core),
+          pop.pairwise = pop.pairwise,
+          data = data,
+          ci = ci,
+          iteration.ci = iteration.ci,
+          quantiles.ci = quantiles.ci,
+          path.folder = path.folder,
+          p = p,
+          temp.files = temp.files
+        )
+      })
+    }
+
     # Table with Fst
     pairwise.fst <- fst.all.pop %>%
       dplyr::mutate(
@@ -930,22 +983,22 @@ compute_fst <- carrier::crate(function(
   } else {
     # here we have to read the data in...
     fst.prep <- temp.files$fst.prep %>%
-    # fst.prep <- vroom::vroom(
-    #   file = temp.files$fst.prep.temp,
-    #   delim = "\t",
-    #   col_types = "iiiiic",
-    #   progress = FALSE,
-    #   num_threads = 1
-    # ) %>%
+      # fst.prep <- vroom::vroom(
+      #   file = temp.files$fst.prep.temp,
+      #   delim = "\t",
+      #   col_types = "iiiiic",
+      #   progress = FALSE,
+      #   num_threads = 1
+      # ) %>%
       dplyr::filter(STRATA %in% pop.select)
     fa <- temp.files$fa %>%
-    #   fa <- vroom::vroom(
-    #     file = temp.files$fa.temp,
-    #   delim = "\t",
-    #   col_types = "iicdddd",
-    #   num_threads = 1,
-    #   progress = FALSE
-    # ) %>%
+      #   fa <- vroom::vroom(
+      #     file = temp.files$fa.temp,
+      #   delim = "\t",
+      #   col_types = "iicdddd",
+      #   num_threads = 1,
+      #   progress = FALSE
+      # ) %>%
       dplyr::filter(STRATA %in% pop.select)
     npl <- temp.files$npl %>%
       # npl <- vroom::vroom(
@@ -954,16 +1007,16 @@ compute_fst <- carrier::crate(function(
       # col_types = vroom::cols(.default = vroom::col_integer()),
       # num_threads = 1,
       # progress = FALSE
-    # ) %>%
+      # ) %>%
       dplyr::select(tidyselect::any_of(c("MARKERS", pop.select))) # here the pop.pair
     nil <- temp.files$nil %>%
-    # nil <- vroom::vroom(
-    #   file = temp.files$nil.temp,
-    #   delim = "\t",
-    #   col_types = vroom::cols(.default = vroom::col_integer()),
-    #   num_threads = 1,
-    #   progress = FALSE
-    # ) %>%
+      # nil <- vroom::vroom(
+      #   file = temp.files$nil.temp,
+      #   delim = "\t",
+      #   col_types = vroom::cols(.default = vroom::col_integer()),
+      #   num_threads = 1,
+      #   progress = FALSE
+      # ) %>%
       dplyr::select(tidyselect::any_of(c("MARKERS", pop.select))) # here the pop.pair
   }
 

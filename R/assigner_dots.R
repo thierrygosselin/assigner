@@ -33,7 +33,9 @@
 #' "internal",
 #' "tidy.check",
 #' "tidy.vcf", "tidy.dart",
-#' "calibrate.alleles")}.
+#' "calibrate.alleles",
+#' "forking"
+#' )}.
 #' @param deprecated (optional) assigner's deprecated arguments.
 #' Default: \code{deprecated = NULL}.
 #' @param verbose (logical) Function will output more details.
@@ -78,7 +80,7 @@ assigner_dots <- function(
     "internal",
     "tidy.check", "tidy.vcf", "tidy.dart",
     "gt", "gt.bin", "gt.vcf", "gt.vcf.nuc",
-    "calibrate.alleles"
+    "calibrate.alleles", "forking"
   ),
   deprecated = NULL,
   verbose = TRUE
@@ -263,7 +265,7 @@ assign_defaults <- function(n, env.arg, verbose = TRUE) {
   # Arguments that default value is FALSE
   dots.false <- c("keep.allele.names", "calibrate.alleles", "long.ld.missing",
                   "detect.mixed.genomes", "detect.duplicate.genomes",
-                  "dp", "internal", "wide", "filter.hwe")
+                  "dp", "internal", "wide", "filter.hwe", "forking")
   if (n %in% dots.true) v <- TRUE
   if (n %in% dots.false) v <- FALSE
 

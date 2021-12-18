@@ -70,16 +70,30 @@ dlr <- function(
 
   # import and modify the assignment file form GenoDive-------------------------
   message("Importing GenoDive assignment results")
+
+  # no longer work with readr v.2
+    # temp.file <- suppressWarnings(
+  #   suppressMessages(
+  #     readr::read_table(
+  #       file = data,
+  #       col_names = FALSE,
+  #       skip_empty_rows = FALSE
+  #     )
+  #   )
+  # )
+
   temp.file <- suppressWarnings(
     suppressMessages(
-      readr::read_table(
-        file = data,
-        col_names = FALSE,
-        skip_empty_rows = FALSE
-      )
+      readr::read_fwf(file = data, skip_empty_rows = FALSE)
     )
   )
-  max.lines = nrow(temp.file) - 1
+
+  message("Inspecting strata")
+  # strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = "cc")
+  strata.df <- radiator::read_strata(strata = strata, pop.id = TRUE) %$% strata
+  max.lines <- nrow(strata.df)
+
+  # max.lines = nrow(temp.file) - 1 # previously with readr < v2.0
   skip.number <- which(stringi::stri_detect_fixed(str = temp.file$X1,
                                                   pattern = "membership")) + 1
 
@@ -91,7 +105,9 @@ dlr <- function(
         skip = skip.number,
         n_max = max.lines,
         col_names = TRUE,
-        progress = interactive(), na = "---"
+        progress = interactive(),
+        na = "---",
+        skip_empty_rows = TRUE
       )
     ) %>%
       dplyr::filter(!is.na(Current)) %>%
@@ -101,13 +117,6 @@ dlr <- function(
   )
 
   temp.file <- skip.number <- NULL
-
-  message("Importing strata file")
-  strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = "cc")
-
-  if (!rlang::has_name(strata.df, "POP_ID") && rlang::has_name(strata.df, "STRATA")) {
-    strata.df %<>% dplyr::rename(POP_ID = STRATA)
-  }
 
   assignment$INDIVIDUALS <- radiator::clean_ind_names(assignment$INDIVIDUALS)
   assignment$POP_ID <- radiator::clean_ind_names(assignment$POP_ID)
@@ -130,15 +139,16 @@ dlr <- function(
 
   get.pop <- strata.df %>%
     dplyr::filter(INDIVIDUALS %in% header.pop) %>%
-    dplyr::mutate(INDIVIDUALS = factor(x = INDIVIDUALS, levels = header.pop)) %>%
+    dplyr::mutate(
+      INDIVIDUALS = factor(x = INDIVIDUALS, levels = header.pop),
+      POP_ID = as.character(POP_ID)
+      ) %>%
     dplyr::arrange(INDIVIDUALS)
 
   strata.df <- NULL
 
   # Change header for the real pop names
-  colnames(assignment) <- c(fixed.header, get.pop$POP_ID )
-
-
+  colnames(assignment) <- c(fixed.header, get.pop$POP_ID)
 
   # Change POP_ID and inferred for the real pop name
   assignment %<>%
@@ -183,9 +193,8 @@ dlr <- function(
   # Table with Dlr--------------------------------------------------------------
   names.pairwise <- utils::combn(unique(get.pop$POP_ID), 2, paste, collapse = '-')
 
-  dlr.table <- tibble::tibble(PAIRWISE_POP = names.pairwise, DLR = dlr.all.pop) %>%
+  dlr.table <- tibble::tibble(PAIRWISE_POP = as.character(names.pairwise), DLR = dlr.all.pop) %>%
     dplyr::mutate(DLR = round(as.numeric(DLR), 2))
-
 
   # Dist and Matrix-------------------------------------------------------------
   dlr.dist <- stats::dist(1:length(unique(get.pop$POP_ID)))
@@ -265,7 +274,7 @@ dlr <- function(
   } else {
     # saving table
     filename.table <- stringi::stri_join(filename, "table.tsv", sep = ".")
-    readr::write_tsv(dlr.table, filename.table)
+    readr::write_tsv(x = dlr.table, file = filename.table)
 
     # saving matrix
     filename.matrix <- stringi::stri_join(filename, "matrix.tsv", sep = ".")

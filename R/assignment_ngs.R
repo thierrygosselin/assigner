@@ -526,10 +526,7 @@ assignment_ngs <- function(
   data <- NULL
 
   if (!rlang::has_name(input, "GT")) {
-    input <- radiator::calibrate_alleles(
-      data = input,
-      parallel.core = parallel.core
-    ) %$% input
+    input %<>% radiator::calibrate_alleles(data = ., gt = TRUE) %$% input
   }
 
   # Strata and pop levels ------------------------------------------------------

@@ -19,6 +19,9 @@ version <- gsub(" ", "", gsub("Version:", "", grep("Version:", description, valu
 [![packageversion](https://img.shields.io/badge/Package%20version-`r version`-orange.svg)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-brightgreen.svg)](/commits/master)
 [![R-CMD-check](https://github.com/thierrygosselin/assigner/workflows/R-CMD-check/badge.svg)](https://github.com/thierrygosselin/assigner/actions)
+[![macOS](https://github.com/thierrygosselin/assigner/workflows/macOS-latest (release)/badge.svg)](https://github.com/thierrygosselin/assigner/actions?workflow=macOS-latest (release))
+[![Linux](https://github.com/thierrygosselin/assigner/workflows/check-linux//badge.svg)](https://github.com/thierrygosselin/assigner/actions?workflow=check-linux)
+[![Windows](https://github.com/thierrygosselin/assigner/workflows/R-CMD-check/badge.svg)](https://github.com/thierrygosselin/assigner/actions?workflow=check-windows)
 [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 <!-- badges: end -->
 
@@ -28,6 +31,8 @@ For the logo, I was inspired by the [Northern Atlantic Octupus](https://500px.co
 
 Genomic datasets produced by next-generation sequencing techniques that reduce the size of the genome (e.g. genotype-by-sequencing (GBS) and
 restriction-site-associated DNA sequencing (RADseq)) have a huge number of markers that hold great potential and promises for assignment analysis. After hitting the bioinformatic wall with the different workflow, you'll likely end up with several folders containing whitelist and blacklist of markers and individuals, data sets with various *de novo* and/or filtering parameters and ... missing data. This reality of GBS/RADseq data is quite hard on GUI software traditionally used for population assignment analysis. The end results are usually poor data exploration, constrained by time, and poor reproducibility.
+
+
 
 **assigner** was tailored to make it easy to conduct population assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like [R Notebook](http://rmarkdown.rstudio.com/r_notebooks.html), [RStudio](https://www.rstudio.com) and [GitHub](https://github.com) will make effortless documenting your workflows and pipelines.
 

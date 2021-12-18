@@ -19,6 +19,7 @@ fst_subsample(
   path.folder = NULL,
   parallel.core = parallel::detectCores() - 1,
   verbose = FALSE,
+  forking = FALSE,
   ...
 )
 }
