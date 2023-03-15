@@ -21,7 +21,7 @@ it."><meta property="og:image" content="/logo.png"><!-- mathjax --><script src="
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.9</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@ it."><meta property="og:image" content="/logo.png"><!-- mathjax --><script src="
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -95,10 +95,10 @@ it.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">install_gsi_sim</span><span class="op">(</span>
-  commit <span class="op">=</span> <span class="st">"080f462c8eff035fa3e9f2fdce26c3ac013e208a"</span>,
-  fromSource <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">install_gsi_sim</span><span class="op">(</span></span>
+<span>  commit <span class="op">=</span> <span class="st">"080f462c8eff035fa3e9f2fdce26c3ac013e208a"</span>,</span>
+<span>  fromSource <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -106,10 +106,13 @@ it.</p>
     <dl><dt>commit</dt>
 <dd><p>The full SHA-1 hash from GitHub from which to get
 the binary or source</p></dd>
+
+
 <dt>fromSource</dt>
 <dd><p>If TRUE, download source, even if a binary is available.
 If FALSE, then it will download a precompiled binary, if available.  If a
 binary is not available, then it will attempt to download the source.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -131,7 +134,7 @@ function <code><a href="gsi_sim_binary_path.html">gsi_sim_binary_path</a></code>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

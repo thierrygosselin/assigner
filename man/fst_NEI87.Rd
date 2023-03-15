@@ -166,13 +166,13 @@ The data frame is tab delimitted.
 \strong{Wide format:}
 The wide format cannot store metadata info.
 The wide format starts with these 2 id columns:
-\code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals),
+\code{INDIVIDUALS}, \code{STRATA} (that refers to any grouping of individuals),
 the remaining columns are the markers in separate columns storing genotypes.
 
 \strong{Long/Tidy format:}
 The long format is considered to be a tidy data frame and can store metadata info.
 (e.g. from a VCF see \pkg{radiator} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
-are required in the long format: \code{INDIVIDUALS}, \code{POP_ID},
+are required in the long format: \code{INDIVIDUALS}, \code{STRATA},
 \code{MARKERS or LOCUS} and \code{GENOTYPE or GT}. The rest are considered metata info.
 
 \strong{2 genotypes formats are available:}

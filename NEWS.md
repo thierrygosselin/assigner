@@ -1,3 +1,8 @@
+# assigner 0.5.9 2023-03-15
+
+* work on *assigner::fst_WC84*
+
+
 # assigner 0.5.8 2020-10-20
 
 * Version bump because it updates numerous packages: `tidyr`, `readr`, using `future`, `carrier`.

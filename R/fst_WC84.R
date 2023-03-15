@@ -381,7 +381,7 @@ fst_WC84 <- function(
     dplyr::arrange(POP_ID)
 
   # strip the data -------------------------------------------------------------
-  strata.bk <- markers.meta.bk <- genotypes.meta.bk <- NULL
+  # increases speed for large datasets
   env.arg <- rlang::current_env()
   data %<>%
     radiator::strip_rad(
@@ -417,7 +417,8 @@ fst_WC84 <- function(
     .x = 1:iteration.subsample,
     .f = subsampling_data,
     strata = strata.bk,
-    subsample = subsample
+    subsample = subsample,
+    random.seed = NULL
   )
 
   # keep track of subsampling individuals and write to directory
@@ -488,7 +489,7 @@ fst_WC84 <- function(
 
     # test1 <- res$pairwise.fst
     # test2 <- res$pairwise.fst.upper.matrix
-
+    # test3 <- res$pairwise.fst.full.matrix
 
     # pairwise.fst.upper.matrix
     # pairwise.fst.full.matrix
@@ -1518,11 +1519,6 @@ heatmap_fst <- function(
   if (is.null(pop.levels)) {
     pop.levels <- colnames(data.fst)
   }
-  # else {
-  # if (length(pop.levels) != length(union(rownames(data.fst), colnames(data.fst)))) {
-  # rlang::abort(message = "Contact author, problem with strata levels in heatmap")
-  # }
-  # }
 
   data.fst %<>%
     radiator::distance2tibble(
@@ -1536,7 +1532,6 @@ heatmap_fst <- function(
     magrittr::set_colnames(x = ., value = c("POP1", "POP2", "FST"))
 
   inv.levels <- rev(levels(data.fst$POP2))
-  # pop.levels <- levels(data.fst$POP2)
   rounder <- function(x, digits) round(as.numeric(x), digits)
   if (max(stringi::stri_length(data.fst$FST), na.rm = TRUE) != digits) {
     round.num <- TRUE
@@ -1560,7 +1555,6 @@ heatmap_fst <- function(
 
 
   data.fst %<>% dplyr::left_join(data.ci, by = c("POP1", "POP2"))
-  # median.fst <- median(x = data.fst$FST, na.rm = TRUE)
   mean.fst <- mean(x = data.fst$FST, na.rm = TRUE)
   min.fst <- min(x = data.fst$FST, na.rm = TRUE)
   max.fst <- max(x = data.fst$FST, na.rm = TRUE)
@@ -1606,20 +1600,21 @@ heatmap_fst <- function(
   heatmap.fst <- ggplot2::ggplot(
     data = data.fst, ggplot2::aes(x = POP1, y = POP2, fill = FST)
   ) +
-    ggplot2::geom_tile(color = "white") +
+    ggplot2::geom_tile(color = "white", alpha = 0.7) +
     ggplot2::geom_text(ggplot2::aes(x = POP1, y = POP2, label = CI),
                        color = "black", size = text.size, na.rm = TRUE) +
-    ggplot2::scale_fill_gradient2(
-      low = color.low,
-      mid = color.mid,
-      high = color.high,
-      # midpoint = median.fst,
-      midpoint = mean.fst,
-      na.value = "white",
-      limit = NULL,
-      # limit = c(min.fst, max.fst),
-      space = "Lab"
-    ) +
+    ggplot2::scale_fill_viridis_c(name = "Fst", option = "H") +
+    # ggplot2::scale_fill_gradient2(
+    #   low = color.low,
+    #   mid = color.mid,
+    #   high = color.high,
+    #   # midpoint = median.fst,
+    #   midpoint = mean.fst,
+    #   na.value = "white",
+    #   limit = NULL,
+    #   # limit = c(min.fst, max.fst),
+    #   space = "Lab"
+    # ) +
     ggplot2::scale_x_discrete(position = "top") +
     ggplot2::theme_minimal() +
     ggplot2::theme(
@@ -1627,7 +1622,9 @@ heatmap_fst <- function(
       axis.title.y = ggplot2::element_blank(),
       axis.text.x = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold"),
       axis.text.y = ggplot2::element_text(size = 10, family = "Helvetica", face = "bold")
-    )
+    ) +
+    ggplot2::coord_equal()
+
   print(heatmap.fst)
 
   if (!is.null(filename)) {
@@ -1750,6 +1747,7 @@ assigner_fst_stats <- function(
 #' @keywords internal
 
 fst_stats <- function(x, l, digits = 9L, m = NULL, s = NULL, subsample = FALSE) {
+  # x = "pairwise.fst" # test
   res <- list()
   # message(x)
   want <- c("sigma.loc", "fst.markers", "fst.ranked", "fst.overall",
@@ -1868,26 +1866,41 @@ change_matrix_strata <- function(x, s) {
   # x
   # class(colnames(x))
   # class(rownames(x))
+
   if (length(dim(x)) > 1) {
-    colnames(x) %<>%
-      as.character(.) %>%
-      stringi::stri_replace_all_regex(
-        str = .,
-        pattern = paste0("^", as.character(s$STRATA_SEQ)),
-        replacement = as.character(s$POP_ID),
-        vectorize_all = FALSE
-      )
-    # colnames(x)
-    rownames(x) %<>%
-      as.character(.) %>%
-      stringi::stri_replace_all_regex(
-        str = .,
-        pattern = paste0("^", as.character(s$STRATA_SEQ)),
-        replacement = as.character(s$POP_ID),
-        vectorize_all = FALSE
-      )
+    if (identical(colnames(x), as.character(s$STRATA_SEQ))) {
+      colnames(x) <- as.character(s$POP_ID)
+    } else {
+      rlang::abort(message = "Contact author, problem with strata levels in fst")
+    }
+    if (identical(rownames(x), as.character(s$STRATA_SEQ))) {
+      rownames(x) <- as.character(s$POP_ID)
+    } else {
+      rlang::abort(message = "Contact author, problem with strata levels in fst")
+    }
   }
-  #
+
+  # problem with code below 20221026
+  # if (length(dim(x)) > 1) {
+  #   colnames(x) %<>%
+  #     as.character(.) %>%
+  #     stringi::stri_replace_all_regex(
+  #       str = .,
+  #       pattern = paste0("^", as.character(s$STRATA_SEQ)),
+  #       replacement = as.character(s$POP_ID),
+  #       vectorize_all = FALSE
+  #     )
+  #   # colnames(x)
+  #   rownames(x) %<>%
+  #     as.character(.) %>%
+  #     stringi::stri_replace_all_regex(
+  #       str = .,
+  #       pattern = paste0("^", as.character(s$STRATA_SEQ)),
+  #       replacement = as.character(s$POP_ID),
+  #       vectorize_all = FALSE
+  #     )
+  # }
+
   return(x)
 }#change_matrix_strata
 

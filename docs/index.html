@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.9</span>
       </span>
     </div>
 
@@ -59,7 +59,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -132,16 +132,16 @@
 </h2>
 <p>To try out the dev version of <strong>assigner</strong>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://devtools.r-lib.org/" class="external-link">"devtools"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"thierrygosselin/assigner"</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://thierrygosselin.github.io/assigner/" class="external-link">assigner</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://devtools.r-lib.org/" class="external-link">"devtools"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"thierrygosselin/assigner"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://thierrygosselin.github.io/assigner/" class="external-link">assigner</a></span><span class="op">)</span></span></code></pre></div>
 <p>If you plan on using <code>gsi_sim</code> inside assigner, you need an additional step:</p>
 <p>With UNIX</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">assigner</span><span class="fu">::</span><span class="fu"><a href="reference/install_gsi_sim.html">install_gsi_sim</a></span><span class="op">(</span>fromSource <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">assigner</span><span class="fu">::</span><span class="fu"><a href="reference/install_gsi_sim.html">install_gsi_sim</a></span><span class="op">(</span>fromSource <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>With PC</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">assigner</span><span class="fu">::</span><span class="fu"><a href="reference/install_gsi_sim.html">install_gsi_sim</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">assigner</span><span class="fu">::</span><span class="fu"><a href="reference/install_gsi_sim.html">install_gsi_sim</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>web site and additional info: <a href="https://thierrygosselin.github.io/assigner/" class="external-link uri">https://thierrygosselin.github.io/assigner/</a>
 </li>
@@ -210,8 +210,8 @@
 <li><a href="https://tidyverse.org/lifecycle/#maturing" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="lifecycle"></a></li>
 <li><a href="http://www.repostatus.org/#active" class="external-link"><img src="http://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed."></a></li>
 <li><a href="https://cran.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg" alt="minimal R version"></a></li>
-<li><a href="commits/master"><img src="https://img.shields.io/badge/Package%20version-0.5.8-orange.svg" alt="packageversion"></a></li>
-<li><a href="/commits/master"><img src="https://img.shields.io/badge/last%20change-2021--12--18-brightgreen.svg" alt="Last-changedate"></a></li>
+<li><a href="commits/master"><img src="https://img.shields.io/badge/Package%20version-0.5.9-orange.svg" alt="packageversion"></a></li>
+<li><a href="/commits/master"><img src="https://img.shields.io/badge/last%20change-2023--03--15-brightgreen.svg" alt="Last-changedate"></a></li>
 <li><a href="https://github.com/thierrygosselin/assigner/actions" class="external-link"><img src="https://github.com/thierrygosselin/assigner/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://github.com/thierrygosselin/assigner/actions?workflow=macOS-latest%20(release)" class="external-link"><img src="https://github.com/thierrygosselin/assigner/workflows/macOS-latest%20(release)/badge.svg" alt="macOS"></a></li>
 <li><a href="https://github.com/thierrygosselin/assigner/actions?workflow=check-linux" class="external-link"><img src="https://github.com/thierrygosselin/assigner/workflows/check-linux//badge.svg" alt="Linux"></a></li>
@@ -231,7 +231,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

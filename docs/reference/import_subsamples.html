@@ -18,7 +18,7 @@ of different subsample folder into R."><meta property="og:image" content="/logo.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.9</span>
       </span>
     </div>
 
@@ -36,7 +36,7 @@ of different subsample folder into R."><meta property="og:image" content="/logo.
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -89,20 +89,25 @@ of different subsample folder into R.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">import_subsamples</span><span class="op">(</span><span class="va">dir.path</span>, imputations <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">import_subsamples</span><span class="op">(</span><span class="va">dir.path</span>, imputations <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>dir.path</dt>
 <dd><p>The path to the directory containing the subsample folders.</p></dd>
+
+
 <dt>imputations</dt>
 <dd><p>(logical) Was the data imputed or not.
 Default: <code>imputations = FALSE</code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data frame of all the individual's assignment, with iterations and subsample.</p>
+    
+
+<p>A data frame of all the individual's assignment, with iterations and subsample.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -111,12 +116,12 @@ Default: <code>imputations = FALSE</code></p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">subsamples.data</span> <span class="op">&lt;-</span> <span class="fu">import_subsamples</span><span class="op">(</span></span>
-<span class="r-in">dir.path <span class="op">=</span> <span class="st">"assignment_analysis_method_random_imputations_rf_populations"</span>,</span>
-<span class="r-in">imputations <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">subsamples.data</span> <span class="op">&lt;-</span> <span class="fu">import_subsamples</span><span class="op">(</span></span></span>
+<span class="r-in"><span>dir.path <span class="op">=</span> <span class="st">"assignment_analysis_method_random_imputations_rf_populations"</span>,</span></span>
+<span class="r-in"><span>imputations <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -131,7 +136,7 @@ Default: <code>imputations = FALSE</code></p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

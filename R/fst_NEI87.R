@@ -156,13 +156,13 @@
 #' \strong{Wide format:}
 #' The wide format cannot store metadata info.
 #' The wide format starts with these 2 id columns:
-#' \code{INDIVIDUALS}, \code{POP_ID} (that refers to any grouping of individuals),
+#' \code{INDIVIDUALS}, \code{STRATA} (that refers to any grouping of individuals),
 #' the remaining columns are the markers in separate columns storing genotypes.
 #'
 #' \strong{Long/Tidy format:}
 #' The long format is considered to be a tidy data frame and can store metadata info.
 #' (e.g. from a VCF see \pkg{radiator} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
-#' are required in the long format: \code{INDIVIDUALS}, \code{POP_ID},
+#' are required in the long format: \code{INDIVIDUALS}, \code{STRATA},
 #' \code{MARKERS or LOCUS} and \code{GENOTYPE or GT}. The rest are considered metata info.
 #'
 #' \strong{2 genotypes formats are available:}
@@ -290,21 +290,16 @@ fst_NEI87 <- function(
       # message("strata file: yes")
       number.columns.strata <- max(utils::count.fields(strata, sep = "\t"))
       col.types <- stringi::stri_join(rep("c", number.columns.strata), collapse = "")
-      suppressMessages(strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = col.types) %>%
-                         dplyr::rename(POP_ID = STRATA))
+      suppressMessages(
+        strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = col.types)
+      )
     } else {
       # message("strata object: yes")
-      colnames(strata) <- stringi::stri_replace_all_fixed(
-        str = colnames(strata),
-        pattern = "STRATA",
-        replacement = "POP_ID",
-        vectorize_all = FALSE
-      )
       strata.df <- strata
     }
 
     # Remove potential whitespace in pop_id
-    strata.df$POP_ID <- stringi::stri_replace_all_fixed(strata.df$POP_ID, pattern = " ", replacement = "_", vectorize_all = FALSE)
+    strata.df$STRATA <- stringi::stri_replace_all_fixed(strata.df$STRATA, pattern = " ", replacement = "_", vectorize_all = FALSE)
 
     strata.df$INDIVIDUALS <- stringi::stri_replace_all_fixed(
       str = strata.df$INDIVIDUALS,
@@ -314,7 +309,7 @@ fst_NEI87 <- function(
     )
 
     input <- input %>%
-      dplyr::select(-POP_ID) %>%
+      dplyr::select(-STRATA) %>%
       dplyr::left_join(strata.df, by = "INDIVIDUALS")
   }
 
@@ -323,14 +318,14 @@ fst_NEI87 <- function(
 
   # subsampling data------------------------------------------------------------
   # create the subsampling list
-  ind.pop.df <- dplyr::distinct(.data = input, POP_ID, INDIVIDUALS)
+  ind.pop.df <- dplyr::distinct(.data = input, STRATA, INDIVIDUALS)
 
   if (is.null(subsample)) {
     iteration.subsample <- 1
   } else {
     if (subsample == "min") {
       subsample <- ind.pop.df %>%
-        dplyr::group_by(POP_ID) %>%
+        dplyr::group_by(STRATA) %>%
         dplyr::tally(.) %>%
         dplyr::filter(n == min(n)) %>%
         dplyr::ungroup(.) %>%
@@ -647,11 +642,11 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
       A2 = stringi::stri_sub(GT, 4,6)
     ) %>%
     dplyr::select(-GT) %>%
-    assigner::rad_long(x = ., cols = c("MARKERS", "INDIVIDUALS", "POP_ID"), names_to = "ALLELES", values_to = "GT")
+    assigner::rad_long(x = ., cols = c("MARKERS", "INDIVIDUALS", "STRATA"), names_to = "ALLELES", values_to = "GT")
 
   # frequency per markers, alleles, pop
   p <- x %>%
-    dplyr::group_by(MARKERS, POP_ID) %>%
+    dplyr::group_by(MARKERS, STRATA) %>%
     dplyr::count(GT) %>%
     dplyr::mutate(P = n / sum(n)) %>%
     dplyr::select(-n) %>%
@@ -660,7 +655,7 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
   # mp: mean frequency per markers
   # mp2: sum of square mean frequency per markers
   mean.p2 <- p %>%
-    tidyr::complete(data = ., POP_ID, tidyr::nesting(MARKERS, GT), fill = list(P = 0)) %>%
+    tidyr::complete(data = ., STRATA, tidyr::nesting(MARKERS, GT), fill = list(P = 0)) %>%
     dplyr::group_by(MARKERS, GT) %>%
     dplyr::summarise(MP = mean(P, na.rm = TRUE)) %>%
     dplyr::group_by(MARKERS) %>%
@@ -669,7 +664,7 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
 
   # msp2 mean frequency per markers per pop
   mean.frequency.markers <- p %>%
-    dplyr::group_by(MARKERS, POP_ID) %>%
+    dplyr::group_by(MARKERS, STRATA) %>%
     dplyr::summarise(SP2 = sum(P^2)) %>%
     dplyr::group_by(MARKERS) %>%
     dplyr::summarise(MSP2 = mean(SP2, na.rm = TRUE)) %>%
@@ -679,11 +674,11 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
   # Mean heterozygosity observed per pop and markers
   # mean heterozygosity across all markers
   mean.het.obs.markers <- x %>%
-    dplyr::distinct(MARKERS, POP_ID, INDIVIDUALS, GT) %>%
-    dplyr::group_by(MARKERS, POP_ID, INDIVIDUALS) %>%
+    dplyr::distinct(MARKERS, STRATA, INDIVIDUALS, GT) %>%
+    dplyr::group_by(MARKERS, STRATA, INDIVIDUALS) %>%
     dplyr::tally(.) %>%
     dplyr::mutate(HO = n - 1) %>%
-    dplyr::group_by(POP_ID, MARKERS) %>%
+    dplyr::group_by(STRATA, MARKERS) %>%
     dplyr::summarise(HO = mean(HO)) %>%
     dplyr::group_by(MARKERS) %>%
     dplyr::summarise(HO = mean(HO)) %>%
@@ -692,7 +687,7 @@ compute_fst_nei <- function(x, ci = FALSE, iteration.ci = 100, quantiles.ci = c(
   # mn: corrected mean number of individuals per markers
   #n: number of individuals, per pop and markers
   fst.data <- x %>%
-    dplyr::group_by(POP_ID, MARKERS) %>%
+    dplyr::group_by(STRATA, MARKERS) %>%
     dplyr::distinct(INDIVIDUALS) %>%
     dplyr::tally(.) %>%
     dplyr::mutate(N_INV = 1 / n) %>%
@@ -853,8 +848,8 @@ pairwise_fst_nei <- carrier::crate(function(
   # list.pair <- 2
   pop.select <- stringi::stri_join(purrr::flatten(pop.pairwise[list.pair]))
   data.select <- data.genotyped %>%
-    dplyr::filter(POP_ID %in% pop.select) %>%
-    dplyr::mutate(POP_ID = droplevels(x = POP_ID))
+    dplyr::filter(STRATA %in% pop.select) %>%
+    dplyr::mutate(STRATA = droplevels(x = STRATA))
   fst.select <- assigner::compute_fst_nei(x = data.select, ci = ci, iteration.ci = iteration.ci, quantiles.ci = quantiles.ci, digits = digits)
   # if (ci){
   df.select <- tibble::tibble(POP1 = pop.select[1], POP2 = pop.select[2])
@@ -895,7 +890,7 @@ fst_nei_subsample <- function(
   }
 
   # Keep only the subsample
-  input <- dplyr::semi_join(input, x, by = c("POP_ID", "INDIVIDUALS"))
+  input <- dplyr::semi_join(input, x, by = c("STRATA", "INDIVIDUALS"))
   x <- NULL #unused object
 
   # genotyped data and holdout sample  -----------------------------------------
@@ -915,7 +910,7 @@ fst_nei_subsample <- function(
   # Compute pairwise Fst -------------------------------------------------------
   if (pairwise) {
     if (verbose) message("Paiwise fst calculation")
-    pop.list <- levels(input$POP_ID) # pop list
+    pop.list <- levels(input$STRATA) # pop list
     # all combination of populations
     pop.pairwise <- utils::combn(unique(pop.list), 2, simplify = FALSE)
     # Fst for all pairwise populations

@@ -41,7 +41,8 @@ if (getRversion() >= "2.15.1") {
       "whitelist.markers", "random.seed", "folder", ".data", "MARKERS...1",
       "MARKERS...3", "MARKERS...4", "STRATA_SEQ", "ARGUMENTS", "VALUES",
       "input", "HET", "calibrate.alleles", "iteration.subsample", "n",
-      "M_SEQ", "ID_SEQ", "1", "2", "where", "p", "forking"
+      "M_SEQ", "ID_SEQ", "1", "2", "where", "p", "forking", "strata.bk",
+      "markers.meta.bk", "genotypes.meta.bk"
     )
   )
 }

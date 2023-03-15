@@ -910,7 +910,7 @@ sudo mv fsc26_mac64/fsc26 /usr/local/bin/fsc26 # will ask for your computer pass
 ```{bash chunk common to both OS, eval=FALSE}
 sudo chmod 777 /usr/local/bin/fsc26
 fsc26
-````
+```
 
 Re-start R and the software fastsimcoal2 will automatically be in your PATH...
 

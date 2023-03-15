@@ -36,7 +36,7 @@ Parallel: The assignment can be conduncted on multiple CPUs.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.9</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@ Parallel: The assignment can be conduncted on multiple CPUs.
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -122,21 +122,21 @@ Assignment assumptions are listed in the section below.</p>
 </ul></div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">assignment_ngs</span><span class="op">(</span>
-  <span class="va">data</span>,
-  strata <span class="op">=</span> <span class="cn">NULL</span>,
-  pop.levels <span class="op">=</span> <span class="cn">NULL</span>,
-  assignment.analysis <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gsim_sim"</span>, <span class="st">"adegenet"</span><span class="op">)</span>,
-  markers.sampling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ranked"</span>, <span class="st">"random"</span><span class="op">)</span>,
-  marker.number <span class="op">=</span> <span class="st">"all"</span>,
-  thl <span class="op">=</span> <span class="fl">1</span>,
-  iteration.method <span class="op">=</span> <span class="fl">10</span>,
-  subsample <span class="op">=</span> <span class="cn">NULL</span>,
-  iteration.subsample <span class="op">=</span> <span class="fl">1</span>,
-  verbose <span class="op">=</span> <span class="cn">TRUE</span>,
-  parallel.core <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">assignment_ngs</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  strata <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pop.levels <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  assignment.analysis <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gsim_sim"</span>, <span class="st">"adegenet"</span><span class="op">)</span>,</span>
+<span>  markers.sampling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ranked"</span>, <span class="st">"random"</span><span class="op">)</span>,</span>
+<span>  marker.number <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  thl <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  iteration.method <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  subsample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  iteration.subsample <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  parallel.core <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -145,6 +145,8 @@ Assignment assumptions are listed in the section below.</p>
 <dd><p>Several input format are accepted. assigner uses <span class="pkg">radiator</span>
 <code><a href="https://thierrygosselin.github.io/radiator/reference/tidy_genomic_data.html" class="external-link">tidy_genomic_data</a></code> module to import the data.
 See function documentation for more details.</p></dd>
+
+
 <dt>strata</dt>
 <dd><p>(optional)
 The strata file is a tab delimited file with a minimum of 2 columns headers:
@@ -153,6 +155,8 @@ DArT data: a third column <code>TARGET_ID</code> is required.
 Documented on <code><a href="https://thierrygosselin.github.io/radiator/reference/read_dart.html" class="external-link">read_dart</a></code>. Also use the strata read function to
 blacklist individuals.
 Default: <code>strata = NULL</code>.</p></dd>
+
+
 <dt>pop.levels</dt>
 <dd><p>(optional, string) This refers to the levels in a factor. In this
 case, the id of the pop.
@@ -161,12 +165,16 @@ alphabetical or numerical order. e.g. <code>pop.levels = c("QUE", "ONT", "ALB")<
 instead of the default <code>pop.levels = c("ALB", "ONT", "QUE")</code>.
 White spaces in population names are replaced by underscore.
 Default: <code>pop.levels = NULL</code>.</p></dd>
+
+
 <dt>assignment.analysis</dt>
 <dd><p>(character) Assignment analysis conducted with
 <code>assignment.analysis = "gsi_sim"</code> or
 <code>assignment.analysis = "adegenet"</code>.
 See <strong>Details</strong> section below for installing
 <a href="https://github.com/eriqande/gsi_sim" class="external-link">gsi_sim</a>.</p></dd>
+
+
 <dt>markers.sampling</dt>
 <dd><p>(character) 2 options for markers selection:</p><ol><li><p><code>markers.sampling == "random"</code> the subset of markers are selected
 randomly, this is the classic <em>Leave-One-Out</em> (LOO) assignment.</p></li>
@@ -177,6 +185,8 @@ implementation of Weir and Cockerham 1984 Fst/Theta equations. This selection
 method is used during <em>Training-Holdout-Leave One Out</em> (thl)
 assignment. How many markers are selected is controlled with argument <code>thl</code>.</p></li>
 </ol></dd>
+
+
 <dt>marker.number</dt>
 <dd><p>(Integer or string of number or "all") The assignment
 analysis can use all your markers (default) or a subset of your markers.
@@ -185,6 +195,8 @@ e.g. To test 500, 1000, 2000 and all the markers:
 To use only 500 makers <code>marker.number = 500</code>. How those markers are sampled
 is determined with the argument <code>markers.sampling</code>, next.
 Default = <code>marker.number = "all"</code>.</p></dd>
+
+
 <dt>thl</dt>
 <dd><p>(character, integer, proportion) For <code>markers.sampling = "ranked"</code> only.
 Several options are available:</p><ol><li><p><code>thl = 1</code>: Only 1 individual sample is used as holdout. This individual is not
@@ -198,6 +210,8 @@ the argument <code>iteration.method = 1</code> is set by default. This is for te
 only.</p></li>
 </ol><p>Different lists of holdout individuals are generated when the argument
 <code>iteration.method</code> (bootstrap) is used.</p></dd>
+
+
 <dt>iteration.method</dt>
 <dd><p>(integer)
 With <strong>random markers selection</strong> method, the iterations argument =
@@ -216,6 +230,8 @@ will be repeated for each individuals in the data set for every
 15 percent of individuals in each populations are chosen randomly as holdout
 individuals and this process is reapeated the number of times chosen by the
 <code>iteration.method</code> value.</p></dd>
+
+
 <dt>subsample</dt>
 <dd><p>(Integer or Character, optional)
 This argument subsample individuals.
@@ -227,27 +243,38 @@ the function will use the smallest population sample size found in the data.
 The number of times this process is repeated is controlled by the argument
 <code>iteration.subsample</code>.
 Default: <code>subsample = NULL</code> (no subsampling).</p></dd>
+
+
 <dt>iteration.subsample</dt>
 <dd><p>(Integer) The number of iterations to repeat
 subsampling of individuals.
 With <code>subsample = 20</code> and <code>iteration.subsample = 10</code>,
 20 individuals/populations will be randomly chosen 10 times.
 Default: <code>iteration.subsample = 1</code>.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>(optional, logical) When <code>verbose = TRUE</code>
 the function is a little more chatty during execution.
 Default: <code>verbose = TRUE</code>.</p></dd>
+
+
 <dt>parallel.core</dt>
 <dd><p>(optional) The number of core used for parallel
 execution during import.
 Default: <code>parallel.core = parallel::detectCores() - 1</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>(optional) To pass further argument for fine-tuning the
 function (see advanced section below).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Depending on arguments selected, several folders and files are written:</p><ol><li><p><code>01_radiator_tidy_genomic</code> this is the result of importing the data
+    
+
+<p>Depending on arguments selected, several folders and files are written:</p><ol><li><p><code>01_radiator_tidy_genomic</code> this is the result of importing the data
 with radiator import module <a href="https://thierrygosselin.github.io/radiator/reference/tidy_genomic_data.html" class="external-link">tidy_genomic_data</a>.</p></li>
 <li><p><code>assigner_assignment_ngs_args_date@time.tsv</code>: For reproducibility,
 the function call, arguments and values used along the default arguments.</p></li>
@@ -257,21 +284,32 @@ of summarized assignment statistics.</p></li>
 <li><p><code>assignment.ranked.results.summary.stats.all.subsamples.tsv</code>:
 When subsampling is used, this file contains the raw results of all subsample before
 summarizing.</p></li>
-</ol><p><strong>THL: Training, Holdout, Leave-one-out</strong>:
-Intermediate files are written, you can inspect specific iterations
+</ol><p><strong>THL: Training, Holdout, Leave-one-out</strong>:</p>
+
+
+<p>Intermediate files are written, you can inspect specific iterations
 and/or subsample:</p><ol><li><p><code>assignment.ranked.results.iterations.raw.tsv</code>: tibble
 with raw intermediate results of all iterations.</p></li>
 <li><p><code>assignment.ranked.results.iterations.summary.tsv</code>: tibble
 with intermediate summary over iterations.</p></li>
 <li><p><code>holdout.individuals.tsv</code>: tibble with the holdout individuals and
 associated iteration and random seed number.</p></li>
-</ol><p><strong>LOO: Leave-one-out</strong>:
-Intermediate files are written, you can inspect specific iterations
+</ol><p><strong>LOO: Leave-one-out</strong>:</p>
+
+
+<p>Intermediate files are written, you can inspect specific iterations
 and/or subsample:</p><ol><li><p><code>assignment.random.results.iterations.raw.tsv</code>: tibble
 with raw intermediate results of all iterations.</p></li>
 <li><p><code>markers.random.tsv</code>: tibble with the random markers selected for
 each iteration with associated random seed number.</p></li>
-</ol><p><strong>Folders</strong>The names have the different iterations <em>i</em>starting with <code>assignment_</code><em>i</em> contains:</p><ul><li><p><code>assignment_</code><em>i</em><code>.tsv</code>: the assignment result, for the
+</ol><p><strong>Folders</strong></p>
+
+
+
+<p>The names have the different iterations <em>i</em></p>
+
+
+<p>starting with <code>assignment_</code><em>i</em> contains:</p><ul><li><p><code>assignment_</code><em>i</em><code>.tsv</code>: the assignment result, for the
 iteration.</p></li>
 <li><p><code>fst.ranked_</code><em>i</em><code>.tsv</code>: for THL method, the ranked Fst
 per markers, for the iteration.</p></li>
@@ -451,7 +489,7 @@ Bioinformatics. 2011:27: 3070–3071. doi:10.1093/bioinformatics/btr521</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

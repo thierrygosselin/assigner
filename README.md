@@ -9,8 +9,8 @@ state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![minimal R
 version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)
-[![packageversion](https://img.shields.io/badge/Package%20version-0.5.8-orange.svg)](commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2021--12--18-brightgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.5.9-orange.svg)](commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2023--03--15-brightgreen.svg)](/commits/master)
 [![R-CMD-check](https://github.com/thierrygosselin/assigner/workflows/R-CMD-check/badge.svg)](https://github.com/thierrygosselin/assigner/actions)
 [![macOS](https://github.com/thierrygosselin/assigner/workflows/macOS-latest%20(release)/badge.svg)](https://github.com/thierrygosselin/assigner/actions?workflow=macOS-latest%20(release))
 [![Linux](https://github.com/thierrygosselin/assigner/workflows/check-linux//badge.svg)](https://github.com/thierrygosselin/assigner/actions?workflow=check-linux)
@@ -51,14 +51,14 @@ make effortless documenting your workflows and pipelines.
 
 The **keywords** here to remember:
 
--   3 differents algorithms implemented: frequentist, likelihood and
-    machine learning
--   cross-validation techniques: classic Leave-One-Out (LOO) and
-    Training, Holdout, Leave-one-out (THL) with marker selection
--   resampling/bootstrap/subsampling
--   fast Fst WC84 implementation)
--   ggplot2-based plotting!
--   <https://thierrygosselin.github.io/assigner/>
+- 3 differents algorithms implemented: frequentist, likelihood and
+  machine learning
+- cross-validation techniques: classic Leave-One-Out (LOO) and Training,
+  Holdout, Leave-one-out (THL) with marker selection
+- resampling/bootstrap/subsampling
+- fast Fst WC84 implementation)
+- ggplot2-based plotting!
+- <https://thierrygosselin.github.io/assigner/>
 
 ## Installation
 
@@ -85,18 +85,18 @@ With PC
 assigner::install_gsi_sim()
 ```
 
--   web site and additional info:
-    <https://thierrygosselin.github.io/assigner/>
--   [Computer setup - installation -
-    troubleshooting](http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html)
--   [assigner’s
-    assumptions](http://thierrygosselin.github.io/assigner/reference/assignment_ngs.html#assumptions)
--   [assigner’s
-    features](http://thierrygosselin.github.io/assigner/FEATURES.html)
--   [Function’s
-    documentation](http://thierrygosselin.github.io/assigner/reference/index.html)
--   [Vignettes](http://thierrygosselin.github.io/assigner/articles/index.html)
--   How to cite assigner: inside R type `citation("assigner")`
+- web site and additional info:
+  <https://thierrygosselin.github.io/assigner/>
+- [Computer setup - installation -
+  troubleshooting](http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html)
+- [assigner’s
+  assumptions](http://thierrygosselin.github.io/assigner/reference/assignment_ngs.html#assumptions)
+- [assigner’s
+  features](http://thierrygosselin.github.io/assigner/FEATURES.html)
+- [Function’s
+  documentation](http://thierrygosselin.github.io/assigner/reference/index.html)
+- [Vignettes](http://thierrygosselin.github.io/assigner/articles/index.html)
+- How to cite assigner: inside R type `citation("assigner")`
 
 ## [Life cycle](https://thierrygosselin.github.io/assigner/articles/life_cycle.html)
 
@@ -106,12 +106,12 @@ change. Your codes and workflows might break from time to time until
 **assigner is stable**. Consequently, depending on your tolerance to
 change, assigner might not be for you.
 
--   Philosophy, major changes and deprecated functions/arguments are
-    documented in life cycle section of functions.
--   The latest changes are documented
-    ([here](https://thierrygosselin.github.io/assigner/articles/life_cycle.html))
-    and in [changelog, versions, new features and bug
-    history](https://thierrygosselin.github.io/assigner/news/index.html)
--   [issues](https://github.com/thierrygosselin/assigner/issues/new/choose)
-    and
-    [contributions](https://github.com/thierrygosselin/assigner/issues/new/choose)
+- Philosophy, major changes and deprecated functions/arguments are
+  documented in life cycle section of functions.
+- The latest changes are documented
+  ([here](https://thierrygosselin.github.io/assigner/articles/life_cycle.html))
+  and in [changelog, versions, new features and bug
+  history](https://thierrygosselin.github.io/assigner/news/index.html)
+- [issues](https://github.com/thierrygosselin/assigner/issues/new/choose)
+  and
+  [contributions](https://github.com/thierrygosselin/assigner/issues/new/choose)

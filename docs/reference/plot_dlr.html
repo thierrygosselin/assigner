@@ -18,7 +18,7 @@ Fig 6."><meta property="og:image" content="/logo.png"><!-- mathjax --><script sr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.9</span>
       </span>
     </div>
 
@@ -36,7 +36,7 @@ Fig 6."><meta property="og:image" content="/logo.png"><!-- mathjax --><script sr
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -89,20 +89,20 @@ Fig 6.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plot_dlr</span><span class="op">(</span>
-  <span class="va">data</span>,
-  <span class="va">pop.pairwise</span>,
-  dlr <span class="op">=</span> <span class="cn">NULL</span>,
-  x.dlr <span class="op">=</span> <span class="cn">NULL</span>,
-  y.dlr <span class="op">=</span> <span class="cn">NULL</span>,
-  fst <span class="op">=</span> <span class="cn">NULL</span>,
-  x.fst <span class="op">=</span> <span class="cn">NULL</span>,
-  y.fst <span class="op">=</span> <span class="cn">NULL</span>,
-  plot.dlr <span class="op">=</span> <span class="cn">TRUE</span>,
-  plot.width <span class="op">=</span> <span class="cn">NULL</span>,
-  plot.height <span class="op">=</span> <span class="cn">NULL</span>,
-  plot.dpi <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_dlr</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">pop.pairwise</span>,</span>
+<span>  dlr <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  x.dlr <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  y.dlr <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fst <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  x.fst <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  y.fst <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plot.dlr <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  plot.width <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plot.height <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plot.dpi <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -110,32 +110,57 @@ Fig 6.</p>
     <dl><dt>data</dt>
 <dd><p>The assigment object from
 <code><a href="dlr.html">dlr</a></code> output.</p></dd>
+
+
 <dt>pop.pairwise</dt>
 <dd><p>List of pairwise populations to generate the Dlr plot.</p></dd>
+
+
 <dt>dlr</dt>
 <dd><p>(optional) Character string with Dlr value.</p></dd>
+
+
 <dt>x.dlr</dt>
 <dd><p>(optional) Position to the x-axis of the Dlr value.</p></dd>
+
+
 <dt>y.dlr</dt>
 <dd><p>(optional) Position to the y-axis of the Dlr value.</p></dd>
+
+
 <dt>fst</dt>
 <dd><p>(optional) Character string with Fst value.</p></dd>
+
+
 <dt>x.fst</dt>
 <dd><p>(optional) Position to the x-axis of the Fst value.</p></dd>
+
+
 <dt>y.fst</dt>
 <dd><p>(optional) Position to the y-axis of the Fst value.</p></dd>
+
+
 <dt>plot.dlr</dt>
 <dd><p>(optional) By default will  write the plot in the working directory.</p></dd>
+
+
 <dt>plot.width</dt>
 <dd><p>(optional) Width in cm of the figure.</p></dd>
+
+
 <dt>plot.height</dt>
 <dd><p>(optional) height in cm of the figure.</p></dd>
+
+
 <dt>plot.dpi</dt>
 <dd><p>(optional) Number of dpi for the figure (e.g 600).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list with the assignment table and the assignment plot.</p>
+    
+
+<p>A list with the assignment table and the assignment plot.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -164,7 +189,7 @@ Molecular Ecology Notes, 4, 792-794.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

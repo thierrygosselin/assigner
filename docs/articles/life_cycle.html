@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">assigner</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.9</span>
       </span>
     </div>
 
@@ -59,7 +59,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -110,9 +110,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Life cycle</h1>
-                        <h4 data-toc-skip class="author">Thierry Gosselin</h4>
+                        <h4 data-toc-skip class="author">Thierry
+Gosselin</h4>
             
-            <h4 data-toc-skip class="date">2021-12-18</h4>
+            <h4 data-toc-skip class="date">2023-03-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/thierrygosselin/assigner/blob/HEAD/vignettes/life_cycle.Rmd" class="external-link"><code>vignettes/life_cycle.Rmd</code></a></small>
       <div class="hidden name"><code>life_cycle.Rmd</code></div>
@@ -121,14 +122,32 @@
 
     
     
-<p>assigner is maturing, but in order to make the package better, changes are inevitable. Experimental functions will change, argument names will change.</p>
-<p>Below an example of recent changes that are all documented in <a href="https://thierrygosselin.github.io/assigner/news/index.html" class="external-link">NEWS and changelog</a>.</p>
+<p>assigner is maturing, but in order to make the package better,
+changes are inevitable. Experimental functions will change, argument
+names will change.</p>
+<p>Below an example of recent changes that are all documented in <a href="https://thierrygosselin.github.io/assigner/news/index.html" class="external-link">NEWS
+and changelog</a>.</p>
 <div class="section level2">
 <h2 id="life-cycle">Life cycle<a class="anchor" aria-label="anchor" href="#life-cycle"></a>
 </h2>
 <p><strong>Missing data imputations: now in <a href="https://github.com/thierrygosselin/grur" class="external-link">grur</a></strong></p>
-<p>The imputation of missing data requires special attention that fall outside the scope of <strong>assigner</strong>. Consequently, these options are no longer available. For assignment, it’s better to do no imputation then quickly do imputations with defaults.</p>
-<p>Inside my package called <a href="https://github.com/thierrygosselin/grur" class="external-link">grur</a>, users can <strong>visualize patterns of missingness</strong> associated with different variables (lanes, chips, sequencers, populations, sample sites, reads/samples, homozygosity, etc). Several <strong>Map-independent imputations</strong> of missing genotypes are available: <strong>Random Forests</strong> (on-the-fly-imputations or predictive modeling), <strong>Extreme Gradient Tree Boosting</strong>, Strawman imputations (~ max/mean/mode: the most frequently observed, non-missing genotypes is used). Imputations can be conducted <strong>overall samples</strong> or <strong>by populations/strata/grouping</strong>. <code><a href="https://thierrygosselin.github.io/radiator/reference/genomic_converter.html" class="external-link">radiator::genomic_converter</a></code> is integrated with the imputation function of <strong>grur</strong>.</p>
+<p>The imputation of missing data requires special attention that fall
+outside the scope of <strong>assigner</strong>. Consequently, these
+options are no longer available. For assignment, it’s better to do no
+imputation then quickly do imputations with defaults.</p>
+<p>Inside my package called <a href="https://github.com/thierrygosselin/grur" class="external-link">grur</a>, users can
+<strong>visualize patterns of missingness</strong> associated with
+different variables (lanes, chips, sequencers, populations, sample
+sites, reads/samples, homozygosity, etc). Several
+<strong>Map-independent imputations</strong> of missing genotypes are
+available: <strong>Random Forests</strong> (on-the-fly-imputations or
+predictive modeling), <strong>Extreme Gradient Tree Boosting</strong>,
+Strawman imputations (~ max/mean/mode: the most frequently observed,
+non-missing genotypes is used). Imputations can be conducted
+<strong>overall samples</strong> or <strong>by
+populations/strata/grouping</strong>.
+<code><a href="https://thierrygosselin.github.io/radiator/reference/genomic_converter.html" class="external-link">radiator::genomic_converter</a></code> is integrated with the
+imputation function of <strong>grur</strong>.</p>
 <ul>
 <li>filter your data correctly in <a href="https://github.com/thierrygosselin/radiator" class="external-link">radiator</a>
 </li>
@@ -156,7 +175,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
