@@ -1,8 +1,8 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with RADseq Data
-Version: 0.5.9
-Date: 2023-03-15
+Version: 0.6.0
+Date: 2024-11-06
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
@@ -49,6 +49,6 @@ LazyLoad: yes
 LazyData: true
 VignetteBuilder: 
     knitr
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 URL: http://thierrygosselin.github.io/assigner/
 BugReports: https://github.com/thierrygosselin/assigner/issues

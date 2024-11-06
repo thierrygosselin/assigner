@@ -383,6 +383,7 @@ fst_WC84 <- function(
   # strip the data -------------------------------------------------------------
   # increases speed for large datasets
   env.arg <- rlang::current_env()
+
   data %<>%
     radiator::strip_rad(
       x = .,
@@ -476,6 +477,7 @@ fst_WC84 <- function(
     # res <- purrr::prepend(x = res, values = purrr::flatten(subsample.fst))
     # change strata --------
     nms <- subsample.fst %>% purrr::map(names) %>% purrr::reduce(union)
+    if (!pairwise && "pairwise.fst" %in% nms) nms <- purrr::discard(.x = nms, .p = nms %in% "pairwise.fst")
     res <- purrr::map(
       .x = nms,
       .f = fst_stats,
@@ -486,6 +488,8 @@ fst_WC84 <- function(
       subsample = FALSE
     ) %>%
       purrr::flatten(.)
+
+
 
     # test1 <- res$pairwise.fst
     # test2 <- res$pairwise.fst.upper.matrix
@@ -1748,6 +1752,8 @@ assigner_fst_stats <- function(
 
 fst_stats <- function(x, l, digits = 9L, m = NULL, s = NULL, subsample = FALSE) {
   # x = "pairwise.fst" # test
+  # x = "fst.markers"
+  # x = "fis.overall"
   res <- list()
   # message(x)
   want <- c("sigma.loc", "fst.markers", "fst.ranked", "fst.overall",

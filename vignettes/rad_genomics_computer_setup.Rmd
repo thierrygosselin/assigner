@@ -1,26 +1,23 @@
 ---
-title: 'RADseq genomics in R'
-subtitle: 'computer setup'
+title: "RADseq Genomics in R"
+subtitle: "computer setup"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_document:
    toc: yes
    toc_float: yes
 vignette: >
-  %\VignetteIndexEntry{RADseq genomics in R}
+  %\VignetteIndexEntry{RADseq Genomics in R}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
-collapse = TRUE,
-comment = "#>"
-)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-**Time to allow: ETA ~20 min**
+**Time to allow: ETA ~30-45 min for experience users, 1h-2h for novices**
 
 This vignette purposes is to show users how to setup their computers 
 for RADseq genomic analysis inside R. It targets users of my packages or 
@@ -41,8 +38,8 @@ The vignette is also usefull if your:
 * `ranger`
 * `missRanger`
 * `pcaMethods`
-* how to **OpenMP enabled** specific packages that require to run in parallel for
-the imputations.
+* how to have **OpenMP enabled** specific packages. R packages that requires 
+to run in parallel for the imputations (e.g. `fstcore`, `fst`, `data.table`).
 
 I'm currently merging information also found in this [tutorial](http://gbs-cloud-tutorial.readthedocs.io/en/latest/03_computer_setup.html)
 
@@ -51,13 +48,16 @@ I'm currently merging information also found in this [tutorial](http://gbs-cloud
 # macOS
 
 **Warning: package management software *Homebrew* and/or *MacPorts* :**
+
 My experience with these packages is that at some point they will be unreliable with 
 genomic software installation. It might do the trick for some software,
-but eventually you will loose a lot of time trying to figure out what's your problem.
+but eventually you will lose a lot of time trying to figure out what's your problem.
+
+In this vignette I present *brewless* options only. 
 
 ## Update your OS
 
-* the current version is macOS Catalina 10.15
+* the current version is macOS Sequoia 15.1
 * [how to update](http://support.apple.com/kb/HT1338?viewlocale=en_US&locale=en_US)
 
 
@@ -76,24 +76,24 @@ Although the prompt message may be a bit confusing, just click **install**.
 xcode-select --install
 ```
 
-In the finder using keyboard shorcut `cmd+shift+g` go to: `/Library/Developer/CommandLineTools/Packages/` and double click on `macOS_SDK_headers_for_macOS_10.14.pkg` to install.
-
 
 **Notes:**
 
 * If command line tools is already installed you'll get this message 
 `xcode-select: error: command line tools are already installed, use "Software Update" to install updates`
-* to test if you have a compiler, you can also type: `make` in the terminal
+* to test if you have a compiler, you can also type: `make` in the terminal, if it's installed you will have something similar to this `*** No targets specified and no makefile found.  Stop.`
+
+**Terminology:**
+
+* [Reading](https://thoughtbot.com/blog/the-magic-behind-configure-make-make-install): 
+to understand the basic steps to install software with the terminal 
+(*configure*, *make* and *sudo make install* steps)
 * `./configure`: configure everything before installation
 * `make`: connect libraries and the source before make install 
 ([doc](http://www.gnu.org/software/make/manual/make.html))
 * `make install`: use to build (compile) source code to create binary files and
 install the application on our system as configured using `./configure`,
 usually in `/usr/local/bin`.
-* [Reading](https://thoughtbot.com/blog/the-magic-behind-configure-make-make-install): 
-to understand the basic steps to install software with the terminal 
-(*configure*, *make* and *sudo make install* steps)
-* for more *curl* option type `curl -h`
 
 
 ## Compiler
@@ -116,35 +116,34 @@ The command below fro both GCC and Clang will:
 
 Choose the binary version number based on your OS and change the version accordingly [link](http://hpc.sourceforge.net).
 
-**Catalina** [gcc-9.2-bin.tar.gz](http://prdownloads.sourceforge.net/hpc/gcc-9.2-bin.tar.gz)
-**Mojave** [gcc-8.3.tar.gz](http://prdownloads.sourceforge.net/hpc/gcc-8.3-bin.tar.gz)
+**Sonoma** [gcc-14.1-m1-bin.tar.gz](http://prdownloads.sourceforge.net/hpc/gcc-14.1-m1-bin.tar.gz)
 
 ```{bash eval=FALSE}
 #In Terminal
 cd Downloads
-sudo tar -zxvf gcc-9.2-bin.tar.gz -C /usr/local --strip-components=2
+sudo tar -zxvf gcc-14.1-m1-bin.tar.gz -C /usr/local --strip-components=2
 ```
 
 ```{bash eval=FALSE}
-sudo rm gcc-9.2-bin.tar.gz
+sudo rm gcc-14.1-m1-bin.tar.gz
 gcc -v
 ```
 
 ### Update Clang
 
-We want [clang](https://en.wikipedia.org/wiki/Clang) compiler with OpenMP enabled.
+We want [clang](https://en.wikipedia.org/wiki/Clang) compiler with OpenMP enabled. The latest version is [19.1.3](https://github.com/llvm/llvm-project/releases/tag/llvmorg-19.1.3).
 
 ```{bash eval=FALSE}
-#In browser
-http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-darwin-apple.tar.xz
+#In browser make sure you know if your mac as an Intel or Mac chips (M1, M2, etc)
+https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.3/LLVM-19.1.3-macOS-X64.tar.xz
 #In Terminal
 cd Downloads
-sudo tar -xzvf clang+llvm-9.0.0-x86_64-darwin-apple.tar.xz -C/usr/local --strip-components=1
+sudo tar -xzvf LLVM-19.1.3-macOS-X64.tar.xz -C/usr/local --strip-components=1
 ```
 
 
 ```{bash eval=FALSE}
-sudo rm clang+llvm-9.0.0-x86_64-darwin-apple.tar.xz
+sudo rm LLVM-19.1.3-macOS-X64.tar.xz
 clang -v
 ```
 
@@ -187,6 +186,7 @@ sudo touch $HOME/.bash_profile
 
 To modify, you can use [BBEdit](http://www.barebones.com/products/bbedit/index.html)
 to open or make and modify hidden items (using the option *Show hidden items* on the open file screen).
+Look for the free version.
 With Linux, use Vi!
 
 Copy/paste the line below in your `.bash_profile` file:
@@ -200,64 +200,6 @@ After modifying your shell start up script always run the command `source ~/.bas
 ## Useful tools
 
 Below are useful but not essential software you will like to have on your mac.
-
-
-### [wget](https://www.gnu.org/software/wget/) utility
-
-This software is similar to curl that is already on your Mac, it's also good to have it.
-This will help you save a lot of time in the future.
-
-**Option 1: trouble-free install**
-
-```{bash eval=FALSE}
-cd ~/Downloads
-curl -O https://raw.githubusercontent.com/rudix-mac/packages/master/10.12/wget-1.18-0.pkg
-# Go in your Downloads folder double-click on the wget file and follow the instructions
-```
-
-**Option 2: from source**
-
-Install [gnutls](http://www.gnutls.org) dependency
-
-```{bash eval=FALSE}
-# for novice user: copy one line at a time in the Terminal:
-cd ~/Downloads
-curl -O http://www.gnupg.org/ftp/gcrypt/gnutls/v3.5/gnutls-3.5.18.tar.xz
-tar -zxvf gnutls-3.5.18.tar.xz
-cd gnutls-3.5.18
-./configure --with-included-libtasn1 --without-p11-kit
-#Forget about the remaining warnings and proceed with `make`
-make
-sudo make install
-```
-
-Now the wget part...
-
-First look for the *.tar.gz* file with
-the latest release (currently: wget2-1.99.2.tar.gz) in this [folder](<http://ftp.gnu.org/gnu/wget/),
-Modify (if you need to), Copy & Paste the commands below (one line at a time):
-
-```{bash eval=FALSE}
-cd ~/Downloads
-# change the '-x.xx.tar.gz' number below with the latest release version.
-curl -O http://ftp.gnu.org/gnu/wget/wget2-1.99.2.tar.gz
-tar -zxvf wget2-1.99.2.tar.gz
-cd wget2-1.99.2
-./configure
-make
-sudo make install                     # will prompt you to enter your password
-cd ..                                 # goes up to the enclosing directory
-wget --help                           # to test installation!
-```
-
-
-Note: 
-
-To remove a folder and downloaded packages use the `sudo rm -R` command,
-but be very careful with this command because the content is deleted FOREVER,
-it doesn't go in the trash...
-
-Delete the wget folder and package using `sudo rm -R wget*`. 
 
 
 ### [BBEdit](http://www.barebones.com/products/bbedit/index.html)
@@ -277,6 +219,9 @@ cd ~/Downloads
 sudo python get-pip.py
 ```
 
+If you get *command not found* you might not have python installed.
+
+
 ```{bash eval=FALSE}
 pip install -U pip   # to upgrade
 ```
@@ -292,14 +237,14 @@ Several flavors available, check for the proper [link](http://releases.llvm.org/
 
 # Install [R](https://cran.r-project.org)
 
-
-To install R v3.6.3 **"Holding the Windsock"** released on 2020-02-29 download the
+To install R v4.4.2 **"Pile of Leaves"** released on 2024-10-31 download the
 installer and follow the instructions
 ```{bash eval=FALSE}
 # for macOS
 cd Downloads
-curl -O https://cran.r-project.org/bin/macosx/el-capitan/base/R-3.6.3.pkg
+curl -O https://cran.r-project.org/bin/macosx/R-4.4.2.pkg
 ```
+
 
 
 
@@ -379,7 +324,7 @@ CXXFLAGS=-mtune=native -g -O2 -Wall -pedantic -Wconversion
 ```
 
 
-# Installation problems {#Installation_problems}
+# Errors and installation problems {#Installation_problems}
 
 Sometimes you'll get warnings while installing dependencies required for 
 *x* package.
@@ -402,9 +347,24 @@ have a look at [packrat](https://www.rstudio.com/resources/webinars/managing-pac
 one's of the packages dependencies, try installing it separately before attempting
 to reinstall the problematic package.
 
-## Error saying "https" not supported or disabled in libcurl
+## Error: macOS Big Sur update
 
-### Installing [OpenSSL](www.openssl.org)
+So far, I've only experience 1 problem after upgrading to Big Sur, and it's linked
+to *adegenet* dependency on [sf](https://r-spatial.github.io/sf/) package [(solution)](#sfprob).
+
+
+## Error: checking whether the C++ compiler works... no
+
+When rtying to compile a software if you get this error: `checking whether the C++ compiler works... no` or `configure: error: C++ compiler cannot create executables`
+
+Try installing Xcode from the App Store.
+
+
+## Error: "https" not supported
+
+If you get something like: `https not supported or disabled in libcurl`, install or re-install:
+
+[OpenSSL](https://www.openssl.org)
 
 Required if GCC compiler is used (TLS backend is then used). Not required if clang is used (securetransport backend is used).
 ```{bash eval=FALSE}
@@ -412,9 +372,8 @@ Required if GCC compiler is used (TLS backend is then used). Not required if cla
 https://www.openssl.org/source/openssl-1.1.1.tar.gz
 
 #In Terminal
-cd Downloads
-curl -O https://www.openssl.org/source/openssl-1.1.1.tar.gz
-tar -zxvf openssl-1.1.1.tar.gz
+cd ~/Downloads
+curl -L https://www.openssl.org/source/openssl-1.1.1.tar.gz | tar xf -
 cd openssl-1.1.1
 ./config
 make -j12 #change with your number of CPU
@@ -424,29 +383,34 @@ cd ..
 sudo rm -R openssl*
 ```
 
-### Installing [curl](https://curl.haxx.se/download)
+[curl](https://curl.haxx.se/download)
+
 Check for the latest release of [curl](https://curl.haxx.se/download)
 ```{bash eval=FALSE}
 #Copy/paste in your browser
-https://curl.haxx.se/download/curl-7.69.0.tar.gz
+https://curl.haxx.se/download/curl-7.85.0.tar.gz
 # Terminal
-cd Downloads
-tar -zxvf curl-7.69.0.tar.gz
-cd curl-7.69.0
+cd ~/Downloads
+tar -zxvf curl-7.85.0.tar.gz
+cd curl-7.85.0
 ```
 
-The next step depends on the compulier used
+*for more *curl* option type `curl -h`*
+
+
+
+The next step depends on the compiler used
 
 With **gcc**:
 ```{bash eval=FALSE}
 ./configure --with-ssl # to enable https via OpenSSL and using GCC
 ```
-Note: with macOS 10.15 this give me an error `configure: error: OpenSSL libs and/or directories were not found where specified!`
+Note: with macOS 11.0.1 this give me an error `configure: error: OpenSSL libs and/or directories were not found where specified!`
 
 If this is the case, use **clang**:
 ```{bash eval=FALSE}
 CC="/usr/local/bin/clang"
-./configure --without-ssl --with-darwinssl # to install via clang
+./configure --without-ssl #--with-darwinssl # to install via clang
 ```
 
 
@@ -468,21 +432,21 @@ sudo apt-get install libgsl0-dev
 ```
 
 
-## Error saying: `Error: vector memory exhausted (limit reached)` {#Renviron}
+## Error: `vector memory exhausted` {#Renviron}
 
-Check that you have a file called `~/.Renviron`:
+For errors that highlight problems with vectors and memory similar to: 
+`vector memory exhausted (limit reached)`. 
+In R, verify that you have a file called `~/.Renviron`:
 
 ```{r eval=FALSE}
 file.exists("~/.Renviron")
 ```
 
-If you dont have the file:
+If you don't have the file:
 
 ```{bash eval=FALSE}
-#In Terminal
-cd ~
-touch .Renviron
-sudo nano .Renviron
+require(usethis)
+usethis::edit_r_environ()
 ```
 
 Add this to your `.Renviron` file located in `~/.Renviron`:
@@ -491,7 +455,7 @@ Add this to your `.Renviron` file located in `~/.Renviron`:
 R_MAX_VSIZE = 100Gb 
 ```
 
-Use BBEdit or other software that allows you to see hidden files starting with a **dot**
+You can also use a text editor that allows you to see hidden files (files starting with a `.` *dot*).
 
 ## Error during package installation
 
@@ -510,17 +474,7 @@ localtime.c:42:10: fatal error: 'string.h' file not found
 ^~~~~~~~~~
 ```
 
-**With macOS:**
-
-* version 10.14, do this:
-
-```{bash solution, eval=FALSE}
-sudo installer -pkg \
-/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg \
--target /
-```
-
-* version **10.15 (Catalina)**: follow the `.Makevars` [configuration](#Makevars_config)
+**With macOS** : your `Makevars` needs additional lines to make it work [configuration](#Makevars_config).
 
 ## Error `.setMaxGlobalSize`
 
@@ -538,7 +492,7 @@ _Note:_ if your heart
 start pounding just at the thought of having to update everything on your computer
 you should definitely have a look at [packrat](https://www.rstudio.com/resources/webinars/managing-package-dependencies-in-r-with-packrat/): it's very easy to use.
 
-## Error in `.DynamicClusterCall`
+## Error `.DynamicClusterCall`
 
 If you have a PC and you're getting this error or closely related error:
 ```{bash, eval=FALSE}
@@ -548,7 +502,9 @@ If you have a PC and you're getting this error or closely related error:
 
 **Solution:** Use `parallel.core = 1` in the function generating the error.
 
-## Error during install when numerous of packages are updated:
+## Corrupt packages
+
+The error below usually happens when several packages are updated:
 
 ```{bash, eval=FALSE}
 # Error in get0(oNam, envir = ns) :
@@ -562,9 +518,14 @@ If you have a PC and you're getting this error or closely related error:
 1. restart R
 2. re-install the package that generated this error
 
-## Error with `dyn.load`
+## Error: `dyn.load` {#Dynload}
 
-Here is an example below:
+I see 2 problems and separate solutions. When the error is related to 
+*adegenet*, *strataG*, *assigner* or packages that depends on 
+[sf](https://r-spatial.github.io/sf/) package, [see the solution below](#sfprob).
+
+When the error is similar to:
+
 ```{bash, eval=FALSE}
 Error in dyn.load(file, DLLpath = DLLpath, ...) : 
   unable to load shared object '/home/rstudio/R/x86_64-pc-linux-gnu-library/3.6/units/libs/units.so':
@@ -583,7 +544,6 @@ Sys.getenv("LD_LIBRARY_PATH")
 
 Note that if the output is not empty, like in the example above, write down the output.
 
-
 2. Set the new [environment variables](https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html) by adding `/usr/local/lib/` to the output above:
 
 When it's empty:
@@ -596,7 +556,7 @@ Sys.setenv(LD_LIBRARY_PATH="/usr/local/lib/")
 
 When it's not, add at the end, separated by `:`
 ```{r, eval=FALSE}
-Sys.setenv(LD_LIBRARY_PATH="/usr/local/lib64/R/lib::/lib:/usr/local/lib64:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.222.b10-0.amzn2.0.1.x86_64/jre/lib/amd64/server:/usr/local/lib/:/usr/lib64")
+Sys.setenv(LD_LIBRARY_PATH="/usr/local/lib64/R/lib:/lib:/usr/local/lib64:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.222.b10-0.amzn2.0.1.x86_64/jre/lib/amd64/server:/usr/local/lib/:/usr/lib64")
 ```
 
 **Long-term solution:** 
@@ -604,7 +564,135 @@ Sys.setenv(LD_LIBRARY_PATH="/usr/local/lib64/R/lib::/lib:/usr/local/lib64:/usr/l
 Instead of using `Sys.setenv` each time you have a similar problem,
 you could add the [environment variables](https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html) `LD_LIBRARY_PATH` to your `.Renviron file`. [This is discussed in another problem above](#Renviron).
 
-## Error with `C stacks usage`
+## Error related to [sf](https://r-spatial.github.io/sf/) and `dyn.load` {#sfprob}
+
+Sometimes the problem related to [dyn.load problems](#Dynload) originates from 
+specific packages. So far, for me,  they are always linked to [sf](https://r-spatial.github.io/sf/) package.
+The problem for macOS is usually when updating os, e.g. from Catalina -> Big Sur. 
+The solution is similar for [Linux when you try to install adegenet](https://thierrygosselin.github.io/RADseq_cloud_tutorial/radseq_cloud_tutorial.html#install_packages).
+
+There are solutions using *Homebrew*, but I'm not a fan for the shortcuts. 
+
+*brewless* version to execute in the terminal:
+
+[udunits](https://www.unidata.ucar.edu/software/udunits/)
+
+```{bash eval=FALSE}
+cd ~/Downloads
+curl -L https://artifacts.unidata.ucar.edu/repository/downloads-udunits/current/udunits-2.2.28.tar.gz | tar xf -
+cd udunits*
+./configure && make -j56 && sudo make install
+cd ..
+sudo rm -R udunits*
+```
+
+[sqlite](https://www.sqlite.org)
+
+```{bash eval=FALSE}
+cd ~/Downloads
+curl -L https://www.sqlite.org/2022/sqlite-autoconf-3390400.tar.gz | tar xf -
+cd sqlite-autoconf*
+./configure && make -j56 && sudo make install
+cd ..
+sudo rm -R sqlite-autoconf*
+```
+
+
+[libtiff](http://libtiff.maptools.org)
+
+```{bash eval=FALSE}
+cd ~/Downloads
+curl -L https://download.osgeo.org/libtiff/tiff-4.4.0.tar.gz | tar xf -
+cd tiff*
+./configure && make -j56 && sudo make install
+cd ..
+sudo rm -R tiff*
+```
+
+[proj](https://proj.org/about.html)
+
+```{bash eval=FALSE}
+cd ~/Downloads
+curl -L  https://download.osgeo.org/proj/proj-9.1.0.tar.gz | tar xf -
+cd proj*
+mkdir build
+cd build
+cmake ..
+cmake --build .
+sudo cmake --build . --target install
+cd ~/Downloads
+sudo rm -R proj*
+# with prior releases, when configure was necessary
+# ./configure --libdir=/usr/local/lib && make -j56 && sudo make install 
+```
+
+[GDAL](https://gdal.org)
+
+```{bash eval=FALSE}
+export LDFLAGS="-L/usr/local/lib"
+export CPPFLAGS="-I/usr/local/include"
+
+cd ~/Downloads
+curl -L https://github.com/OSGeo/gdal/releases/download/v3.5.3/gdal-3.5.3.tar.gz | tar xf -
+cd gdal*
+mkdir build
+cd build
+cmake ..
+cmake --build .
+sudo cmake --build . --target install
+cd ~/Downloads
+sudo rm -R gdal*
+# previous install command required
+#./configure --prefix=/usr/local --libdir=/usr/local/lib --with-proj=/usr/local && make -j56 && sudo make install #time for coffee...
+```
+
+
+[GEOS](https://trac.osgeo.org/geos)
+
+```{bash eval=FALSE}
+cd ~/Downloads
+git clone https://git.osgeo.org/gitea/geos/geos.git
+cd geos*
+mkdir build
+cd build
+cmake ..
+cmake --build .
+sudo cmake --build . --target install
+cd ~/Downloads
+sudo rm -R geos*
+# previous install command required
+#./autogen.sh
+#./configure --libdir=/usr/local/lib && make -j56 && sudo make install
+```
+
+**Back in R/RStudio**
+
+```{r, eval=FALSE}
+install.packages("rgeos", repos="http://R-Forge.R-project.org", type="source")
+install.packages("rgdal", repos="http://R-Forge.R-project.org", type="source")
+devtools::install_github("r-spatial/sf", configure.args = "--with-proj-lib=/usr/local")
+install.packages("adegenet")
+```
+
+## Error: `HTTP status was 404 Not Found`
+
+This error is sometimes poping after a new R upgrade. Try installing the problematic package differently.
+
+
+Instead of: 
+
+```{r, eval=FALSE}
+BiocManager::install("SeqArray")
+```
+
+
+Try:
+```{r, eval=FALSE}
+remotes::install_local(path = "SeqArray_latest.tar.gz")
+```
+
+
+## Error: `C stacks usage`
 ```{r, eval=FALSE}
 Error: C stack usage  7971092 is too close to the limit
 ```
@@ -624,14 +712,69 @@ So far, I haven't found the cure to this computer-specific problem.
 
 # Specific librairies installation
 
+
+## `fst` & `fstcore` & `data.table`
+
+Better to install and compile them from source to enable OpenMP. Install in the 
+terminal [zstd](https://facebook.github.io/zstd/) and [lz4](https://lz4.github.io/lz4/):
+
+
+```{bash eval=FALSE}
+cd ~/Downloads
+curl -L https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.tar.gz | tar xf -
+cd lz4*
+make 
+sudo make install
+cd .. 
+sudo rm -R lz4*
+```
+
+```{bash eval=FALSE}
+cd ~/Downloads
+curl -L https://github.com/facebook/zstd/archive/refs/tags/v1.5.6.tar.gz | tar xf -
+cd zstd*
+make 
+sudo make install
+cd .. 
+sudo rm -R zstd*
+```
+
+
+`fstcore`, `fst` and `data.table` requires these R *Makevars* specifications. 
+If you have other lines, comment (`#`) before saving and installing from source:
+
+```{r eval=FALSE}
+usethis::edit_r_makevars()
+```
+
+
+```{r eval=FALSE}
+#fstcore fst data.table
+CC=/usr/local/bin/gcc -fopenmp
+CXX=/usr/local/bin/g++ -fopenmp
+CXX11=/usr/local/bin/g++ -fopenmp
+CXX14=/usr/local/bin/g++ -fopenmp
+CXX17=/usr/local/bin/g++ -fopenmp
+CXX1X=/usr/local/bin/g++ -fopenmp
+CXX98=/usr/local/bin/g++ -fopenmp
+```
+
+
+```{r eval=FALSE}
+install.packages("fstcore", type = "source")
+install.packages("fst", type = "source")
+install.packages("data.table", type = "source")
+```
+
+
+
 ## `rmetasim`
 
 ### Download
-Download the latest github release of Allan Strand's **rmetasim**
+Download the latest github release of Allan Strand's [rmetasim](https://github.com/stranda/rmetasim)
 ```{bash eval=FALSE}
 cd ~/Downloads
-wget --no-check-certificate https://github.com/stranda/rmetasim/archive/master.zip
-curl -O https://github.com/stranda/rmetasim/archive/master.zip
+curl -L -O https://github.com/stranda/rmetasim/archive/master.zip
 unzip master.zip
 ```
 
@@ -654,29 +797,10 @@ If you have other lines, comment (#) before compiling `rmetasim`:
 usethis::edit_r_makevars()
 ```
 
-**With most OS (including macOS 10.14):**
-
-```{bash eval=FALSE}
-CC=/usr/local/bin/clang
-CC=/usr/local/bin/clang
-CXX=/usr/local/bin/clang++
-CXX1X=/usr/local/bin/clang++
-CXX11=/usr/local/bin/clang++
-FLIBS=-L/usr/local/lib
-CFLAGS=-I/usr/local/include
-LDFLAGS=-L/usr/local/lib
-CPPFLAGS=-I/usr/local/include
-SHLIB_OPENMP_CFLAGS= -fopenmp
-SHLIB_OPENMP_FCFLAGS= -fopenmp
-SHLIB_OPENMP_FFLAGS= -fopenmp
-SHLIB_OPENMP_CXXFLAGS= -fopenmp
-```
-
-**macOS 10.15**
+**macOS**
 
 This latest os requires extra lines:
 ```{bash eval=FALSE}
-CC=/usr/local/bin/clang
 CC=/usr/local/bin/clang
 CXX=/usr/local/bin/clang++
 CXX1X=/usr/local/bin/clang++
@@ -776,7 +900,7 @@ Additionally, `LightGBM` requires [CMake](https://cmake.org/overview/)
 
 ### Download and install CMake
 ```{bash eval=FALSE}
-#In browser or using wget in Terminal
+#In browser or using curl in Terminal
 https://cmake.org/files/v3.12/cmake-3.12.2-Darwin-x86_64.dmg
 # double-click on the disk image and follow instructions
 ```
@@ -836,8 +960,7 @@ PKG_LIBS = "-liconv"
 From the Terminal run these steps to download and compile randomForestSRC:
 ```{bash eval=FALSE}
 cd ~/Downloads
-curl -O https://cran.r-project.org/src/contrib/randomForestSRC_2.9.3.tar.gz
-tar -zxvf randomForestSRC_2.9.3.tar.gz
+curl -L https://cran.r-project.org/src/contrib/randomForestSRC_2.9.3.tar.gz | tar xf -
 cd randomForestSRC
 ```
 
@@ -892,7 +1015,7 @@ To install [fastsimcoal2 v.2.6.0.3](http://cmpg.unibe.ch/software/fastsimcoal2/)
 
 ### LINUX
 ```{bash Linux, eval=FALSE}
-wget http://cmpg.unibe.ch/software/fastsimcoal2/downloads/fsc26_linux64.zip
+curl -O http://cmpg.unibe.ch/software/fastsimcoal2/downloads/fsc26_linux64.zip
 unzip fsc26_linux64.zip
 sudo mv fsc26_linux64/fsc26 /usr/local/bin/fsc26 # will ask for your computer password
 ```
@@ -942,8 +1065,7 @@ The old openmpi version (openmpi-1.6.5) is required, saddly.
 
 ```{bash macOS openmpi-1.6.5, eval=FALSE}
 cd ~/Downloads
-curl -O https://download.open-mpi.org/release/open-mpi/v1.6/openmpi-1.6.5.tar.gz
-tar -zxvf openmpi-1.6.5.tar.gz
+curl -L https://download.open-mpi.org/release/open-mpi/v1.6/openmpi-1.6.5.tar.gz | tar xf -
 cd openmpi-1.6.5
 export TMPDIR=/tmp
 ./configure F77=gfortran #--prefix=/usr/local -openmp # no longer work for some reason
@@ -967,7 +1089,7 @@ Several options are available depending on the compiler you have installed.
 
 ## Update [Github](http://en.wikipedia.org/wiki/Github)
 
-macOS Catalina comes with [Github](https://github.com), a Version Control System
+macOS comes with [Github](https://github.com), a Version Control System
 (VCS), pre-installed. However, the install is in `/usr/bin/git`
 which can make it difficult for beginners to update. To change this, run these
 commands:
@@ -976,9 +1098,7 @@ commands:
 
 ```{bash eval=FALSE}
 cd ~/Downloads
-wget http://ftp.gnu.org/gnu/autoconf/autoconf-latest.tar.gz
-curl -O http://ftp.gnu.org/gnu/autoconf/autoconf-latest.tar.gz
-tar -xvzf autoconf-latest.tar.gz
+curl -L http://ftp.gnu.org/gnu/autoconf/autoconf-latest.tar.gz | tar xf -
 cd autoconf-2.69
 ./configure
 make
@@ -1006,6 +1126,7 @@ git --version                   # confirmed the version you just installed
 which git                       # returns /usr/local/bin
 ```
 
+
 ## macOS Terminal from specific folder
 
 In **System Preferences** choose `Keyboard -> Shortcuts`. From the left panel, choose
@@ -1020,11 +1141,7 @@ knitr::include_graphics("terminal_folder_shortcut.png")
 
 ## Shortcut to folder path
 
-Open the Automator application (it's on all MAC...). 
-
-```{r automator.png, echo=FALSE}
-knitr::include_graphics("automator.png")
-```
+With macOS, open the [Automator application](https://support.apple.com/en-ca/guide/automator/welcome/mac). 
 
 ```{bash eval=FALSE}
 File -> New (cmd-N)

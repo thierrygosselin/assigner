@@ -1,3 +1,7 @@
+# assigner 0.6.0 2024-11-06
+
+* refresh for new R version
+
 # assigner 0.5.9 2023-03-15
 
 * work on *assigner::fst_WC84*
