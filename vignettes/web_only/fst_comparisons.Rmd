@@ -814,7 +814,8 @@ I prefer to look at it in a tibble...
 
 ### Generate a tibble for correlation results
 
-```{r corr tibble, echo = TRUE}
+```{r corr tibble, eval = FALSE, echo = TRUE}
+library(dplyr)
 fst.corr.tibble <- radiator::distance2tibble(
     x = fst.corr, 
     na.diag = TRUE, 
@@ -831,7 +832,8 @@ Very interesting results!
 
 Let's plot the results:
 
-```{r plot the results, echo = TRUE}
+```{r plot the results, eval = FALSE, echo = TRUE}
+library(dplyr)
 plot.fst <- fst.summary %>% 
   tidyr::unite(data = ., col = PAIRS, POP1, POP2, sep = "-") %>% 
   tidyr::gather(data = ., key = SOFTWARE, value = FST, -PAIRS) %>% 
@@ -878,7 +880,7 @@ fst.summary.sim01
 
 
 **Generate the correlation tibble:**
-```{r, echo = TRUE}
+```{r, eval = FALSE, echo = TRUE}
 fst.corr.tibble.sim01 <- round(cor(x = dplyr::select(fst.summary.sim01, -POP1, -POP2)), 6) %>% 
  radiator::distance2tibble(
   x = ., 
@@ -913,7 +915,7 @@ fst.summary.sim02
 ```
 
 **Generate the correlation tibble:**
-```{r, echo = TRUE}
+```{r, eval = FALSE, echo = TRUE}
 fst.corr.tibble.sim02 <- round(cor(x = dplyr::select(fst.summary.sim02, -POP1, -POP2)), 6) %>% 
  radiator::distance2tibble(
   x = ., 
@@ -928,7 +930,7 @@ fst.corr.tibble.sim02
 # Table of features
 
 The table timing was produced using the empirical dataset.
-```{r Table of caracteristics, echo = TRUE}
+```{r Table of caracteristics, eval = FALSE, echo = TRUE}
 summary.table <- readr::read_tsv(file = "fst_comparisons_packages_features.tsv", col_types = readr::cols(.default = readr::col_character()))
 knitr::kable(summary.table) %>% 
   kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE)

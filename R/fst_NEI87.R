@@ -179,27 +179,28 @@
 
 #' @examples
 #' \dontrun{
-#' wombat.fst.pairwise <- fst_NEI87(
-#' data = "wombat.filtered.tidy.tsv",
-#' sep = "/",
-#' pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
-#' holdout.samples = NULL,
-#' pairwise = TRUE,
-#' ci = TRUE,
-#' iteration.ci = 10000,
-#' quantiles.ci = c(0.025,0.975),
-#' parallel.core = 8,
-#' verbose = TRUE
-#' )
-#' To get the overall Fst estimate:
-#' wombat.fst.pairwise$fst.overall
-#' To get the Fst plot:
-#' wombat.fst.pairwise$fst.plots
-#' To get the pairwise Fst values with confidence intervals in a data frame:
-#' wombat.fst.pairwise$pairwise.fst
-#' To get the pairwise fst and ci matrix in a data frame:
-#' # rename, data frame, put rownames in column
-#' pairwise.fst.ci.df <- data.frame(pairwise.fst.ci.matrix) %>% add_rownames("POP")
+#'  require(assigner)
+#'  wombat.fst.pairwise <- fst_NEI87(
+#'  data = "wombat.filtered.tidy.tsv",
+#'  sep = "/",
+#'  pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
+#'  holdout.samples = NULL,
+#'  pairwise = TRUE,
+#'  ci = TRUE,
+#'  iteration.ci = 10000,
+#'  quantiles.ci = c(0.025,0.975),
+#'  parallel.core = 8,
+#'  verbose = TRUE
+#'  )
+#'  #To get the overall Fst estimate:
+#'  wombat.fst.pairwise$fst.overall
+#'  #To get the Fst plot:
+#'  wombat.fst.pairwise$fst.plots
+#'  #To get the pairwise Fst values with confidence intervals in a data frame:
+#'  wombat.fst.pairwise$pairwise.fst
+#'  #To get the pairwise fst and ci matrix in a data frame:
+#'  # rename, data frame, put rownames in column
+#'  pairwise.fst.ci.df <- data.frame(pairwise.fst.ci.matrix) %>% add_rownames("POP")
 #' }
 
 #' @references Nei M. (1987) Molecular Evolutionary Genetics.

@@ -326,37 +326,22 @@
 #' @examples
 #' \dontrun{
 #' assignment.treefrog <- assignment_ngs(
-#'     data = "batch_1.vcf", strata = "strata.treefrog.tsv",
-#'     assignment.analysis = "gsi_sim",
-#'      marker.number = c(500, 5000, "all"),
-#'      markers.sampling = "ranked", thl = 0.3
-#'      )
+#'  data = "batch_1.vcf",
+#'  strata = "strata.treefrog.tsv",
+#'  assignment.analysis = "gsi_sim",
+#'  marker.number = c(500, 5000, "all"),
+#'  markers.sampling = "ranked",
+#'  thl = 0.3
+#'  )
+#'  # To create a dataframe with the assignment results:
+#'    assignment <- assignment.treefrog$assignment
+#'  # To plot the assignment using ggplot2 and facet
+#'    fig <- assignment.treefrog$assignment.plot
+#'  # To view the full range of y values = Assignment success(%):
+#'    fig + ggplot2::scale_y_continuous(limits = c(0,100))
 #'
-#' # To create a dataframe with the assignment results:
-#' assignment <- assignment.treefrog$assignment
-#'
-#' # To plot the assignment using ggplot2 and facet
-#' fig <- assignment.treefrog$assignment.plot
-#'
-#' # To view the full range of y values = Assignment success(%):
-#' fig + ggplot2::scale_y_continuous(limits = c(0,100))
-#' # Or use the ... argument: full.y.range = TRUE
-#'
-#' # If you want to remove underscore in population names that contained white space:
-#' facet_names <- c(
-#'     `some_pop` = "Some POP",
-#'     `some_other_pop` = "This is what I want",
-#'     `OVERALL` = "Overall")
-#'
-#' # use the labeller in the facet_grid or facet_wrap call:
-#' fig +
-#'     ggplot2::facet_grid(
-#'         SUBSAMPLE ~ CURRENT,
-#'         ggplot2::labeller = ggplot2::as_labeller(facet_names)
-#'         ) +
-#'     ggplot2::scale_y_continuous(limits = c(0,100))
+#'  # Or use the ... argument: full.y.range = TRUE
 #' }
-
 
 #' @references Anderson, Eric C., Robin S. Waples, and Steven T. Kalinowski. (2008)
 #' An improved method for predicting the accuracy of genetic stock identification.
