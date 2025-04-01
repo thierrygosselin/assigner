@@ -10,8 +10,13 @@ developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repo
 [![minimal R
 version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)
 <<<<<<< HEAD
+<<<<<<< HEAD
 [![packageversion](https://img.shields.io/badge/Package%20version-0.5.9-orange.svg)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2025--03--27-brightgreen.svg)](/commits/master)
+=======
+[![packageversion](https://img.shields.io/badge/Package%20version-0.6.0-orange.svg)](commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2024--11--06-brightgreen.svg)](/commits/master)
+>>>>>>> 8b22fde89475554facfd5b85fdf27d001b866f54
 =======
 [![packageversion](https://img.shields.io/badge/Package%20version-0.6.0-orange.svg)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2024--11--06-brightgreen.svg)](/commits/master)
