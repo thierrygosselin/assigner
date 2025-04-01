@@ -6,8 +6,7 @@ Date: 2024-11-06
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
-  person("Eric C.", "Anderson", role = "ctb"),
-  person("Ian", "Bradbury", role = "ctb")
+  person("Eric C.", "Anderson", role = "ctb")
   )
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
 Description: Set of R tools for assignment analysis tailored for RADseq data.
@@ -50,5 +49,5 @@ LazyData: true
 VignetteBuilder: 
     knitr
 RoxygenNote: 7.3.2
-URL: http://thierrygosselin.github.io/assigner/
+URL: https://thierrygosselin.github.io/assigner/
 BugReports: https://github.com/thierrygosselin/assigner/issues

@@ -1,3 +1,7 @@
+url: https://thierrygosselin.github.io/assigner/
+template:
+  bootstrap: 5
+  light-switch: yes
 reference:
 - title: Assignment analysis
   contents:
@@ -15,7 +19,7 @@ reference:
   - import_subsamples
   - import_subsamples_fst
   - install_gsi_sim
-  
+
 - title: Data
   contents:
   - data_assigner_sim_01
@@ -53,3 +57,4 @@ navbar:
   right:
   - icon: fa-github fa-lg
     href: https://github.com/thierrygosselin/assigner
+    aria-label: GitHub
