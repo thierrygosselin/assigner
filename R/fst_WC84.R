@@ -35,9 +35,20 @@
 #'
 #' \strong{Why no p-values ?}
 #'
-#' There is no null hypothesis testing with \emph{P}-values.
+#' There is no null hypothesis testing with \emph{P}-values and its rarely if ever
+#' the appropriate model in population genomics, despite its popularity
+#' with molecular ecologists interested in population differentiation.
+#'
+#' "The important scientific question is the real magnitude of the differentiation,
+#' not the smallness of the \emph{P} value" —Lou Jost
+#'
 #' Confidence intervals provided with the \emph{F}-statistics
 #' enables more reliable conclusions about the biological trends in the data.
+#' A confidence interval describes the statistical uncertainty of the \emph{F}-statistics
+#' estimate. If the confidence interval include zero, then the null hypothesis
+#' cannot be rejected. If the confidence interval does not include zero, the null
+#' hypothesis can be rejected and you can also have an appreciation of the real
+#' magnitude of the statistical differentiation whether its large or small.
 
 #' @param data A tidy data frame object in the global environment or
 #' a tidy data frame in wide or long format in the working directory.
@@ -213,6 +224,10 @@
 #' Analysis of molecular variance inferred from metric distances among
 #' DNA haplotypes: application to human mitochondrial DNA restriction data.
 #' Genetics. 1992;131: 479-491.
+#' @references Jost L, D vs. GST: Response to Heller and Siegismund (2009) and
+#' Ryman and Leimar (2009).
+#' Molecular Ecology. 2009; 18:10 2088-2091.
+#' https://doi.org/10.1111/j.1365-294x.2009.04186.x
 #' @references Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
 #' two programs for the analysis of genetic diversity of asexual organisms.
 #' Molecular Ecology Notes, 4, 792-794.
@@ -315,7 +330,6 @@ fst_WC84 <- function(
     verbose = FALSE
   )
   dots.filename <- stringi::stri_join("assigner_fst_WC84_args_", file.date, ".tsv")
-  # currently not saved
 
   # Checking for missing and/or default arguments ------------------------------
   if (missing(data)) rlang::abort("data is missing")
@@ -326,6 +340,7 @@ fst_WC84 <- function(
   if (!filter.monomorphic) {
     message("filter.monomorphic = FALSE... not a good idea, but lets do it...")
   }
+
   # filename & folder ----------------------------------------------------------
   path.folder <- NULL
   if (!is.null(filename)) {
@@ -383,6 +398,7 @@ fst_WC84 <- function(
   # strip the data -------------------------------------------------------------
   # increases speed for large datasets
   env.arg <- rlang::current_env()
+
   data %<>%
     radiator::strip_rad(
       x = .,
@@ -476,6 +492,7 @@ fst_WC84 <- function(
     # res <- purrr::prepend(x = res, values = purrr::flatten(subsample.fst))
     # change strata --------
     nms <- subsample.fst %>% purrr::map(names) %>% purrr::reduce(union)
+    if (!pairwise && "pairwise.fst" %in% nms) nms <- purrr::discard(.x = nms, .p = nms %in% "pairwise.fst")
     res <- purrr::map(
       .x = nms,
       .f = fst_stats,
@@ -486,6 +503,8 @@ fst_WC84 <- function(
       subsample = FALSE
     ) %>%
       purrr::flatten(.)
+
+
 
     # test1 <- res$pairwise.fst
     # test2 <- res$pairwise.fst.upper.matrix
@@ -1748,6 +1767,8 @@ assigner_fst_stats <- function(
 
 fst_stats <- function(x, l, digits = 9L, m = NULL, s = NULL, subsample = FALSE) {
   # x = "pairwise.fst" # test
+  # x = "fst.markers"
+  # x = "fis.overall"
   res <- list()
   # message(x)
   want <- c("sigma.loc", "fst.markers", "fst.ranked", "fst.overall",

@@ -152,9 +152,20 @@ this function.
 
 \strong{Why no p-values ?}
 
-There is no null hypothesis testing with \emph{P}-values.
+There is no null hypothesis testing with \emph{P}-values and its rarely if ever
+the appropriate model in population genomics, despite its popularity
+with molecular ecologists interested in population differentiation.
+
+"The important scientific question is the real magnitude of the differentiation,
+not the smallness of the \emph{P} value" —Lou Jost
+
 Confidence intervals provided with the \emph{F}-statistics
 enables more reliable conclusions about the biological trends in the data.
+A confidence interval describes the statistical uncertainty of the \emph{F}-statistics
+estimate. If the confidence interval include zero, then the null hypothesis
+cannot be rejected. If the confidence interval does not include zero, the null
+hypothesis can be rejected and you can also have an appreciation of the real
+magnitude of the statistical differentiation whether its large or small.
 }
 \section{Advance mode}{
 
@@ -231,6 +242,11 @@ Excoffier L, Smouse PE, Quattro JM.
 Analysis of molecular variance inferred from metric distances among
 DNA haplotypes: application to human mitochondrial DNA restriction data.
 Genetics. 1992;131: 479-491.
+
+Jost L, D vs. GST: Response to Heller and Siegismund (2009) and
+Ryman and Leimar (2009).
+Molecular Ecology. 2009; 18:10 2088-2091.
+https://doi.org/10.1111/j.1365-294x.2009.04186.x
 
 Meirmans PG, Van Tienderen PH (2004) genotype and genodive:
 two programs for the analysis of genetic diversity of asexual organisms.

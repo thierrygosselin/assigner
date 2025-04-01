@@ -49,6 +49,6 @@ LazyLoad: yes
 LazyData: true
 VignetteBuilder: 
     knitr
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 URL: http://thierrygosselin.github.io/assigner/
 BugReports: https://github.com/thierrygosselin/assigner/issues

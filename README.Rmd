@@ -3,7 +3,7 @@ output: github_document
 ---
 
 
-# assigner <a href='http://thierrygosselin.github.io/assigner/'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# assigner <a href='http://thierrygosselin.github.io/assigner/'><img src='man/figures/logo.png' align="right" height="160" /></a>
 
 
 

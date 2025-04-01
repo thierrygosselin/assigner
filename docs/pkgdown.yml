@@ -1,12 +1,11 @@
-pandoc: 2.19.2
-pkgdown: 2.0.7
+pandoc: '3.2'
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   assignment.whitelists: assignment.whitelists.html
+  web_only/fst_comparisons: web_only/fst_comparisons.html
   fst_confidence_intervals: fst_confidence_intervals.html
   get_started: get_started.html
   life_cycle: life_cycle.html
   rad_genomics_computer_setup: rad_genomics_computer_setup.html
-  fst_comparisons: web_only/fst_comparisons.html
-last_built: 2023-03-15T18:15Z
-
+last_built: 2025-03-27T04:25Z
