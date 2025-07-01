@@ -420,6 +420,7 @@ fst_WC84 <- function(
   )
 
   # decide if plot.fst will be generated in compute_fst (to manage the iterations)
+  plot.fst <- TRUE
   if (iteration.subsample > 1) plot.fst <- FALSE
 
 
