@@ -27,21 +27,27 @@ assigner_dots(
      "gt.vcf.nuc",
     "calibrate.alleles", "forking"),
   deprecated = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  dev.mode = FALSE
 )
 }
 \arguments{
-\item{func.name}{Default: \code{as.list(sys.call())[[1]]}.}
+\item{func.name}{The name of the function calling `assigner_dots`.
+Default: \code{as.list(sys.call())[[1]]}.}
 
-\item{fd}{(optional) Default: \code{rlang::fn_fmls_names()}.}
+\item{fd}{(optional) A character vector of formal argument names for the
+calling function.
+Default: \code{rlang::fn_fmls_names()}.}
 
-\item{args.list}{(optional) Default:\code{args.list = as.list(environment())}.}
+\item{args.list}{(optional) A named list of arguments already present in the
+calling function's environment. Default:\code{args.list = as.list(environment())}.}
 
-\item{dotslist}{The dots dots dots arguments captured.
+\item{dotslist}{The captured `...` using `rlang::dots_list(...)`.
 Default: \code{
 dotslist = rlang::dots_list(..., .homonyms = "error", .check_assign = TRUE)}.}
 
-\item{keepers}{(optional) The arguments that are used inside the function.
+\item{keepers}{(optional) A character vector of allowed dot arguments that
+should be assigned.
 Default: \code{keepers = c(
 "subsample.markers.stats", "subsample",
 "filter.reproducibility", "filter.individuals.missing",
@@ -69,12 +75,38 @@ Default: \code{keepers = c(
 "forking"
 )}.}
 
-\item{deprecated}{(optional) assigner's deprecated arguments.
+\item{deprecated}{(optional) Vector of deprecated argument names to detect in `...`.
 Default: \code{deprecated = NULL}.}
 
-\item{verbose}{(logical) Function will output more details.}
+\item{verbose}{(logical) Function will output more details.
+Will print messages describing assignments and issues.
+Default: \code{verbose = TRUE}.}
+
+\item{dev.mode}{(logical) If `TRUE`, arguments will be assigned to the
+global environment (`globalenv()`) for interactive development and testing.
+Default: \code{dev.mode = FALSE}.}
+}
+\value{
+A `tibble` with columns `ARGUMENTS`, `VALUES`, and `GROUPS`,
+indicating how each dot-argument was handled:
+  - `"fct.call.args"`: named arguments from the function call
+  - `"fct.call..."`: valid dot arguments passed
+  - `"default..."`: valid dot arguments not passed (defaults assigned)
+  - `"deprecated..."`: deprecated arguments passed
+  - `"unknowned..."`: unknown arguments passed
 }
 \description{
 Extract and assign the dots-dots-dots
+Capture and assign the `...` arguments in a robust and tidy way. This utility function:
+- Assigns known `...` arguments (called "keepers") into the function's environment.
+- Detects and warns about unknown or deprecated arguments.
+- Assigns default values for expected `...` arguments not supplied.
+- Logs everything in a tidy tibble grouped by type.
+
+Especially useful for deeply nested or extensible functions (e.g., pipelines or packages).
+
+Includes a `dev.mode` flag to allow testing in the global environment interactively.
 }
+\keyword{dots}
 \keyword{internal}
+\keyword{meta-development}

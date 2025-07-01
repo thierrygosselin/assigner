@@ -42,7 +42,8 @@ if (getRversion() >= "2.15.1") {
       "MARKERS...3", "MARKERS...4", "STRATA_SEQ", "ARGUMENTS", "VALUES",
       "input", "HET", "calibrate.alleles", "iteration.subsample", "n",
       "M_SEQ", "ID_SEQ", "1", "2", "where", "p", "forking", "strata.bk",
-      "markers.meta.bk", "genotypes.meta.bk"
+      "markers.meta.bk", "genotypes.meta.bk", "FST_RANGE", "N_MONOMORPHIC_BL",
+      "match_col", "subsample", "FST_HEATMAP"
     )
   )
 }

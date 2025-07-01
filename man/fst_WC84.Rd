@@ -16,7 +16,7 @@ fst_WC84(
   quantiles.ci = c(0.025, 0.975),
   heatmap.fst = FALSE,
   digits = 9,
-  filename = NULL,
+  filename = "fst_WC84",
   parallel.core = parallel::detectCores() - 2,
   verbose = FALSE,
   ...
@@ -26,7 +26,7 @@ fst_WC84(
 \item{data}{A tidy data frame object in the global environment or
 a tidy data frame in wide or long format in the working directory.
 \emph{How to get a tidy data frame ?}
-Look into \pkg{radiator} \code{\link{tidy_genomic_data}}.
+Look into \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}.
 You can also use this function to filter your dataset using
 whitelist of markers, blacklist of individuals and genotypes.}
 
@@ -81,9 +81,9 @@ Default: \code{heatmap.fst = FALSE}.}
 results.
 Default: \code{digits = 9}.}
 
-\item{filename}{(optional, character) Give filename prefix, this will trigger
-saving results in a directory.
-Default: \code{filename = NULL}.}
+\item{filename}{(optional, character) Give filename prefix for the output
+directory, this will trigger saving results.
+Default: \code{filename = "fst_WC84"}.}
 
 \item{parallel.core}{(optional, integer) The number of core for parallel computation
 of pairwise Fst. See also the advance mode section below.
@@ -157,7 +157,7 @@ the appropriate model in population genomics, despite its popularity
 with molecular ecologists interested in population differentiation.
 
 "The important scientific question is the real magnitude of the differentiation,
-not the smallness of the \emph{P} value" —Lou Jost
+not the smallness of the \emph{P} value" -Lou Jost
 
 Confidence intervals provided with the \emph{F}-statistics
 enables more reliable conclusions about the biological trends in the data.
@@ -199,16 +199,6 @@ Un-calibrated alleles can bias estimate and by default the function expect that
 the REF/ALT alleles are calibrated. Using \code{calibrate.alleles = TRUE},
 can take a bit more time.
 Default: \code{calibrate.alleles = FALSE}.
-
-\item \code{forking} (logical)
-For macOS, forking is a much faster option, despite having the reputation of
-being unreliable in GUI environment like RStudio.
-The implementation in assigner is stable and up to 3-4 times faster.
-It's easier on memory.
-By default the function uses \code{multisession} from the future package
-to implement parallel processing. If you have macOS, test by toggling to
-\code{TRUE} this argument.
-Default: \code{forking = FALSE}.
 }
 }
 

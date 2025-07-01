@@ -171,7 +171,7 @@ the remaining columns are the markers in separate columns storing genotypes.
 
 \strong{Long/Tidy format:}
 The long format is considered to be a tidy data frame and can store metadata info.
-(e.g. from a VCF see \pkg{radiator} \code{\link{tidy_genomic_data}}). A minimum of 4 columns
+(e.g. from a VCF see \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}). A minimum of 4 columns
 are required in the long format: \code{INDIVIDUALS}, \code{STRATA},
 \code{MARKERS or LOCUS} and \code{GENOTYPE or GT}. The rest are considered metata info.
 
@@ -181,7 +181,7 @@ are required in the long format: \code{INDIVIDUALS}, \code{STRATA},
 The separator can be any of these: \code{"/", ":", "_", "-", "."}.
 
 \emph{How to get a tidy data frame ?}
-\pkg{radiator} \code{\link{tidy_genomic_data}} can transform 6 genomic data formats
+\pkg{radiator} \code{\link[radiator]{tidy_genomic_data}} can transform 6 genomic data formats
 in a tidy data frame.
 }
 \note{

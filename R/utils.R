@@ -8,13 +8,13 @@ assigner_function_header <- function(f.name = NULL, start = TRUE, verbose = TRUE
   if (is.null(f.name)) invisible(NULL)
   if (start) {
     if (verbose) {
-      cat("################################################################################\n")
-      cat(paste0(stringi::stri_pad_both(str = paste0(" assigner::", f.name, " "), width = 80L, pad = "#"), "\n"))
-      cat("################################################################################\n")
+      message(stringi::stri_pad_both(str = "", width = 80L, pad = "#"))
+      message(stringi::stri_pad_both(str = paste0(" assigner::", f.name, " "), width = 80L, pad = "#"))
+      message(stringi::stri_pad_both(str = "", width = 80L, pad = "#"), "\n")
     }
   } else {
     if (verbose) {
-      cat(paste0(stringi::stri_pad_both(str = paste0(" completed ", f.name, " "), width = 80L, pad = "#"), "\n"))
+      message(stringi::stri_pad_both(str = paste0(" completed ", f.name, " "), width = 80L, pad = "#"), "\n")
     }
   }
 }# End assigner_function_header
@@ -484,21 +484,22 @@ assigner_future <- function(
         int = {
           .x %<>%
             parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
-            purrr::flatten_int(.)
+            vctrs::vec_c(.ptype = integer())
         },
-        chr = {.x %<>%
+        chr = {
+          .x %<>%
             parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
-            purrr::flatten_chr(.)
+            vctrs::vec_c(.ptype = character())
         },
         dfr = {
           .x %<>%
             parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
-            purrr::flatten_dfr(.)
+            dplyr::bind_rows(.)
         },
         dfc = {
           .x %<>%
             parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
-            purrr::flatten_dfc(.)
+            dplyr::bind_cols(.)
         },
         walk = {furrr::future_walk},
         drop = {
@@ -512,22 +513,21 @@ assigner_future <- function(
         int = {
           .x %<>%
             parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
-            purrr::flatten_int(.)
+            vctrs::vec_c(.ptype = integer())
         },
         chr = {.x %<>%
             parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
-            purrr::flatten_chr(.)
+            vctrs::vec_c(.ptype = character())
         },
         dfr = {
           .x %<>%
             parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
             dplyr::bind_rows(.)
-            # purrr::flatten_dfr(.)
         },
         dfc = {
           .x %<>%
             parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
-            purrr::flatten_dfc(.)
+            dplyr::bind_cols(.)
         },
         walk = {furrr::future_walk},
         drop = {
@@ -545,9 +545,9 @@ assigner_future <- function(
                       walk = {furrr::future_walk},
                       drop = {furrr::future_map}
     )
-    p <- NULL
+    # p <- NULL
     p <- progressr::progressor(along = .x)
-    opts <- furrr::furrr_options(globals = FALSE, seed = TRUE)
+    opts <- furrr::furrr_options(globals = TRUE, seed = TRUE)
     if (length(list(...)) == 0) {
       .x %<>% rad_map(.x = ., .f = .f, .options = opts)
     } else {
@@ -679,3 +679,274 @@ assigner_toc <- function(
 ) {
   if (verbose) message("\n", end.message, " ", round((proc.time() - timing)[[3]]), " sec")
 }# End assigner_toc
+
+
+# Internal Matrix Utilities for Pairwise Distance Data -------------------------
+
+#' @title Internal Matrix Utilities for Pairwise Distance Data
+#'
+#' @description
+#' These internal utility functions convert long-format pairwise population
+#' data into symmetric matrices, typically used for visualising pairwise
+#' FST or genetic distance estimates.
+#'
+#' @details
+#' `make_upper_matrix()` converts long-form pairwise data into a wide upper-triangular matrix.
+#' `make_full_symmetric_matrix()` takes that upper matrix and completes the symmetric form.
+#'
+#' @param data A data frame or tibble with `POP1`, `POP2`, and a value column.
+#' @param value.col The unquoted column to use as matrix values.
+#' @param fill.value The value to fill missing cells (default: `""`).
+#' @param upper.matrix A square matrix (upper triangle filled).
+#' @param diagonal.value The value to assign to the diagonal (default: `"0"`).
+#'
+#' @return A matrix. The first function returns an upper-triangular matrix, and
+#' the second a full symmetric matrix with diagonal.
+#'
+#' @keywords internal
+#' @rdname pairwise_matrix_utils
+#' @export
+#'
+# Helper: make upper matrix from long format
+make_upper_matrix <- function(data, value.col, fill.value = "") {
+  mat <- data %>%
+    tidyr::complete(POP1, POP2) %>%
+    tidyr::pivot_wider(
+      names_from = POP2,
+      values_from = {{ value.col }},
+      values_fill = fill.value
+    ) %>%
+    dplyr::rename(POP = POP1)
+
+  rn <- mat$POP
+  mat <- as.matrix(mat[, -1])
+  rownames(mat) <- rn
+  return(mat)
+}#End make_upper_matrix
+
+#' @rdname pairwise_matrix_utils
+#' @export
+# Helper: fill lower triangle and diagonal of matrix
+make_full_symmetric_matrix <- function(upper.matrix, diagonal.value = "0") {
+  full <- upper.matrix
+  full[lower.tri(full)] <- t(full)[lower.tri(full)]
+  diag(full) <- diagonal.value
+  return(full)
+}#End make_full_symmetric_matrix
+
+
+
+#' @title change_matrix_strata
+#' @description Integrate strata info back into the matrix
+#' @rdname change_matrix_strata
+#' @export
+#' @keywords internal
+change_matrix_strata <- function(x, s) {
+  # x
+  # class(colnames(x))
+  # class(rownames(x))
+
+  if (length(dim(x)) > 1) {
+    if (identical(colnames(x), as.character(s$STRATA_SEQ))) {
+      colnames(x) <- as.character(s$STRATA)
+    } else {
+      rlang::abort(message = "Contact author, problem with strata levels in fst")
+    }
+    if (identical(rownames(x), as.character(s$STRATA_SEQ))) {
+      rownames(x) <- as.character(s$STRATA)
+    } else {
+      rlang::abort(message = "Contact author, problem with strata levels in fst")
+    }
+  }
+  return(x)
+}#change_matrix_strata
+
+# match_markers_meta -----------------------------------------------------------
+#' @title match_markers_meta
+#' @description Integrate markers meta info back into the data
+#' @rdname match_markers_meta
+#' @export
+#' @keywords internal
+match_markers_meta <- function(x, markers.meta) {
+  x  %<>%
+    dplyr::left_join(markers.meta, by = "M_SEQ") %>%
+    dplyr::select(-M_SEQ)
+  return(x)
+}# End match_strata
+
+# fst_write -----------------------------------------------------------
+#' @title fst_write
+#' @description Write the fst results to working directory or path
+#' @rdname fst_write
+#' @export
+#' @keywords internal
+fst_write <- function(x,list.sub, path.folder) {
+  readr::write_tsv(
+    x = list.sub[[x]],
+    file = file.path(path.folder, paste0(x, ".tsv"))
+  )
+}#End fst_write
+
+
+# Format mean and range of numeric vector as string ----------------------------
+#' @title Format mean and range of numeric vector as string
+#' @description Produces a string like "0.123 [0.100 - 0.150]" for a numeric vector.
+#' @param x A numeric vector.
+#' @param meanx Logical; whether to include the mean value in the output. Defaults to `TRUE`.
+#' @param min.max Logical; whether to include the minimum and maximum values in the output. Defaults to `TRUE`.
+#' @param digits Number of digits *after the decimal point*.
+#' @param scientific Logical; whether to use scientific notation.
+#' @return A character string with formatted mean, min, and max values.
+#' @keywords internal
+format_mean_range <- function(x, meanx = TRUE, min.max = TRUE, digits = 3, scientific = FALSE) {
+
+  # arg for formatC
+  fmt.args <- list(
+    format = "f",
+    digits = digits,
+    flag = "",
+    big.mark = "",
+    decimal.mark = ".",
+    drop0trailing = FALSE
+  )
+  if (scientific) fmt.args$format <- "e"
+
+  # default:
+  sep1 <- " ["
+  sep2 <- " - "
+  sep3 <- "]"
+
+  if (meanx) {
+    mean_str <- do.call(formatC, c(list(x = mean(x, na.rm = TRUE)), fmt.args))
+  } else {
+    mean_str <- ""
+    sep1 <- "["
+  }
+
+
+  if (min.max) {
+    min_str  <- do.call(formatC, c(list(x = pmax(0, min(x, na.rm = TRUE))),  fmt.args))
+    max_str  <- do.call(formatC, c(list(x = max(x, na.rm = TRUE)),  fmt.args))
+  } else {
+    min_str <- ""
+    max_str <- ""
+    sep1 <- ""
+    sep2 <- ""
+    sep3 <- ""
+  }
+  # Concatenate and return the formatted string
+  stringi::stri_c(mean_str, sep1, min_str, sep2, max_str, sep3)
+}# END format_mean_range
+
+#' Format numeric using formatC and dynamic arguments
+#'
+#' @param x A numeric scalar.
+#' @param fmt.args A named list of arguments to pass to base::formatC.
+#'
+#' @return A character string formatted by formatC.
+#' @keywords internal
+
+utils_formatC <- function(x, fmt.args) {
+  rlang::exec(base::formatC, x = x, !!!fmt.args)
+}#END utils_formatC
+
+#' Format a numeric vector using formatC and flexible arguments
+#'
+#' @param x A numeric vector.
+#' @param fmt.args A named list of arguments to pass to base::formatC.
+#'
+#' @return A character vector with formatted values.
+#' @keywords internal
+utils_formatC_vec <- function(x, fmt.args) {
+  # rlang::exec() is not vectorised, so we use vapply + utils_formatC
+  vapply(
+    x,
+    FUN = function(val) rlang::exec(base::formatC, x = val, !!!fmt.args),
+    FUN.VALUE = character(1)
+  )
+}# END utils_formatC_vec
+
+# Plot the distribution of FST values-------------------------------------------
+#' @title Plot the distribution of FST values
+#' @description Creates a histogram of FST values from a tibble or data frame.
+#'
+#' @param data A tibble or data frame containing a numeric `FST` column.
+#' @param binwidth A numeric value specifying the histogram bin width. Default is `0.01`.
+#'
+#' @return A `ggplot2` object showing the histogram of FST values.
+#' @keywords internal
+#' @export
+#'
+#' @importFrom ggplot2 ggplot aes geom_histogram labs expand_limits theme element_text
+plot_fst_distribution <- function(data, binwidth = 0.01) {
+  bold.text <- ggplot2::element_text(size = 10, family = "Helvetica", face = "bold")
+
+  ggplot2::ggplot(data, ggplot2::aes(x = FST, na.rm = TRUE)) +
+    ggplot2::geom_histogram(binwidth = binwidth) +
+    ggplot2::labs(x = "Fst (overall)") +
+    ggplot2::expand_limits(x = 0) +
+    ggplot2::theme(
+      legend.position = "none",
+      axis.title.x = bold.text,
+      axis.title.y = bold.text,
+      legend.title = bold.text,
+      legend.text = bold.text,
+      strip.text.x = bold.text
+    )
+}# END plot_fst_distribution
+
+
+# Extract arguments matching --------
+
+#' @title Extract arguments matching a function's formals
+#' @rdname extract_matching_args
+#' @description
+#' Extracts named arguments from an environment (e.g., the calling environment)
+#' that match the formal arguments of a target function.
+#'
+#' Useful when forwarding arguments from a parent function to a subfunction
+#' without manually repeating each parameter.
+#'
+#' @param from.env The environment from which to extract arguments (typically `environment()` or `rlang::caller_env()`).
+#' @param to.fn The target function whose formal arguments will be matched.
+#' @param .evaluate Logical, whether to force evaluation (default: TRUE).
+#' @param .exclude Optional character vector of argument names to exclude.
+
+#' @return A named list of matched and evaluated arguments (excluding `.exclude`).
+#'
+#' @examples
+#' \dontrun{
+#' args.for.fst <- extract_matching_args(from.env = environment(), to.fn = assigner::compute_fst)
+#' result <- rlang::exec(assigner::compute_fst, x = my_data, !!!args.for.fst)
+#' }
+#'
+#' @keywords internal
+#' @export
+#'
+#' @importFrom rlang env_names env_get set_names
+#' @importFrom purrr map
+extract_matching_args <- function(from.env, to.fn, .evaluate = TRUE, .exclude = NULL) {
+  fn.args <- names(formals(to.fn))
+  env.args <- rlang::env_names(from.env)
+
+  matched.args <- env.args[env.args %in% fn.args]
+
+  if (!is.null(.exclude)) {
+    matched.args <- setdiff(matched.args, .exclude)
+  }
+
+  # Extract the matched arguments and evaluate if requested
+  out <- rlang::set_names(matched.args) %>%
+    purrr::map(~ rlang::env_get(from.env, .x))
+
+  if (.evaluate) {
+    # Force evaluation so they're not lazy expressions/closures
+    out <- purrr::map(out, identity)
+  }
+
+  out  # Return the evaluated arguments
+}
+
+
+
+

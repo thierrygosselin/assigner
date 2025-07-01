@@ -1,8 +1,8 @@
 Package: assigner
 Type: Package
 Title: Assignment Analysis with RADseq Data
-Version: 0.6.0
-Date: 2024-11-06
+Version: 0.7.0
+Date: 2025-07-01
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
@@ -11,28 +11,30 @@ Authors@R: c(
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
 Description: Set of R tools for assignment analysis tailored for RADseq data.
 Depends:
-    R (>= 3.5.0)
+    R (>= 4.1.0)
 Imports:
     adegenet,
+    arrow,
     data.table,
     dplyr (>= 1.0.0),
     furrr (>= 0.2.0),
+    ggplot2,
     magrittr,
-    radiator
+    purrr,
+    radiator,
+    rlang
 Suggests:
     BiocManager,
     carrier,
+    cli,
     devtools,
     future,
-    ggplot2,
     knitr,
     modelr,
     parallel,
     png,
-    purrr,
     progressr,
     readr (>= 1.4.0),
-    rlang,
     rmarkdown,
     stats,
     stringi,
@@ -40,6 +42,7 @@ Suggests:
     tidyr,
     tidyselect,
     tidyverse,
+    vctrs,
     vroom,
     utils
 Remotes: thierrygosselin/radiator

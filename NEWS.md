@@ -1,3 +1,8 @@
+# assigner 0.7.0 2025-07-01
+
+* *assigner::fst_WC84*: work faster and as better reporting
+
+
 # assigner 0.6.0 2024-11-06
 
 * refresh for new R version

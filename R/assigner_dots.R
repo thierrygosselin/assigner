@@ -1,15 +1,31 @@
 # assigner_dots-----------------------------------------------------------------
 #' @title assigner_dots
 #' @description Extract and assign the dots-dots-dots
+#' Capture and assign the `...` arguments in a robust and tidy way. This utility function:
+#' - Assigns known `...` arguments (called "keepers") into the function's environment.
+#' - Detects and warns about unknown or deprecated arguments.
+#' - Assigns default values for expected `...` arguments not supplied.
+#' - Logs everything in a tidy tibble grouped by type.
+#'
+#' Especially useful for deeply nested or extensible functions (e.g., pipelines or packages).
+#'
+#' Includes a `dev.mode` flag to allow testing in the global environment interactively.
+#'
 #' @name assigner_dots
 #' @rdname assigner_dots
-#' @param func.name Default: \code{as.list(sys.call())[[1]]}.
-#' @param fd (optional) Default: \code{rlang::fn_fmls_names()}.
-#' @param args.list (optional) Default:\code{args.list = as.list(environment())}.
-#' @param dotslist The dots dots dots arguments captured.
+
+#' @param func.name The name of the function calling `assigner_dots`.
+#' Default: \code{as.list(sys.call())[[1]]}.
+#' @param fd (optional) A character vector of formal argument names for the
+#' calling function.
+#' Default: \code{rlang::fn_fmls_names()}.
+#' @param args.list (optional) A named list of arguments already present in the
+#' calling function's environment. Default:\code{args.list = as.list(environment())}.
+#' @param dotslist The captured `...` using `rlang::dots_list(...)`.
 #' Default: \code{
 #' dotslist = rlang::dots_list(..., .homonyms = "error", .check_assign = TRUE)}.
-#' @param keepers (optional) The arguments that are used inside the function.
+#' @param keepers (optional) A character vector of allowed dot arguments that
+#' should be assigned.
 #' Default: \code{keepers = c(
 #' "subsample.markers.stats", "subsample",
 #' "filter.reproducibility", "filter.individuals.missing",
@@ -36,11 +52,27 @@
 #' "calibrate.alleles",
 #' "forking"
 #' )}.
-#' @param deprecated (optional) assigner's deprecated arguments.
+#' @param deprecated (optional) Vector of deprecated argument names to detect in `...`.
 #' Default: \code{deprecated = NULL}.
 #' @param verbose (logical) Function will output more details.
-#' @keywords internal
+#' Will print messages describing assignments and issues.
+#' Default: \code{verbose = TRUE}.
+#' @param dev.mode (logical) If `TRUE`, arguments will be assigned to the
+#' global environment (`globalenv()`) for interactive development and testing.
+#' Default: \code{dev.mode = FALSE}.
+#' @keywords internal dots meta-development
 #' @export
+
+#' @return A `tibble` with columns `ARGUMENTS`, `VALUES`, and `GROUPS`,
+#' indicating how each dot-argument was handled:
+#'   - `"fct.call.args"`: named arguments from the function call
+#'   - `"fct.call..."`: valid dot arguments passed
+#'   - `"default..."`: valid dot arguments not passed (defaults assigned)
+#'   - `"deprecated..."`: deprecated arguments passed
+#'   - `"unknowned..."`: unknown arguments passed
+
+
+
 
 assigner_dots <- function(
   func.name = as.list(sys.call())[[1]],
@@ -83,11 +115,16 @@ assigner_dots <- function(
     "calibrate.alleles", "forking"
   ),
   deprecated = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  dev.mode = FALSE
 ) {
   opt.change <- getOption("width")
   options(width = 70)
-  env.arg <- parent.frame()
+
+  # Use global env if dev.mode is TRUE
+  env.arg <- if (dev.mode) rlang::global_env() else parent.frame()
+
+
   res <- tibble::tibble(
     ARGUMENTS = character(0),
     VALUES = character(0),
@@ -230,7 +267,7 @@ message_func_call <- function(n, v, verbose = TRUE) {
 
 extract_dots <- function(n, v, env.arg, verbose = TRUE) {
   assign(x = n, value = v, pos = env.arg, envir = env.arg)
-  if (n == "path.folder" && !is.null(v)) v <- radiator::folder_short(v)
+  if (n == "path.folder" && !is.null(v)) v <- basename(v)
   if (n == "subsample") v <- length(n)
   if (n == "pop.levels") v <- length(n)
   if (n == "pop.labels") v <- length(n)

@@ -5,20 +5,17 @@
 \title{pairwise_fst}
 \usage{
 pairwise_fst(
-  list.pair,
+  x,
   pop.pairwise = NULL,
-  data = NULL,
   ci = FALSE,
   iteration.ci = 100,
   quantiles.ci = c(0.025, 0.975),
   digits = 9,
-  path.folder = path.folder,
-  p = NULL,
-  temp.files = NULL,
+  path.folder = NULL,
   ...
 )
 }
 \description{
-Pairwise Fst function
+main function
 }
 \keyword{internal}

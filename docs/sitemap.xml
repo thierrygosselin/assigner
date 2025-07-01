@@ -36,11 +36,14 @@
 <url><loc>https://thierrygosselin.github.io/assigner/reference/compound_assignment_pipe_operator.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/compute_fst.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/compute_fst_nei.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/create_subsample_list.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/data_assigner_sim_01.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/data_assigner_sim_02.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/dlr.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/dlr_relative.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/extract_dots.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/extract_matching_args.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/format_mean_range.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/fst_NEI87.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/fst_WC84.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/fst_nei_subsample.html</loc></url>
@@ -54,6 +57,7 @@
 <url><loc>https://thierrygosselin.github.io/assigner/reference/gsi_sim_exists.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/gsi_sim_is_executable.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/heatmap_fst.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/import_data.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/import_subsamples.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/import_subsamples_fst.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/index.html</loc></url>
@@ -61,15 +65,22 @@
 <url><loc>https://thierrygosselin.github.io/assigner/reference/marker_selection.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/match_markers_meta.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/message_func_call.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/minimize_args_list.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/n.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/pairwise_fst.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/pairwise_fst_nei.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/pairwise_matrix_utils.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/parallel_core_opt.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/pipe.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/plot_assignment.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/plot_dlr.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/plot_fst_distribution.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/prep_strata.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/rad_long.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/rad_wide.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/subsampling_data.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/utils_formatC.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/utils_formatC_vec.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/write_temp_data_fst.html</loc></url>
 </urlset>
 

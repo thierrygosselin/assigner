@@ -4,7 +4,7 @@
 \alias{fst_stats}
 \title{fst_stats}
 \usage{
-fst_stats(x, l, digits = 9L, m = NULL, s = NULL, subsample = FALSE)
+fst_stats(x, l, digits = 9L, m = NULL, s = NULL, iteration.subsample = NULL)
 }
 \description{
 Generate useful stats

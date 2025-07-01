@@ -397,10 +397,8 @@ assignment_ngs <- function(
   # keep.gsi.files = FALSE
   # random.seed = NULL
   # whitelist.markers = NULL
-  cat("################################################################################\n")
-  cat("########################## assigner::assignment_ngs ############################\n")
-  cat("################################################################################\n")
   # Cleanup---------------------------------------------------------------------
+  assigner_function_header(f.name = "assignment_ngs", verbose = verbose)
   file.date <- format(Sys.time(), "%Y%m%d@%H%M")
   if (verbose) message("Execution date/time: ", file.date)
   old.dir <- getwd()
@@ -413,7 +411,7 @@ assignment_ngs <- function(
   on.exit(options(width = opt.change), add = TRUE)
   on.exit(timing <- proc.time() - timing, add = TRUE)
   on.exit(if (verbose) message("\nComputation time, overall: ", round(timing[[3]]), " sec"), add = TRUE)
-  on.exit(cat("########################## assignment_ngs completed ############################\n"), add = TRUE)
+  on.exit(assigner_function_header(f.name = "assignment_ngs", start = FALSE, verbose = verbose), add = TRUE)
 
   # Function call and dotslist -------------------------------------------------
   rad.dots <- radiator::radiator_dots(
@@ -478,21 +476,20 @@ assignment_ngs <- function(
   }
 
   directory <- radiator::generate_folder(
-    f = folder,
     rad.folder = rad.folder,
-    prefix_int = FALSE,
+    path.folder = folder,
+    prefix.int = FALSE,
     append.date = TRUE,
     internal = FALSE,
     file.date = file.date,
     verbose = verbose)
 
   # write the dots file
-  radiator::write_rad(
+  radiator::write_radiator_tsv(
     data = rad.dots,
-    path = directory,
+    path.folder = directory,
     filename = stringi::stri_join(
       "assigner_assignment_ngs_args_", file.date, ".tsv"),
-    tsv = TRUE,
     internal = FALSE,
     write.message = "Function call and arguments stored in: ",
     verbose = FALSE
@@ -529,7 +526,7 @@ assignment_ngs <- function(
 
   # Analysis -------------------------------------------------------------------
   res <- suppressWarnings(
-    purrr::map_df(
+    purrr::map(
       .x = subsample.list,
       .f = assignment_subsamples,
       input = input,
@@ -548,7 +545,8 @@ assignment_ngs <- function(
       adegenet.dapc.opt = adegenet.dapc.opt,
       adegenet.n.rep = adegenet.n.rep,
       adegenet.training = adegenet.training
-    )
+    ) %>%
+      purrr::list_rbind()
   )
 
   if (iteration.subsample > 1) {
@@ -996,7 +994,7 @@ assignment_subsamples <- function(
     holdout.individuals <- hs$holdout.individuals
     iterations.list <- hs$iterations.list
     hs <- NULL
-    message("Holdout samples saved in your folder")
+    message("Holdout samples file saved: holdout.individuals.tsv")
 
     # Going through the loop of holdout individuals
     message("Starting parallel computations, for progress monitor activity in folder...")
@@ -1212,9 +1210,9 @@ assignment_ranking <- carrier::crate(function(
 
   # folder of iterations
   i.folder <- radiator::generate_folder(
-    f = directory.subsample,
     rad.folder = stringi::stri_join("assignment_", i),
-    prefix_int = FALSE,
+    path.folder = directory.subsample,
+    prefix.int = FALSE,
     internal = FALSE,
     append.date = FALSE,
     verbose = FALSE)
@@ -1374,7 +1372,12 @@ assignment_gsi_sim <- function(
   markers.sampling = "random",
   thl = 1
 ) {
+
   # Write gsi_sim input file to directory
+  if (rlang::has_name(input, "STRATA") & !rlang::has_name(input, "POP_ID")) {
+    input %<>% dplyr::rename(POP_ID = STRATA)
+  }
+
   input.gsi <- radiator::write_gsi_sim(
     data = input %>%
       dplyr::filter(MARKERS %in% select.markers) %>%
@@ -1383,7 +1386,7 @@ assignment_gsi_sim <- function(
   )
 
   # Run gsi_sim
-  input.gsi <- radiator::folder_short(input.gsi)
+  input.gsi <- basename(input.gsi)
   output.gsi <- stringi::stri_replace_all_fixed(
     str = input.gsi, pattern = "txt", replacement = "output.txt")
   setwd(i.folder)
@@ -1670,9 +1673,9 @@ assignment_random <- carrier::crate(function(
 
   # folder of iterations
   i.folder <- radiator::generate_folder(
-    f = directory.subsample,
     rad.folder = stringi::stri_join("assignment_", i),
-    prefix_int = FALSE,
+    path.folder = directory.subsample,
+    prefix.int = FALSE,
     internal = FALSE,
     append.date = FALSE,
     verbose = FALSE)

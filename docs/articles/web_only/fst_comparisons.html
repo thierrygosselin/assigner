@@ -6,12 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Comparisons of Fst computations • assigner</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../../apple-touch-icon-60x60.png">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../../favicon.ico">
+<link rel="manifest" href="../../site.webmanifest">
 <script src="../../lightswitch.js"></script><script src="../../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -26,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">assigner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,7 +75,7 @@
                         <h4 data-toc-skip class="author">Thierry
 Gosselin</h4>
             
-            <h4 data-toc-skip class="date">2025-04-01</h4>
+            <h4 data-toc-skip class="date">2025-07-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/thierrygosselin/assigner/blob/HEAD/vignettes/web_only/fst_comparisons.Rmd" class="external-link"><code>vignettes/web_only/fst_comparisons.Rmd</code></a></small>
       <div class="d-none name"><code>fst_comparisons.Rmd</code></div>
@@ -702,7 +701,7 @@ GenoDive to R</li>
 </h3>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
-<span>  <span class="va">stampp.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span></span>
+<span>  <span class="va">stampp.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/StAMPP/man/stamppFst.html" class="external-link">stamppFst</a></span><span class="op">(</span></span>
 <span>    geno <span class="op">=</span> <span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">genlight</span>, </span>
 <span>    nboots <span class="op">=</span> <span class="fl">1</span>, </span>
 <span>    percent <span class="op">=</span> <span class="fl">95</span>, </span>
@@ -727,7 +726,7 @@ GenoDive to R</li>
 <h3 id="simulated-datasets-7">Simulated datasets<a class="anchor" aria-label="anchor" href="#simulated-datasets-7"></a>
 </h3>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">stampp.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">stampp.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/StAMPP/man/stamppFst.html" class="external-link">stamppFst</a></span><span class="op">(</span></span>
 <span>    geno <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">genlight</span>, </span>
 <span>    nboots <span class="op">=</span> <span class="fl">1</span>, </span>
 <span>    percent <span class="op">=</span> <span class="fl">95</span>, </span>
@@ -746,7 +745,7 @@ GenoDive to R</li>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"STAMPP_SIM01"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">POP1</span>, <span class="va">POP2</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">stampp.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span></span>
+<span><span class="va">stampp.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/StAMPP/man/stamppFst.html" class="external-link">stamppFst</a></span><span class="op">(</span></span>
 <span>    geno <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">genlight</span>, </span>
 <span>    nboots <span class="op">=</span> <span class="fl">1</span>, </span>
 <span>    percent <span class="op">=</span> <span class="fl">95</span>, </span>
@@ -1077,7 +1076,7 @@ the packages/software probably depends on numerous things:</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">summary.table</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_tsv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"fst_comparisons_packages_features.tsv"</span>, col_types <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/cols.html" class="external-link">cols</a></span><span class="op">(</span>.default <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html" class="external-link">col_character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">summary.table</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span>bootstrap_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span><span class="op">)</span>, full_width <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu">kable_styling</span><span class="op">(</span>bootstrap_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span><span class="op">)</span>, full_width <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><em>Note:</em></p>
 <ul>
 <li>VCFtools: we used only 2 populations and timing is inside VCFtools
@@ -1142,7 +1141,7 @@ an interesting feature of your favorite package.</em></p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

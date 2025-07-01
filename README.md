@@ -8,9 +8,9 @@
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![minimal R
-version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)
-[![packageversion](https://img.shields.io/badge/Package%20version-0.6.0-orange.svg)](commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2025--04--01-brightgreen.svg)](/commits/master)
+version](https://img.shields.io/badge/R%3E%3D-4.1.0-6666ff.svg)](https://cran.r-project.org/)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.7.0-orange.svg)](commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2025--07--01-brightgreen.svg)](/commits/master)
 [![R-CMD-check](https://github.com/thierrygosselin/assigner/workflows/R-CMD-check/badge.svg)](https://github.com/thierrygosselin/assigner/actions)
 [![macOS](https://github.com/thierrygosselin/assigner/workflows/macOS-latest%20(release)/badge.svg)](https://github.com/thierrygosselin/assigner/actions?workflow=macOS-latest%20(release))
 [![Linux](https://github.com/thierrygosselin/assigner/workflows/check-linux//badge.svg)](https://github.com/thierrygosselin/assigner/actions?workflow=check-linux)
