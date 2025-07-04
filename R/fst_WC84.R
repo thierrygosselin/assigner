@@ -755,8 +755,12 @@ fst_WC84 <- function(
       sep1 <- " ["
       sep2 <- " - "
       sep3 <- "]"
-      min.fst <- res$fst.overall$MIN
-      max.fst <- res$fst.overall$MAX
+      # min.fst <- res$fst.overall$MIN
+      # max.fst <- res$fst.overall$MAX
+
+      min.fst <- res$fst.overall[[if (is.null(subsample)) "CI_LOW" else "MIN"]]
+      max.fst <- res$fst.overall[[if (is.null(subsample)) "CI_HIGH" else "MAX"]]
+
     }
     fst.message <- stringi::stri_c(mean.fst, sep1, min.fst, sep2, max.fst, sep3)
     message("Fst (overall): ", fst.message)
@@ -1944,8 +1948,9 @@ fst_stats <- function(
         )
       )
 
+    fmt.args <- list(format = "f", digits = digits, decimal.mark = ".")
+    fmt.args.0 <- list(format = "f", digits = 0, decimal.mark = ".")
     if (subsampling) {
-      fmt.args <- list(format = "f", digits = digits, decimal.mark = ".")
 
       res1 %<>%
         dplyr::group_by(POP1, POP2) %>%
@@ -1958,8 +1963,17 @@ fst_stats <- function(
           CI_HIGH = utils_formatC(max(CI_HIGH, na.rm = TRUE), fmt.args = fmt.args),
           .groups = "drop"
         )
+    } else {
+      res1 %<>%
+        dplyr::mutate(
+          FST_RANGE = NA,
+          FST = utils_formatC(FST, fmt.args = fmt.args),
+          N_MARKERS = utils_formatC(N_MARKERS, fmt.args = fmt.args.0),
+          N_MONOMORPHIC_BL = utils_formatC(N_MONOMORPHIC_BL, fmt.args = fmt.args.0),
+          CI_LOW = utils_formatC(CI_LOW, fmt.args = fmt.args),
+          CI_HIGH = utils_formatC(CI_HIGH, fmt.args = fmt.args)
+        )
     }
-
     res1 %<>%
       dplyr::mutate(
         NS = dplyr::if_else(as.numeric(CI_LOW) == 0, TRUE, FALSE),
