@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Pairwise and overall Fst with confidence intervals + building phylogenetic tree">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">assigner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,6 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../index.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link" href="../FEATURES.html">Features</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/get_started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
@@ -43,10 +42,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/get_started.html">Get started</a></li>
     <li><a class="dropdown-item" href="../articles/fst_confidence_intervals.html">Fst analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/web_only/fst_comparisons.html">Comparisons of Fst in 8 packages/software</a></li>
     <li><a class="dropdown-item" href="../articles/assignment.whitelists.html">Using whitelists in assignment</a></li>
-    <li><a class="dropdown-item" href="../articles/rad_genomics_computer_setup.html">Computer setup - Installation - Troubleshooting</a></li>
-    <li><a class="dropdown-item" href="../articles/life_cycle.html">Life cycle</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -69,7 +65,7 @@
                         <h4 data-toc-skip class="author">Thierry
 Gosselin</h4>
             
-            <h4 data-toc-skip class="date">2025-07-04</h4>
+            <h4 data-toc-skip class="date">2026-08-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/thierrygosselin/assigner/blob/HEAD/vignettes/fst_confidence_intervals.Rmd" class="external-link"><code>vignettes/fst_confidence_intervals.Rmd</code></a></small>
       <div class="d-none name"><code>fst_confidence_intervals.Rmd</code></div>
@@ -104,7 +100,7 @@ will drastically reduce the number of markers, and consequently your
 genome coverage for the estimate. Strategically, you should reduce the
 threshold of number of populations required to keep a marker (e.g. use a
 minimum of 2 populations genotyped for the markers to keep it). This is
-easily tested with <code><a href="https://thierrygosselin.github.io/radiator/reference/filter_common_markers.html" class="external-link">radiator::filter_common_markers</a></code> or in
+easily tested with <code>radiator::filter_common_markers</code> or in
 stacks population module.</p>
 <p>The overall fst and fis estimates will have reduce genome-wide
 coverage, because the computation is conducted with shared markers
@@ -316,7 +312,7 @@ object <code>pairwise.fst.ci.df</code>:</li>
 <ol style="list-style-type: decimal">
 <li>Or even better, use the heatmap of Fst and CI values…:
 <center>
-<img src="fst_WC84_heatmap_fst.png" width="600"><center></center>
+<img src="fst_WC84_heatmap_fst.png" width="600" alt="Heatmap of pairwise FST estimates with confidence intervals"><center></center>
 </center>
 </li>
 </ol>
@@ -363,7 +359,7 @@ object <code>pairwise.fst.ci.df</code>:</li>
 </ol>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get the latest development version of ggtree:</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://www.amazon.com/Integration-Manipulation-Visualization-Phylogenetic-Computational-ebook/dp/B0B5NLZR1Z/" class="external-link">"ggtree"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"GuangchuangYu/ggtree"</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://www.amazon.com/Integration-Manipulation-Visualization-Phylogenetic-Computational-ebook/dp/B0B5NLZR1Z/" class="external-link">"ggtree"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"GuangchuangYu/ggtree"</span><span class="op">)</span></span>
 <span><span class="co"># If it's not working, use the Bioconductor version:</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ggtree"</span><span class="op">)</span></span></code></pre></div>
@@ -382,7 +378,7 @@ object <code>pairwise.fst.ci.df</code>:</li>
 <span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.16</span><span class="op">)</span> <span class="co"># to allocate more space for tip labels (trial/error)</span></span>
 <span><span class="va">tree.figure</span></span>
 <span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"assigner.fst.tree.example.pdf"</span>, width <span class="op">=</span> <span class="fl">15</span>, height <span class="op">=</span> <span class="fl">15</span>, dpi <span class="op">=</span> <span class="fl">600</span>, units <span class="op">=</span> <span class="st">"cm"</span>, useDingbats <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="assigner_fst_tree_example.png" width="400"></p>
+<p><img src="assigner_fst_tree_example.png" width="400" alt="Example population tree constructed from pairwise FST distances"></p>
 </div>
 </div>
 <div class="section level2">
@@ -391,7 +387,7 @@ object <code>pairwise.fst.ci.df</code>:</li>
 <p>Please send me suggestions and bug reports through github</p>
 <p><strong>References</strong></p>
 <p>Weir BS, Cockerham CC (1984) Estimating F-Statistics for the Analysis
-of Population Structure. Evolution, 38, 1358–1370.</p>
+of Population Structure. Evolution, 38, 1358-1370.</p>
 <p>G Yu, D Smith, H Zhu, Y Guan, TTY Lam, ggtree: an R package for
 visualization and annotation of phylogenetic tree with different types
 of meta-data. revised.</p>
@@ -407,7 +403,7 @@ of meta-data. revised.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

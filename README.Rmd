@@ -2,91 +2,89 @@
 output: github_document
 ---
 
+# assigner <a href="https://thierrygosselin.github.io/assigner/"><img src="man/figures/logo.png" align="right" height="160" alt="assigner logo" /></a>
 
-# assigner <a href='http://thierrygosselin.github.io/assigner/'><img src='man/figures/logo.png' align="right" height="160" /></a>
-
-
-
-```{r, echo = FALSE}
-description <- readLines("DESCRIPTION")
-rvers <- stringr::str_match(grep("R \\(", description, value = TRUE), "[0-9]{1,4}\\.[0-9]{1,4}\\.[0-9]{1,4}")[1,1]
-version <- gsub(" ", "", gsub("Version:", "", grep("Version:", description, value = TRUE)))
+```{r badges, echo=FALSE, results='hide'}
+description <- read.dcf("DESCRIPTION")
+version <- description[1, "Version"]
+r_version <- sub(".*\\(>= *([^)]*)\\).*", "\\1", description[1, "Depends"])
 ```
+
 <!-- badges: start -->
-[![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://tidyverse.org/lifecycle/#maturing)
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![minimal R version](https://img.shields.io/badge/R%3E%3D-`r rvers`-6666ff.svg)](https://cran.r-project.org/)
-[![packageversion](https://img.shields.io/badge/Package%20version-`r version`-orange.svg)](commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-brightgreen.svg)](/commits/master)
-[![R-CMD-check](https://github.com/thierrygosselin/assigner/workflows/R-CMD-check/badge.svg)](https://github.com/thierrygosselin/assigner/actions)
-[![macOS](https://github.com/thierrygosselin/assigner/workflows/macOS-latest (release)/badge.svg)](https://github.com/thierrygosselin/assigner/actions?workflow=macOS-latest (release))
-[![Linux](https://github.com/thierrygosselin/assigner/workflows/check-linux//badge.svg)](https://github.com/thierrygosselin/assigner/actions?workflow=check-linux)
-[![Windows](https://github.com/thierrygosselin/assigner/workflows/R-CMD-check/badge.svg)](https://github.com/thierrygosselin/assigner/actions?workflow=check-windows)
+[![Project status: active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Package version](https://img.shields.io/badge/package%20version-`r version`-orange.svg)](https://github.com/thierrygosselin/assigner)
+[![R version](https://img.shields.io/badge/R-%3E%3D%20`r r_version`-blue.svg)](https://www.r-project.org/)
 [![DOI](https://zenodo.org/badge/14548/thierrygosselin/assigner.svg)](https://zenodo.org/badge/latestdoi/14548/thierrygosselin/assigner)
 <!-- badges: end -->
 
-The name **assigner** |əˈsʌɪn| is rooted in the Latin word *assignare*. Its first use in French dates back to XIIIe.
+`assigner` helps answer a practical question: **how well can genomic data assign
+individuals to candidate source populations?**
 
-For the logo, I was inspired by the [Northern Atlantic Octupus](https://500px.com/photo/3885192/nature-a-reflexion-by-thierry-gosselin). I was fortunate to spend a lot of times with one during my PhD. These incredible creatures have 8 arms and [thousands of suckers](https://500px.com/photo/3885141/stuck-on-me-by-thierry-gosselin) that they can control independently. Octopus are really the best multitaskers. The logo was designed by the artist [Claude Thivierge](http://www.claudethivierge.com).
+Use `assigner` to:
 
-Genomic datasets produced by next-generation sequencing techniques that reduce the size of the genome (e.g. genotype-by-sequencing (GBS) and
-restriction-site-associated DNA sequencing (RADseq)) have a huge number of markers that hold great potential and promises for assignment analysis. After hitting the bioinformatic wall with the different workflow, you'll likely end up with several folders containing whitelist and blacklist of markers and individuals, data sets with various *de novo* and/or filtering parameters and ... missing data. This reality of GBS/RADseq data is quite hard on GUI software traditionally used for population assignment analysis. The end results are usually poor data exploration, constrained by time, and poor reproducibility.
+- assign individuals with a native population-genetic likelihood method written
+  entirely in R, using called genotypes (`GT`) or genotype likelihoods (`GL` and
+  `PL`);
+- retain the likelihood of every individual in every candidate population, not
+  only the best and second-best assignments;
+- compare likelihood assignment with elastic net, XGBoost, experimental TabPFN,
+  `adegenet`, or Eric C. Anderson's
+  [`gsi_sim`](https://github.com/eriqande/gsi_sim) workflows;
+- evaluate assignment honestly with holdout samples, leave-one-out estimation,
+  and repeated marker panels;
+- avoid the high-grading bias described by Anderson (2010) by keeping marker
+  selection inside the training data and holdout individuals untouched;
+- compare random marker panels with panels ranked by population differentiation;
+- calculate and visualize Dlr as a measure of assignment resolution between
+  population pairs;
+- quantify effective reference sample size for GL/PL data and identify
+  potentially important information imbalances among source populations;
+- calculate an optional coverage-aware diagnostic for individuals that may
+  originate from an unsampled source;
+- estimate global and pairwise FST with confidence intervals; and
+- keep analyses reproducible with recorded arguments, random seeds, intermediate
+  results, and dated output folders.
 
+Ordinary leave-one-out assignment does not remove the high-grading bias created
+when the same individuals were already used to select apparently informative
+loci. See [Anderson (2010)](https://doi.org/10.1111/j.1755-0998.2010.02846.x)
+and the get-started vignette for the Training-Holdout-Leave-one-out design.
 
+`assigner` accepts genomic data prepared with
+[genometranslator](https://thierrygosselin.github.io/genometranslator/) and
+expects genomic quality control and filtering to have been completed first, for
+example with [radr](https://thierrygosselin.github.io/radr/).
 
-**assigner** was tailored to make it easy to conduct population assignment analysis using GBS/RADseq data within R. Additionally, combining the use of tools like [R Notebook](http://rmarkdown.rstudio.com/r_notebooks.html), [RStudio](https://www.rstudio.com) and [GitHub](https://github.com) will make effortless documenting your workflows and pipelines.
-
-The **keywords** here to remember: 
-
-* 3 differents algorithms implemented: frequentist, likelihood and machine learning
-* cross-validation techniques: classic Leave-One-Out (LOO) and Training, Holdout, Leave-one-out (THL)
-with marker selection
-* resampling/bootstrap/subsampling
-* fast Fst WC84 implementation)
-* ggplot2-based plotting! 
-* [https://thierrygosselin.github.io/assigner/](https://thierrygosselin.github.io/assigner/) 
-
+The package distinguishes assignment to predefined reference populations from
+clustering, mixture estimation, and statistical migrant detection. The
+[get-started vignette](https://thierrygosselin.github.io/assigner/articles/get_started.html#theory-and-interpretation)
+explains these distinctions, leave-one-out assignment, unsampled alleles,
+missing data, validation, and the foundational references behind the methods.
 
 ## Installation
-To try out the dev version of **assigner**:
 
 ```r
-if (!require("devtools")) install.packages("devtools")
-devtools::install_github("thierrygosselin/assigner")
-library(assigner)
+install.packages("remotes")
+remotes::install_github("thierrygosselin/assigner")
 ```
 
-If you plan on using `gsi_sim` inside assigner, you need an additional step:
+[`gsi_sim`](https://github.com/eriqande/gsi_sim), developed by assigner
+co-author Eric C. Anderson, is optional and is not installed by the R package. Complete
+installation instructions are in the
+[get-started vignette](https://thierrygosselin.github.io/assigner/articles/get_started.html).
+After installing it, verify the setup with:
 
-With UNIX
 ```r
-assigner::install_gsi_sim(fromSource = TRUE)
+assigner::check_gsi_sim()
 ```
 
-With PC
-```r
-assigner::install_gsi_sim()
-```
+## Start here
 
-* web site and additional info: [https://thierrygosselin.github.io/assigner/](https://thierrygosselin.github.io/assigner/) 
-* [Computer setup - installation - troubleshooting](http://thierrygosselin.github.io/assigner/articles/rad_genomics_computer_setup.html)
-* [assigner's assumptions](http://thierrygosselin.github.io/assigner/reference/assignment_ngs.html#assumptions)
-* [assigner's features](http://thierrygosselin.github.io/assigner/FEATURES.html)
-* [Function's documentation](http://thierrygosselin.github.io/assigner/reference/index.html)
-* [Vignettes](http://thierrygosselin.github.io/assigner/articles/index.html)
-* How to cite assigner: inside R type `citation("assigner")`
+- [Get started](https://thierrygosselin.github.io/assigner/articles/get_started.html)
+- [Function reference](https://thierrygosselin.github.io/assigner/reference/index.html)
+- [FST confidence intervals](https://thierrygosselin.github.io/assigner/articles/fst_confidence_intervals.html)
+- [Development roadmap](https://github.com/thierrygosselin/assigner/blob/main/ROADMAP.md)
+- [Issue tracker](https://github.com/thierrygosselin/assigner/issues)
 
-## [Life cycle](https://thierrygosselin.github.io/assigner/articles/life_cycle.html)
-
-assigner is maturing, but in order to make the package better, changes are 
-inevitable. Experimental functions will change, argument names will change.
-Your codes and workflows might break from time to time until **assigner is stable**. 
-Consequently, depending on your tolerance to change, assigner might not be for you.
-
-* Philosophy, major changes and deprecated functions/arguments are documented in
-life cycle section of functions. 
-* The latest changes are documented ([here](https://thierrygosselin.github.io/assigner/articles/life_cycle.html)) and
-in [changelog, versions, new features and bug history](https://thierrygosselin.github.io/assigner/news/index.html)
-* [issues](https://github.com/thierrygosselin/assigner/issues/new/choose) and [contributions](https://github.com/thierrygosselin/assigner/issues/new/choose)
-
-
+Record the package version with `packageVersion("assigner")` and obtain the
+recommended citation with `citation("assigner")`.

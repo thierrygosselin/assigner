@@ -1,0 +1,67 @@
+# Running assigner::evaluate_assignment with several whitelists
+
+## Prepare working environment
+
+``` r
+
+rm(list = ls())
+if (!require("pak")) install.packages("pak")
+pak::pkg_install("thierrygosselin/assigner")
+library(assigner)
+assigner::install_gsi_sim(fromSource = TRUE)
+```
+
+## Prepare whitelists
+
+- Gather your whitelist in a single folder
+- Get the list of these file in a string with the command below:
+
+``` r
+
+all.whitelists <- list.files(path = "~/Desktop/whitelists_salmon", pattern = "whitelist")
+all.whitelists # to see if the whitelists are all there
+```
+
+## Create a function to run your assignment
+
+- Here the goal is to have a the argument you need selected
+- The only argument that will change will be the whitelist
+- you could have multiple arguments changing at the same time, but for
+  simplicity, let’s start with just one
+
+``` r
+
+whitelists_assigner <- function(x) {
+  res <- assigner::evaluate_assignment(
+    data = "subset_melville_salmon.tsv", #change for what you want
+    whitelist.markers = x, # don't change this one,
+    assignment.analysis = "adegenet", #change for what you want
+    common.markers = TRUE,#change for what you want
+    marker.number = "all",# I think you get the idea...
+    pop.levels = c(1,2,3,4,5,6,7,8,9,10,11),
+    markers.sampling = "random",
+    iteration.method = 1,
+    keep.gsi.files = FALSE
+  )
+}
+```
+
+## Run the assignment
+
+- The trick here is to **map** these whitelists to your new function
+  `whitelists_assigner`
+- The results are in a list easily managed by R
+- The `purrr` package is awesome for this, it’s very similar to the
+  `lapply` function, only better.
+- If you have access to a MAC or a LINUX cluster, you could just replace
+  the [`purrr::map`](https://purrr.tidyverse.org/reference/map.html)
+  function to
+  [`parallel::mclapply`](https://rdrr.io/r/parallel/mclapply.html)
+
+``` r
+
+salmon.assignment.res <- purrr::map(
+.x = all.whitelists, # your whitelist created above
+.f = whitelists_assigner # your new function
+)
+```

@@ -1,8 +1,8 @@
 ---
-title: "Running assigner::assignment_ngs with several whitelists"
+title: "Running assigner::evaluate_assignment with several whitelists"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Running assigner::assignment_ngs with several whitelists}
+  %\VignetteIndexEntry{Running assigner::evaluate_assignment with several whitelists}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -43,14 +43,14 @@ all.whitelists # to see if the whitelists are all there
 
 ```{r tailored assignment function, eval = FALSE}
 whitelists_assigner <- function(x) {
-  res <- assigner::assignment_ngs(
+  res <- assigner::evaluate_assignment(
     data = "subset_melville_salmon.tsv", #change for what you want
     whitelist.markers = x, # don't change this one,
     assignment.analysis = "adegenet", #change for what you want
     common.markers = TRUE,#change for what you want
     marker.number = "all",# I think you get the idea...
     pop.levels = c(1,2,3,4,5,6,7,8,9,10,11),
-    sampling.method = "random",
+    markers.sampling = "random",
     iteration.method = 1,
     keep.gsi.files = FALSE
   )
@@ -71,5 +71,4 @@ salmon.assignment.res <- purrr::map(
 .f = whitelists_assigner # your new function
 )
 ```
-
 

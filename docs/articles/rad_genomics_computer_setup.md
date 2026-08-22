@@ -1,0 +1,1230 @@
+# RADseq Genomics in R
+
+**Time to allow: ETA ~30-45 min for experience users, 1h-2h for
+novices**
+
+This vignette purposes is to show users how to setup their computers for
+RADseq genomic analysis inside R. It targets users of my packages or
+workshops.
+
+The vignette as an `Installation problems` section, browse through it if
+your experiencing installation issues.
+
+The vignette is also usefull if your:
+
+- conducting imputations
+- using simulations with `grur` and it’s dependencies or simulations
+  with `strataG`.
+- specific installation instructions for:
+- `rmetasim`
+- `XGBoost`
+- `LightGBM`
+- `randomForestSRC`
+- `ranger`
+- `missRanger`
+- `pcaMethods`
+- how to have **OpenMP enabled** specific packages. R packages that
+  requires to run in parallel for the imputations (e.g. `fstcore`,
+  `fst`, `data.table`).
+
+I’m currently merging information also found in this
+[tutorial](http://gbs-cloud-tutorial.readthedocs.io/en/latest/03_computer_setup.md)
+
+# macOS
+
+**Warning: package management software *Homebrew* and/or *MacPorts* :**
+
+My experience with these packages is that at some point they will be
+unreliable with genomic software installation. It might do the trick for
+some software, but eventually you will lose a lot of time trying to
+figure out what’s your problem.
+
+In this vignette I present *brewless* options only.
+
+## Update your OS
+
+- the current version is macOS Sequoia 15.1
+- [how to
+  update](http://support.apple.com/kb/HT1338?viewlocale=en_US&locale=en_US)
+
+## Get administrator and root user access
+
+Make sure you have administrator and root user access to your computer
+[how](https://support.apple.com/en-ca/HT204012).
+
+## Apple’s Command Line Tools
+
+Make sure it’s installed…if not, follow instructions. Although the
+prompt message may be a bit confusing, just click **install**.
+
+``` bash
+xcode-select --install
+```
+
+**Notes:**
+
+- If command line tools is already installed you’ll get this message
+  `xcode-select: error: command line tools are already installed, use "Software Update" to install updates`
+- to test if you have a compiler, you can also type: `make` in the
+  terminal, if it’s installed you will have something similar to this
+  `*** No targets specified and no makefile found. Stop.`
+
+**Terminology:**
+
+- [Reading](https://thoughtbot.com/blog/the-magic-behind-configure-make-make-install):
+  to understand the basic steps to install software with the terminal
+  (*configure*, *make* and *sudo make install* steps)
+- `./configure`: configure everything before installation
+- `make`: connect libraries and the source before make install
+  ([doc](http://www.gnu.org/software/make/manual/make.md))
+- `make install`: use to build (compile) source code to create binary
+  files and install the application on our system as configured using
+  `./configure`, usually in `/usr/local/bin`.
+
+## Compiler
+
+Apple can’t ship GNU [Compiler](http://en.wikipedia.org/wiki/Compiler)
+Collection (GCC) with OpenMP enabled, similar story with
+[Clang](http://en.wikipedia.org/wiki/Clang) the other compiler used in
+macOS. Consequently, both need to be updateed manually if you want to
+run software that ues parallel computing (like stacks).
+
+The command below fro both GCC and Clang will:
+
+- change directory to your downloads
+- download the compiler’s binaries
+- uncompress and move folders (`bin`, `include`, `lib`, `libexec` and
+  `share`) of the compiler on your computer `/usr/local` directory.
+- remove the downloaded file
+- check the version of gcc
+
+### Update GCC
+
+Choose the binary version number based on your OS and change the version
+accordingly [link](http://hpc.sourceforge.net).
+
+**Sonoma**
+[gcc-14.1-m1-bin.tar.gz](http://prdownloads.sourceforge.net/hpc/gcc-14.1-m1-bin.tar.gz)
+
+``` bash
+#In Terminal
+cd Downloads
+sudo tar -zxvf gcc-14.1-m1-bin.tar.gz -C /usr/local --strip-components=2
+```
+
+``` bash
+sudo rm gcc-14.1-m1-bin.tar.gz
+gcc -v
+```
+
+### Update Clang
+
+We want [clang](https://en.wikipedia.org/wiki/Clang) compiler with
+OpenMP enabled. The latest version is
+[19.1.3](https://github.com/llvm/llvm-project/releases/tag/llvmorg-19.1.3).
+
+``` bash
+#In browser make sure you know if your mac as an Intel or Mac chips (M1, M2, etc)
+https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.3/LLVM-19.1.3-macOS-X64.tar.xz
+#In Terminal
+cd Downloads
+sudo tar -xzvf LLVM-19.1.3-macOS-X64.tar.xz -C/usr/local --strip-components=1
+```
+
+``` bash
+sudo rm LLVM-19.1.3-macOS-X64.tar.xz
+clang -v
+```
+
+## PATH
+
+The shell start up script and PATH to programs\*\*
+
+To make things a little easier to talk to your computer, each time you
+open the *Terminal* a [shell start up
+scripts](http://en.wikipedia.org/wiki/Bash_(Unix_shell)) tells your
+computer where to look for programs. The path for your programs can be
+modified in your shell start up script. When your computer is searching
+for programs, it looks into these
+[path](http://en.wikipedia.org/wiki/PATH_(variable)):
+
+``` bash
+$PATH
+```
+
+The output should look like this:
+`/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin`. But sometimes, it will
+also say: `No such file or directory` (no worries, see below).
+
+Use the `pwd` command to know exactly where you are!
+
+The name of the shell startup file differs across platforms. Depending
+on OS it is called **~/.bash_profile** and sometimes **~/.profile**.
+Filename beginning with a dot “.” are reserved for the system and are
+**invisible** in the mac Finder.
+
+Find your shell start up script with the following command:
+
+``` bash
+ls -al ~ | grep profile
+```
+
+If this returns nothing (blank), you don’t have a shell start up script.
+Create one with this command
+
+``` bash
+sudo touch $HOME/.bash_profile
+```
+
+To modify, you can use
+[BBEdit](http://www.barebones.com/products/bbedit/index.md) to open or
+make and modify hidden items (using the option *Show hidden items* on
+the open file screen). Look for the free version. With Linux, use Vi!
+
+Copy/paste the line below in your `.bash_profile` file:
+
+``` bash
+PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+```
+
+After modifying your shell start up script always run the command
+`source ~/.bash_profile` to reload it.
+
+## Useful tools
+
+Below are useful but not essential software you will like to have on
+your mac.
+
+### [BBEdit](http://www.barebones.com/products/bbedit/index.md)
+
+This is TextWrangler replacement and is a free text editor that will
+help you save time. Once installed, go in the
+`Apple Menu bar -> BBEdit -> Install Command Line`
+
+### [pip](https://pip.pypa.io/en/stable/)
+
+This is a Python installer tool that I highly recommend. To install or
+upgrade pip, securely download
+[get-pip.py](https://bootstrap.pypa.io/get-pip.py).
+
+Run this from you Terminal:
+
+``` bash
+cd ~/Downloads
+sudo python get-pip.py
+```
+
+If you get *command not found* you might not have python installed.
+
+``` bash
+pip install -U pip   # to upgrade
+```
+
+``` bash
+sudo rm -R ~/Downloads/get-pip.py # to remove the downloaded file
+```
+
+# Linux
+
+Make sure you have GCC and CLANG with OpenMP enabled. Several flavors
+available, check for the proper
+[link](http://releases.llvm.org/download.md)
+
+# Install [R](https://cran.r-project.org)
+
+To install R v4.4.2 **“Pile of Leaves”** released on 2024-10-31 download
+the installer and follow the instructions
+
+``` bash
+# for macOS
+cd Downloads
+curl -O https://cran.r-project.org/bin/macosx/R-4.4.2.pkg
+```
+
+**To remove R completely from macOS**
+
+``` bash
+sudo rm -rf /Library/Frameworks/R.framework /Applications/R.app \
+/usr/bin/R /usr/bin/Rscript
+```
+
+# Rstudio
+
+To download RStudio, check this
+[link](https://www.rstudio.com/products/rstudio/download/#download) and
+download the installer for your OS.
+
+# Installing Libraries
+
+Below is how I setup most of my computers after a clean macOS
+install. 1. Start with **devtools** and **tidyverse**
+
+``` r
+if (!require("devtools")) install.packages("devtools") # to install
+install.packages("tidyverse")
+```
+
+2.  The gsl package is required by numerous packages and can cause some
+    headaches… Don’t install it from source.
+
+``` r
+install.packages("gsl")
+```
+
+If the console print this:
+`Do you want to install from sources the package which needs compilation? (Yes/no/cancel)`.
+Always aswer **no** unless of course you know what you are doing.
+
+3.  Than, I install **grur** and **assigner** my packges with the higher
+    number of dependencies, this way it’s installing automatically 90%
+    of the packages I need (including **radiator**).
+
+``` r
+devtools::install_github("thierrygosselin/grur")
+devtools::install_github("thierrygosselin/assigner")
+```
+
+# Makevars file
+
+For some packages you might have to compile from source and the use of
+different compiler is sometimes very useful. You need to tell R how to
+use the compilers. This might change from one package to another.
+Nothing is simple, you know this by now… All this is done through R’s
+**Makevars** file located in `~/.R/Makevars`.
+
+To modify or create the file, the fastest way is to use the package
+[usethis](https://usethis.r-lib.org) (it’s installed automatically with
+`devtools`):
+
+``` r
+usethis::edit_r_makevars()
+```
+
+**Makevars content required:**
+
+``` bash
+CC=/usr/local/bin/gcc
+CXX=/usr/local/bin/g++
+FC=/usr/local/bin/gfortran
+F77=/usr/local/bin/gfortran
+PKG_LIBS = -fopenmp -lgomp
+PKG_CFLAGS= -O3 -Wall -pipe -pedantic -std=gnu99 -fopenmp
+PKG_CXXFLAGS=-fopenmp -std=c++11
+CFLAGS= -O3 -Wall -pipe -pedantic -std=gnu99 -fopenmp
+SHLIB_OPENMP_CFLAGS = -fopenmp
+SHLIB_OPENMP_CXXFLAGS = -fopenmp
+SHLIB_OPENMP_FCFLAGS = -fopenmp
+SHLIB_OPENMP_FFLAGS = -fopenmp
+# change the nex line according to your computer compiler version (use gcc -v in terminal):
+FLIBS=-L/usr/local/lib/gcc/x86_64-apple-darwin19/9.2.0/finclude 
+CFLAGS=-mtune=native -g -O2 -Wall -pedantic -Wconversion
+CXXFLAGS=-mtune=native -g -O2 -Wall -pedantic -Wconversion
+```
+
+# Errors and installation problems
+
+Sometimes you’ll get warnings while installing dependencies required for
+*x* package.
+
+``` r
+#Warning: cannot remove prior installation of package ‘stringi’
+```
+
+To solve this problem, delete manually the problematic package in the
+installation folder (on mac:
+`/Library/Frameworks/R.framework/Resources/library`) or in the
+`Terminal`:
+
+``` bash
+sudo rm -R /Library/Frameworks/R.framework/Resources/library/package_name
+# Changing 'package_name' to the problematic package.
+# Reinstall the package.
+```
+
+- Using the latest version of R, RStudio and packages is recommended. If
+  your heart start pounding just at the thought of having to install a
+  new R version, you should have a look at
+  [packrat](https://www.rstudio.com/resources/webinars/managing-package-dependencies-in-r-with-packrat/).
+
+- Look at the output in R console when you get an error message. If it’s
+  related to one’s of the packages dependencies, try installing it
+  separately before attempting to reinstall the problematic package.
+
+## Error: macOS Big Sur update
+
+So far, I’ve only experience 1 problem after upgrading to Big Sur, and
+it’s linked to *adegenet* dependency on
+[sf](https://r-spatial.github.io/sf/) package [(solution)](#sfprob).
+
+## Error: checking whether the C++ compiler works… no
+
+When rtying to compile a software if you get this error:
+`checking whether the C++ compiler works... no` or
+`configure: error: C++ compiler cannot create executables`
+
+Try installing Xcode from the App Store.
+
+## Error: “https” not supported
+
+If you get something like: `https not supported or disabled in libcurl`,
+install or re-install:
+
+[OpenSSL](https://www.openssl.org)
+
+Required if GCC compiler is used (TLS backend is then used). Not
+required if clang is used (securetransport backend is used).
+
+``` bash
+#In browser
+https://www.openssl.org/source/openssl-1.1.1.tar.gz
+
+#In Terminal
+cd ~/Downloads
+curl -L https://www.openssl.org/source/openssl-1.1.1.tar.gz | tar xf -
+cd openssl-1.1.1
+./config
+make -j12 #change with your number of CPU
+make test #long
+sudo make install
+cd ..
+sudo rm -R openssl*
+```
+
+[curl](https://curl.haxx.se/download)
+
+Check for the latest release of [curl](https://curl.haxx.se/download)
+
+``` bash
+#Copy/paste in your browser
+https://curl.haxx.se/download/curl-7.85.0.tar.gz
+# Terminal
+cd ~/Downloads
+tar -zxvf curl-7.85.0.tar.gz
+cd curl-7.85.0
+```
+
+*for more* curl\* option type `curl -h`\*
+
+The next step depends on the compiler used
+
+With **gcc**:
+
+``` bash
+./configure --with-ssl # to enable https via OpenSSL and using GCC
+```
+
+Note: with macOS 11.0.1 this give me an error
+`configure: error: OpenSSL libs and/or directories were not found where specified!`
+
+If this is the case, use **clang**:
+
+``` bash
+CC="/usr/local/bin/clang"
+./configure --without-ssl #--with-darwinssl # to install via clang
+```
+
+``` bash
+make -j12 #change with your number of CPU
+sudo make install
+cd ..
+sudo rm -R curl*
+```
+
+## Linux related problem
+
+If you have an install problem, the problem might be very
+computer-specific. e.g. if the problem is related to `strataG`, `copula`
+and/or `gsl`, try installing `libgsl0-dev` in the **Terminal** (very
+easy now with the latest RStudio release!):
+
+``` bash
+sudo apt-get install libgsl0-dev
+```
+
+## Error: `vector memory exhausted`
+
+For errors that highlight problems with vectors and memory similar to:
+`vector memory exhausted (limit reached)`. In R, verify that you have a
+file called `~/.Renviron`:
+
+``` r
+file.exists("~/.Renviron")
+```
+
+If you don’t have the file:
+
+``` bash
+require(usethis)
+usethis::edit_r_environ()
+```
+
+Add this to your `.Renviron` file located in `~/.Renviron`:
+
+``` bash
+R_MAX_VSIZE = 100Gb 
+```
+
+You can also use a text editor that allows you to see hidden files
+(files starting with a `.` *dot*).
+
+## Error during package installation
+
+- Problem with `string.h`, `math.h` or any other `.h`
+- Problem with `vroom`
+- Problem with `rmetasim`
+
+An example during `vroom` installation:
+
+``` bash
+clang++ -std=gnu++11 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I"/Library/Frameworks/R.framework/Versions/3.5/Resources/library/Rcpp/include" -I"/Library/Frameworks/R.framework/Versions/3.5/Resources/library/progress/include" -I/usr/local/include  -Imio/include -DWIN32_LEAN_AND_MEAN -Ispdlog/include -fPIC  -Wall -g -O2 -c gen.cc -o gen.o
+clang++ -std=gnu++11 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I"/Library/Frameworks/R.framework/Versions/3.5/Resources/library/Rcpp/include" -I"/Library/Frameworks/R.framework/Versions/3.5/Resources/library/progress/include" -I/usr/local/include  -Imio/include -DWIN32_LEAN_AND_MEAN -Ispdlog/include -fPIC  -Wall -g -O2 -c index_collection.cc -o index_collection.o
+/usr/local/bin/clang -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I"/Library/Frameworks/R.framework/Versions/3.5/Resources/library/Rcpp/include" -I"/Library/Frameworks/R.framework/Versions/3.5/Resources/library/progress/include" -I/usr/local/include   -fPIC  -I/usr/local/include -c localtime.c -o localtime.o
+localtime.c:42:10: fatal error: 'string.h' file not found
+#include <string.h>
+^~~~~~~~~~
+```
+
+**With macOS** : your `Makevars` needs additional lines to make it work
+[configuration](#Makevars_config).
+
+## Error `.setMaxGlobalSize`
+
+Its a problem with a previous version of `pbmcapply` and it’s
+interaction with `future`.
+
+**Solution:**
+
+- restart your computer
+- with a clean desk and session: open RStudio and update your packages
+- Restart R (`RStudio > Session > Restart R`)
+- Re-install my github package generating the error
+
+*Note:* if your heart start pounding just at the thought of having to
+update everything on your computer you should definitely have a look at
+[packrat](https://www.rstudio.com/resources/webinars/managing-package-dependencies-in-r-with-packrat/):
+it’s very easy to use.
+
+## Error `.DynamicClusterCall`
+
+If you have a PC and you’re getting this error or closely related error:
+
+``` bash
+# Error in .DynamicClusterCall(cl, length(cl), .fun = function(.proc_idx,  :
+# One of the nodes produced an error: Can not open file 'FILE PATH'. The process cannot access the file because it # is being used by another process.
+```
+
+**Solution:** Use `parallel.core = 1` in the function generating the
+error.
+
+## Corrupt packages
+
+The error below usually happens when several packages are updated:
+
+``` bash
+# Error in get0(oNam, envir = ns) :
+# lazy-load database '/Library/Frameworks/R.framework/Versions/3.5/Resources/library/callr/R/callr.rdb' is corrupt
+# In addition: Warning message:
+# In get0(oNam, envir = ns) : internal error -3 in R_decompress1
+```
+
+**Solution:**
+
+1.  restart R
+2.  re-install the package that generated this error
+
+## Error: `dyn.load`
+
+I see 2 problems and separate solutions. When the error is related to
+*adegenet*, *strataG*, *assigner* or packages that depends on
+[sf](https://r-spatial.github.io/sf/) package, [see the solution
+below](#sfprob).
+
+When the error is similar to:
+
+``` bash
+Error in dyn.load(file, DLLpath = DLLpath, ...) : 
+  unable to load shared object '/home/rstudio/R/x86_64-pc-linux-gnu-library/3.6/units/libs/units.so':
+  libudunits2.so.0: cannot open shared object file: No such file or directory
+Calls: <Anonymous> ... asNamespace -> loadNamespace -> library.dynam -> dyn.load
+Execution halted
+```
+
+**Solution:**
+
+1.  In R, check the output of this command that look for the
+    [environment
+    variables](https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html):
+
+``` r
+Sys.getenv("LD_LIBRARY_PATH")
+# [1]""
+```
+
+Note that if the output is not empty, like in the example above, write
+down the output.
+
+2.  Set the new [environment
+    variables](https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html)
+    by adding `/usr/local/lib/` to the output above:
+
+When it’s empty:
+
+``` r
+# in R:
+Sys.setenv(LD_LIBRARY_PATH="/usr/local/lib/")
+# For Linux you could use: /usr/local/lib/:/usr/lib64 
+```
+
+When it’s not, add at the end, separated by `:`
+
+``` r
+Sys.setenv(LD_LIBRARY_PATH="/usr/local/lib64/R/lib:/lib:/usr/local/lib64:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.222.b10-0.amzn2.0.1.x86_64/jre/lib/amd64/server:/usr/local/lib/:/usr/lib64")
+```
+
+**Long-term solution:**
+
+Instead of using `Sys.setenv` each time you have a similar problem, you
+could add the [environment
+variables](https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html)
+`LD_LIBRARY_PATH` to your `.Renviron file`. [This is discussed in
+another problem above](#Renviron).
+
+## Error related to [sf](https://r-spatial.github.io/sf/) and `dyn.load`
+
+Sometimes the problem related to [dyn.load problems](#Dynload)
+originates from specific packages. So far, for me, they are always
+linked to [sf](https://r-spatial.github.io/sf/) package. The problem for
+macOS is usually when updating os, e.g. from Catalina -\> Big Sur. The
+solution is similar for [Linux when you try to install
+adegenet](https://thierrygosselin.github.io/RADseq_cloud_tutorial/radseq_cloud_tutorial.html#install_packages).
+
+There are solutions using *Homebrew*, but I’m not a fan for the
+shortcuts.
+
+*brewless* version to execute in the terminal:
+
+[udunits](https://www.unidata.ucar.edu/software/udunits/)
+
+``` bash
+cd ~/Downloads
+curl -L https://artifacts.unidata.ucar.edu/repository/downloads-udunits/current/udunits-2.2.28.tar.gz | tar xf -
+cd udunits*
+./configure && make -j56 && sudo make install
+cd ..
+sudo rm -R udunits*
+```
+
+[sqlite](https://www.sqlite.org)
+
+``` bash
+cd ~/Downloads
+curl -L https://www.sqlite.org/2022/sqlite-autoconf-3390400.tar.gz | tar xf -
+cd sqlite-autoconf*
+./configure && make -j56 && sudo make install
+cd ..
+sudo rm -R sqlite-autoconf*
+```
+
+[libtiff](http://libtiff.maptools.org)
+
+``` bash
+cd ~/Downloads
+curl -L https://download.osgeo.org/libtiff/tiff-4.4.0.tar.gz | tar xf -
+cd tiff*
+./configure && make -j56 && sudo make install
+cd ..
+sudo rm -R tiff*
+```
+
+[proj](https://proj.org/about.html)
+
+``` bash
+cd ~/Downloads
+curl -L  https://download.osgeo.org/proj/proj-9.1.0.tar.gz | tar xf -
+cd proj*
+mkdir build
+cd build
+cmake ..
+cmake --build .
+sudo cmake --build . --target install
+cd ~/Downloads
+sudo rm -R proj*
+# with prior releases, when configure was necessary
+# ./configure --libdir=/usr/local/lib && make -j56 && sudo make install 
+```
+
+[GDAL](https://gdal.org)
+
+``` bash
+export LDFLAGS="-L/usr/local/lib"
+export CPPFLAGS="-I/usr/local/include"
+
+cd ~/Downloads
+curl -L https://github.com/OSGeo/gdal/releases/download/v3.5.3/gdal-3.5.3.tar.gz | tar xf -
+cd gdal*
+mkdir build
+cd build
+cmake ..
+cmake --build .
+sudo cmake --build . --target install
+cd ~/Downloads
+sudo rm -R gdal*
+# previous install command required
+#./configure --prefix=/usr/local --libdir=/usr/local/lib --with-proj=/usr/local && make -j56 && sudo make install #time for coffee...
+```
+
+[GEOS](https://trac.osgeo.org/geos)
+
+``` bash
+cd ~/Downloads
+git clone https://git.osgeo.org/gitea/geos/geos.git
+cd geos*
+mkdir build
+cd build
+cmake ..
+cmake --build .
+sudo cmake --build . --target install
+cd ~/Downloads
+sudo rm -R geos*
+# previous install command required
+#./autogen.sh
+#./configure --libdir=/usr/local/lib && make -j56 && sudo make install
+```
+
+**Back in R/RStudio**
+
+``` r
+install.packages("rgeos", repos="http://R-Forge.R-project.org", type="source")
+install.packages("rgdal", repos="http://R-Forge.R-project.org", type="source")
+devtools::install_github("r-spatial/sf", configure.args = "--with-proj-lib=/usr/local")
+install.packages("adegenet")
+```
+
+## Error: `HTTP status was 404 Not Found`
+
+This error is sometimes poping after a new R upgrade. Try installing the
+problematic package differently.
+
+Instead of:
+
+``` r
+BiocManager::install("SeqArray")
+```
+
+Try:
+
+``` r
+remotes::install_local(path = "SeqArray_latest.tar.gz")
+```
+
+## Error: `C stacks usage`
+
+``` r
+Error: C stack usage  7971092 is too close to the limit
+```
+
+So far, I haven’t found the cure to this computer-specific problem.
+
+**Potential solutions:**
+
+- Make sure you have enough RAM on your computer for the dataset you
+  want to analyze (16GB is the bare minimum these days for small-medium
+  RADseq dataset).
+- Closing all windows/app running in the background somtimes help.
+- Updating to the latest version of R, RStudio and libraries.
+- Not a fan of upgrading to latest version, use
+  [Packrat](https://rstudio.github.io/packrat/).
+- Follow the guidelines to prepare your computer in this vignette, from
+  the start…
+
+## Google is your next best friend…
+
+# Specific librairies installation
+
+## `fst` & `fstcore` & `data.table`
+
+Better to install and compile them from source to enable OpenMP. Install
+in the terminal [zstd](https://facebook.github.io/zstd/) and
+[lz4](https://lz4.github.io/lz4/):
+
+``` bash
+cd ~/Downloads
+curl -L https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.tar.gz | tar xf -
+cd lz4*
+make 
+sudo make install
+cd .. 
+sudo rm -R lz4*
+```
+
+``` bash
+cd ~/Downloads
+curl -L https://github.com/facebook/zstd/archive/refs/tags/v1.5.6.tar.gz | tar xf -
+cd zstd*
+make 
+sudo make install
+cd .. 
+sudo rm -R zstd*
+```
+
+`fstcore`, `fst` and `data.table` requires these R *Makevars*
+specifications. If you have other lines, comment (`#`) before saving and
+installing from source:
+
+``` r
+usethis::edit_r_makevars()
+```
+
+``` r
+#fstcore fst data.table
+CC=/usr/local/bin/gcc -fopenmp
+CXX=/usr/local/bin/g++ -fopenmp
+CXX11=/usr/local/bin/g++ -fopenmp
+CXX14=/usr/local/bin/g++ -fopenmp
+CXX17=/usr/local/bin/g++ -fopenmp
+CXX1X=/usr/local/bin/g++ -fopenmp
+CXX98=/usr/local/bin/g++ -fopenmp
+```
+
+``` r
+install.packages("fstcore", type = "source")
+install.packages("fst", type = "source")
+install.packages("data.table", type = "source")
+```
+
+## `rmetasim`
+
+### Download
+
+Download the latest github release of Allan Strand’s
+[rmetasim](https://github.com/stranda/rmetasim)
+
+``` bash
+cd ~/Downloads
+curl -L -O https://github.com/stranda/rmetasim/archive/master.zip
+unzip master.zip
+```
+
+### Modify the number of loci: MAXLOCI
+
+If you want to use more loci during your simulations (default is 10001),
+you need to modify rmetasim before compiling. With a text editor, modify
+the `const.h` file in the `src` folder: `rmetasim-master/src/const.h`.
+Navigate to **lane 33** and change the integer to the desired maximum
+number of loci. Or do this in the Terminal:
+
+``` bash
+sed -i -e 's/#define MAXLOCI               10001/#define MAXLOCI               20000/g' rmetasim-master/src/const.h
+```
+
+### Makevars configuration
+
+*rmetasim* requires these Makevars (`~/.R/Makevars` file)
+specifications. If you have other lines, comment (#) before compiling
+`rmetasim`:
+
+``` r
+usethis::edit_r_makevars()
+```
+
+**macOS**
+
+This latest os requires extra lines:
+
+``` bash
+CC=/usr/local/bin/clang
+CXX=/usr/local/bin/clang++
+CXX1X=/usr/local/bin/clang++
+FLIBS=-L/usr/local/lib
+LDFLAGS=-L/usr/local/lib
+SHLIB_OPENMP_CFLAGS= -fopenmp
+SHLIB_OPENMP_FCFLAGS= -fopenmp
+SHLIB_OPENMP_FFLAGS= -fopenmp
+SHLIB_OPENMP_CXXFLAGS= -fopenmp
+CFLAGS+=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+CCFLAGS+=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+CXXFLAGS+=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+CPPFLAGS+=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+```
+
+### Compile
+
+``` bash
+R CMD INSTALL "rmetasim-master" # Terminal command
+sudo rm -R rmetasim* # to remove the folders no longer required
+```
+
+## `XGBoost`
+
+### Download the github version
+
+``` bash
+# terminal
+cd Downloads
+git clone --recursive https://github.com/dmlc/xgboost
+cd xgboost
+```
+
+### Error?
+
+If you’re getting this error:
+`"https" not supported or disabled in libcurl`, extra steps are
+required, [check the installation problems
+section](#Installation_problems) to install `OpenSSL` and `curl` and
+enabling `https` with `--with-ssl` option.
+
+### Modification
+
+Modify in a text editor the `configure` file inside the
+`xgboost/R-package` folder:
+
+``` bash
+# Go to line 1676
+# change
+ac_pkg_openmp=no
+# to
+ac_pkg_openmp=yes
+#save the file under the same name
+```
+
+### Makevars configuration
+
+`XGBoost` requires these Makevars specifications. If you have other
+lines, comment (#) before compiling:
+
+``` r
+usethis::edit_r_makevars()
+```
+
+``` bash
+CC=/usr/local/bin/gcc
+CXX=/usr/local/bin/g++
+CXX11=/usr/local/bin/g++
+CXX14=/usr/local/bin/g++
+CXX17=/usr/local/bin/g++
+SHLIB_OPENMP_CFLAGS= -fopenmp
+SHLIB_OPENMP_FCFLAGS= -fopenmp
+SHLIB_OPENMP_FFLAGS= -fopenmp
+SHLIB_OPENMP_CXXFLAGS= -fopenmp
+CFLAGS=-g -O3 -Wall -pedantic -std=gnu99 -mtune=native -pipe
+CXXFLAGS=-g -O3 -Wall -pedantic -std=c++11 -mtune=native -pipe
+LDFLAGS=-L/usr/local/lib -Wl,-rpath,/usr/local/lib
+CPPFLAGS=-I/usr/local/include -I/usr/local/include
+```
+
+### Compile
+
+``` bash
+sudo R CMD INSTALL R-package
+```
+
+### Test R-package
+
+You should see a time difference between both runs
+
+``` r
+require(xgboost)
+x <-  matrix(rnorm(100*10000), 10000, 100)
+y <-  x %*% rnorm(100) + rnorm(1000)
+
+system.time({bst = xgboost(data = x, label = y, nthread = 1, nround = 100, verbose = FALSE)})
+system.time({bst = xgboost(data = x, label = y, nthread = 4, nround = 100, verbose = FALSE)})
+```
+
+## `LightGBM`
+
+`LightGBM` requires an OpenMP-enabled compiler. Currently, it doesn’t
+work well with clang, so make sure you have updated your GCC compiler
+(instructions above). Additionally, `LightGBM` requires
+[CMake](https://cmake.org/overview/)
+
+### Download and install CMake
+
+``` bash
+#In browser or using curl in Terminal
+https://cmake.org/files/v3.12/cmake-3.12.2-Darwin-x86_64.dmg
+# double-click on the disk image and follow instructions
+```
+
+To add CMake to the PATH:
+
+``` bash
+PATH="/Applications/CMake.app/Contents/bin":"$PATH"
+# Or, to install symlinks to '/usr/local/bin', run:
+sudo "/Applications/CMake.app/Contents/bin/cmake-gui" --install
+# Or, to install symlinks to another directory, run:
+sudo "/Applications/CMake.app/Contents/bin/cmake-gui" --install=/path/to/bin
+#Then, run the following commands to install LightGBM:
+```
+
+### Download and Install LightGBM
+
+``` bash
+cd Downloads
+git clone --recursive https://github.com/Microsoft/LightGBM
+cd LightGBM
+Rscript build_r.R
+# previous version required running these lines instead
+#cd LightGBM/R-package
+#export CC=/usr/local/bin/gcc CXX=/usr/local/bin/g++
+#R CMD INSTALL --build . --no-multiarch
+```
+
+## `randomForestSRC`
+
+[randomForestSRC](http://web.ccs.miami.edu/~hishwaran/ishwaran.md)
+requires the GCC OpenMP-enabled compiler to run in parallel. See
+instructions above if not already done.
+
+### Makevars configuration
+
+Check that the lines below **are not** commented in your `~/.R/Makevars`
+file:
+
+``` r
+usethis::edit_r_makevars()
+```
+
+``` bash
+CC=/usr/local/bin/gcc
+CXX=/usr/local/bin/g++
+CFLAGS=-g -O3 -Wall -pedantic -std=gnu99 -mtune=native -pipe
+CXXFLAGS=-g -O3 -Wall -pedantic -std=c++11 -mtune=native -pipe
+PKG_CFLAGS= -O3 -Wall -pipe -pedantic -std=gnu99 -fopenmp
+PKG_CXXFLAGS=-fopenmp -std=c++11
+FC=/usr/local/bin/gfortran
+F77=/usr/local/bin/gfortran
+LDFLAGS=-L/usr/local/lib
+PKG_LIBS = "-liconv"
+```
+
+### Download and install
+
+From the Terminal run these steps to download and compile
+randomForestSRC:
+
+``` bash
+cd ~/Downloads
+curl -L https://cran.r-project.org/src/contrib/randomForestSRC_2.9.3.tar.gz | tar xf -
+cd randomForestSRC
+```
+
+Make sure you have autoconf installed:
+
+``` bash
+# in Terminal
+cd ~/Downloads
+autoconf
+```
+
+Should output: `autoconf: error: no input file`, if not, install
+following the [steps here](#useful).
+
+``` bash
+# in Terminal
+cd ~/Downloads/randomForestSRC
+autoconf
+cd ~/Downloads
+R CMD INSTALL --preclean --clean randomForestSRC
+```
+
+You want to make sure that this line is printed during execution of the
+previous command:
+`checking whether OpenMP will work in a package... yes` or
+`checking for /usr/local/bin/gcc option to support OpenMP... -fopenmp`
+
+## `ranger`
+
+[ranger](https://github.com/imbs-hl/ranger) is easy to install.
+
+``` r
+install.packages("ranger")
+```
+
+## `missRanger`
+
+[missRanger](https://github.com/mayer79/missRanger) is also very easy to
+install.
+
+``` r
+install.packages("missRanger")
+```
+
+## `miceRanger`
+
+[miceRanger](https://github.com/FarrellDay/miceRanger) easy to install.
+
+``` r
+install.packages("miceRanger")
+```
+
+## `pcaMethods`
+
+To install [pcaMethods](https://github.com/hredestig/pcaMethods), from
+bioconductor:
+
+``` r
+BiocManager::install("pcaMethods")
+```
+
+## `fastsimcoal2`
+
+To install [fastsimcoal2
+v.2.6.0.3](http://cmpg.unibe.ch/software/fastsimcoal2/), to use in
+`grur::simulate_rad`:
+
+### LINUX
+
+``` bash
+curl -O http://cmpg.unibe.ch/software/fastsimcoal2/downloads/fsc26_linux64.zip
+unzip fsc26_linux64.zip
+sudo mv fsc26_linux64/fsc26 /usr/local/bin/fsc26 # will ask for your computer password
+```
+
+### MacOS
+
+``` bash
+cd ~/Downloads
+curl -O http://cmpg.unibe.ch/software/fastsimcoal2/downloads/fsc26_mac64.zip
+unzip fsc26_mac64.zip
+sudo mv fsc26_mac64/fsc26 /usr/local/bin/fsc26 # will ask for your computer password
+```
+
+### Common to both OS:
+
+``` bash
+sudo chmod 777 /usr/local/bin/fsc26
+fsc26
+```
+
+Re-start R and the software fastsimcoal2 will automatically be in your
+PATH…
+
+### PATH
+
+To see the path of the installation, in the `Terminal`:
+
+``` bash
+which fsc26
+# in macOS:
+# /usr/local/bin/fsc26
+```
+
+If that doesn’t work, do:
+
+``` bash
+source ~/.bash_profile
+```
+
+Remove the files in the folder:
+
+``` bash
+sudo rm -R ~/Downloads/fsc26_mac64*
+```
+
+## `COLONY`
+
+To install [COLONY 30/07/2018,
+V2.0.6.5](https://www.zsl.org/science/software/colony):
+
+### MacOS
+
+The old openmpi version (openmpi-1.6.5) is required, saddly.
+
+``` bash
+cd ~/Downloads
+curl -L https://download.open-mpi.org/release/open-mpi/v1.6/openmpi-1.6.5.tar.gz | tar xf -
+cd openmpi-1.6.5
+export TMPDIR=/tmp
+./configure F77=gfortran #--prefix=/usr/local -openmp # no longer work for some reason
+make -j 12
+sudo make install
+sudo rm -R ~/Downloads/openmpi*
+```
+
+To download COLONY, follow instructions on Jinliang Wang [ZSL
+website](https://www.zsl.org/science/software/colony). The file you need
+to uncompress is named: `colony2.mac_.20180730.zip`.
+
+### Linux
+
+To download COLONY, follow instructions on Jinliang Wang [ZSL
+website](https://www.zsl.org/science/software/colony). The file you need
+to uncompress is named: `colony2.linux_.20180730.zip`.
+
+Several options are available depending on the compiler you have
+installed.
+
+# Useful
+
+## Update [Github](http://en.wikipedia.org/wiki/Github)
+
+macOS comes with [Github](https://github.com), a Version Control System
+(VCS), pre-installed. However, the install is in `/usr/bin/git` which
+can make it difficult for beginners to update. To change this, run these
+commands:
+
+1.  Install [GNU Autoconf](http://www.gnu.org/software/autoconf/)
+
+``` bash
+cd ~/Downloads
+curl -L http://ftp.gnu.org/gnu/autoconf/autoconf-latest.tar.gz | tar xf -
+cd autoconf-2.69
+./configure
+make
+sudo make install
+cd .. 
+sudo rm -R ~/Downloads/autoconf-*
+```
+
+2.  Install Github
+
+``` bash
+git --version                   # show current git version installed
+which git                       # returns where is git on your computer
+cd ~/Downloads
+git clone https://github.com/git/git # install the latest Git
+cd git
+make configure
+./configure
+make -j12
+sudo make install
+cd .. 
+sudo rm -R ~/Downloads/git/     # remove git folder
+source ~/.bash_profile          # reload startup script
+git --version                   # confirmed the version you just installed
+which git                       # returns /usr/local/bin
+```
+
+## macOS Terminal from specific folder
+
+In **System Preferences** choose `Keyboard -> Shortcuts`. From the left
+panel, choose **Services**. In the right panel, under **Files and
+Folders**, choose **New Terminal at Folder and/or New Terminal Tab at
+Folder**. Now you can right-click your track pad or mouse on a folder
+and choose Services -\> New Terminal at Folder!
+
+![](/Users/gos040/Documents/biologie/r_packages/assigner/vignettes/terminal_folder_shortcut.png)
+
+## Shortcut to folder path
+
+With macOS, open the [Automator
+application](https://support.apple.com/en-ca/guide/automator/welcome/mac).
+
+``` bash
+File -> New (cmd-N)
+Choose: Services
+Left panel, choose: Library -> Utilities
+Middle, choose: Copy to Clipboard and drag it to the right panel
+Now you want to have: Service receives selected FILES OR FOLDERS in FINDER>
+You should have something similar to the image below:
+```
+
+![](/Users/gos040/Documents/biologie/r_packages/assigner/vignettes/copy_path.png)
+
+``` bash
+Save (cmd-S) or File -> Save service as: copy path to clipboard
+```
+
+Go in the Finder, select a folder and right click on it you should see
+‘copy path to clipboard’ at the bottom or in **Services**.

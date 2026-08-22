@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../../favicon.ico">
 <link rel="manifest" href="../../site.webmanifest">
 <script src="../../lightswitch.js"></script><script src="../../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../../deps/headroom-0.11.0/headroom.min.js"></script><script src="../../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../../deps/search-1.0.0/fuse.min.js"></script><script src="../../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../../pkgdown.js"></script><meta property="og:title" content="Comparisons of Fst computations">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">assigner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,18 +35,14 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../../index.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link" href="../../FEATURES.html">Features</a></li>
 <li class="nav-item"><a class="nav-link" href="../../articles/get_started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../../reference/index.html">Reference</a></li>
-<li class="active nav-item dropdown">
+<li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../../articles/get_started.html">Get started</a></li>
     <li><a class="dropdown-item" href="../../articles/fst_confidence_intervals.html">Fst analysis</a></li>
-    <li><a class="dropdown-item" href="../../articles/web_only/fst_comparisons.html">Comparisons of Fst in 8 packages/software</a></li>
     <li><a class="dropdown-item" href="../../articles/assignment.whitelists.html">Using whitelists in assignment</a></li>
-    <li><a class="dropdown-item" href="../../articles/rad_genomics_computer_setup.html">Computer setup - Installation - Troubleshooting</a></li>
-    <li><a class="dropdown-item" href="../../articles/life_cycle.html">Life cycle</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../../news/index.html">News</a></li>
@@ -75,7 +71,7 @@
                         <h4 data-toc-skip class="author">Thierry
 Gosselin</h4>
             
-            <h4 data-toc-skip class="date">2025-07-04</h4>
+            <h4 data-toc-skip class="date">2026-08-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/thierrygosselin/assigner/blob/HEAD/vignettes/web_only/fst_comparisons.Rmd" class="external-link"><code>vignettes/web_only/fst_comparisons.Rmd</code></a></small>
       <div class="d-none name"><code>fst_comparisons.Rmd</code></div>
@@ -108,12 +104,12 @@ directory.</p></li>
 <code class="sourceCode R"><span><span class="co"># install required packages</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"diveRsity"</span>, <span class="st">"hierfstat"</span>, <span class="st">"StAMPP"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://devtools.r-lib.org/" class="external-link">"devtools"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'ericarcher/strataG'</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'ericarcher/strataG'</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"3.12"</span><span class="op">)</span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"SNPRelate"</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="http://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2" class="external-link">"ggcorrplot"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"ggcorrplot"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"thierrygosselin/assigner"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://rpkgs.datanovia.com/ggcorrplot/" class="external-link">"ggcorrplot"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"ggcorrplot"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"thierrygosselin/assigner"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Versions of packages and software:</strong></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check packages versions</span></span>
@@ -144,7 +140,7 @@ data.</p>
 <p>Owens GL, Baute GJ, Rieseberg LH. Revisiting a classic case of
 introgression: hybridization and gene flow in Californian sunflowers.
 Abbott RJ, Barton NH, Good JM, editors. Molecular Ecology. 2016;25:
-2630–2643. <a href="doi:10.1111/mec.13569" class="uri">doi:10.1111/mec.13569</a></p>
+2630-2643. <a href="doi:10.1111/mec.13569" class="uri">doi:10.1111/mec.13569</a></p>
 <p><strong>Download the files:</strong></p>
 <ul>
 <li><a href="https://www.dropbox.com/s/3kfx351ijeaa1wr/sunflower.vcf?dl=0" class="external-link">vcf</a></li>
@@ -176,7 +172,7 @@ to produce the required files or R objects:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://thierrygosselin.github.io/assigner/">assigner</a></span><span class="op">)</span></span>
 <span><span class="co"># radiator is installed automatically with assigner</span></span>
-<span><span class="va">sunflower.filtered</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/genomic_converter.html" class="external-link">genomic_converter</a></span><span class="op">(</span></span>
+<span><span class="va">sunflower.filtered</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu">genomic_converter</span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="st">"sunflower.vcf"</span>, </span>
 <span>  strata <span class="op">=</span> <span class="st">"sunflower.strata.tsv"</span>, </span>
 <span>  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -190,7 +186,7 @@ to produce the required files or R objects:</p>
 <p>VCF stats:</p>
 <ul>
 <li>the original number of markers is 34258.</li>
-<li>by default, <code><a href="https://thierrygosselin.github.io/radiator/reference/genomic_converter.html" class="external-link">radiator::genomic_converter</a></code> will only keep
+<li>by default, <code>radiator::genomic_converter</code> will only keep
 polymorphic markers in common between the strata.</li>
 <li>15973 biallelic markers are recovered.</li>
 <li>Number of populations: 9</li>
@@ -229,7 +225,7 @@ just going to use <code>system.time</code>.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>POP_ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">POP_ID</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"POP_1"</span>, <span class="st">"POP_2"</span>, <span class="st">"POP_3"</span>, <span class="st">"POP_4"</span>, <span class="st">"POP_5"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">POP_ID</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sim.data1</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/genomic_converter.html" class="external-link">genomic_converter</a></span><span class="op">(</span></span>
+<span><span class="va">sim.data1</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu">genomic_converter</span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">data_assigner_sim_01</span>, </span>
 <span>  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"genepop"</span>, <span class="co"># for GenoDive and diveRsity</span></span>
@@ -253,7 +249,7 @@ just going to use <code>system.time</code>.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>POP_ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">POP_ID</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"POP_1"</span>, <span class="st">"POP_2"</span>, <span class="st">"POP_3"</span>, <span class="st">"POP_4"</span>, <span class="st">"POP_5"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">POP_ID</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sim.data2</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/genomic_converter.html" class="external-link">genomic_converter</a></span><span class="op">(</span></span>
+<span><span class="va">sim.data2</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu">genomic_converter</span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">data_assigner_sim_02</span>, </span>
 <span>  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"genepop"</span>, <span class="co"># for GenoDive and diveRsity</span></span>
@@ -291,7 +287,7 @@ just going to use <code>system.time</code>.</p>
 <span>    <span class="co"># We transform the matrix into a useful tibble:</span></span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>      x <span class="op">=</span> <span class="va">.</span>, remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, na.diag <span class="op">=</span> <span class="cn">TRUE</span>, relative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>    <span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"HIERFSTAT"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
@@ -313,7 +309,7 @@ just going to use <code>system.time</code>.</p>
 <span>    <span class="co"># We transform the matrix into a useful tibble:</span></span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>      x <span class="op">=</span> <span class="va">.</span>, remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, na.diag <span class="op">=</span> <span class="cn">TRUE</span>, relative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>    <span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"HIERFSTAT_SIM01"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
@@ -327,7 +323,7 @@ just going to use <code>system.time</code>.</p>
 <span>    <span class="co"># We transform the matrix into a useful tibble:</span></span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>      x <span class="op">=</span> <span class="va">.</span>, remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, na.diag <span class="op">=</span> <span class="cn">TRUE</span>, relative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>    <span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"POP1"</span>, <span class="st">"POP2"</span>, <span class="st">"HIERFSTAT_SIM02"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
@@ -419,7 +415,7 @@ min on my MBP)</li>
 <span>    <span class="co"># We transform the matrix into a useful tibble:</span></span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>      x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>      remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>      remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># FALSE because their's only the lower diag</span></span>
@@ -455,7 +451,7 @@ min on my MBP)</li>
 <span>  <span class="co"># We transform the matrix into a useful tibble:</span></span>
 <span>  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>    remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>    remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># FALSE because their's only the lower diag</span></span>
@@ -483,7 +479,7 @@ min on my MBP)</li>
 <span>  <span class="co"># We transform the matrix into a useful tibble:</span></span>
 <span>  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>    remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>    remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># FALSE because their's only the lower diag</span></span>
@@ -508,7 +504,7 @@ below.</li>
 </h3>
 <p>We need the strata</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">strata</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/read_strata.html" class="external-link">read_strata</a></span><span class="op">(</span>strata <span class="op">=</span> <span class="st">"sunflower.strata.tsv"</span><span class="op">)</span> <span class="op"><a href="../../reference/Exposition_pipe_operator.html">%$%</a></span> <span class="va">strata</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">strata</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu">read_strata</span><span class="op">(</span>strata <span class="op">=</span> <span class="st">"sunflower.strata.tsv"</span><span class="op">)</span> <span class="op"><a href="../../reference/Exposition_pipe_operator.html">%$%</a></span> <span class="va">strata</span></span></code></pre></div>
 <p>Showing off the global Fst only:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
@@ -579,7 +575,7 @@ below.</li>
 <h3 id="simulated-datasets-5">Simulated datasets<a class="anchor" aria-label="anchor" href="#simulated-datasets-5"></a>
 </h3>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">strata</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/generate_strata.html" class="external-link">generate_strata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>STRATA <span class="op">=</span> <span class="va">POP_ID</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">strata</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu">generate_strata</span><span class="op">(</span>data <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>STRATA <span class="op">=</span> <span class="va">POP_ID</span><span class="op">)</span></span>
 <span><span class="va">pop.pairwise</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">strata</span><span class="op">$</span><span class="va">STRATA</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">snprelate.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map_dfr</a></span><span class="op">(</span></span>
 <span>  .x <span class="op">=</span> <span class="va">pop.pairwise</span>,</span>
@@ -589,7 +585,7 @@ below.</li>
 <span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>SNPRELATE_MEAN_SIM01 <span class="op">=</span> <span class="va">SNPRELATE_MEAN</span>, SNPRELATE_WEIGHTED_SIM01 <span class="op">=</span> <span class="va">SNPRELATE_WEIGHTED</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">strata</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/generate_strata.html" class="external-link">generate_strata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>STRATA <span class="op">=</span> <span class="va">POP_ID</span><span class="op">)</span></span>
+<span><span class="va">strata</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu">generate_strata</span><span class="op">(</span>data <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">tidy.data</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>STRATA <span class="op">=</span> <span class="va">POP_ID</span><span class="op">)</span></span>
 <span><span class="va">pop.pairwise</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">strata</span><span class="op">$</span><span class="va">STRATA</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">snprelate.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map_dfr</a></span><span class="op">(</span></span>
 <span>  .x <span class="op">=</span> <span class="va">pop.pairwise</span>,</span>
@@ -628,7 +624,7 @@ file</li>
 <span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>    remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>    remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># FALSE because their's only the lower diag</span></span>
@@ -661,7 +657,7 @@ GenoDive to R</li>
 <span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>    remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>    remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># FALSE because their's only the lower diag</span></span>
@@ -681,7 +677,7 @@ GenoDive to R</li>
 <span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_rownames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="va">pops</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>    remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>    remove.lower <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># FALSE because their's only the lower diag</span></span>
@@ -701,7 +697,7 @@ GenoDive to R</li>
 </h3>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
-<span>  <span class="va">stampp.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/StAMPP/man/stamppFst.html" class="external-link">stamppFst</a></span><span class="op">(</span></span>
+<span>  <span class="va">stampp.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span></span>
 <span>    geno <span class="op">=</span> <span class="va">sunflower.filtered</span><span class="op">$</span><span class="va">genlight</span>, </span>
 <span>    nboots <span class="op">=</span> <span class="fl">1</span>, </span>
 <span>    percent <span class="op">=</span> <span class="fl">95</span>, </span>
@@ -709,7 +705,7 @@ GenoDive to R</li>
 <span>  <span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="co"># The distance matrix need some love</span></span>
 <span>    <span class="co"># if we want to compare it with the others:</span></span>
-<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>      x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>      remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>      remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, </span>
@@ -726,7 +722,7 @@ GenoDive to R</li>
 <h3 id="simulated-datasets-7">Simulated datasets<a class="anchor" aria-label="anchor" href="#simulated-datasets-7"></a>
 </h3>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">stampp.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/StAMPP/man/stamppFst.html" class="external-link">stamppFst</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">stampp.sim01.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span></span>
 <span>    geno <span class="op">=</span> <span class="va">sim.data1</span><span class="op">$</span><span class="va">genlight</span>, </span>
 <span>    nboots <span class="op">=</span> <span class="fl">1</span>, </span>
 <span>    percent <span class="op">=</span> <span class="fl">95</span>, </span>
@@ -734,7 +730,7 @@ GenoDive to R</li>
 <span>  <span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="co"># The distance matrix need some love</span></span>
 <span>    <span class="co"># if we want to compare it with the others:</span></span>
-<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>      x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>      remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>      remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, </span>
@@ -745,7 +741,7 @@ GenoDive to R</li>
 <span>    <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"POP2"</span>, <span class="st">"POP1"</span>, <span class="st">"STAMPP_SIM01"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">POP1</span>, <span class="va">POP2</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">stampp.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/StAMPP/man/stamppFst.html" class="external-link">stamppFst</a></span><span class="op">(</span></span>
+<span><span class="va">stampp.sim02.fst</span> <span class="op">&lt;-</span> <span class="fu">StAMPP</span><span class="fu">::</span><span class="fu">stamppFst</span><span class="op">(</span></span>
 <span>    geno <span class="op">=</span> <span class="va">sim.data2</span><span class="op">$</span><span class="va">genlight</span>, </span>
 <span>    nboots <span class="op">=</span> <span class="fl">1</span>, </span>
 <span>    percent <span class="op">=</span> <span class="fl">95</span>, </span>
@@ -753,7 +749,7 @@ GenoDive to R</li>
 <span>  <span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="co"># The distance matrix need some love</span></span>
 <span>    <span class="co"># if we want to compare it with the others:</span></span>
-<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span>    <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>      x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>      remove.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>      remove.lower <span class="op">=</span> <span class="cn">FALSE</span>, </span>
@@ -938,7 +934,7 @@ the packages/software probably depends on numerous things:</p>
 </h4>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="va">fst.corr.tibble</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span><span class="va">fst.corr.tibble</span> <span class="op">&lt;-</span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">fst.corr</span>, </span>
 <span>    na.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>    relative <span class="op">=</span> <span class="cn">FALSE</span>, </span>
@@ -1013,7 +1009,7 @@ the packages/software probably depends on numerous things:</p>
 <p><strong>Generate the correlation tibble:</strong></p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fst.corr.tibble.sim01</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">fst.summary.sim01</span>, <span class="op">-</span><span class="va">POP1</span>, <span class="op">-</span><span class="va">POP2</span><span class="op">)</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>  x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>  na.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>  relative <span class="op">=</span> <span class="cn">FALSE</span>, </span>
@@ -1058,7 +1054,7 @@ the packages/software probably depends on numerous things:</p>
 <p><strong>Generate the correlation tibble:</strong></p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fst.corr.tibble.sim02</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">fst.summary.sim02</span>, <span class="op">-</span><span class="va">POP1</span>, <span class="op">-</span><span class="va">POP2</span><span class="op">)</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span> <span class="op"><a href="../../reference/pipe.html">%&gt;%</a></span> </span>
-<span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu"><a href="https://thierrygosselin.github.io/radiator/reference/distance2tibble.html" class="external-link">distance2tibble</a></span><span class="op">(</span></span>
+<span> <span class="fu">radiator</span><span class="fu">::</span><span class="fu">distance2tibble</span><span class="op">(</span></span>
 <span>  x <span class="op">=</span> <span class="va">.</span>, </span>
 <span>  na.diag <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>  relative <span class="op">=</span> <span class="cn">FALSE</span>, </span>
@@ -1141,7 +1137,7 @@ an interesting feature of your favorite package.</em></p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

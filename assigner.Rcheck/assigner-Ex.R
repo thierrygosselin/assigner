@@ -1,0 +1,292 @@
+pkgname <- "assigner"
+source(file.path(R.home("share"), "R", "examples-header.R"))
+options(warn = 1)
+library('assigner')
+
+base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+cleanEx()
+nameEx("assign_individuals")
+### * assign_individuals
+
+flush(stderr()); flush(stdout())
+
+### Name: assign_individuals
+### Title: Assign individuals to reference strata
+### Aliases: assign_individuals
+
+### ** Examples
+
+## Not run: 
+##D result <- assigner::assign_individuals(
+##D   data = genome,
+##D   leave.one.out = TRUE
+##D )
+##D 
+##D result$assignment
+##D result$likelihoods
+## End(Not run)
+
+
+
+
+cleanEx()
+nameEx("dlr")
+### * dlr
+
+flush(stderr()); flush(stdout())
+
+### Name: dlr
+### Title: Genotype likelihood ratio distance (Dlr)
+### Aliases: dlr
+
+### ** Examples
+
+## Not run: 
+##D dlr <- assigner::dlr(
+##D data = "assignment.gdv", strata = "my.strata.tsv", plots = TRUE)
+##D 
+##D # to get the plots list:
+##D plot.list <- dlr$dlr.plots
+##D # access and isolate in different object a plot with $
+## End(Not run)
+
+
+
+cleanEx()
+nameEx("evaluate_assignment")
+### * evaluate_assignment
+
+flush(stderr()); flush(stdout())
+
+### Name: evaluate_assignment
+### Title: Population assignment analysis for genomic data
+### Aliases: evaluate_assignment
+
+### ** Examples
+
+## Not run: 
+##D assignment.treefrog <- evaluate_assignment(
+##D  data = "batch_1.vcf",
+##D  strata = "strata.treefrog.tsv",
+##D  assignment.analysis = "gsi_sim",
+##D  marker.number = c(500, 5000, "all"),
+##D  markers.sampling = "ranked",
+##D  thl = 0.3
+##D  )
+##D  # To create a dataframe with the assignment results:
+##D    assignment <- assignment.treefrog$assignment
+##D  # To plot the assignment using ggplot2 and facet
+##D    fig <- assignment.treefrog$assignment.plot
+##D  # To view the full range of y values = Assignment success(%):
+##D    fig + ggplot2::scale_y_continuous(limits = c(0,100))
+##D 
+##D  # Or use the ... argument: full.y.range = TRUE
+## End(Not run)
+
+
+
+cleanEx()
+nameEx("extract_matching_args")
+### * extract_matching_args
+
+flush(stderr()); flush(stdout())
+
+### Name: extract_matching_args
+### Title: Extract arguments matching a function's formals
+### Aliases: extract_matching_args
+### Keywords: internal
+
+### ** Examples
+
+## Not run: 
+##D args.for.fst <- extract_matching_args(from.env = environment(), to.fn = assigner::compute_fst)
+##D result <- rlang::exec(assigner::compute_fst, x = my_data, !!!args.for.fst)
+## End(Not run)
+
+
+
+
+cleanEx()
+nameEx("fst_NEI87")
+### * fst_NEI87
+
+flush(stderr()); flush(stdout())
+
+### Name: fst_NEI87
+### Title: A fast implementation of Nei's 1987 Fst (overall and paiwise
+###   estimates)
+### Aliases: fst_NEI87
+
+### ** Examples
+
+## Not run: 
+##D  require(assigner)
+##D  wombat.fst.pairwise <- fst_NEI87(
+##D  data = "wombat.filtered.tidy.tsv",
+##D  sep = "/",
+##D  pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
+##D  holdout.samples = NULL,
+##D  pairwise = TRUE,
+##D  ci = TRUE,
+##D  iteration.ci = 10000,
+##D  quantiles.ci = c(0.025,0.975),
+##D  parallel.core = 8,
+##D  verbose = TRUE
+##D  )
+##D  #To get the overall Fst estimate:
+##D  wombat.fst.pairwise$fst.overall
+##D  #To get the Fst plot:
+##D  wombat.fst.pairwise$fst.plots
+##D  #To get the pairwise Fst values with confidence intervals in a data frame:
+##D  wombat.fst.pairwise$pairwise.fst
+##D  #To get the pairwise fst and ci matrix in a data frame:
+##D  # rename, data frame, put rownames in column
+##D  pairwise.fst.ci.df <- data.frame(pairwise.fst.ci.matrix) %>% add_rownames("POP")
+## End(Not run)
+
+
+
+cleanEx()
+nameEx("fst_WC84")
+### * fst_WC84
+
+flush(stderr()); flush(stdout())
+
+### Name: fst_WC84
+### Title: A fast implementation of Weir and Cockerham (1984) Fst/Theta
+###   (overall and paiwise estimates)
+### Aliases: fst_WC84
+
+### ** Examples
+
+## Not run: 
+##D wombat.fst.pairwise <- fst_WC84(
+##D     data = "wombat.filtered.tidy.tsv",
+##D     pop.levels = c("ATL", "MLE", "BIS", "PMO", "SOL", "TAS", "ECU"),
+##D     pairwise = TRUE,
+##D     ci = TRUE,
+##D     iteration.ci = 10000,
+##D     quantiles.ci = c(0.025,0.975),
+##D     parallel.core = 8,
+##D     verbose = TRUE,
+##D     filename = "wombat",
+##D     heatmap.fst = TRUE
+##D )
+##D 
+##D # To get the overall Fst estimate:
+##D wombat.fst.pairwise$fst.overall
+##D 
+##D # To get the Fst plot:
+##D wombat.fst.pairwise$fst.plot
+##D 
+##D #To get the pairwise Fst values with confidence intervals in a data frame:
+##D df <- wombat.fst.pairwise$pairwise.fst
+## End(Not run)
+
+
+
+cleanEx()
+nameEx("import_data")
+### * import_data
+
+flush(stderr()); flush(stdout())
+
+### Name: import_data
+### Title: Import and Standardize Genomic Data
+### Aliases: import_data
+### Keywords: internal
+
+### ** Examples
+
+## Not run: 
+##D # From tidy data
+##D tidy_data <- import_data(data = my_tibble)
+##D 
+##D # From GDS file
+##D tidy_data <- import_data(data = "myfile.gds")
+##D 
+##D # With calibration
+##D tidy_data <- import_data(data = my_tibble, calibrate.alleles = TRUE)
+## End(Not run)
+
+
+
+cleanEx()
+nameEx("import_subsamples")
+### * import_subsamples
+
+flush(stderr()); flush(stdout())
+
+### Name: import_subsamples
+### Title: Import individual's assignment results of different subsample
+###   folder.
+### Aliases: import_subsamples
+
+### ** Examples
+
+## Not run: 
+##D subsamples.data <- import_subsamples(
+##D dir.path = "assignment_analysis_method_random_imputations_rf_populations",
+##D imputations = TRUE
+##D )
+## End(Not run)
+
+
+
+cleanEx()
+nameEx("import_subsamples_fst")
+### * import_subsamples_fst
+
+flush(stderr()); flush(stdout())
+
+### Name: import_subsamples_fst
+### Title: Import the fst ranking from all the subsample runs inside an
+###   assignment folder.
+### Aliases: import_subsamples_fst
+
+### ** Examples
+
+## Not run: 
+##D subsamples.data <- import_subsamples_fst(
+##D dir.path = "assignment_analysis_method_ranked_no_imputations_20160425@2321"
+##D )
+## End(Not run)
+
+
+
+cleanEx()
+nameEx("write_temp_data_fst")
+### * write_temp_data_fst
+
+flush(stderr()); flush(stdout())
+
+### Name: write_temp_data_fst
+### Title: Write Temporary Data to Parquet
+### Aliases: write_temp_data_fst
+### Keywords: internal
+
+### ** Examples
+
+## Not run: 
+##D # Example usage
+##D write_temp_data_fst(
+##D   subsample.list = subsample_info,
+##D   data = my_data
+##D )
+## End(Not run)
+
+
+
+### * <FOOTER>
+###
+cleanEx()
+options(digits = 7L)
+base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+grDevices::dev.off()
+###
+### Local variables: ***
+### mode: outline-minor ***
+### outline-regexp: "\\(> \\)?### [*]+" ***
+### End: ***
+quit('no')

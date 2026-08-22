@@ -1,0 +1,29 @@
+FEATURES	HIERFSTAT	STRATAG	ASSIGNER	DIVERSITY	STAMPP	GENODIVE	SNPRELATE	VCFtools
+Function	pairwise.WCfst	popStructTest	fst_WC84	diffCalc	stamppFst	F_st	snpgdsFst	--weir-fst-pop
+W&C 1984 Fst	yes	yes	yes	yes	yes	yes	yes	yes
+Language	R	R, C	R	R, C++	R	Objective-C 	R, C++	Perl, C++
+Data	object	object	both	file	object	file	object	file
+Format	hierfstat	gtypes	several	genepop	genlight	several	SNPRelate GDS	VCF
+Polymorphic markers	yes	?	yes	?	yes	?	yes	yes
+Tailor common markers	yes	?	yes	?	yes	?	?	yes
+Output number of markers	no	no	yes	no	no	no	yes	no
+Global fst	no	yes	yes	yes	no	no	yes	yes
+Pairwise fst	yes	yes	yes	yes	yes	yes	no*	no
+Bootstrap individuals	no	no	no	yes	no	no	no	no
+Boostrap loci	no	yes	yes	yes	yes	yes	no	no
+CI	no	no	yes	yes	yes	no	no	no
+P-Value	no	yes	no	no	yes	yes	no	no
+Locus pairwise	no	no	no	yes	no	no	no	no
+Figures	no	no	yes	no	no	no	no	no
+Tibble	no	yes	yes	no	no	no	no	no
+Full upper and lower matrix	yes	no	yes	no	no	yes	yes	no
+Upper matrix	no	no	yes	no	no	no	no	no
+Lower matrix	no	yes	yes	yes	yes	no	no	no
+Combo matrix (Fst + stats)	no	yes	yes	no	no	no	no	no
+Fst markers	yes	no	yes	yes	no	no	yes	yes
+Fis	yes	no	yes	yes	no	no	no	no
+Write	no	no	yes	yes	no	no	no	yes
+Parallelize	no	yes	yes	yes	yes*	yes	yes	yes
+OS (linux, macOS, windows)	all	all	all	all	all	macOS	all	all
+Impacted by missingness	no	yes	no	yes	yes	yes	yes	yes
+Timing (sec)	1234	657	49	43	39	3	0.245	2*

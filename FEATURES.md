@@ -5,7 +5,7 @@
 | Caracteristics | Description |
 |:-------------------|:--------------------------------------------------------|
 |**Analysis**| [gsi_sim](https://github.com/eriqande/gsi_sim) (Anderson et al., 2008; Anderson, 2010) or [adegenet](https://github.com/thibautjombart/adegenet) (Jombart, 2008; Jombart and Ahmed, 2011)<br><br>Conducted on: samples of **known origin (population)** or **unknown/mixture**|
-|**Input files**| assigner relies on `radiator::tidy_genomic_data` for imports |
+|**Input files**| assigner relies on `genometranslator::read_*()` for imports and `genometranslator::tidy_genome()` for GDS-to-table conversion |
 |**Markers selections**|Random or ranked based on W&C's Fst (Weir and Cockerham, 1984) or Nei's Gst (Nei, 1987)|
 |**Cross-Validations**|Avoid high-grading bias, use **classic LOO** (Leave-One-Out) or **THL** (Training, Holdout, Leave-one-out) (see Anderson, 2010)|
 |**Resampling/Bootstrap/Subsampling**|markers and individuals|

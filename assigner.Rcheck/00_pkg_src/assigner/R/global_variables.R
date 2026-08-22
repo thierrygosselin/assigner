@@ -1,0 +1,33 @@
+# Avoid R CMD check notes for columns used through tidy evaluation.
+if (getRversion() >= "2.15.1") {
+  utils::globalVariables(c(
+    ".", ".data", "1", "2", "A1", "A2", "ALLELE_GROUP", "ALLELES",
+    "ARGUMENTS", "ASSIGN", "ASSIGNMENT_PERC", "calibrate.alleles", "CI",
+    "CI_HIGH", "CI_LOW", "Current", "CURRENT", "DLR", "DLR_RELATIVE",
+    "DST", "DST_P", "dum", "dum1", "FIS", "FIS_CI_HIGH", "FIS_CI_LOW",
+    "folder", "FREQ_AL", "FREQ_APL", "FST", "FST_HEATMAP", "GT", "HET",
+    "HO", "HS", "HT", "HT_P", "ID", "ID_SEQ", "Individual",
+    "INDIVIDUALS", "Inferred", "INFERRED", "input", "iteration.subsample",
+    "ITERATIONS", "JOST_D", "JOST_D_CI_HIGH", "JOST_D_CI_LOW", "KEEPER",
+    "Lik_home", "Lik_max", "Lik_ratio", "LOCUS", "LOW", "lsiga", "lsigb",
+    "lsigw", "M_SEQ", "MARKER_NUMBER", "MARKERS", "markers.meta.bk", "MAX",
+    "MEAN", "MEDIAN", "METHOD", "MHO", "MHOM", "MIN", "MN", "MP", "MP2",
+    "MSI", "MSP", "MSP2", "n", "N_INV", "N_MARKERS",
+    "N_MONOMORPHIC_BL", "NAPL", "NC", "NEI_FST", "NEI_FST_CI_HIGH",
+    "NEI_FST_CI_LOW", "NEI_FST_P", "NEI_FST_P_CI_HIGH",
+    "NEI_FST_P_CI_LOW", "NIL", "NIPL", "NP", "NPL", "NS", "OTHERS", "P",
+    "POP_ID", "POP1", "POP2", "POP3", "Populations", "QUANTILE25",
+    "QUANTILE75", "random.seed", "RANKING", "RATIO", "SCORE", "SE", "SE_MAX",
+    "SE_MIN", "SECOND_BEST_POP", "SECOND_BEST_SCORE", "siga", "sigb", "sigw",
+    "SP2", "SSG", "SSi", "SSP", "STRATA", "STRATA_SEQ", "strata.bk",
+    "subsample", "SUBSAMPLE", "TOTAL", "tsiga", "tsigb", "tsigw", "VALUES",
+    "whitelist.markers", "adegenet.dapc.opt", "adegenet.n.rep",
+    "adegenet.training", "full.y.range", "keep.gsi.files", "A1", "A2",
+    "ALLELE", "ALT_COUNT", "ALT_DOSAGE", "ALT_FREQ", "CANDIDATE",
+    "CORRECT", "CURRENT", "HOME_LIK_RATIO", "LOG_LIKELIHOOD",
+    "LOG_LIK_HOME", "LOG_LIK_MAX", "LOG_LIK_RATIO", "LOG_LIK_SECOND",
+    "LOG_PROBABILITY", "N_ALLELES", "N_GENOTYPED", "N_MARKERS",
+    "RANK", "REF_ALLELE", "SECOND_BEST", "N", "LIK_HOME", "LIK_MAX",
+    "LIK_RATIO", "N_CANDIDATES", "HOME_N_GENOTYPED"
+  ))
+}

@@ -2,6 +2,7 @@
 <url><loc>https://thierrygosselin.github.io/assigner/404.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/FEATURES.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/LICENSE.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/ROADMAP.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/articles/assignment.whitelists.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/articles/fst_confidence_intervals.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/articles/get_started.html</loc></url>
@@ -13,7 +14,9 @@
 <url><loc>https://thierrygosselin.github.io/assigner/index.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/news/index.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/Exposition_pipe_operator.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/assess_assignment_mc.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/assign_defaults.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/assign_individuals.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/assigner_dots.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/assigner_fst_stats.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/assigner_function_header.html</loc></url>
@@ -32,7 +35,9 @@
 <url><loc>https://thierrygosselin.github.io/assigner/reference/boot_ci_nei.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/change_matrix_strata.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/check_args_class.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/check_gsi_sim.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/clean_marker_number.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/compare_unsampled_scores.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/compound_assignment_pipe_operator.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/compute_fst.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/compute_fst_nei.html</loc></url>
@@ -41,6 +46,7 @@
 <url><loc>https://thierrygosselin.github.io/assigner/reference/data_assigner_sim_02.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/dlr.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/dlr_relative.html</loc></url>
+<url><loc>https://thierrygosselin.github.io/assigner/reference/evaluate_assignment.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/extract_dots.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/extract_matching_args.html</loc></url>
 <url><loc>https://thierrygosselin.github.io/assigner/reference/format_mean_range.html</loc></url>

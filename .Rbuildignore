@@ -13,3 +13,8 @@
 ^\.github$
 ^LICENSE\.md$
 ^cran-comments\.md$
+^\.positai$
+^\.claude$
+^Icon.*$
+^assigner\.Rcheck$
+^assigner_[0-9.]+\.tar\.gz$

@@ -1,0 +1,207 @@
+---
+title: "Get started with assigner"
+author: "Thierry Gosselin"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
+vignette: >
+  %\VignetteIndexEntry{Get started with assigner}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Package roles
+
+`assigner` evaluates population-assignment performance from genomic data. Use
+[genometranslator](https://thierrygosselin.github.io/genometranslator/) to read
+genomic formats and [radr](https://thierrygosselin.github.io/radr/) to explore
+and filter them. `assigner` does not silently perform general genomic quality
+control.
+
+## Install assigner
+
+```r
+install.packages("remotes")
+remotes::install_github("thierrygosselin/assigner")
+library(assigner)
+```
+
+The `adegenet` engine is an R dependency. The alternative `gsi_sim` engine is
+an external command-line program and is not bundled with `assigner`.
+
+## Install gsi_sim
+
+`gsi_sim` is not currently available through Bioconda. Install it from its
+[source repository](https://github.com/eriqande/gsi_sim) inside the shared
+`genomics` Conda environment.
+
+### macOS
+
+```bash
+conda activate genomics
+conda install -c conda-forge git clang make
+cd ~/Downloads
+git clone --recurse-submodules https://github.com/eriqande/gsi_sim.git
+cd gsi_sim
+./Compile_gsi_sim.sh
+mkdir -p "$CONDA_PREFIX/bin"
+cp gsi_sim-Darwin "$CONDA_PREFIX/bin/gsi_sim"
+chmod +x "$CONDA_PREFIX/bin/gsi_sim"
+gsi_sim --help
+```
+
+### Linux
+
+```bash
+conda activate genomics
+conda install -c conda-forge git gcc make
+cd ~/Downloads
+git clone --recurse-submodules https://github.com/eriqande/gsi_sim.git
+cd gsi_sim
+./Compile_gsi_sim.sh
+mkdir -p "$CONDA_PREFIX/bin"
+cp gsi_sim-Linux "$CONDA_PREFIX/bin/gsi_sim"
+chmod +x "$CONDA_PREFIX/bin/gsi_sim"
+gsi_sim --help
+```
+
+Start R from an activated `genomics` environment, then verify discovery:
+
+```r
+assigner::check_gsi_sim()
+```
+
+The upstream repository includes an old Windows binary. The modern `assigner`
+workflow expects an executable named `gsi_sim` on `PATH`; Windows users should
+use a compatible Unix-like environment and confirm it with `check_gsi_sim()`.
+
+## Prepare data and strata
+
+Start with maintained sample metadata. `INDIVIDUALS` must match the genomic
+data, and `STRATA` identifies candidate source populations. Import source data
+with `genometranslator::read_genome()`, perform quality control with `radr`, and
+pass the prepared GDS or tidy genomic data to `assigner`.
+
+```r
+data("data_assigner_sim_01", package = "assigner")
+genome <- data_assigner_sim_01
+```
+
+## Native likelihood assignment
+
+The native engine estimates allele frequencies in every reference stratum and
+calculates the genotype log-likelihood of every individual under every
+candidate stratum. It retains the complete likelihood table—not only the best
+and second-best assignments.
+
+```r
+native <- assigner::assign_individuals(
+  data = genome,
+  leave.one.out = TRUE
+)
+
+native$assignment
+native$likelihoods
+```
+
+For reference individuals, leave-one-out estimation avoids using the focal
+individual to estimate the allele frequencies against which it is evaluated.
+The complete likelihood table can be used directly to calculate Dlr:
+
+```r
+native_dlr <- assigner::dlr(native)
+native_dlr$dlr.table
+native_dlr$dlr.matrix
+```
+
+## Machine-learning assignment
+
+Optional engines return the probability of every individual under every
+candidate stratum. Install the R engines with:
+
+```r
+install.packages(c("glmnet", "xgboost"))
+```
+
+```r
+elastic <- assigner::assign_individuals(
+  genome, engine = "elastic_net", folds = 5, random.seed = 20260822
+)
+
+boosted <- assigner::assign_individuals(
+  genome, engine = "xgboost", folds = 5, random.seed = 20260822
+)
+```
+
+TabPFN is an experimental Python engine. In Terminal:
+
+```bash
+conda activate genomics
+python -m pip install tabpfn
+```
+
+Install `reticulate` in R, start R from the activated environment, and run:
+
+```r
+install.packages("reticulate")
+tabpfn <- assigner::assign_individuals(
+  genome, engine = "tabpfn", folds = 5, random.seed = 20260822
+)
+```
+
+Missingness requires special attention for every engine. Elastic net uses
+training-fold mean imputation, XGBoost learns missing-value routing, and TabPFN
+uses native preprocessing with a missingness indicator. Consequently, apparent
+assignment power can reflect sequencing batch or processing history. Always
+inspect `result$missingness`, keep preprocessing inside validation folds, and
+when possible validate on an independent sequencing batch.
+
+## Training–Holdout–Leave-one-out with gsi_sim
+
+Holdout samples do not contribute to marker ranking or training, which avoids
+evaluating assignment on the same samples used to select markers.
+
+```r
+result <- assigner::evaluate_assignment(
+  data = genome,
+  assignment.analysis = "gsi_sim",
+  markers.sampling = "ranked",
+  marker.number = c(100, 250, "all"),
+  thl = 0.20,
+  iteration.method = 5,
+  random.seed = 20260822
+)
+```
+
+The dated output folder contains the argument log, holdout selections, raw
+results, summaries, and plots. Retain it with the analysis.
+
+## R-based assignment with adegenet
+
+```r
+result_adegenet <- assigner::evaluate_assignment(
+  data = genome,
+  assignment.analysis = "adegenet",
+  markers.sampling = "random",
+  marker.number = c(100, "all"),
+  iteration.method = 5,
+  random.seed = 20260822
+)
+```
+
+## Estimate FST
+
+```r
+fst <- assigner::fst_WC84(
+  data = genome,
+  pairwise = TRUE,
+  ci = TRUE,
+  iteration.ci = 100,
+  verbose = TRUE
+)
+```
+
+See the [FST vignette](fst_confidence_intervals.html) for interpretation and
+additional examples.

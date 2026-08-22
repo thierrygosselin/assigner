@@ -5,7 +5,10 @@ template:
 reference:
 - title: Assignment analysis
   contents:
-  - assignment_ngs
+  - evaluate_assignment
+  - assign_individuals
+  - assess_assignment_mc
+  - compare_unsampled_scores
 
 - title: Fst
   contents:
@@ -18,7 +21,7 @@ reference:
   - heatmap_fst
   - import_subsamples
   - import_subsamples_fst
-  - install_gsi_sim
+  - check_gsi_sim
 
 - title: Data
   contents:
@@ -31,8 +34,6 @@ navbar:
   left:
   - text: Installation
     href: index.html
-  - text: Features
-    href: FEATURES.html
   - text: Get started
     href: articles/get_started.html
   - text: Reference
@@ -44,14 +45,8 @@ navbar:
       href: articles/get_started.html
     - text: Fst analysis
       href: articles/fst_confidence_intervals.html
-    - text: Comparisons of Fst in 8 packages/software
-      href: articles/web_only/fst_comparisons.html
     - text: Using whitelists in assignment
       href: articles/assignment.whitelists.html
-    - text: Computer setup - Installation - Troubleshooting
-      href: articles/rad_genomics_computer_setup.html
-    - text: Life cycle
-      href: articles/life_cycle.html
   - text: News
     href: news/index.html
   right:

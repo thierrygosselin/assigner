@@ -15,6 +15,12 @@ fst_WC84(
   iteration.ci = 100,
   quantiles.ci = c(0.025, 0.975),
   heatmap.fst = FALSE,
+  linkage.group = NULL,
+  window.size = 25000L,
+  window.method = c("fixed", "sliding", "kernel"),
+  window.step = NULL,
+  kernel.sigma = 150000,
+  outlier.sd = 4,
   digits = 9,
   filename = "fst_WC84",
   parallel.core = parallel::detectCores() - 2,
@@ -26,7 +32,7 @@ fst_WC84(
 \item{data}{A tidy data frame object in the global environment or
 a tidy data frame in wide or long format in the working directory.
 \emph{How to get a tidy data frame ?}
-Look into \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}.
+Look into \pkg{genometranslator} \code{\link[genometranslator]{read_genome}}.
 You can also use this function to filter your dataset using
 whitelist of markers, blacklist of individuals and genotypes.}
 
@@ -77,6 +83,46 @@ The heatmap can also be generated separately after the Fst
 analysis using the separate function: \code{\link{heatmap_fst}}.
 Default: \code{heatmap.fst = FALSE}.}
 
+\item{linkage.group}{(optional, logical) Generate chromosome or linkage-group
+summaries and a genome-position plot. With \code{linkage.group = NULL}, the
+feature is activated automatically when informative \code{CHROM} and numeric
+\code{POS} metadata indicate a reference-guided genome. Use \code{TRUE} to
+force it for a one-linkage-group genome, or \code{FALSE} to disable it.
+Default: \code{linkage.group = NULL}.}
+
+\item{window.size}{(optional, integer) Width of each fixed, non-overlapping
+genomic window, measured in base pairs (bp). WC84 variance components from
+markers inside each window are recombined to estimate window-level Fst.
+For example, \code{window.size = 25000L} creates adjacent 25 kb windows:
+1-25,000 bp, 25,001-50,000 bp, and so forth. This argument does not currently
+define a sliding or overlapping window. Default:
+\code{window.size = 25000L} (25 kb).}
+
+\item{window.method}{(optional, character) Genomic window method.
+\code{"fixed"} uses adjacent, non-overlapping windows and is the default.
+\code{"sliding"} uses overlapping rectangular windows of
+\code{window.size} bp, advanced by \code{window.step} bp.
+\code{"kernel"} evaluates Gaussian-weighted WC84 components on a regular
+grid; markers within three standard deviations of each grid position
+contribute to the estimate. Default: \code{window.method = "fixed"}.}
+
+\item{window.step}{(optional, integer) Distance in base pairs between
+consecutive window centres for \code{window.method = "sliding"} or
+\code{"kernel"}. With \code{NULL}, the step is 20 percent of
+\code{window.size} for sliding windows and \code{window.size} for kernel
+smoothing. It is ignored for fixed windows. Default:
+\code{window.step = NULL}.}
+
+\item{kernel.sigma}{(optional, numeric) Standard deviation of the Gaussian
+kernel in base pairs when \code{window.method = "kernel"}. Markers farther
+than \code{3 * kernel.sigma} from a grid position receive zero weight.
+Following the STACKS default, \code{kernel.sigma = 150000} uses markers up
+to 450 kb on either side. Default: \code{kernel.sigma = 150000}.}
+
+\item{outlier.sd}{(optional, numeric) Number of standard deviations above
+the mean window Fst used for the exploratory horizontal outlier threshold.
+Use \code{NULL} to omit the threshold. Default: \code{outlier.sd = 4}.}
+
 \item{digits}{(optional, integer) The number of decimal places to be used in
 results.
 Default: \code{digits = 9}.}
@@ -110,6 +156,10 @@ When sumsample is selected the objects end with \code{.subsample}.
  \item \code{$fis.markers}: the fis by markers,
  \item \code{$fis.overall}: the mean fis overall markers and the number of markers,
  \item \code{$fst.plot}: the histogram of the overall Fst per markers,
+ \item \code{$fst.linkage.groups}: descriptive per-linkage-group summaries,
+ \item \code{$fst.windows}: WC84 estimates in non-overlapping genomic windows,
+ \item \code{$fst.genome.plot}: windowed WC84 Fst in a chromosome-concatenated
+ genome plot,
  \item \code{$pairwise.fst}: the pairwise fst in long/tidy data frame and the number of markers ,
  \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix,
  \item \code{$pairwise.fst.full.matrix}: the pairwise fst matrix (duplicated upper and lower triangle),
@@ -144,6 +194,27 @@ your markers to use this function characteristic strategically to get
 better genome-wide estimate. This is even more important when your project
 involves more than 2 populations that evolved more by neutral processes
 (e.g. genetic drift) than by natural selection (see the vignette for more details).
+
+\emph{Fst along linkage groups}
+
+For reference-guided genomes with informative \code{CHROM} and \code{POS}
+metadata, the function automatically reports WC84 Fst for each linkage group
+and in non-overlapping genomic windows. The windowed estimates are displayed
+in a chromosome-concatenated Manhattan-style plot. With exactly two strata,
+these are pairwise estimates; with more strata, they are overall estimates
+among all included strata. Broad, spatially coherent regions of elevated
+differentiation can help identify regions for follow-up, including candidate
+inversions. An Fst pattern alone does not establish an inversion. Candidate
+regions should be evaluated with complementary evidence such as absolute
+divergence, nucleotide diversity, Tajima's D, linkage disequilibrium, local
+PCA, read mapping, or structural-variant analyses. De novo datasets using
+synthetic \code{CHROM_1} metadata are not plotted automatically.
+
+The \code{"kernel"} option follows the Gaussian smoothing philosophy used by
+the STACKS \code{populations} program: estimates are evaluated along the
+reference genome, marker contributions decline with distance, and the kernel
+is truncated at three standard deviations on either side. Here, the weights
+are applied to the WC84 variance components before Fst is calculated.
 }
 \note{
 \strong{Negative Fst} are technical artifact of the computation
@@ -254,7 +325,11 @@ Evolution, 38, 1358-1370.
 
 Roesti M, Salzburger W, Berner D. (2012)
 Uninformative polymorphisms bias genome scans for signatures of selection.
-BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x
+BMC Evolutionary Biology, 12, 94. \doi{10.1186/1471-2148-12-94}.
+
+Catchen J, Hohenlohe PA, Bassham S, Amores A, Cresko WA (2013).
+Stacks: an analysis tool set for population genomics.
+Molecular Ecology, 22, 3124-3140. \doi{10.1111/mec.12354}.
 
 Zheng X, Levine D, Shen J, Gogarten SM, Laurie C, Weir BS.
 A high-performance computing toolset for relatedness and principal component

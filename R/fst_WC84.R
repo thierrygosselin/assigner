@@ -28,6 +28,27 @@
 #' better genome-wide estimate. This is even more important when your project
 #' involves more than 2 populations that evolved more by neutral processes
 #' (e.g. genetic drift) than by natural selection (see the vignette for more details).
+#'
+#' \emph{Fst along linkage groups}
+#'
+#' For reference-guided genomes with informative \code{CHROM} and \code{POS}
+#' metadata, the function automatically reports WC84 Fst for each linkage group
+#' and in non-overlapping genomic windows. The windowed estimates are displayed
+#' in a chromosome-concatenated Manhattan-style plot. With exactly two strata,
+#' these are pairwise estimates; with more strata, they are overall estimates
+#' among all included strata. Broad, spatially coherent regions of elevated
+#' differentiation can help identify regions for follow-up, including candidate
+#' inversions. An Fst pattern alone does not establish an inversion. Candidate
+#' regions should be evaluated with complementary evidence such as absolute
+#' divergence, nucleotide diversity, Tajima's D, linkage disequilibrium, local
+#' PCA, read mapping, or structural-variant analyses. De novo datasets using
+#' synthetic \code{CHROM_1} metadata are not plotted automatically.
+#'
+#' The \code{"kernel"} option follows the Gaussian smoothing philosophy used by
+#' the STACKS \code{populations} program: estimates are evaluated along the
+#' reference genome, marker contributions decline with distance, and the kernel
+#' is truncated at three standard deviations on either side. Here, the weights
+#' are applied to the WC84 variance components before Fst is calculated.
 
 #' @note \strong{Negative Fst} are technical artifact of the computation
 #' (see Roesti el al. 2012) and are automatically replaced with zero inside
@@ -53,7 +74,7 @@
 #' @param data A tidy data frame object in the global environment or
 #' a tidy data frame in wide or long format in the working directory.
 #' \emph{How to get a tidy data frame ?}
-#' Look into \pkg{radiator} \code{\link[radiator]{tidy_genomic_data}}.
+#' Look into \pkg{genometranslator} \code{\link[genometranslator]{read_genome}}.
 #' You can also use this function to filter your dataset using
 #' whitelist of markers, blacklist of individuals and genotypes.
 
@@ -104,6 +125,46 @@
 #' The heatmap can also be generated separately after the Fst
 #' analysis using the separate function: \code{\link{heatmap_fst}}.
 #' Default: \code{heatmap.fst = FALSE}.
+
+#' @param linkage.group (optional, logical) Generate chromosome or linkage-group
+#' summaries and a genome-position plot. With \code{linkage.group = NULL}, the
+#' feature is activated automatically when informative \code{CHROM} and numeric
+#' \code{POS} metadata indicate a reference-guided genome. Use \code{TRUE} to
+#' force it for a one-linkage-group genome, or \code{FALSE} to disable it.
+#' Default: \code{linkage.group = NULL}.
+
+#' @param window.size (optional, integer) Width of each fixed, non-overlapping
+#' genomic window, measured in base pairs (bp). WC84 variance components from
+#' markers inside each window are recombined to estimate window-level Fst.
+#' For example, \code{window.size = 25000L} creates adjacent 25 kb windows:
+#' 1-25,000 bp, 25,001-50,000 bp, and so forth. This argument does not currently
+#' define a sliding or overlapping window. Default:
+#' \code{window.size = 25000L} (25 kb).
+
+#' @param window.method (optional, character) Genomic window method.
+#' \code{"fixed"} uses adjacent, non-overlapping windows and is the default.
+#' \code{"sliding"} uses overlapping rectangular windows of
+#' \code{window.size} bp, advanced by \code{window.step} bp.
+#' \code{"kernel"} evaluates Gaussian-weighted WC84 components on a regular
+#' grid; markers within three standard deviations of each grid position
+#' contribute to the estimate. Default: \code{window.method = "fixed"}.
+
+#' @param window.step (optional, integer) Distance in base pairs between
+#' consecutive window centres for \code{window.method = "sliding"} or
+#' \code{"kernel"}. With \code{NULL}, the step is 20 percent of
+#' \code{window.size} for sliding windows and \code{window.size} for kernel
+#' smoothing. It is ignored for fixed windows. Default:
+#' \code{window.step = NULL}.
+
+#' @param kernel.sigma (optional, numeric) Standard deviation of the Gaussian
+#' kernel in base pairs when \code{window.method = "kernel"}. Markers farther
+#' than \code{3 * kernel.sigma} from a grid position receive zero weight.
+#' Following the STACKS default, \code{kernel.sigma = 150000} uses markers up
+#' to 450 kb on either side. Default: \code{kernel.sigma = 150000}.
+
+#' @param outlier.sd (optional, numeric) Number of standard deviations above
+#' the mean window Fst used for the exploratory horizontal outlier threshold.
+#' Use \code{NULL} to omit the threshold. Default: \code{outlier.sd = 4}.
 
 #' @param digits (optional, integer) The number of decimal places to be used in
 #' results.
@@ -173,6 +234,10 @@
 #'  \item \code{$fis.markers}: the fis by markers,
 #'  \item \code{$fis.overall}: the mean fis overall markers and the number of markers,
 #'  \item \code{$fst.plot}: the histogram of the overall Fst per markers,
+#'  \item \code{$fst.linkage.groups}: descriptive per-linkage-group summaries,
+#'  \item \code{$fst.windows}: WC84 estimates in non-overlapping genomic windows,
+#'  \item \code{$fst.genome.plot}: windowed WC84 Fst in a chromosome-concatenated
+#'  genome plot,
 #'  \item \code{$pairwise.fst}: the pairwise fst in long/tidy data frame and the number of markers ,
 #'  \item \code{$pairwise.fst.upper.matrix}: the pairwise fst in a upper triangle matrix,
 #'  \item \code{$pairwise.fst.full.matrix}: the pairwise fst matrix (duplicated upper and lower triangle),
@@ -231,7 +296,10 @@
 #' Evolution, 38, 1358-1370.
 #' @references Roesti M, Salzburger W, Berner D. (2012)
 #' Uninformative polymorphisms bias genome scans for signatures of selection.
-#' BMC Evol Biol., 12:94. doi:10.1111/j.1365-294X.2012.05509.x
+#' BMC Evolutionary Biology, 12, 94. \doi{10.1186/1471-2148-12-94}.
+#' @references Catchen J, Hohenlohe PA, Bassham S, Amores A, Cresko WA (2013).
+#' Stacks: an analysis tool set for population genomics.
+#' Molecular Ecology, 22, 3124-3140. \doi{10.1111/mec.12354}.
 #' @references Zheng X, Levine D, Shen J, Gogarten SM, Laurie C, Weir BS.
 #' A high-performance computing toolset for relatedness and principal component
 #' analysis of SNP data. Bioinformatics. 2012;28: 3326-3328.
@@ -266,6 +334,12 @@ fst_WC84 <- function(
     iteration.ci = 100,
     quantiles.ci = c(0.025,0.975),
     heatmap.fst = FALSE,
+    linkage.group = NULL,
+    window.size = 25000L,
+    window.method = c("fixed", "sliding", "kernel"),
+    window.step = NULL,
+    kernel.sigma = 150000,
+    outlier.sd = 4,
     digits = 9,
     filename = "fst_WC84",
     parallel.core = parallel::detectCores() - 2,
@@ -291,36 +365,30 @@ fst_WC84 <- function(
   # heatmap.fst = FALSE
   # calibrate.alleles = FALSE
 
-  # Cleanup---------------------------------------------------------------------
-  assigner_function_header(f.name = "fst_WC84", verbose = verbose)
-  file.date <- format(Sys.time(), "%Y%m%d@%H%M")
-  if (verbose) message("Execution date/time: ", file.date)
-  old.dir <- getwd()
-  opt.change <- getOption("width")
-  options(width = 70)
+  # Common startup -------------------------------------------------------------
+  .start <- tgbase::startup(
+    f.name = "fst_WC84", package = "assigner", verbose = verbose
+  )
+  on.exit(tgbase::teardown(.start), add = TRUE)
+  file.date <- .start$file.date
   opt.digits <- getOption("digits")
   options(digits = digits, scipen = 999)
-  timing <- assigner_tic()
   res <- list() # where the results will be stored
-  #back to the original directory and options
-  on.exit(setwd(old.dir), add = TRUE)
-  on.exit(options(width = opt.change), add = TRUE)
   on.exit(options(digits = opt.digits), add = TRUE)
-  on.exit(assigner_toc(timing), add = TRUE)
-  on.exit(assigner_function_header(f.name = "fst_WC84", start = FALSE, verbose = verbose), add = TRUE)
 
   # Function call and dotslist -------------------------------------------------
-  rad.dots <- assigner::assigner_dots(
-    func.name = as.list(sys.call())[[1]], # Get name of the calling function
-    fd = rlang::fn_fmls_names(),# Grab formal argument names of the function
-    args.list = as.list(environment()),# Capture current environment's arguments
-    dotslist = rlang::dots_list(
+  fst.dots <- tgbase::resolve_dots(
+    dots = rlang::dots_list(
       ..., # Capture the `...` content
       .homonyms = "error", # Error on duplicate names
       .check_assign = TRUE), # Ensure arguments can be assigned
-    keepers = c("holdout.samples", "subsample",
-                "iteration.subsample", "blacklist.id",
-                "calibrate.alleles"),# Expected dot arguments
+    allowed = c("holdout.samples", "subsample", "iteration.subsample",
+      "blacklist.id", "calibrate.alleles"),
+    defaults = list(
+      holdout.samples = NULL, subsample = NULL, iteration.subsample = 1L,
+      blacklist.id = NULL, calibrate.alleles = FALSE
+    ),
+    env = environment(),
     verbose = FALSE
   )
 
@@ -334,15 +402,15 @@ fst_WC84 <- function(
   # filename & folder ----------------------------------------------------------
   if (is.null(filename)) filename <- "fst_WC84"
 
-  path.folder <- radiator::generate_folder(
-    rad.folder = filename,
+  path.folder <- tgbase::generate_folder(
+    folder = filename,
     path.folder = NULL,
     file.date = file.date,
     verbose = verbose)
 
   # write the dots file
-  radiator::write_radiator_tsv(
-    data = rad.dots,
+  tgbase::write_tgbase_tsv(
+    data = fst.dots,
     path.folder = path.folder,
     filename = "assigner_fst_WC84_args",
     date = TRUE,
@@ -393,13 +461,60 @@ fst_WC84 <- function(
   # 3. Stripping and selecting data---------------------------------------------
   env.arg <- rlang::current_env()
   data %<>%
-    radiator::strip_rad(
+    radr::strip_rad(
       x = .,
       env.arg = env.arg,
       keep.strata = TRUE,
       verbose = FALSE
     ) %>%
     dplyr::select(tidyselect::one_of(c("ID_SEQ", "STRATA_SEQ", "M_SEQ", "GT")))
+
+  # Automatically enable genomic-coordinate summaries only when the metadata
+  # are more informative than the synthetic CHROM_1 convention used for de novo
+  # datasets. A user can explicitly enable the feature for a one-chromosome
+  # reference genome.
+  linkage.group.available <- has_linkage_group_coordinates(markers.meta.bk)
+  if (is.null(linkage.group)) {
+    linkage.group <- linkage.group.available
+  } else if (!is.logical(linkage.group) || length(linkage.group) != 1L || is.na(linkage.group)) {
+    rlang::abort("linkage.group must be TRUE, FALSE, or NULL.")
+  }
+  if (isTRUE(linkage.group) && !has_position_metadata(markers.meta.bk)) {
+    rlang::abort(
+      "linkage.group = TRUE requires marker metadata columns CHROM and numeric POS."
+    )
+  }
+  if (!is.numeric(window.size) || length(window.size) != 1L ||
+      is.na(window.size) || window.size <= 0) {
+    rlang::abort("window.size must be one positive number of base pairs.")
+  }
+  window.size <- as.integer(window.size)
+  window.method <- match.arg(window.method)
+  if (!is.null(window.step) &&
+      (!is.numeric(window.step) || length(window.step) != 1L ||
+       is.na(window.step) || window.step <= 0)) {
+    rlang::abort("window.step must be one positive number of base pairs or NULL.")
+  }
+  if (is.null(window.step)) {
+    window.step <- if (identical(window.method, "sliding")) {
+      max(1L, as.integer(round(window.size * 0.2)))
+    } else {
+      window.size
+    }
+  }
+  window.step <- as.integer(window.step)
+  if (!is.numeric(kernel.sigma) || length(kernel.sigma) != 1L ||
+      is.na(kernel.sigma) || kernel.sigma <= 0) {
+    rlang::abort("kernel.sigma must be one positive number of base pairs.")
+  }
+  if (!is.null(outlier.sd) &&
+      (!is.numeric(outlier.sd) || length(outlier.sd) != 1L ||
+       is.na(outlier.sd) || outlier.sd <= 0)) {
+    rlang::abort("outlier.sd must be one positive number or NULL.")
+  }
+  if (isTRUE(linkage.group) && verbose) {
+    cli::cli_alert_info("Genomic coordinates detected: preparing Fst by linkage group")
+  }
 
   # The function will make the bk object...
   # strata.bk
@@ -687,6 +802,27 @@ fst_WC84 <- function(
   res <- append(res, res.temp)
   res.temp <- NULL # unsused object
 
+  # Linkage-group summaries and genome-position plot --------------------------
+  res$fst.linkage.groups <- NULL
+  res$fst.windows <- NULL
+  res$fst.genome.plot <- NULL
+  if (isTRUE(linkage.group)) {
+    linkage.results <- fst_linkage_groups(
+      fst.markers = res$fst.markers,
+      sigma.loc = res$sigma.loc,
+      window.size = window.size,
+      window.method = window.method,
+      window.step = window.step,
+      kernel.sigma = kernel.sigma,
+      outlier.sd = outlier.sd,
+      digits = digits
+    )
+    res$fst.linkage.groups <- linkage.results$summary
+    res$fst.windows <- linkage.results$windows
+    res$fst.genome.plot <- linkage.results$plot
+    linkage.results <- NULL
+  }
+
   # 9. Write and plot-----------------------------------------------------------
 
   # plot fst for overall iterations.
@@ -709,6 +845,23 @@ fst_WC84 <- function(
                 "fis.markers", "fis.overall", "pairwise.fst"),
       .f = fst_write, list.sub = res, path.folder = path.folder
     )
+    if (isTRUE(linkage.group)) {
+      readr::write_tsv(
+        x = res$fst.linkage.groups,
+        file = file.path(path.folder, "fst.linkage.groups.tsv")
+      )
+      readr::write_tsv(
+        x = res$fst.windows,
+        file = file.path(path.folder, "fst.windows.tsv")
+      )
+      ggplot2::ggsave(
+        filename = file.path(path.folder, "fst.genome.plot.pdf"),
+        plot = res$fst.genome.plot,
+        width = 18, height = 12,
+        dpi = 300, units = "cm", device = "pdf", limitsize = FALSE,
+        useDingbats = FALSE
+      )
+    }
     # fst.plot
     ggplot2::ggsave(
       filename = file.path(path.folder, "fst.plot.pdf"),
@@ -769,16 +922,345 @@ fst_WC84 <- function(
   return(res)
 }#END fst_WC84
 
+# Linkage-group summaries ------------------------------------------------------
+
+# Test whether chromosome and position columns can support a genomic plot.
+has_position_metadata <- function(markers.meta) {
+  if (is.null(markers.meta) ||
+      !all(c("CHROM", "POS") %in% names(markers.meta))) return(FALSE)
+
+  chrom <- as.character(markers.meta$CHROM)
+  pos <- suppressWarnings(as.numeric(as.character(markers.meta$POS)))
+  valid <- !is.na(chrom) & nzchar(chrom) & is.finite(pos)
+  sum(valid) >= 2L && length(unique(pos[valid])) >= 2L
+}
+
+# Automatic detection deliberately excludes CHROM_1-only metadata because that
+# label is generated for de novo datasets that do not have genomic coordinates.
+has_linkage_group_coordinates <- function(markers.meta) {
+  if (!has_position_metadata(markers.meta)) return(FALSE)
+  chrom <- unique(as.character(markers.meta$CHROM))
+  chrom <- chrom[!is.na(chrom) & nzchar(chrom)]
+  length(chrom) > 1L || !all(chrom %in% c("CHROM_1", "CHROM1"))
+}
+
+# Prepare WC84 linkage-group and window estimates, descriptive locus summaries,
+# and a chromosome-concatenated genome plot.
+fst_linkage_groups <- function(
+    fst.markers,
+    sigma.loc = NULL,
+    window.size = 25000L,
+    window.method = c("fixed", "sliding", "kernel"),
+    window.step = NULL,
+    kernel.sigma = 150000,
+    outlier.sd = 4,
+    digits = 9L
+) {
+  window.method <- match.arg(window.method)
+  if (is.null(window.step)) {
+    window.step <- if (identical(window.method, "sliding")) {
+      max(1L, as.integer(round(window.size * 0.2)))
+    } else {
+      as.integer(window.size)
+    }
+  }
+  required <- c("CHROM", "POS")
+  if (!all(required %in% names(fst.markers))) {
+    rlang::abort("Per-marker Fst results do not contain CHROM and POS metadata.")
+  }
+
+  fst.column <- if ("FST" %in% names(fst.markers)) "FST" else "MEAN"
+  if (!fst.column %in% names(fst.markers)) {
+    rlang::abort("Per-marker Fst results do not contain FST estimates.")
+  }
+
+  genome.fst <- fst.markers %>%
+    dplyr::transmute(
+      CHROM = as.character(.data$CHROM),
+      POS = suppressWarnings(as.numeric(as.character(.data$POS))),
+      FST = as.numeric(.data[[fst.column]])
+    ) %>%
+    dplyr::filter(
+      !is.na(.data$CHROM), nzchar(.data$CHROM),
+      is.finite(.data$POS), is.finite(.data$FST)
+    ) %>%
+    dplyr::mutate(
+      CHROM = factor(.data$CHROM, levels = unique(.data$CHROM))
+    ) %>%
+    dplyr::arrange(.data$CHROM, .data$POS)
+
+  if (nrow(genome.fst) == 0L) {
+    rlang::abort("No finite chromosome, position, and Fst combinations are available.")
+  }
+
+  summary <- genome.fst %>%
+    dplyr::group_by(.data$CHROM) %>%
+    dplyr::summarise(
+      N_MARKERS = dplyr::n(),
+      POS_MIN = min(.data$POS),
+      POS_MAX = max(.data$POS),
+      FST_MEAN = mean(.data$FST),
+      FST_MEDIAN = stats::median(.data$FST),
+      FST_Q25 = stats::quantile(.data$FST, 0.25, names = FALSE),
+      FST_Q75 = stats::quantile(.data$FST, 0.75, names = FALSE),
+      FST_MAX = max(.data$FST),
+      .groups = "drop"
+    ) %>%
+    dplyr::mutate(
+      CHROM = as.character(.data$CHROM),
+      dplyr::across(
+        .cols = tidyselect::starts_with("FST_"),
+        .fns = function(x) round(x, digits = digits)
+      )
+    )
+
+  if (is.null(sigma.loc) ||
+      !all(c("CHROM", "POS", "lsiga", "lsigb", "lsigw") %in% names(sigma.loc))) {
+    rlang::abort(
+      "WC84 variance components with CHROM and POS are required for genomic windows."
+    )
+  }
+
+  if (!"ITERATIONS" %in% names(sigma.loc)) sigma.loc$ITERATIONS <- 1L
+  components <- sigma.loc %>%
+    dplyr::transmute(
+      CHROM = as.character(.data$CHROM),
+      POS = suppressWarnings(as.numeric(as.character(.data$POS))),
+      ITERATIONS = .data$ITERATIONS,
+      lsiga = .data$lsiga,
+      lsigb = .data$lsigb,
+      lsigw = .data$lsigw
+    ) %>%
+    dplyr::filter(
+      !is.na(.data$CHROM), nzchar(.data$CHROM), is.finite(.data$POS)
+    )
+
+  combine_wc84 <- function(x, groups) {
+    x %>%
+      dplyr::group_by(dplyr::across(tidyselect::all_of(groups))) %>%
+      dplyr::summarise(
+        N_MARKERS = dplyr::n(),
+        SIGMA_A = sum(.data$lsiga, na.rm = TRUE),
+        SIGMA_B = sum(.data$lsigb, na.rm = TRUE),
+        SIGMA_W = sum(.data$lsigw, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      dplyr::mutate(
+        FST_WC84 = .data$SIGMA_A /
+          (.data$SIGMA_A + .data$SIGMA_B + .data$SIGMA_W),
+        FST_WC84 = pmax(.data$FST_WC84, 0)
+      )
+  }
+
+  wc84 <- combine_wc84(components, c("CHROM", "ITERATIONS")) %>%
+    dplyr::group_by(.data$CHROM) %>%
+    dplyr::summarise(
+      FST_WC84 = mean(.data$FST_WC84, na.rm = TRUE),
+      FST_WC84_MIN = min(.data$FST_WC84, na.rm = TRUE),
+      FST_WC84_MAX = max(.data$FST_WC84, na.rm = TRUE),
+      WC84_ITERATIONS = dplyr::n(),
+      .groups = "drop"
+    ) %>%
+    dplyr::mutate(
+      CHROM = as.character(.data$CHROM),
+      dplyr::across(
+        .cols = tidyselect::starts_with("FST_WC84"),
+        .fns = function(x) round(x, digits = digits)
+      )
+    )
+  summary <- dplyr::left_join(summary, wc84, by = "CHROM")
+
+  calculate_windows <- function(x) {
+    x <- x[order(x$POS), , drop = FALSE]
+    chromosome <- x$CHROM[[1]]
+    iteration <- x$ITERATIONS[[1]]
+    chromosome.end <- max(x$POS, na.rm = TRUE)
+
+    if (identical(window.method, "fixed")) {
+      return(
+        x %>%
+          dplyr::mutate(
+            WINDOW = floor((.data$POS - 1) / window.size),
+            WINDOW_START = .data$WINDOW * window.size + 1,
+            WINDOW_END = pmin((.data$WINDOW + 1) * window.size, chromosome.end),
+            WINDOW_MID = (.data$WINDOW_START + .data$WINDOW_END) / 2
+          ) %>%
+          combine_wc84(
+            c(
+              "CHROM", "WINDOW", "WINDOW_START", "WINDOW_END",
+              "WINDOW_MID", "ITERATIONS"
+            )
+          )
+      )
+    }
+
+    if (identical(window.method, "sliding")) {
+      half.width <- window.size / 2
+      first.centre <- min(half.width, chromosome.end / 2)
+      centres <- seq(first.centre, chromosome.end, by = window.step)
+      if (length(centres) == 0L) centres <- chromosome.end / 2
+      starts <- pmax(1, floor(centres - half.width))
+      ends <- pmin(chromosome.end, ceiling(centres + half.width))
+    } else {
+      centres <- seq(1, chromosome.end, by = window.step)
+      starts <- pmax(1, floor(centres - 3 * kernel.sigma))
+      ends <- pmin(chromosome.end, ceiling(centres + 3 * kernel.sigma))
+    }
+
+    lower.index <- findInterval(starts - 1, x$POS) + 1L
+    upper.index <- findInterval(ends, x$POS)
+    rows <- lapply(seq_along(centres), function(i) {
+      if (lower.index[[i]] > upper.index[[i]]) return(NULL)
+      keep <- seq.int(lower.index[[i]], upper.index[[i]])
+      weights <- if (identical(window.method, "kernel")) {
+        exp(-0.5 * ((x$POS[keep] - centres[[i]]) / kernel.sigma)^2)
+      } else {
+        rep(1, length(keep))
+      }
+      sigma.a <- sum(weights * x$lsiga[keep], na.rm = TRUE)
+      sigma.b <- sum(weights * x$lsigb[keep], na.rm = TRUE)
+      sigma.w <- sum(weights * x$lsigw[keep], na.rm = TRUE)
+      denominator <- sigma.a + sigma.b + sigma.w
+      tibble::tibble(
+        CHROM = chromosome,
+        WINDOW = i - 1L,
+        WINDOW_START = starts[[i]],
+        WINDOW_END = ends[[i]],
+        WINDOW_MID = centres[[i]],
+        ITERATIONS = iteration,
+        N_MARKERS = length(keep),
+        SIGMA_A = sigma.a,
+        SIGMA_B = sigma.b,
+        SIGMA_W = sigma.w,
+        FST_WC84 = pmax(sigma.a / denominator, 0)
+      )
+    })
+    dplyr::bind_rows(rows)
+  }
+
+  windows <- components %>%
+    dplyr::group_split(.data$CHROM, .data$ITERATIONS, .keep = TRUE) %>%
+    purrr::map(calculate_windows) %>%
+    dplyr::bind_rows() %>%
+    dplyr::group_by(
+      .data$CHROM, .data$WINDOW, .data$WINDOW_START,
+      .data$WINDOW_END, .data$WINDOW_MID
+    ) %>%
+    dplyr::summarise(
+      N_MARKERS = round(mean(.data$N_MARKERS)),
+      FST_WC84 = mean(.data$FST_WC84, na.rm = TRUE),
+      FST_WC84_MIN = min(.data$FST_WC84, na.rm = TRUE),
+      FST_WC84_MAX = max(.data$FST_WC84, na.rm = TRUE),
+      WC84_ITERATIONS = dplyr::n(),
+      .groups = "drop"
+    ) %>%
+    dplyr::mutate(
+      WINDOW_METHOD = window.method,
+      WINDOW_SIZE_BP = if (identical(window.method, "kernel")) {
+        NA_integer_
+      } else {
+        as.integer(window.size)
+      },
+      WINDOW_STEP_BP = if (identical(window.method, "fixed")) {
+        as.integer(window.size)
+      } else {
+        as.integer(window.step)
+      },
+      KERNEL_SIGMA_BP = if (identical(window.method, "kernel")) {
+        kernel.sigma
+      } else {
+        NA_real_
+      }
+    )
+
+  chromosome.order <- unique(as.character(genome.fst$CHROM))
+  chromosome.layout <- windows %>%
+    dplyr::mutate(CHROM = factor(.data$CHROM, levels = chromosome.order)) %>%
+    dplyr::group_by(.data$CHROM) %>%
+    dplyr::summarise(CHROM_LENGTH = max(.data$WINDOW_END), .groups = "drop") %>%
+    dplyr::arrange(.data$CHROM) %>%
+    dplyr::mutate(
+      OFFSET = cumsum(dplyr::lag(.data$CHROM_LENGTH, default = 0)),
+      AXIS_MID = .data$OFFSET + .data$CHROM_LENGTH / 2,
+      CHROM_GROUP = as.integer(.data$CHROM) %% 2L
+    )
+
+  windows <- windows %>%
+    dplyr::mutate(CHROM = factor(.data$CHROM, levels = chromosome.order)) %>%
+    dplyr::left_join(chromosome.layout, by = "CHROM") %>%
+    dplyr::mutate(
+      GENOME_POS = .data$OFFSET + .data$WINDOW_MID,
+      OUTLIER_THRESHOLD = if (is.null(outlier.sd)) {
+        NA_real_
+      } else {
+        mean(.data$FST_WC84, na.rm = TRUE) +
+          outlier.sd * stats::sd(.data$FST_WC84, na.rm = TRUE)
+      },
+      OUTLIER = !is.na(.data$OUTLIER_THRESHOLD) &
+        .data$FST_WC84 > .data$OUTLIER_THRESHOLD
+    ) %>%
+    dplyr::mutate(
+      CHROM = as.character(.data$CHROM),
+      dplyr::across(
+        .cols = tidyselect::starts_with("FST_WC84"),
+        .fns = function(x) round(x, digits = digits)
+      )
+    )
+
+  threshold <- unique(windows$OUTLIER_THRESHOLD)
+  threshold <- threshold[is.finite(threshold)]
+
+  plot <- ggplot2::ggplot(
+    windows,
+    ggplot2::aes(
+      x = .data$GENOME_POS, y = .data$FST_WC84,
+      colour = factor(.data$CHROM_GROUP)
+    )
+  ) +
+    ggplot2::geom_point(alpha = 0.75, size = 1) +
+    ggplot2::scale_colour_manual(values = c("0" = "grey70", "1" = "grey20")) +
+    ggplot2::scale_x_continuous(
+      breaks = chromosome.layout$AXIS_MID,
+      labels = as.character(chromosome.layout$CHROM),
+      expand = ggplot2::expansion(mult = c(0.005, 0.005))
+    ) +
+    ggplot2::labs(
+      x = "Linkage group",
+      y = expression(F[ST]),
+      title = bquote(
+        .(tools::toTitleCase(window.method)) * " WC84 " * F[ST]
+      )
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      legend.position = "none",
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.grid.major.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(size = 8),
+      axis.ticks.x = ggplot2::element_blank()
+    )
+  if (length(threshold) == 1L) {
+    plot <- plot +
+      ggplot2::geom_hline(
+        yintercept = threshold,
+        linetype = "dashed",
+        linewidth = 0.45
+      )
+  }
+
+  list(summary = summary, windows = windows, plot = plot)
+}
+
 # Internal Nested Functions to compute WC84 Fst --------------------------------
 
 # Import and Standardize Genomic Data ------------------------------------------
 #' @title Import and Standardize Genomic Data
-#' @description Import and format genomic data into a tidy format compatible with downstream analyses in \pkg{radiator}. This function detects the input data type (tidy data frame, GDS file, or SeqVarGDSClass) and performs the appropriate transformation.
+#' @description Import and format genomic data into a tidy format compatible with downstream analyses in \pkg{genometranslator}. This function detects the input data type (tidy data frame, GDS file, or SeqVarGDSClass) and performs the appropriate transformation.
 #' @param data Genomic dataset. Can be a tibble/data frame in wide format, a GDS file path, or a \code{SeqVarGDSClass} object.
-#' @param calibrate.alleles Logical. If \code{TRUE}, force recalibration of REF/ALT allele genotypes using \code{\link[radiator]{calibrate_alleles}}. Default: \code{FALSE}.
+#' @param calibrate.alleles Logical. If \code{TRUE}, force recalibration of REF/ALT allele genotypes using \code{\link[genometranslator]{calibrate_alleles}}. Default: \code{FALSE}.
 #' @param verbose Logical. Show detailed messages during import. Default: \code{FALSE}.
 #' @return A tidy data frame (tibble) with standardized genotype format and required metadata (e.g., GT column).
-#' @seealso \code{\link[radiator]{detect_genomic_format}}, \code{\link[radiator]{tidy_wide}}, \code{\link[radiator]{calibrate_alleles}}, \code{\link[radiator]{read_rad}}, \code{\link[radiator]{gds2tidy}}
+#' @seealso \code{\link[genometranslator]{detect_genomic_format}}, \code{\link[genometranslator]{read_genome}}, and \code{\link[genometranslator]{calibrate_alleles}}
 #' @rdname import_data
 #' @export
 #' @keywords internal
@@ -796,7 +1278,7 @@ fst_WC84 <- function(
 #' }
 
 import_data <- function(data, calibrate.alleles = FALSE, verbose = FALSE) {
-  data.type <- radiator::detect_genomic_format(data)
+  data.type <- genometranslator::detect_genomic_format(data)
 
   if (verbose) cli::cli_progress_step(msg = "Importing data...")
 
@@ -805,21 +1287,21 @@ import_data <- function(data, calibrate.alleles = FALSE, verbose = FALSE) {
   }
   # GDS or Tidy
   if (data.type == "tbl_df") {
-    data %<>% radiator::tidy_wide(data = ., import.metadata = TRUE)
+    data %<>% genometranslator::read_genome(data = ., import.metadata = TRUE)
 
     if (!rlang::has_name(data, "GT") || calibrate.alleles) {
       if (verbose) cli::cli_progress_step(msg = "generating the necessary genotype format")
-      data %<>% radiator::calibrate_alleles(data = ., gt = TRUE, verbose = TRUE) %$% input
+      data %<>% genometranslator::calibrate_alleles(data = ., gt = TRUE, verbose = TRUE) %$% input
     }
 
   } else if (data.type %in% c("SeqVarGDSClass", "gds.file")) {
-    radiator::radiator_packages_dep(package = "SeqArray", cran = FALSE, bioc = TRUE)
+    tgbase::check_package(package = "SeqArray", cran = FALSE, bioc = TRUE)
 
     if (data.type == "gds.file") {
-      data %<>% radiator::read_rad(data = ., verbose = TRUE)
+      data %<>% genometranslator::read_genome(data = ., verbose = TRUE)
     }
 
-    data %<>% radiator::gds2tidy(gds = ., pop.id = FALSE, gt = TRUE)
+    data %<>% genometranslator::read_genome(data = ., import.metadata = TRUE)
   } else {
     rlang::abort("Input not supported for this function: read function documentation")
   }
@@ -848,7 +1330,7 @@ prep_strata <- function(data, strata, pop.levels = NULL, blacklist.id = NULL, ve
   if (verbose) cli::cli_progress_step(msg = "Preparing the stratification")
 
   # Strata
-  strata <- radiator::read_strata(
+  strata <- genometranslator::read_strata(
     strata = strata,
     pop.id = TRUE,
     blacklist.id = blacklist.id,
@@ -858,7 +1340,7 @@ prep_strata <- function(data, strata, pop.levels = NULL, blacklist.id = NULL, ve
 
   # population levels and strata
   if (!is.null(strata)) {
-    data <- radiator::join_strata(
+    data <- genometranslator::join_strata(
       data = data,
       strata = strata,
       pop.id = FALSE,
@@ -1704,7 +2186,7 @@ heatmap_fst <- function(
 
   if (!pairwise.tib) {
     data.fst %<>%
-      radiator::distance2tibble(
+      tgbase::distance2tibble(
         x = .,
         remove.diag = FALSE,
         na.diag = TRUE,
@@ -1724,7 +2206,7 @@ heatmap_fst <- function(
     if (n.s) round.num <- TRUE
 
     data.ci %<>%
-      radiator::distance2tibble(
+      tgbase::distance2tibble(
         x = .,
         remove.diag = FALSE,
         na.diag = TRUE,
@@ -1928,7 +2410,7 @@ fst_stats <- function(
     res1 %<>%
       dplyr::mutate(
         dplyr::across(
-          .cols = where(is.numeric),
+          .cols = tidyselect::where(is.numeric),
           .fns = round,
           digits = digits
         )
@@ -2032,8 +2514,3 @@ minimize_args_list <- function(args, keep, verbose = TRUE) {
 
   args[keep]
 }
-
-
-
-
-

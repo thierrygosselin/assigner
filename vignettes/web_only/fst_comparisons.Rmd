@@ -70,7 +70,7 @@ kindly provided by Gregory Owens. This dataset as missing data.
 
 Owens GL, Baute GJ, Rieseberg LH. Revisiting a classic case of introgression: 
 hybridization and gene flow in Californian sunflowers. Abbott RJ, Barton NH, 
-Good JM, editors. Molecular Ecology. 2016;25: 2630–2643. doi:10.1111/mec.13569
+Good JM, editors. Molecular Ecology. 2016;25: 2630-2643. doi:10.1111/mec.13569
 
 
 **Download the files:**

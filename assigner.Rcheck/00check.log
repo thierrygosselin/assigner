@@ -1,0 +1,99 @@
+* using log directory ‘/Users/gos040/Documents/biologie/r_packages/assigner/assigner.Rcheck’
+* using R version 4.6.1 (2026-06-24)
+* using platform: aarch64-apple-darwin23
+* R was compiled by
+    Apple clang version 17.0.0 (clang-1700.3.19.1)
+    GNU Fortran (GCC) 14.2.0
+* running under: macOS Tahoe 26.6.2
+* using session charset: UTF-8
+* current time: 2026-08-22 03:49:54 UTC
+* using options ‘--no-manual --no-build-vignettes’
+* checking for file ‘assigner/DESCRIPTION’ ... OK
+* checking extension type ... Package
+* this is package ‘assigner’ version ‘0.7.1’
+* package encoding: UTF-8
+* checking package namespace information ... OK
+* checking package dependencies ... INFO
+Packages suggested but not available for checking: 'reticulate', 'xgboost'
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘assigner’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+assign_individuals_ml: no visible binding for global variable ‘DOSAGE’
+assign_individuals_ml: no visible binding for global variable
+  ‘PROBABILITY’
+assignment_ml_fit: no visible global function definition for ‘predict’
+Undefined global functions or variables:
+  DOSAGE predict PROBABILITY
+Consider adding
+  importFrom("stats", "predict")
+to your NAMESPACE file.
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking contents of ‘data’ directory ... OK
+* checking data for non-ASCII characters ... OK
+* checking LazyData ... OK
+* checking data for ASCII and uncompressed saves ... OK
+* checking files in ‘vignettes’ ... WARNING
+Files in the 'vignettes' directory but no files in 'inst/doc':
+  ‘assigner_fst_tree_example.png’ ‘assignment_loo_test4.png’
+  ‘assignment_thl_test1_full_range.png’ ‘assignment_thl_test1.png’
+  ‘assignment_thl_test2.png’ ‘assignment_thl_test3.png’
+  ‘assignment.whitelists.html’ ‘assignment.whitelists.R’
+  ‘assignment.whitelists.Rmd’ ‘automator.png’ ‘copy_path.png’
+  ‘fst_confidence_intervals.html’ ‘fst_confidence_intervals.R’
+  ‘fst_confidence_intervals.Rmd’ ‘fst_WC84_heatmap_fst.png’
+  ‘get_started.html’ ‘get_started.R’ ‘get_started.Rmd’
+  ‘life_cycle.html’ ‘life_cycle.R’ ‘life_cycle.Rmd’
+  ‘membership_dataset1.png’ ‘membership_dataset2.png’
+  ‘rad_genomics_computer_setup.html’ ‘rad_genomics_computer_setup.R’
+  ‘terminal_folder_shortcut.png’
+  ‘web_only/fst_comparisons_packages_features.tsv’
+  ‘web_only/fst_comparisons.nb.html’ ‘web_only/fst_comparisons.Rmd’
+  ‘web_only/fst.summary.sim01.tsv’ ‘web_only/fst.summary.sim02.tsv’
+  ‘web_only/fst.summary.tsv’
+* checking examples ... OK
+* checking for unstated dependencies in vignettes ... OK
+* checking package vignettes ... WARNING
+Directory 'inst/doc' does not exist.
+Package vignettes without corresponding single PDF/HTML:
+  ‘assignment.whitelists.Rmd’
+  ‘fst_confidence_intervals.Rmd’
+  ‘get_started.Rmd’
+  ‘life_cycle.Rmd’
+* checking running R code from vignettes ... OK
+  ‘assignment.whitelists.Rmd’ using ‘UTF-8’... OK
+  ‘fst_confidence_intervals.Rmd’ using ‘UTF-8’... OK
+  ‘get_started.Rmd’ using ‘UTF-8’... OK
+  ‘life_cycle.Rmd’ using ‘UTF-8’... OK
+* checking re-building of vignette outputs ... SKIPPED
+* DONE
+Status: 2 WARNINGs, 1 NOTE

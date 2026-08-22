@@ -1,25 +1,3 @@
-# assigner_function_header -----------------------------------------------------
-#' @title assigner_function_header
-#' @description Generate function header
-#' @rdname assigner_function_header
-#' @keywords internal
-#' @export
-assigner_function_header <- function(f.name = NULL, start = TRUE, verbose = TRUE) {
-  if (is.null(f.name)) invisible(NULL)
-  if (start) {
-    if (verbose) {
-      message(stringi::stri_pad_both(str = "", width = 80L, pad = "#"))
-      message(stringi::stri_pad_both(str = paste0(" assigner::", f.name, " "), width = 80L, pad = "#"))
-      message(stringi::stri_pad_both(str = "", width = 80L, pad = "#"), "\n")
-    }
-  } else {
-    if (verbose) {
-      message(stringi::stri_pad_both(str = paste0(" completed ", f.name, " "), width = 80L, pad = "#"), "\n")
-    }
-  }
-}# End assigner_function_header
-
-
 # Pipe operator ----------------------------------------------------------------
 #' @title Forward-pipe operator
 #' @description magrittr forward-pipe operator
@@ -51,6 +29,10 @@ NULL
 #' @export
 #' @importFrom magrittr %<>%
 #' @usage lhs \%<>\% rhs
+NULL
+
+# Import used by serialized parallel worker functions.
+#' @importFrom carrier crate
 NULL
 
 # dplyr n ----------------------------------------------------------------------
@@ -218,467 +200,61 @@ import_subsamples_fst <- function(dir.path){
 }#End import_subsamples_fst
 
 
-# GSI_BINARY_SUPPORT -----------------------------------------------------------
+# gsi_sim executable -----------------------------------------------------------
 
-
-#' return the path where gsi_sim should be in the R system paths
+#' Check the gsi_sim installation
 #'
-#' @keywords internal
-#' @name gsi_sim_binary_path
-#' @rdname gsi_sim_binary_path
-#' @export
-gsi_sim_binary_path <- function() {
-  file.path(system.file(package = "assigner"), "bin", "gsi_sim")
-}
-
-#' return TRUE if gsi_sim exists where it should be
-#' @keywords internal
-#' @export
-#' @name gsi_sim_exists
-#' @rdname gsi_sim_exists
-gsi_sim_exists <- function() {
-  file.exists(gsi_sim_binary_path())
-}
-
-
-#' return TRUE if gsi_sim is executable
-#' @keywords internal
-#' @export
-#' @name gsi_sim_is_executable
-#' @rdname gsi_sim_is_executable
-gsi_sim_is_executable <- function() {
-  NULL #incomplete
-}
-
-
-#' file path to be used in a call to gsi_sim.
+#' `gsi_sim`, developed by assigner co-author Eric C. Anderson, is an external
+#' command-line program and is not installed by the R package. This function
+#' searches the active `PATH` and validates that the executable can be started.
 #'
-#' This version checks to make sure it is there and throws an
-#' error with a suggestion of how to get it if it is not there.
-#' @export
-#' @keywords internal
-#' @name gsi_sim_binary
-#' @rdname gsi_sim_binary
-gsi_sim_binary <- function() {
-  if (!gsi_sim_exists()) stop("Can't find the gsi_sim executable where it was expected
-                              at ", gsi_sim_binary_path(), ".
-                              If you have internet access, you can install it
-                              from within R by invoking the function \"install_gsi_sim()\"")
-
-  # then I should check to make sure it is executable
-
-  # if so, return the path
-  gsi_sim_binary_path()
-
-}
-
-
-#' downloads gsi_sim that is appropriate for the operating system
+#' @references Anderson EC (2010). Assessing the power of informative subsets
+#'   of loci for population assignment: standard methods are upwardly biased.
+#'   Molecular Ecology Resources, 10, 701-710.
 #'
-#' If the system is Mac, or Windows, this function will
-#' download a precompiled binary from GitHub.  In other cases, or
-#' if fromSource == TRUE, this function will attempt to download
-#' the source code and compile the program from source and install
-#' it.
+#' @param error Logical. Stop with installation guidance when `gsi_sim` cannot
+#'   be used. Default: \code{error = TRUE}.
+#' @param verbose Logical. Display the detected executable. Default:
+#'   \code{verbose = TRUE}.
 #'
-#' If this function fails, then you can just compile gsi_sim by
-#' going to GITHUB_URL and compiling it yourself and naming the
-#' executable gsi_sim and putting it at the location specified by the
-#' function \code{\link{gsi_sim_binary_path}}.
-#' @param commit  The full SHA-1 hash from GitHub from which to get
-#' the binary or source
-#' @param fromSource If TRUE, download source, even if a binary is available.
-#' If FALSE, then it will download a precompiled binary, if available.  If a
-#' binary is not available, then it will attempt to download the source.
+#' @return Invisibly returns the executable path, or an empty string when it is
+#'   unavailable and \code{error = FALSE}.
 #' @export
-#' @name install_gsi_sim
-#' @rdname install_gsi_sim
-install_gsi_sim <- function(commit = "080f462c8eff035fa3e9f2fdce26c3ac013e208a", fromSource = FALSE) {
+check_gsi_sim <- function(error = TRUE, verbose = TRUE) {
+  executable <- Sys.which("gsi_sim")
+  ok <- nzchar(executable) && file.access(executable, mode = 1L) == 0L
 
-  # make a bin directory
-  suppressWarnings(dir.create(file.path(system.file(package = "assigner"), "bin")))
-
-  uname <- Sys.info()["sysname"]
-  urlbase <- paste("https://github.com/eriqande/gsi_sim/blob/", commit,
-                   "/gsi_sim-", sep = "")
-
-  if (fromSource == FALSE) {
-    if (uname == "Darwin") {
-      url <- paste(urlbase, "Darwin", sep = "")
-    }
-    if (uname == "Windows") {
-      url <- paste(urlbase, "MINGW32_NT-6.1", sep = "")
-    }
-    if (uname == "Darwin" || uname == "Windows") {
-      message("Downloading file ", url)
-      message("And copying to ", gsi_sim_binary_path())
-      utils::download.file(url = url, destfile = gsi_sim_binary_path())
-      Sys.chmod(gsi_sim_binary_path()) # make it executable
-    }
-    return(NULL)
-  }
-
-  if (uname == "Linux" || fromSource == TRUE) {  # in this case we will just compile from source
-    td <- tempdir()
-
-    message("Will be cloning gsi_sim repository to ", td)
-    message("Removing any earlier instances of the repository in that temp directory")
-    system(paste("cd", td, "; rm -r -f gsi_sim"))
-    message("Cloning repository, dealing with submodules, compiling gsi_sim ")
-    comm <- paste("cd ", td,
-                  "&&  git clone https://github.com/eriqande/gsi_sim.git ",
-                  "&&  cd gsi_sim ",
-                  "&&  git checkout ", commit,
-                  "&& git submodule init && git submodule update ",
-                  "&& ./Compile_gsi_sim.sh ", sep = "")
-    boing <- system(comm)
-    if (boing != 0) {
-      stop("Failed trying to clone and compile gsi_sim")
-    } else {
-      message("Apparently successful compiling gsi_sim.  Now copying to ", gsi_sim_binary_path())
-      trycopy <- file.copy(from = paste(td, "/gsi_sim/gsi_sim-", uname, sep = ""),
-                           to = gsi_sim_binary_path(),
-                           overwrite = TRUE)
-      if (trycopy == FALSE) stop("Apparently failed trying to copy ",
-                                 paste(td, "/gsi_sim/gsi_sim-", uname, sep = ""),
-                                 "to ",
-                                 gsi_sim_binary_path())
-    }
-  }
-}
-# parallel_core_opt ------------------------------------------------------------
-#' @title parallel_core_opt
-#' @description Optimization of parallel core argument for radiator
-#' @keywords internal
-#' @export
-parallel_core_opt <- function(parallel.core = NULL, max.core = NULL) {
-  # strategy:
-  # minimum of 1 core and a maximum of all the core available -2
-  # even number of core
-  # test
-  # parallel.core <- 1
-  # parallel.core <- 2
-  # parallel.core <- 3
-  # parallel.core <- 11
-  # parallel.core <- 12
-  # parallel.core <- 16
-  # max.core <- 5
-  # max.core <- 50
-  # max.core <- NULL
-
-  # Add-ons options
-  # to control the max and min number to use...
-
-  if (is.null(parallel.core)) {
-    parallel.core <- parallel::detectCores() - 2
-  } else {
-    parallel.core <- floor(parallel.core / 2) * 2
-    parallel.core <- max(1, min(parallel.core, parallel::detectCores() - 2))
-  }
-
-  if (is.null(max.core)) {
-    parallel.core.opt <- parallel.core
-  } else {
-    parallel.core.opt <- min(parallel.core, floor(max.core / 2) * 2)
-  }
-  return(parallel.core.opt)
-}#End parallel_core_opt
-
-# assigner_future: future and future.apply -------------------------------------
-#' @name assigner_future
-#' @title assigner parallel function
-#' @description Updating assigner to use future
-# @inheritParams future::plan
-# @inheritParams future::availableCores
-#' @inheritParams future.apply::future_apply
-#' @rdname assigner_future
-#' @export
-#' @keywords internal
-assigner_future <- function(
-  .x,
-  .f,
-  flat.future = c("int", "chr", "dfr", "dfc", "walk", "drop"),
-  split.vec = FALSE,
-  split.with = NULL,
-  split.chunks = 4L,
-  parallel.core = parallel::detectCores() - 1,
-  forking = FALSE,
-  ...
-) {
-  os <- Sys.info()[['sysname']]
-  if (os == "Windows") forking <- FALSE
-
-  opt.change <- getOption("width")
-  options(width = 70)
-  on.exit(options(width = opt.change), add = TRUE)
-  on.exit(if (parallel.core > 1L && !forking) future::plan(strategy = "sequential"), add = TRUE)
-
-  # argument for flattening the results
-  flat.future <- match.arg(
-    arg = flat.future,
-    choices = c("int", "chr", "dfr", "dfc", "walk", "drop"),
-    several.ok = FALSE
-  )
-
-  # splitting into chunks-------------------------------------------------------
-  if (split.vec && is.null(split.with)) {
-    # d: data, data length, data size
-    # sv: split vector
-    d <- .x
-    df <- FALSE
-    if (any(class(d) %in% c("tbl_df","tbl","data.frame"))) {
-      d <- nrow(d)
-      df <- TRUE
-    }
-    if (length(d) > 1L) d <- length(d)
-    stopifnot(is.integer(d))
-    sv <- as.integer(floor((split.chunks * (seq_len(d) - 1) / d) + 1))
-    # sv <- as.integer(floor((parallel.core * cpu.rounds * (seq_len(d) - 1) / d) + 1))
-    stopifnot(length(sv) == d)
-
-    # split
-    if (df) {
-      .x$SPLIT_VEC <- sv
-      .x %<>% dplyr::group_split(.tbl = ., "SPLIT_VEC", .keep = FALSE)
-    } else {
-      .x %<>% split(x = ., f = sv)
-    }
-  }
-
-  if (!is.null(split.with)) {
-    # check
-    if (length(split.with) != 1 || !is.character(split.with)) {
-      rlang::abort(message = "Contact author: problem with parallel computation")
-    }
-    .data <- NULL
-    stopifnot(rlang::has_name(.x, split.with))
-    if (split.vec) {
-      sv <- dplyr::distinct(.x, .data[[split.with]])
-      d <- nrow(sv)
-      sv$SPLIT_VEC <- as.integer(floor((split.chunks * (seq_len(d) - 1) / d) + 1))
-      .x %<>%
-        dplyr::left_join(sv, by = split.with) %>%
-        dplyr::group_split(.tbl = ., "SPLIT_VEC", .keep = FALSE)
-    } else {
-      .x %<>% dplyr::group_split(.tbl = ., .data[[split.with]], .keep = TRUE)
-    }
-  }
-
-  if (parallel.core == 1L) {
-    future::plan(strategy = "sequential")
-  } else {
-    parallel.core <- parallel_core_opt(parallel.core = parallel.core)
-    lx <- length(.x)
-    if (lx < parallel.core) {
-      future::plan(strategy = "multisession", workers = lx)
-    } else {
-      if (!forking) future::plan(strategy = "multisession", workers = parallel.core)
-    }
-  }
-
-  # Run the function in parallel and account for dots-dots-dots argument
-  if (forking) {
-    if (length(list(...)) == 0) {
-      rad_map <- switch(
-        flat.future,
-        int = {
-          .x %<>%
-            parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
-            vctrs::vec_c(.ptype = integer())
-        },
-        chr = {
-          .x %<>%
-            parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
-            vctrs::vec_c(.ptype = character())
-        },
-        dfr = {
-          .x %<>%
-            parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
-            dplyr::bind_rows(.)
-        },
-        dfc = {
-          .x %<>%
-            parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core) %>%
-            dplyr::bind_cols(.)
-        },
-        walk = {furrr::future_walk},
-        drop = {
-          .x %<>%
-            parallel::mclapply(X = ., FUN = .f, mc.cores = parallel.core)
-        }
-      )
-    } else {
-      rad_map <- switch(
-        flat.future,
-        int = {
-          .x %<>%
-            parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
-            vctrs::vec_c(.ptype = integer())
-        },
-        chr = {.x %<>%
-            parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
-            vctrs::vec_c(.ptype = character())
-        },
-        dfr = {
-          .x %<>%
-            parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
-            dplyr::bind_rows(.)
-        },
-        dfc = {
-          .x %<>%
-            parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core) %>%
-            dplyr::bind_cols(.)
-        },
-        walk = {furrr::future_walk},
-        drop = {
-          .x %<>%
-            parallel::mclapply(X = ., FUN = .f, ..., mc.cores = parallel.core)
-        }
-      )
-    }
-  } else {
-    rad_map <- switch(flat.future,
-                      int = {furrr::future_map_int},
-                      chr = {furrr::future_map_chr},
-                      dfr = {furrr::future_map_dfr},
-                      dfc = {furrr::future_map_dfc},
-                      walk = {furrr::future_walk},
-                      drop = {furrr::future_map}
+  if (!ok) {
+    guidance <- paste0(
+      "gsi_sim was not found on PATH. It is an external program and is not ",
+      "installed by assigner. Follow the source-installation instructions in ",
+      "the assigner get-started vignette, then restart R and run ",
+      "assigner::check_gsi_sim().\nSource: https://github.com/eriqande/gsi_sim"
     )
-    # p <- NULL
-    p <- progressr::progressor(along = .x)
-    opts <- furrr::furrr_options(globals = TRUE, seed = TRUE)
-    if (length(list(...)) == 0) {
-      .x %<>% rad_map(.x = ., .f = .f, .options = opts)
-    } else {
-      .x %<>% rad_map(.x = ., .f = .f, ..., .options = opts)
-    }
+    if (isTRUE(error)) rlang::abort(guidance)
+    if (isTRUE(verbose)) message(guidance)
+    return(invisible(""))
   }
-  return(.x)
-}#End assigner_future
 
-# PIVOT-GATHER-CAST ------------------------------------------------------------
-# rationale for doing this is that i'm tired of using tidyverse or data.table semantics
-# tidyr changed from gather/spread to pivot_ functions but their are still very slow compared
-# to 1. the original gather/spread and data.table equivalent...
-
-#' @title rad_long
-#' @description Gather, melt and pivot_longer
-#' @rdname rad_long
-#' @keywords internal
-#' @export
-
-rad_long <- function(
-  x,
-  cols = NULL,
-  measure_vars = NULL,
-  names_to = NULL,
-  values_to = NULL,
-  variable_factor = TRUE,
-  keep_rownames = FALSE,
-  tidy = FALSE
-){
-
-
-  # tidyr
-  if (tidy) {
-    x %>%
-      tidyr::pivot_longer(
-        data = .,
-        cols = -cols,
-        names_to = names_to,
-        values_to = values_to
-      )
-  } else {# data.table
-    x %>%
-      data.table::as.data.table(., keep.rownames = keep_rownames) %>%
-      data.table::melt.data.table(
-        data = .,
-        id.vars = cols,
-        measure.vars = measure_vars,
-        variable.name = names_to,
-        value.name = values_to,
-        variable.factor = variable_factor
-      ) %>%
-      tibble::as_tibble(.)
+  status <- suppressWarnings(system2(executable, "--help", stdout = FALSE, stderr = FALSE))
+  if (!identical(status, 0L)) {
+    guidance <- paste0("gsi_sim was found at ", executable,
+      " but could not be started successfully.")
+    if (isTRUE(error)) rlang::abort(guidance)
+    if (isTRUE(verbose)) message(guidance)
+    return(invisible(""))
   }
-}#rad_long
 
-#' @title rad_wide
-#' @description Spread, dcast and pivot_wider
-#' @rdname rad_wide
+  if (isTRUE(verbose)) message("gsi_sim: ", executable)
+  invisible(unname(executable))
+}
+
+#' Locate the gsi_sim executable
+#' @return The validated path to `gsi_sim`.
 #' @keywords internal
-#' @export
-rad_wide <- function(
-  x ,
-  formula = NULL,
-  names_from = NULL,
-  values_from = NULL,
-  sep = "_",
-  fun_aggregate = NULL,
-  values_fill = NULL,
-  tidy = FALSE
-){
-  # tidyr
-  if (tidy) {
-    x %<>%
-      tidyr::pivot_wider(
-        data = .,
-        names_from = names_from,
-        values_from = values_from,
-        values_fill = values_fill
-      )
-  } else {# data.table
-    if (is.null(fun_aggregate)) {
-      x  %>%
-        data.table::as.data.table(.) %>%
-        data.table::dcast.data.table(
-          data = .,
-          formula =  formula,
-          value.var = values_from,
-          sep = sep,
-          fill = values_fill
-        ) %>%
-        tibble::as_tibble(.)
-    } else {
-      x  %>%
-        data.table::as.data.table(.) %>%
-        data.table::dcast.data.table(
-          data = .,
-          formula =  formula,
-          value.var = values_from,
-          sep = sep,
-          fun.aggregate = fun_aggregate,
-          fill = values_fill
-        ) %>%
-        tibble::as_tibble(.)
-    }
-  }
-}#rad_wide
+gsi_sim_binary <- function() check_gsi_sim(error = TRUE, verbose = FALSE)
 
 
-# assigner_clock ---------------------------------------------------------------
-#' @title assigner_tic
-#' @description assigner tictoc function
-#' @rdname assigner_tic
-#' @keywords internal
-#' @export
-assigner_tic <- function(timing = proc.time()) {
-  invisible(timing)
-}# End assigner_tic
-
-#' @title assigner_toc
-#' @description assigner tictoc function
-#' @rdname assigner_toc
-#' @keywords internal
-#' @export
-assigner_toc <- function(
-  timing,
-  end.message = "Computation time, overall:",
-  verbose = TRUE
-) {
-  if (verbose) message("\n", end.message, " ", round((proc.time() - timing)[[3]]), " sec")
-}# End assigner_toc
 
 
 # Internal Matrix Utilities for Pairwise Distance Data -------------------------
@@ -735,31 +311,6 @@ make_full_symmetric_matrix <- function(upper.matrix, diagonal.value = "0") {
 }#End make_full_symmetric_matrix
 
 
-
-#' @title change_matrix_strata
-#' @description Integrate strata info back into the matrix
-#' @rdname change_matrix_strata
-#' @export
-#' @keywords internal
-change_matrix_strata <- function(x, s) {
-  # x
-  # class(colnames(x))
-  # class(rownames(x))
-
-  if (length(dim(x)) > 1) {
-    if (identical(colnames(x), as.character(s$STRATA_SEQ))) {
-      colnames(x) <- as.character(s$STRATA)
-    } else {
-      rlang::abort(message = "Contact author, problem with strata levels in fst")
-    }
-    if (identical(rownames(x), as.character(s$STRATA_SEQ))) {
-      rownames(x) <- as.character(s$STRATA)
-    } else {
-      rlang::abort(message = "Contact author, problem with strata levels in fst")
-    }
-  }
-  return(x)
-}#change_matrix_strata
 
 # match_markers_meta -----------------------------------------------------------
 #' @title match_markers_meta
@@ -850,22 +401,6 @@ utils_formatC <- function(x, fmt.args) {
   rlang::exec(base::formatC, x = x, !!!fmt.args)
 }#END utils_formatC
 
-#' Format a numeric vector using formatC and flexible arguments
-#'
-#' @param x A numeric vector.
-#' @param fmt.args A named list of arguments to pass to base::formatC.
-#'
-#' @return A character vector with formatted values.
-#' @keywords internal
-utils_formatC_vec <- function(x, fmt.args) {
-  # rlang::exec() is not vectorised, so we use vapply + utils_formatC
-  vapply(
-    x,
-    FUN = function(val) rlang::exec(base::formatC, x = val, !!!fmt.args),
-    FUN.VALUE = character(1)
-  )
-}# END utils_formatC_vec
-
 # Plot the distribution of FST values-------------------------------------------
 #' @title Plot the distribution of FST values
 #' @description Creates a histogram of FST values from a tibble or data frame.
@@ -946,7 +481,3 @@ extract_matching_args <- function(from.env, to.fn, .evaluate = TRUE, .exclude = 
 
   out  # Return the evaluated arguments
 }
-
-
-
-

@@ -1,0 +1,16 @@
+assign_individuals      Assign individuals to reference strata
+check_gsi_sim           Check the gsi_sim installation
+data_assigner_sim_01    Simulated dataset to test assigner
+data_assigner_sim_02    Simulated dataset to test assigner
+dlr                     Genotype likelihood ratio distance (Dlr)
+evaluate_assignment     Population assignment analysis for genomic data
+fst_NEI87               A fast implementation of Nei's 1987 Fst
+                        (overall and paiwise estimates)
+fst_WC84                A fast implementation of Weir and Cockerham
+                        (1984) Fst/Theta (overall and paiwise
+                        estimates)
+heatmap_fst             heatmap_fst
+import_subsamples       Import individual's assignment results of
+                        different subsample folder.
+import_subsamples_fst   Import the fst ranking from all the subsample
+                        runs inside an assignment folder.

@@ -178,7 +178,7 @@ readr::write_tsv(x = pairwise.fst.ci.df, path = "pairwise.fst.ci.df.tsv")
 
 1. Or even better, use the heatmap of Fst and CI values...:
 <center>
-<img src="fst_WC84_heatmap_fst.png" width="600">
+<img src="fst_WC84_heatmap_fst.png" width="600" alt="Heatmap of pairwise FST estimates with confidence intervals">
 <center>
 
 
@@ -241,7 +241,7 @@ tree.figure
 ggplot2::ggsave(filename = "assigner.fst.tree.example.pdf", width = 15, height = 15, dpi = 600, units = "cm", useDingbats = FALSE)
 ```
 
-<img src="assigner_fst_tree_example.png" width="400">
+<img src="assigner_fst_tree_example.png" width="400" alt="Example population tree constructed from pairwise FST distances">
 
 
 # Conclusion
@@ -251,10 +251,8 @@ Please send me suggestions and bug reports through github
 **References**
 
 Weir BS, Cockerham CC (1984) Estimating F-Statistics for the 
-Analysis of Population Structure. Evolution, 38, 1358–1370.
+Analysis of Population Structure. Evolution, 38, 1358-1370.
 
 G Yu, D Smith, H Zhu, Y Guan, TTY Lam,
 ggtree: an R package for visualization and annotation of phylogenetic tree with different types of meta-data.
 revised.
-
-

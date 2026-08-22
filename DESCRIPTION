@@ -1,56 +1,61 @@
 Package: assigner
 Type: Package
-Title: Assignment Analysis with RADseq Data
-Version: 0.7.0
-Date: 2025-07-01
+Title: Population Assignment Analysis with Genomic Data
+Version: 0.7.1
+Date: 2026-08-22
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
   person("Eric C.", "Anderson", role = "ctb")
   )
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
-Description: Set of R tools for assignment analysis tailored for RADseq data.
+Description: Tools for population-assignment analysis with genomic data,
+    including marker resampling, Training-Holdout-Leave-one-out validation,
+    assignment summaries, and fast implementations of common FST estimators.
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.4.0)
 Imports:
     adegenet,
     arrow,
-    data.table,
-    dplyr (>= 1.0.0),
-    furrr (>= 0.2.0),
-    ggplot2,
-    magrittr,
-    purrr,
-    radiator,
-    rlang
-Suggests:
-    BiocManager,
     carrier,
     cli,
-    devtools,
+    dplyr (>= 1.0.0),
+    furrr (>= 0.2.0),
     future,
-    knitr,
-    modelr,
+    genometranslator,
+    ggplot2,
+    magrittr,
     parallel,
-    png,
     progressr,
-    readr (>= 1.4.0),
-    rmarkdown,
+    purrr,
+    radr,
+    readr (>= 2.1.0),
+    rlang,
     stats,
     stringi,
+    tgbase,
     tibble,
     tidyr,
-    tidyselect,
-    tidyverse,
-    vctrs,
-    vroom,
-    utils
-Remotes: thierrygosselin/radiator
+    tidyselect
+Suggests:
+    BiocManager,
+    glmnet,
+    knitr,
+    reticulate,
+    rmarkdown,
+    SNPRelate,
+    testthat (>= 3.0.0),
+    xgboost
+Remotes:
+    thierrygosselin/genometranslator,
+    thierrygosselin/radr,
+    thierrygosselin/tgbase
 License: GPL-3
 LazyLoad: yes
 LazyData: true
 VignetteBuilder: 
     knitr
-RoxygenNote: 7.3.2
 URL: https://thierrygosselin.github.io/assigner/
 BugReports: https://github.com/thierrygosselin/assigner/issues
+Config/roxygen2/version: 8.1.0
+Config/testthat/edition: 3
