@@ -145,6 +145,40 @@ correlations and sampling theory rather than from an arbitrary
 molecular-distance matrix <span class="citation">(<a href="#ref-WeirCockerham1984">Weir and Cockerham 1984</a>)</span>.</p>
 </div>
 <div class="section level3">
+<h3 id="a-nested-looking-table-is-not-necessarily-an-amova-hierarchy">A nested-looking table is not necessarily an AMOVA hierarchy<a class="anchor" aria-label="anchor" href="#a-nested-looking-table-is-not-necessarily-an-amova-hierarchy"></a>
+</h3>
+<p>AMOVA requires more than columns that can be arranged as
+<code>REGION/STRATA</code>. The lower units must be biologically
+meaningful replicates for the higher-level inference. Capture locality,
+life stage, migratory route, inferred cluster, and reproductive
+population are not automatically interchangeable.</p>
+<p>Two recent highly migratory fish studies illustrate the distinction.
+Mikles et al. combined whole-genome data with independently observed
+movements of Atlantic bluefin tuna from Gulf of Mexico and Mediterranean
+spawning grounds <span class="citation">(<a href="#ref-Mikles2026">Mikles et al. 2026</a>)</span>. Adults and larvae
+form nested-looking categories, but they are life stages rather than
+replicated populations within each spawning region. With only two
+primary spawning populations, higher-level AMOVA has essentially no
+population replication. Their movement, ordination, differentiation, and
+demographic analyses addressed different and appropriate questions.</p>
+<p>Chevrier et al. sampled swordfish at many Indian Ocean localities and
+recovered a north-south signal associated strongly with a possible
+chromosomal inversion <span class="citation">(<a href="#ref-Chevrier2024">Chevrier et al. 2024</a>)</span>. Localities
+could form the lowest AMOVA level, but capture sites may mix
+reproductive origins, and testing a grouping discovered from the same
+SNPs is post hoc rather than independent confirmation <span class="citation">(<a href="#ref-Meirmans2015">Meirmans 2015</a>)</span>.
+A useful AMOVA would be descriptive or use regions specified before
+examining the genotypes, and would compare linkage-pruned neutral loci,
+the inversion, and the genome with that region removed.</p>
+<p>Before fitting a hierarchy, ask whether the grouping was specified
+independently, whether lower units are biological replicates, whether
+enough units occur in every group, and whether one linked region could
+dominate the component. <code><a href="../reference/amova_genomic.html">amova_genomic()</a></code> can audit
+permutation support and linkage-aware marker uncertainty, but it cannot
+decide whether a metadata column represents a valid biological
+population. That decision belongs to the sampling design.</p>
+</div>
+<div class="section level3">
 <h3 id="the-distance-is-part-of-the-biological-model">The distance is part of the biological model<a class="anchor" aria-label="anchor" href="#the-distance-is-part-of-the-biological-model"></a>
 </h3>
 <p>The original AMOVA paper emphasizes that alternative distance
@@ -455,12 +489,12 @@ argument.</p>
 <span><span class="co">#&gt;     PHI_SC 0.02296129           NA</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">per_locus</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   MARKERS     REGION      POP_ID    Within  N GROUPS EUCLIDEAN MIN_EIGENVALUE</span></span>
-<span><span class="co">#&gt; 1   loc_1 -0.1828342  0.26878189 0.4739583 20      4      TRUE  -3.157841e-15</span></span>
-<span><span class="co">#&gt; 2  loc_10  0.4545455 -0.05000000 0.3000000 23      4      TRUE  -9.137335e-16</span></span>
-<span><span class="co">#&gt; 3  loc_11  0.3264038 -0.05487714 0.4188889 19      4      TRUE  -2.688294e-15</span></span>
-<span><span class="co">#&gt; 4  loc_12  0.5063272  0.03518519 0.2981481 22      4      TRUE  -2.279589e-15</span></span>
-<span><span class="co">#&gt; 5   loc_2  0.2358076 -0.06604938 0.6814815 22      4      TRUE  -1.202430e-15</span></span>
-<span><span class="co">#&gt; 6   loc_3  0.1589945 -0.06736720 0.3598039 21      4      TRUE  -2.087598e-15</span></span>
+<span><span class="co">#&gt; 1   loc_1 -0.1828342  0.26878189 0.4739583 20      4      TRUE  -1.246316e-15</span></span>
+<span><span class="co">#&gt; 2  loc_10  0.4545455 -0.05000000 0.3000000 23      4      TRUE  -2.039205e-15</span></span>
+<span><span class="co">#&gt; 3  loc_11  0.3264038 -0.05487714 0.4188889 19      4      TRUE  -2.809005e-15</span></span>
+<span><span class="co">#&gt; 4  loc_12  0.5063272  0.03518519 0.2981481 22      4      TRUE  -2.556524e-15</span></span>
+<span><span class="co">#&gt; 5   loc_2  0.2358076 -0.06604938 0.6814815 22      4      TRUE  -1.323316e-15</span></span>
+<span><span class="co">#&gt; 6   loc_3  0.1589945 -0.06736720 0.3598039 21      4      TRUE  -1.693783e-15</span></span>
 <span><span class="co">#&gt;   CORRECTION</span></span>
 <span><span class="co">#&gt; 1          0</span></span>
 <span><span class="co">#&gt; 2          0</span></span>
@@ -750,6 +784,12 @@ permutations;</li>
 truncated.</li>
 </ul>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Chevrier2024" class="csl-entry">
+Chevrier, Thomas, Dominique A. Cowart, Anne-Elise Nieblas, et al. 2024.
+<span>“Population Structure of the Swordfish, Xiphias Gladius, Across
+the Indian Ocean Using Next-Generation Sequencing.”</span> <em>ICES
+Journal of Marine Science</em> 82 (5): fsae179. <a href="https://doi.org/10.1093/icesjms/fsae179" class="external-link">https://doi.org/10.1093/icesjms/fsae179</a>.
+</div>
 <div id="ref-DrayDufour2007" class="csl-entry">
 Dray, Stéphane, and Anne-Béatrice Dufour. 2007. <span>“The Ade4 Package:
 Implementing the Duality Diagram for Ecologists.”</span> <em>Journal of
@@ -783,6 +823,11 @@ Meirmans, Patrick G. 2006. <span>“Using the AMOVA Framework to Estimate
 a Standardized Genetic Differentiation Measure.”</span>
 <em>Evolution</em> 60 (11): 2399–402. <a href="https://doi.org/10.1111/j.0014-3820.2006.tb01874.x" class="external-link">https://doi.org/10.1111/j.0014-3820.2006.tb01874.x</a>.
 </div>
+<div id="ref-Meirmans2015" class="csl-entry">
+Meirmans, Patrick G. 2015. <span>“Seven Common Mistakes in Population
+Genetics and How to Avoid Them.”</span> <em>Molecular Ecology</em> 24
+(13): 3223–31. <a href="https://doi.org/10.1111/mec.13243" class="external-link">https://doi.org/10.1111/mec.13243</a>.
+</div>
 <div id="ref-Meirmans2020" class="csl-entry">
 Meirmans, Patrick G. 2020. <span>“GenoDive Version 3.0: Easy-to-Use
 Software for the Analysis of Genetic Data of Diploids and
@@ -793,6 +838,11 @@ Polyploids.”</span> <em>Molecular Ecology Resources</em> 20 (4):
 Meirmans, Patrick G., and Philip W. Hedrick. 2011. <span>“Assessing
 Population Structure: FST and Related Measures.”</span> <em>Molecular
 Ecology Resources</em> 11 (1): 5–18. <a href="https://doi.org/10.1111/j.1755-0998.2010.02927.x" class="external-link">https://doi.org/10.1111/j.1755-0998.2010.02927.x</a>.
+</div>
+<div id="ref-Mikles2026" class="csl-entry">
+Mikles, Chloe S., Camille M. L. S. Pagniello, Eyal Bigal, et al. 2026.
+<span>“Adaptive Genomic Divergence Parallels Migratory Behavior in
+Atlantic Bluefin Tuna.”</span> <em>Current Biology</em> 36: 2518–36. <a href="https://doi.org/10.1016/j.cub.2026.04.006" class="external-link">https://doi.org/10.1016/j.cub.2026.04.006</a>.
 </div>
 <div id="ref-Paradis2010" class="csl-entry">
 Paradis, Emmanuel. 2010. <span>“Pegas: An r Package for Population

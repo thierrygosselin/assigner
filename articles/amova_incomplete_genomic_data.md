@@ -67,6 +67,44 @@ for example, is derived from allelic correlations and sampling theory
 rather than from an arbitrary molecular-distance matrix ([Weir and
 Cockerham 1984](#ref-WeirCockerham1984)).
 
+### A nested-looking table is not necessarily an AMOVA hierarchy
+
+AMOVA requires more than columns that can be arranged as
+`REGION/STRATA`. The lower units must be biologically meaningful
+replicates for the higher-level inference. Capture locality, life stage,
+migratory route, inferred cluster, and reproductive population are not
+automatically interchangeable.
+
+Two recent highly migratory fish studies illustrate the distinction.
+Mikles et al. combined whole-genome data with independently observed
+movements of Atlantic bluefin tuna from Gulf of Mexico and Mediterranean
+spawning grounds ([Mikles et al. 2026](#ref-Mikles2026)). Adults and
+larvae form nested-looking categories, but they are life stages rather
+than replicated populations within each spawning region. With only two
+primary spawning populations, higher-level AMOVA has essentially no
+population replication. Their movement, ordination, differentiation, and
+demographic analyses addressed different and appropriate questions.
+
+Chevrier et al. sampled swordfish at many Indian Ocean localities and
+recovered a north-south signal associated strongly with a possible
+chromosomal inversion ([Chevrier et al. 2024](#ref-Chevrier2024)).
+Localities could form the lowest AMOVA level, but capture sites may mix
+reproductive origins, and testing a grouping discovered from the same
+SNPs is post hoc rather than independent confirmation ([Meirmans
+2015](#ref-Meirmans2015)). A useful AMOVA would be descriptive or use
+regions specified before examining the genotypes, and would compare
+linkage-pruned neutral loci, the inversion, and the genome with that
+region removed.
+
+Before fitting a hierarchy, ask whether the grouping was specified
+independently, whether lower units are biological replicates, whether
+enough units occur in every group, and whether one linked region could
+dominate the component.
+[`amova_genomic()`](https://thierrygosselin.github.io/assigner/reference/amova_genomic.md)
+can audit permutation support and linkage-aware marker uncertainty, but
+it cannot decide whether a metadata column represents a valid biological
+population. That decision belongs to the sampling design.
+
 ### The distance is part of the biological model
 
 The original AMOVA paper emphasizes that alternative distance matrices
@@ -358,12 +396,12 @@ fit
 #>     PHI_SC 0.02296129           NA
 head(fit$per_locus)
 #>   MARKERS     REGION      POP_ID    Within  N GROUPS EUCLIDEAN MIN_EIGENVALUE
-#> 1   loc_1 -0.1828342  0.26878189 0.4739583 20      4      TRUE  -3.157841e-15
-#> 2  loc_10  0.4545455 -0.05000000 0.3000000 23      4      TRUE  -9.137335e-16
-#> 3  loc_11  0.3264038 -0.05487714 0.4188889 19      4      TRUE  -2.688294e-15
-#> 4  loc_12  0.5063272  0.03518519 0.2981481 22      4      TRUE  -2.279589e-15
-#> 5   loc_2  0.2358076 -0.06604938 0.6814815 22      4      TRUE  -1.202430e-15
-#> 6   loc_3  0.1589945 -0.06736720 0.3598039 21      4      TRUE  -2.087598e-15
+#> 1   loc_1 -0.1828342  0.26878189 0.4739583 20      4      TRUE  -1.246316e-15
+#> 2  loc_10  0.4545455 -0.05000000 0.3000000 23      4      TRUE  -2.039205e-15
+#> 3  loc_11  0.3264038 -0.05487714 0.4188889 19      4      TRUE  -2.809005e-15
+#> 4  loc_12  0.5063272  0.03518519 0.2981481 22      4      TRUE  -2.556524e-15
+#> 5   loc_2  0.2358076 -0.06604938 0.6814815 22      4      TRUE  -1.323316e-15
+#> 6   loc_3  0.1589945 -0.06736720 0.3598039 21      4      TRUE  -1.693783e-15
 #>   CORRECTION
 #> 1          0
 #> 2          0
@@ -626,6 +664,11 @@ An AMOVA report should state at least:
 - permutation unit, restrictions, seed, and number of permutations;
 - whether negative variance components were retained or truncated.
 
+Chevrier, Thomas, Dominique A. Cowart, Anne-Elise Nieblas, et al. 2024.
+“Population Structure of the Swordfish, Xiphias Gladius, Across the
+Indian Ocean Using Next-Generation Sequencing.” *ICES Journal of Marine
+Science* 82 (5): fsae179. <https://doi.org/10.1093/icesjms/fsae179>.
+
 Dray, Stéphane, and Anne-Béatrice Dufour. 2007. “The Ade4 Package:
 Implementing the Duality Diagram for Ecologists.” *Journal of
 Statistical Software* 22 (4): 1–20.
@@ -654,6 +697,10 @@ Meirmans, Patrick G. 2006. “Using the AMOVA Framework to Estimate a
 Standardized Genetic Differentiation Measure.” *Evolution* 60 (11):
 2399–402. <https://doi.org/10.1111/j.0014-3820.2006.tb01874.x>.
 
+Meirmans, Patrick G. 2015. “Seven Common Mistakes in Population Genetics
+and How to Avoid Them.” *Molecular Ecology* 24 (13): 3223–31.
+<https://doi.org/10.1111/mec.13243>.
+
 Meirmans, Patrick G. 2020. “GenoDive Version 3.0: Easy-to-Use Software
 for the Analysis of Genetic Data of Diploids and Polyploids.” *Molecular
 Ecology Resources* 20 (4): 1126–31.
@@ -662,6 +709,11 @@ Ecology Resources* 20 (4): 1126–31.
 Meirmans, Patrick G., and Philip W. Hedrick. 2011. “Assessing Population
 Structure: FST and Related Measures.” *Molecular Ecology Resources* 11
 (1): 5–18. <https://doi.org/10.1111/j.1755-0998.2010.02927.x>.
+
+Mikles, Chloe S., Camille M. L. S. Pagniello, Eyal Bigal, et al. 2026.
+“Adaptive Genomic Divergence Parallels Migratory Behavior in Atlantic
+Bluefin Tuna.” *Current Biology* 36: 2518–36.
+<https://doi.org/10.1016/j.cub.2026.04.006>.
 
 Paradis, Emmanuel. 2010. “Pegas: An r Package for Population Genetics
 with an Integrated-Modular Approach.” *Bioinformatics* 26 (3): 419–20.
