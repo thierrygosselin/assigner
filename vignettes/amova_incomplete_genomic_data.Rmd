@@ -86,6 +86,38 @@ estimator called \(F_{ST}\). Weir and Cockerham's estimator, for example, is
 derived from allelic correlations and sampling theory rather than from an
 arbitrary molecular-distance matrix [@WeirCockerham1984].
 
+## A nested-looking table is not necessarily an AMOVA hierarchy
+
+AMOVA requires more than columns that can be arranged as `REGION/STRATA`.
+The lower units must be biologically meaningful replicates for the higher-level
+inference. Capture locality, life stage, migratory route, inferred cluster, and
+reproductive population are not automatically interchangeable.
+
+Two recent highly migratory fish studies illustrate the distinction. Mikles et
+al. combined whole-genome data with independently observed movements of
+Atlantic bluefin tuna from Gulf of Mexico and Mediterranean spawning grounds
+[@Mikles2026]. Adults and larvae form nested-looking categories, but they are
+life stages rather than replicated populations within each spawning region.
+With only two primary spawning populations, higher-level AMOVA has essentially
+no population replication. Their movement, ordination, differentiation, and
+demographic analyses addressed different and appropriate questions.
+
+Chevrier et al. sampled swordfish at many Indian Ocean localities and recovered
+a north-south signal associated strongly with a possible chromosomal inversion
+[@Chevrier2024]. Localities could form the lowest AMOVA level, but capture sites
+may mix reproductive origins, and testing a grouping discovered from the same
+SNPs is post hoc rather than independent confirmation [@Meirmans2015]. A useful
+AMOVA would be descriptive or use regions specified before examining the
+genotypes, and would compare linkage-pruned neutral loci, the inversion, and
+the genome with that region removed.
+
+Before fitting a hierarchy, ask whether the grouping was specified
+independently, whether lower units are biological replicates, whether enough
+units occur in every group, and whether one linked region could dominate the
+component. `amova_genomic()` can audit permutation support and linkage-aware
+marker uncertainty, but it cannot decide whether a metadata column represents
+a valid biological population. That decision belongs to the sampling design.
+
 ## The distance is part of the biological model
 
 The original AMOVA paper emphasizes that alternative distance matrices encode
