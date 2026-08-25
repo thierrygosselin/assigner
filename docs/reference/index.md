@@ -11,7 +11,7 @@
 - [`compare_unsampled_scores()`](https://thierrygosselin.github.io/assigner/reference/compare_unsampled_scores.md)
   : Compare assigner and WGSassign unsampled-source scores
 
-## Fst
+## Population differentiation
 
 - [`fst_NEI87()`](https://thierrygosselin.github.io/assigner/reference/fst_NEI87.md)
   : A fast implementation of Nei's 1987 Fst (overall and paiwise
@@ -19,6 +19,8 @@
 - [`fst_WC84()`](https://thierrygosselin.github.io/assigner/reference/fst_WC84.md)
   : A fast implementation of Weir and Cockerham (1984) Fst/Theta
   (overall and paiwise estimates)
+- [`amova_genomic()`](https://thierrygosselin.github.io/assigner/reference/amova_genomic.md)
+  : Hierarchical AMOVA for incomplete genomic data
 
 ## Utility
 

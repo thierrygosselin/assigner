@@ -10,10 +10,11 @@ reference:
   - assess_assignment_mc
   - compare_unsampled_scores
 
-- title: Fst
+- title: Population differentiation
   contents:
   - fst_NEI87
   - fst_WC84
+  - amova_genomic
 
 - title: Utility
   contents:
@@ -45,6 +46,8 @@ navbar:
       href: articles/get_started.html
     - text: Fst analysis
       href: articles/fst_confidence_intervals.html
+    - text: AMOVA for incomplete genomic data
+      href: articles/amova_incomplete_genomic_data.html
     - text: Using whitelists in assignment
       href: articles/assignment.whitelists.html
   - text: News

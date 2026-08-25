@@ -26,7 +26,10 @@ Use `assigner` to:
   potentially important information imbalances among source populations;
 - calculate an optional coverage-aware diagnostic for individuals that
   may originate from an unsampled source;
-- estimate global and pairwise FST with confidence intervals; and
+- estimate global and pairwise FST with confidence intervals;
+- run hierarchical AMOVA on incomplete genomic data with auditable
+  locus-wise sample support, selectable molecular distances, Euclidean
+  diagnostics, and hierarchy-aware permutations; and
 - keep analyses reproducible with recorded arguments, random seeds,
   intermediate results, and dated output folders.
 
@@ -48,6 +51,58 @@ vignette](https://thierrygosselin.github.io/assigner/articles/get_started.html#t
 explains these distinctions, leave-one-out assignment, unsampled
 alleles, missing data, validation, and the foundational references
 behind the methods.
+
+## AMOVA for incomplete genomic data
+
+[`amova_genomic()`](https://thierrygosselin.github.io/assigner/reference/amova_genomic.md)
+implements a hierarchical analysis of molecular variance for long
+genomic datasets. Its default missing-data strategy works locus by
+locus: individuals without a genotype at the current locus are omitted
+from that locus only, and the represented populations, sample sizes,
+degrees of freedom, and unequal-sample-size coefficients are
+recalculated from the observations that actually contribute.
+
+This follows the genomic, locus-wise philosophy used by Stacks while
+keeping the analysis accessible from R. It complements rather than
+replaces established AMOVA implementations in `ade4`, `pegas`, `poppr`,
+and GenoDive.
+
+``` r
+
+amova_result <- assigner::amova_genomic(
+  data = "genomic_data.gds",
+  hierarchy = c("REGION", "POP_ID"),
+  distance = "euclidean",
+  missing = "locuswise",
+  min_groups = 2,
+  min_individuals = 2,
+  standardized = FALSE
+)
+
+amova_result$global
+amova_result$per_locus
+amova_result$marker_audit
+```
+
+Available missing-data strategies are `"locuswise"`, `"filter"`, and
+`"complete"`. The function does **not** impute genotypes. Identity,
+nucleotide, Euclidean, Manhattan, and custom squared distances are
+supported. A Meirmans-style standardized statistic is currently limited
+to identity distance, where the maximum distance has a defined meaning;
+distances are never standardized by their observed sample maximum.
+
+The `data` argument follows the rest of `assigner`: use a GDS file path
+or an open GDS object supported by
+[`genometranslator::read_genome()`](https://thierrygosselin.github.io/genometranslator/reference/read_genome.html).
+Standard diploid dosage is selected automatically. Use `strata` when
+hierarchy columns are kept in a separate strata file, or set `value`
+explicitly for haplotype and custom distance analyses.
+
+The [AMOVA for incomplete genomic data
+vignette](https://thierrygosselin.github.io/assigner/articles/amova_incomplete_genomic_data.html)
+explains the variance-component theory, distance geometry, standardized
+differentiation, missing-data assumptions, existing implementations,
+validation strategy, and recommended literature.
 
 ## Installation
 
@@ -76,6 +131,8 @@ assigner::check_gsi_sim()
   reference](https://thierrygosselin.github.io/assigner/reference/index.html)
 - [FST confidence
   intervals](https://thierrygosselin.github.io/assigner/articles/fst_confidence_intervals.html)
+- [AMOVA for incomplete genomic
+  data](https://thierrygosselin.github.io/assigner/articles/amova_incomplete_genomic_data.html)
 - [Development
   roadmap](https://github.com/thierrygosselin/assigner/blob/main/ROADMAP.md)
 - [Issue tracker](https://github.com/thierrygosselin/assigner/issues)
@@ -96,7 +153,7 @@ the recommended citation with `citation("assigner")`.
 - [`compare_unsampled_scores()`](https://thierrygosselin.github.io/assigner/reference/compare_unsampled_scores.md)
   : Compare assigner and WGSassign unsampled-source scores
 
-## Fst
+## Population differentiation
 
 - [`fst_NEI87()`](https://thierrygosselin.github.io/assigner/reference/fst_NEI87.md)
   : A fast implementation of Nei's 1987 Fst (overall and paiwise
@@ -104,6 +161,8 @@ the recommended citation with `citation("assigner")`.
 - [`fst_WC84()`](https://thierrygosselin.github.io/assigner/reference/fst_WC84.md)
   : A fast implementation of Weir and Cockerham (1984) Fst/Theta
   (overall and paiwise estimates)
+- [`amova_genomic()`](https://thierrygosselin.github.io/assigner/reference/amova_genomic.md)
+  : Hierarchical AMOVA for incomplete genomic data
 
 ## Utility
 
@@ -131,6 +190,8 @@ the recommended citation with `citation("assigner")`.
 
 ### All vignettes
 
+- [AMOVA for incomplete genomic
+  data](https://thierrygosselin.github.io/assigner/articles/amova_incomplete_genomic_data.md):
 - [Running assigner::evaluate_assignment with several
   whitelists](https://thierrygosselin.github.io/assigner/articles/assignment.whitelists.md):
 - [Comparisons of Fst

@@ -68,6 +68,7 @@ involves more than 2 populations that evolved more by neutral processes
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/get_started.html">Get started</a></li>
     <li><a class="dropdown-item" href="../articles/fst_confidence_intervals.html">Fst analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/amova_incomplete_genomic_data.html">AMOVA for incomplete genomic data</a></li>
     <li><a class="dropdown-item" href="../articles/assignment.whitelists.html">Using whitelists in assignment</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -324,11 +325,13 @@ Molecular Ecology. 17: 4015-4026.</p>
 populations,
 it is adviseable to perform an overall test of population differentiation,
 possibly using a hierarchical population structure, (see AMOVA)'</em></p>
-<p>To compute an AMOVA, use <a href="http://www.bentleydrummer.nl/software/software/GenoDive.html" class="external-link">GenoDive</a></p>
+<p>For hierarchical AMOVA of incomplete genomic data, see
+<code><a href="amova_genomic.html">amova_genomic</a></code>. Independent implementations useful for
+comparison include <span class="pkg">ade4</span>, <span class="pkg">pegas</span>, <span class="pkg">poppr</span>, GenoDive, and
+Stacks.</p>
 <p><a href="https://github.com/jgx65/hierfstat/" class="external-link">hierfstat</a></p>
-<p>Link for <a href="http://www.bentleydrummer.nl/software/software/GenoDive.html" class="external-link">GenoDive</a></p>
 <p>For Fisher's exact test and p-values per markers
-see <code>mmod</code> <code>diff_test</code>.</p>
+see an appropriate maintained exact-test implementation.</p>
 <p><code><a href="https://thierrygosselin.github.io/genometranslator/reference/read_genome.html" class="external-link">read_genome</a></code> to import supported genomic data
 format in tidy data frames.</p></div>
     </div>

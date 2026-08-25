@@ -28,20 +28,26 @@ The first implementation should prioritize pairwise Dxy from reference-guided
 GDS data. Haplotype-level Dxy should follow once phased haplotypes have a stable
 representation.
 
-## 2. AMOVA
+## 2. AMOVA - initial implementation available
 
-Develop an Analysis of Molecular Variance framework that can support:
+`amova_genomic()` now provides the first Analysis of Molecular Variance
+framework with:
 
-- one or more hierarchical grouping columns from the strata data;
-- SNP, allele, and haplotype distance models;
-- variance components at every hierarchy level;
-- Phi-statistics, including PhiST where appropriate;
-- permutation tests with reproducible random seeds; and
-- clear reporting of missing data, sample size, and degrees of freedom.
+- GDS files or open GDS objects as the primary input;
+- one or more hierarchical grouping columns from GDS metadata or strata data;
+- SNP-dosage, identity, nucleotide, Manhattan, and custom distance models;
+- locus-wise, filtered, and complete-case missing-data strategies;
+- variance components and Phi-statistics at supported hierarchy levels;
+- Euclidean validation and optional Lingoes correction;
+- hierarchy-aware permutation tests with reproducible random seeds; and
+- explicit reporting of retained loci, missing data, sample size, eigenvalues,
+  corrections, and degrees of freedom.
 
-AMOVA should be a separate public function, not an option hidden inside
-fst_WC84(). The initial implementation should be checked against published
-examples and established programs such as Arlequin and GenoDive.
+AMOVA is a separate public function rather than an option hidden inside
+`fst_WC84()`. Remaining work is validation against published examples,
+simulations, and established programs including `ade4`, `pegas`, `poppr`,
+Arlequin, GenoDive, and Stacks; deeper testing of informative missingness; and
+profiling before moving selected numerical kernels to C++.
 
 ## 3. Phased haplotypes
 

@@ -2,6 +2,8 @@
 
 ### All vignettes
 
+- [AMOVA for incomplete genomic
+  data](https://thierrygosselin.github.io/assigner/articles/amova_incomplete_genomic_data.md):
 - [Running assigner::evaluate_assignment with several
   whitelists](https://thierrygosselin.github.io/assigner/articles/assignment.whitelists.md):
 - [Comparisons of Fst

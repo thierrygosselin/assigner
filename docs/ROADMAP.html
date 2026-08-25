@@ -22,6 +22,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/get_started.html">Get started</a></li>
     <li><a class="dropdown-item" href="articles/fst_confidence_intervals.html">Fst analysis</a></li>
+    <li><a class="dropdown-item" href="articles/amova_incomplete_genomic_data.html">AMOVA for incomplete genomic data</a></li>
     <li><a class="dropdown-item" href="articles/assignment.whitelists.html">Using whitelists in assignment</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">News</a></li>
@@ -57,15 +58,17 @@
 </ul><p>The first implementation should prioritize pairwise Dxy from reference-guided GDS data. Haplotype-level Dxy should follow once phased haplotypes have a stable representation.</p>
 </div>
 <div class="section level2">
-<h2 id="id_2-amova">2. AMOVA<a class="anchor" aria-label="anchor" href="#id_2-amova"></a></h2>
-<p>Develop an Analysis of Molecular Variance framework that can support:</p>
-<ul><li>one or more hierarchical grouping columns from the strata data;</li>
-<li>SNP, allele, and haplotype distance models;</li>
-<li>variance components at every hierarchy level;</li>
-<li>Phi-statistics, including PhiST where appropriate;</li>
-<li>permutation tests with reproducible random seeds; and</li>
-<li>clear reporting of missing data, sample size, and degrees of freedom.</li>
-</ul><p>AMOVA should be a separate public function, not an option hidden inside fst_WC84(). The initial implementation should be checked against published examples and established programs such as Arlequin and GenoDive.</p>
+<h2 id="id_2-amova---initial-implementation-available">2. AMOVA - initial implementation available<a class="anchor" aria-label="anchor" href="#id_2-amova---initial-implementation-available"></a></h2>
+<p><code><a href="reference/amova_genomic.html">amova_genomic()</a></code> now provides the first Analysis of Molecular Variance framework with:</p>
+<ul><li>GDS files or open GDS objects as the primary input;</li>
+<li>one or more hierarchical grouping columns from GDS metadata or strata data;</li>
+<li>SNP-dosage, identity, nucleotide, Manhattan, and custom distance models;</li>
+<li>locus-wise, filtered, and complete-case missing-data strategies;</li>
+<li>variance components and Phi-statistics at supported hierarchy levels;</li>
+<li>Euclidean validation and optional Lingoes correction;</li>
+<li>hierarchy-aware permutation tests with reproducible random seeds; and</li>
+<li>explicit reporting of retained loci, missing data, sample size, eigenvalues, corrections, and degrees of freedom.</li>
+</ul><p>AMOVA is a separate public function rather than an option hidden inside <code><a href="reference/fst_WC84.html">fst_WC84()</a></code>. Remaining work is validation against published examples, simulations, and established programs including <code>ade4</code>, <code>pegas</code>, <code>poppr</code>, Arlequin, GenoDive, and Stacks; deeper testing of informative missingness; and profiling before moving selected numerical kernels to C++.</p>
 </div>
 <div class="section level2">
 <h2 id="id_3-phased-haplotypes">3. Phased haplotypes<a class="anchor" aria-label="anchor" href="#id_3-phased-haplotypes"></a></h2>

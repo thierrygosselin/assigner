@@ -98,6 +98,7 @@ are applied to the WC84 variance components before Fst is calculated."><meta pro
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/get_started.html">Get started</a></li>
     <li><a class="dropdown-item" href="../articles/fst_confidence_intervals.html">Fst analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/amova_incomplete_genomic_data.html">AMOVA for incomplete genomic data</a></li>
     <li><a class="dropdown-item" href="../articles/assignment.whitelists.html">Using whitelists in assignment</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -452,11 +453,13 @@ doi:10.1093/bioinformatics/bts606</p>
 populations,
 it is advisable to perform an overall test of population differentiation,
 possibly using a hierarchical population structure, (see AMOVA)'</em>.
-To compute an AMOVA, use <a href="http://www.bentleydrummer.nl/software/software/GenoDive.html" class="external-link">GenoDive</a>
-or <code>Phi_st_Meirmans</code> in <code>mmod</code>.</p>
+For hierarchical AMOVA of incomplete genomic data, see
+<code><a href="amova_genomic.html">amova_genomic</a></code>. Independent implementations useful for
+comparison include <span class="pkg">ade4</span>, <span class="pkg">pegas</span>, <span class="pkg">poppr</span>, GenoDive, and
+Stacks.</p>
 <p><a href="https://github.com/jgx65/hierfstat/" class="external-link">hierfstat</a></p>
 <p>For Fisher's exact test and p-values per markers
-see <code>mmod</code> <code>diff_test</code>.</p>
+see an appropriate maintained exact-test implementation.</p>
 <p><strong>Vignette for this function:</strong> <a href="https://www.dropbox.com/s/tiq4yenzmgzc2f5/fst_confidence_intervals.html?dl=0" class="external-link">how to do the pairwise and overall Fst with confidence intervals and build the phylogenetic tree</a></p></div>
     </div>
     <div class="section level2">

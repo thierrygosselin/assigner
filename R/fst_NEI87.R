@@ -222,14 +222,15 @@
 #' it is adviseable to perform an overall test of population differentiation,
 #' possibly using a hierarchical population structure, (see AMOVA)'}
 #'
-#' To compute an AMOVA, use \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
+#' For hierarchical AMOVA of incomplete genomic data, see
+#' \code{\link{amova_genomic}}. Independent implementations useful for
+#' comparison include \pkg{ade4}, \pkg{pegas}, \pkg{poppr}, GenoDive, and
+#' Stacks.
 #'
 #' \href{https://github.com/jgx65/hierfstat/}{hierfstat}
 #'
-#' Link for \href{http://www.bentleydrummer.nl/software/software/GenoDive.html}{GenoDive}
-#'
 #' For Fisher's exact test and p-values per markers
-#' see \code{mmod} \code{diff_test}.
+#' see an appropriate maintained exact-test implementation.
 #'
 #' \code{\link[genometranslator]{read_genome}} to import supported genomic data
 #' format in tidy data frames.
