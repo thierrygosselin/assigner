@@ -443,33 +443,32 @@ argument.</p>
 <span><span class="va">individual_strata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  INDIVIDUALS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"ind_%02d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">24</span><span class="op">)</span>,</span>
 <span>  REGION <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"north"</span>, <span class="st">"south"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
-<span>  POP_ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n1"</span>, <span class="st">"n2"</span>, <span class="st">"s1"</span>, <span class="st">"s2"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
+<span>  STRATA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n1"</span>, <span class="st">"n2"</span>, <span class="st">"s1"</span>, <span class="st">"s2"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">example_amova</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">example_amova</span>, <span class="va">individual_strata</span>, by <span class="op">=</span> <span class="st">"INDIVIDUALS"</span><span class="op">)</span></span>
 <span><span class="va">population_effect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>n1 <span class="op">=</span> <span class="fl">0.1</span>, n2 <span class="op">=</span> <span class="fl">0.6</span>, s1 <span class="op">=</span> <span class="fl">1.2</span>, s2 <span class="op">=</span> <span class="fl">1.7</span><span class="op">)</span></span>
-<span><span class="va">example_amova</span><span class="op">$</span><span class="va">GT_BIN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span></span>
+<span><span class="va">example_amova</span><span class="op">$</span><span class="va">GT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">example_amova</span><span class="op">)</span>, <span class="fl">2</span>,</span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">population_effect</span><span class="op">[</span><span class="va">example_amova</span><span class="op">$</span><span class="va">POP_ID</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">population_effect</span><span class="op">[</span><span class="va">example_amova</span><span class="op">$</span><span class="va">STRATA</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">example_amova</span><span class="op">$</span><span class="va">GT_BIN</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">example_amova</span><span class="op">)</span>, <span class="fl">30</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
+<span><span class="va">example_amova</span><span class="op">$</span><span class="va">GT</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">example_amova</span><span class="op">)</span>, <span class="fl">30</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_amova</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   INDIVIDUALS MARKERS REGION POP_ID GT_BIN</span></span>
-<span><span class="co">#&gt; 1      ind_01   loc_1  north     n1      1</span></span>
-<span><span class="co">#&gt; 2      ind_01   loc_6  north     n1     NA</span></span>
-<span><span class="co">#&gt; 3      ind_01  loc_11  north     n1      0</span></span>
-<span><span class="co">#&gt; 4      ind_01   loc_5  north     n1      0</span></span>
-<span><span class="co">#&gt; 5      ind_01  loc_10  north     n1      1</span></span>
-<span><span class="co">#&gt; 6      ind_01   loc_8  north     n1      0</span></span></code></pre></div>
+<span><span class="co">#&gt;   INDIVIDUALS MARKERS REGION STRATA GT</span></span>
+<span><span class="co">#&gt; 1      ind_01   loc_1  north     n1  1</span></span>
+<span><span class="co">#&gt; 2      ind_01   loc_6  north     n1 NA</span></span>
+<span><span class="co">#&gt; 3      ind_01  loc_11  north     n1  0</span></span>
+<span><span class="co">#&gt; 4      ind_01   loc_5  north     n1  0</span></span>
+<span><span class="co">#&gt; 5      ind_01  loc_10  north     n1  1</span></span>
+<span><span class="co">#&gt; 6      ind_01   loc_8  north     n1  0</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="locus-wise-amova">Locus-wise AMOVA<a class="anchor" aria-label="anchor" href="#locus-wise-amova"></a>
 </h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amova_genomic.html">amova_genomic</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">example_amova</span>,</span>
-<span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"POP_ID"</span><span class="op">)</span>,</span>
-<span>  value <span class="op">=</span> <span class="st">"GT_BIN"</span>,</span>
+<span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"STRATA"</span><span class="op">)</span>,</span>
 <span>  distance <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
 <span>  missing <span class="op">=</span> <span class="st">"locuswise"</span>,</span>
 <span>  min.groups <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -488,7 +487,7 @@ argument.</p>
 <span><span class="co">#&gt;     PHI_CT 0.30824170           NA</span></span>
 <span><span class="co">#&gt;     PHI_SC 0.02296129           NA</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">per_locus</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   MARKERS     REGION      POP_ID    Within  N GROUPS EUCLIDEAN MIN_EIGENVALUE</span></span>
+<span><span class="co">#&gt;   MARKERS     REGION      STRATA    Within  N GROUPS EUCLIDEAN MIN_EIGENVALUE</span></span>
 <span><span class="co">#&gt; 1   loc_1 -0.1828342  0.26878189 0.4739583 20      4      TRUE  -1.246316e-15</span></span>
 <span><span class="co">#&gt; 2  loc_10  0.4545455 -0.05000000 0.3000000 23      4      TRUE  -2.039205e-15</span></span>
 <span><span class="co">#&gt; 3  loc_11  0.3264038 -0.05487714 0.4188889 19      4      TRUE  -2.809005e-15</span></span>
@@ -517,8 +516,7 @@ argument.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_filtered</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amova_genomic.html">amova_genomic</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">example_amova</span>,</span>
-<span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"POP_ID"</span><span class="op">)</span>,</span>
-<span>  value <span class="op">=</span> <span class="st">"GT_BIN"</span>,</span>
+<span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"STRATA"</span><span class="op">)</span>,</span>
 <span>  distance <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
 <span>  missing <span class="op">=</span> <span class="st">"filter"</span>,</span>
 <span>  min.call.rate <span class="op">=</span> <span class="fl">0.75</span>,</span>
@@ -544,7 +542,7 @@ implemented.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_identity</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amova_genomic.html">amova_genomic</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">haplotype_data</span>,</span>
-<span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"POP_ID"</span><span class="op">)</span>,</span>
+<span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"STRATA"</span><span class="op">)</span>,</span>
 <span>  value <span class="op">=</span> <span class="st">"HAPLOTYPE"</span>,</span>
 <span>  distance <span class="op">=</span> <span class="st">"identity"</span>,</span>
 <span>  missing <span class="op">=</span> <span class="st">"locuswise"</span>,</span>
@@ -557,8 +555,7 @@ implemented.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_permuted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amova_genomic.html">amova_genomic</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">example_amova</span>,</span>
-<span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"POP_ID"</span><span class="op">)</span>,</span>
-<span>  value <span class="op">=</span> <span class="st">"GT_BIN"</span>,</span>
+<span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"STRATA"</span><span class="op">)</span>,</span>
 <span>  distance <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
 <span>  missing <span class="op">=</span> <span class="st">"locuswise"</span>,</span>
 <span>  standardized <span class="op">=</span> <span class="cn">FALSE</span>,</span>

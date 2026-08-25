@@ -72,7 +72,7 @@ and GenoDive.
 
 amova_result <- assigner::amova_genomic(
   data = "genomic_data.gds",
-  hierarchy = c("REGION", "POP_ID"),
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "locuswise",
   min.groups = 2,

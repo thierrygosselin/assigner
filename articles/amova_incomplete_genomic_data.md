@@ -348,25 +348,25 @@ example_amova <- expand.grid(
 individual_strata <- data.frame(
   INDIVIDUALS = sprintf("ind_%02d", 1:24),
   REGION = rep(c("north", "south"), each = 12),
-  POP_ID = rep(c("n1", "n2", "s1", "s2"), each = 6)
+  STRATA = rep(c("n1", "n2", "s1", "s2"), each = 6)
 )
 
 example_amova <- merge(example_amova, individual_strata, by = "INDIVIDUALS")
 population_effect <- c(n1 = 0.1, n2 = 0.6, s1 = 1.2, s2 = 1.7)
-example_amova$GT_BIN <- rbinom(
+example_amova$GT <- rbinom(
   nrow(example_amova), 2,
-  plogis(-1 + population_effect[example_amova$POP_ID])
+  plogis(-1 + population_effect[example_amova$STRATA])
 )
-example_amova$GT_BIN[sample(nrow(example_amova), 30)] <- NA
+example_amova$GT[sample(nrow(example_amova), 30)] <- NA
 
 head(example_amova)
-#>   INDIVIDUALS MARKERS REGION POP_ID GT_BIN
-#> 1      ind_01   loc_1  north     n1      1
-#> 2      ind_01   loc_6  north     n1     NA
-#> 3      ind_01  loc_11  north     n1      0
-#> 4      ind_01   loc_5  north     n1      0
-#> 5      ind_01  loc_10  north     n1      1
-#> 6      ind_01   loc_8  north     n1      0
+#>   INDIVIDUALS MARKERS REGION STRATA GT
+#> 1      ind_01   loc_1  north     n1  1
+#> 2      ind_01   loc_6  north     n1 NA
+#> 3      ind_01  loc_11  north     n1  0
+#> 4      ind_01   loc_5  north     n1  0
+#> 5      ind_01  loc_10  north     n1  1
+#> 6      ind_01   loc_8  north     n1  0
 ```
 
 ### Locus-wise AMOVA
@@ -375,8 +375,7 @@ head(example_amova)
 
 fit <- amova_genomic(
   data = example_amova,
-  hierarchy = c("REGION", "POP_ID"),
-  value = "GT_BIN",
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "locuswise",
   min.groups = 2,
@@ -395,7 +394,7 @@ fit
 #>     PHI_CT 0.30824170           NA
 #>     PHI_SC 0.02296129           NA
 head(fit$per_locus)
-#>   MARKERS     REGION      POP_ID    Within  N GROUPS EUCLIDEAN MIN_EIGENVALUE
+#>   MARKERS     REGION      STRATA    Within  N GROUPS EUCLIDEAN MIN_EIGENVALUE
 #> 1   loc_1 -0.1828342  0.26878189 0.4739583 20      4      TRUE  -1.246316e-15
 #> 2  loc_10  0.4545455 -0.05000000 0.3000000 23      4      TRUE  -2.039205e-15
 #> 3  loc_11  0.3264038 -0.05487714 0.4188889 19      4      TRUE  -2.809005e-15
@@ -425,8 +424,7 @@ head(fit$marker_audit)
 
 fit_filtered <- amova_genomic(
   data = example_amova,
-  hierarchy = c("REGION", "POP_ID"),
-  value = "GT_BIN",
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "filter",
   min.call.rate = 0.75,
@@ -453,7 +451,7 @@ statistics whose maxima have not been implemented.
 
 fit_identity <- amova_genomic(
   data = haplotype_data,
-  hierarchy = c("REGION", "POP_ID"),
+  hierarchy = c("REGION", "STRATA"),
   value = "HAPLOTYPE",
   distance = "identity",
   missing = "locuswise",
@@ -467,8 +465,7 @@ fit_identity <- amova_genomic(
 
 fit_permuted <- amova_genomic(
   data = example_amova,
-  hierarchy = c("REGION", "POP_ID"),
-  value = "GT_BIN",
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "locuswise",
   standardized = FALSE,
