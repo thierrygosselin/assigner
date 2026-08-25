@@ -1,0 +1,24 @@
+# Authors and Citation
+
+## Authors
+
+- **Thierry Gosselin**. Author, maintainer.
+
+- **Eric C. Anderson**. Contributor.
+
+## Citation
+
+Source:
+[`inst/CITATION`](https://github.com/thierrygosselin/assigner/blob/master/inst/CITATION)
+
+Gosselin, T, Anderson, E. C., Bradbury, I. (2020). assigner: Assignment
+Analysis with GBS/RAD Data using R. R package version 0.5.8.
+http://thierrygosselin.github.io/assigner/. doi : 10.5281/zenodo.592677
+
+    @Manual{,
+      title = {assigner: Assignment Analysis with GBS/RAD Data using R},
+      year = {2020},
+      author = {Thierry Gosselin},
+      url = {https://github.com/thierrygosselin/assigner},
+      doi = {10.5281/zenodo.592677},
+    }

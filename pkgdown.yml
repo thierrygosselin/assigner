@@ -1,0 +1,14 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  amova_incomplete_genomic_data: amova_incomplete_genomic_data.html
+  assignment.whitelists: assignment.whitelists.html
+  web_only/fst_comparisons: web_only/fst_comparisons.html
+  fst_confidence_intervals: fst_confidence_intervals.html
+  get_started: get_started.html
+  life_cycle: life_cycle.html
+last_built: 2026-08-25T03:38Z
+urls:
+  reference: https://thierrygosselin.github.io/assigner/reference
+  article: https://thierrygosselin.github.io/assigner/articles

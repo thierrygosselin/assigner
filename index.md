@@ -1,0 +1,142 @@
+# assigner
+
+`assigner` helps answer a practical question: **how well can genomic
+data assign individuals to candidate source populations?**
+
+Use `assigner` to:
+
+- assign individuals with a native population-genetic likelihood method
+  written entirely in R, using called genotypes (`GT`) or genotype
+  likelihoods (`GL` and `PL`);
+- retain the likelihood of every individual in every candidate
+  population, not only the best and second-best assignments;
+- compare likelihood assignment with elastic net, XGBoost, experimental
+  TabPFN, `adegenet`, or Eric C. Anderson’s
+  [`gsi_sim`](https://github.com/eriqande/gsi_sim) workflows;
+- evaluate assignment honestly with holdout samples, leave-one-out
+  estimation, and repeated marker panels;
+- avoid the high-grading bias described by Anderson (2010) by keeping
+  marker selection inside the training data and holdout individuals
+  untouched;
+- compare random marker panels with panels ranked by population
+  differentiation;
+- calculate and visualize Dlr as a measure of assignment resolution
+  between population pairs;
+- quantify effective reference sample size for GL/PL data and identify
+  potentially important information imbalances among source populations;
+- calculate an optional coverage-aware diagnostic for individuals that
+  may originate from an unsampled source;
+- estimate global and pairwise FST with confidence intervals;
+- run hierarchical AMOVA on incomplete genomic data with auditable
+  locus-wise sample support, selectable molecular distances, Euclidean
+  diagnostics, hierarchy-aware permutations, marker confidence
+  intervals, and population sensitivity analysis; and
+- keep analyses reproducible with recorded arguments, random seeds,
+  intermediate results, and dated output folders.
+
+Ordinary leave-one-out assignment does not remove the high-grading bias
+created when the same individuals were already used to select apparently
+informative loci. See [Anderson
+(2010)](https://doi.org/10.1111/j.1755-0998.2010.02846.x) and the
+get-started vignette for the Training-Holdout-Leave-one-out design.
+
+`assigner` accepts genomic data prepared with
+[genometranslator](https://thierrygosselin.github.io/genometranslator/)
+and expects genomic quality control and filtering to have been completed
+first, for example with [radr](https://thierrygosselin.github.io/radr/).
+
+The package distinguishes assignment to predefined reference populations
+from clustering, mixture estimation, and statistical migrant detection.
+The [get-started
+vignette](https://thierrygosselin.github.io/assigner/articles/get_started.html#theory-and-interpretation)
+explains these distinctions, leave-one-out assignment, unsampled
+alleles, missing data, validation, and the foundational references
+behind the methods.
+
+## AMOVA for incomplete genomic data
+
+[`amova_genomic()`](https://thierrygosselin.github.io/assigner/reference/amova_genomic.md)
+implements a hierarchical analysis of molecular variance for long
+genomic datasets. Its default missing-data strategy works locus by
+locus: individuals without a genotype at the current locus are omitted
+from that locus only, and the represented populations, sample sizes,
+degrees of freedom, and unequal-sample-size coefficients are
+recalculated from the observations that actually contribute.
+
+This follows the genomic, locus-wise philosophy used by Stacks while
+keeping the analysis accessible from R. It complements rather than
+replaces established AMOVA implementations in `ade4`, `pegas`, `poppr`,
+and GenoDive.
+
+``` r
+
+amova_result <- assigner::amova_genomic(
+  data = "genomic_data.gds",
+  hierarchy = c("REGION", "POP_ID"),
+  distance = "euclidean",
+  missing = "locuswise",
+  min.groups = 2,
+  min.individuals = 2,
+  standardized = FALSE
+)
+
+amova_result$global
+amova_result$per_locus
+amova_result$marker_audit
+```
+
+Available missing-data strategies are `"locuswise"`, `"filter"`, and
+`"complete"`. The function does **not** impute genotypes. Identity,
+nucleotide, Euclidean, Manhattan, and custom squared distances are
+supported. A Meirmans-style standardized statistic is currently limited
+to identity distance, where the maximum distance has a defined meaning;
+distances are never standardized by their observed sample maximum.
+
+The `data` argument follows the rest of `assigner`: use a GDS file path
+or an open GDS object supported by
+[`genometranslator::read_genome()`](https://thierrygosselin.github.io/genometranslator/reference/read_genome.html).
+Standard diploid dosage is selected automatically. Use `strata` when
+hierarchy columns are kept in a separate strata file, or set `value`
+explicitly for haplotype and custom distance analyses.
+
+The [AMOVA for incomplete genomic data
+vignette](https://thierrygosselin.github.io/assigner/articles/amova_incomplete_genomic_data.html)
+explains the variance-component theory, distance geometry, standardized
+differentiation, missing-data assumptions, existing implementations,
+validation strategy, and recommended literature.
+
+## Installation
+
+``` r
+
+install.packages("remotes")
+remotes::install_github("thierrygosselin/assigner")
+```
+
+[`gsi_sim`](https://github.com/eriqande/gsi_sim), developed by assigner
+co-author Eric C. Anderson, is optional and is not installed by the R
+package. Complete installation instructions are in the [get-started
+vignette](https://thierrygosselin.github.io/assigner/articles/get_started.html).
+After installing it, verify the setup with:
+
+``` r
+
+assigner::check_gsi_sim()
+```
+
+## Start here
+
+- [Get
+  started](https://thierrygosselin.github.io/assigner/articles/get_started.html)
+- [Function
+  reference](https://thierrygosselin.github.io/assigner/reference/index.html)
+- [FST confidence
+  intervals](https://thierrygosselin.github.io/assigner/articles/fst_confidence_intervals.html)
+- [AMOVA for incomplete genomic
+  data](https://thierrygosselin.github.io/assigner/articles/amova_incomplete_genomic_data.html)
+- [Development
+  roadmap](https://github.com/thierrygosselin/assigner/blob/main/ROADMAP.md)
+- [Issue tracker](https://github.com/thierrygosselin/assigner/issues)
+
+Record the package version with `packageVersion("assigner")` and obtain
+the recommended citation with `citation("assigner")`.
