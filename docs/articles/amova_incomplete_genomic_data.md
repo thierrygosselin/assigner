@@ -38,12 +38,12 @@ Method-of-moments equations then estimate variance components while
 accounting for unequal sample sizes ([Excoffier et al.
 1992](#ref-Excoffier1992)).
 
-For a hierarchy `REGION/POP_ID`, the variance components are
+For a hierarchy `REGION/STRATA`, the variance components are
 conventionally written as
 
-- (\_a^2): among regions;
-- (\_b^2): among populations within regions;
-- (\_c^2): within populations.
+- $`\sigma_a^2`$: among regions;
+- $`\sigma_b^2`$: among populations within regions;
+- $`\sigma_c^2`$: within populations.
 
 The associated statistics are
 
@@ -61,7 +61,7 @@ The associated statistics are
 
 The notation describes correlations of molecular differences at
 specified hierarchical levels. It should not be confused automatically
-with every estimator called (F\_{ST}). Weir and Cockerham’s estimator,
+with every estimator called $`F_{ST}`$. Weir and Cockerham’s estimator,
 for example, is derived from allelic correlations and sampling theory
 rather than from an arbitrary molecular-distance matrix ([Weir and
 Cockerham 1984](#ref-WeirCockerham1984)).
@@ -101,7 +101,7 @@ sampling uncertainty, the distance, and the sampling design.
 
 ## Standardized differentiation is a second calculation
 
-(\_{ST}) may have a low attainable maximum when within-population
+$`\Phi_{ST}`$ may have a low attainable maximum when within-population
 diversity is high. Meirmans proposed standardizing the statistic by its
 maximum possible value conditional on the observed within-population
 component ([Meirmans 2006](#ref-Meirmans2006)):
@@ -119,13 +119,14 @@ Following the logic used by GenoDive and Stacks, `assigner` currently
 computes the standardized statistic only with identity distance. The
 observed within-population distances are retained, whereas
 between-population distances are replaced by their theoretical maximum.
-Other distances can be used for (*{ST}), but they do not receive an
-automatic (’*{ST}) unless a defensible theoretical maximum is supplied.
+Other distances can be used for $`\Phi_{ST}`$, but they do not receive
+an automatic $`\Phi'_{ST}`$ unless a defensible theoretical maximum is
+supplied.
 
-This is why (*{ST}) and (’*{ST}) need not use the same distance matrix.
-Reporting both can be useful because ordinary and standardized
-differentiation answer related but distinct questions ([Meirmans and
-Hedrick 2011](#ref-MeirmansHedrick2011)).
+This is why $`\Phi_{ST}`$ and $`\Phi'_{ST}`$ need not use the same
+distance matrix. Reporting both can be useful because ordinary and
+standardized differentiation answer related but distinct questions
+([Meirmans and Hedrick 2011](#ref-MeirmansHedrick2011)).
 
 ## Why incomplete genomic data need special treatment
 
@@ -228,7 +229,7 @@ are single-completion, frequency-based approaches. They should not be
 described as a modern multiple-imputation framework designed to
 propagate uncertainty from the high and structured missingness often
 observed in RADseq datasets. GenoDive’s standardized AMOVA is closely
-connected to Meirmans’ derivation of (’\_{ST}) ([Meirmans
+connected to Meirmans’ derivation of $`\Phi'_{ST}`$([Meirmans
 2006](#ref-Meirmans2006)), making it an important reference
 implementation and a useful independent comparison for `assigner`.
 
@@ -250,7 +251,7 @@ recalculated from the represented haplotypes. It supports minimum sample
 proportions per population and minimum numbers of represented
 populations.
 
-Stacks calculates haplotype (\_{ST}) using nucleotide-substitution
+Stacks calculates haplotype $`\Phi_{ST}`$ using nucleotide-substitution
 distances. For standardized differentiation, it separately uses identity
 distances and constructs a maximum between-population distance. These
 choices strongly influenced the `assigner` design.
@@ -270,13 +271,13 @@ incomplete-genomic-data contract:
 - the observations and hierarchical units contributing to every locus
   are recalculated rather than inferred from the full input strata;
 - global statistics are ratios of **summed locus variance components**,
-  not arithmetic means of locus ()-statistics;
+  not arithmetic means of locus $`\Phi`$-statistics;
 - marker call rates, represented groups, sample sizes, retained loci,
   eigenvalues, and geometric corrections are returned for audit;
 - distance methods have explicit names and allow a custom
   squared-distance function;
-- ordinary ()-statistics and standardized (’\_{ST}) are kept as separate
-  calculations;
+- ordinary $`\Phi`$-statistics and standardized $`\Phi'_{ST}`$ are kept
+  as separate calculations;
 - permutation occurs at the exchangeable unit appropriate to the tested
   hierarchy level;
 - imputation is intentionally outside the function.
@@ -567,7 +568,7 @@ Before treating this implementation as a reference estimator, it should
 be validated in layers:
 
 1.  **Complete balanced data:** compare sums of squares, mean squares,
-    variance components, and ()-statistics with `ade4`, `pegas`,
+    variance components, and $`\Phi`$-statistics with `ade4`, `pegas`,
     GenoDive, and Stacks where their input models overlap.
 2.  **Complete unbalanced data:** verify unequal-sample-size
     coefficients against worked calculations and independent software.
@@ -597,7 +598,7 @@ The following sequence gives a useful path through the subject:
     Cockerham 1984](#ref-WeirCockerham1984)).
 3.  Meirmans for standardized AMOVA differentiation ([Meirmans
     2006](#ref-Meirmans2006)).
-4.  Meirmans and Hedrick for the interpretation of (F\_{ST}),
+4.  Meirmans and Hedrick for the interpretation of $`F_{ST}`$,
     standardized (F’\_{ST}), and related measures ([Meirmans and Hedrick
     2011](#ref-MeirmansHedrick2011)).
 5.  Fitzpatrick for the limits of hierarchical permutation power

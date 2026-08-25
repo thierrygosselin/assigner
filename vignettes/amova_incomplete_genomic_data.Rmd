@@ -45,7 +45,7 @@ documents the choices made in `assigner`.
 
 ## From observations to squared distances
 
-For (n) molecular observations, let (Delta=(\delta_{ij}^2)) be the matrix
+For \(n\) molecular observations, let \(\Delta=(\delta_{ij}^2)\) be the matrix
 of squared distances. The total sum of squared deviations can be written as
 
 \[
