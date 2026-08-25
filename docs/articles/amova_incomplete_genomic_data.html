@@ -109,12 +109,18 @@ provide the sums of squares assigned to each hierarchical level.
 Dividing by the corresponding degrees of freedom gives mean squares.
 Method-of-moments equations then estimate variance components while
 accounting for unequal sample sizes <span class="citation">(<a href="#ref-Excoffier1992">Excoffier et al. 1992</a>)</span>.</p>
-<p>For a hierarchy <code>REGION/POP_ID</code>, the variance components
+<p>For a hierarchy <code>REGION/STRATA</code>, the variance components
 are conventionally written as</p>
 <ul>
-<li>(_a^2): among regions;</li>
-<li>(_b^2): among populations within regions;</li>
-<li>(_c^2): within populations.</li>
+<li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>σ</mi><mi>a</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\sigma_a^2</annotation></semantics></math>:
+among regions;</li>
+<li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>σ</mi><mi>b</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\sigma_b^2</annotation></semantics></math>:
+among populations within regions;</li>
+<li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>σ</mi><mi>c</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\sigma_c^2</annotation></semantics></math>:
+within populations.</li>
 </ul>
 <p>The associated statistics are</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow></msub><mo>=</mo><mfrac><mrow><msubsup><mi>σ</mi><mi>a</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mi>b</mi><mn>2</mn></msubsup></mrow><mrow><msubsup><mi>σ</mi><mi>a</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mi>b</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mi>c</mi><mn>2</mn></msubsup></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">
@@ -129,10 +135,11 @@ are conventionally written as</p>
 </annotation></semantics></math></p>
 <p>The notation describes correlations of molecular differences at
 specified hierarchical levels. It should not be confused automatically
-with every estimator called (F_{ST}). Weir and Cockerham’s estimator,
-for example, is derived from allelic correlations and sampling theory
-rather than from an arbitrary molecular-distance matrix <span class="citation">(<a href="#ref-WeirCockerham1984">Weir and Cockerham
-1984</a>)</span>.</p>
+with every estimator called
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>F</mi><mrow><mi>S</mi><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">F_{ST}</annotation></semantics></math>.
+Weir and Cockerham’s estimator, for example, is derived from allelic
+correlations and sampling theory rather than from an arbitrary
+molecular-distance matrix <span class="citation">(<a href="#ref-WeirCockerham1984">Weir and Cockerham 1984</a>)</span>.</p>
 </div>
 <div class="section level3">
 <h3 id="the-distance-is-part-of-the-biological-model">The distance is part of the biological model<a class="anchor" aria-label="anchor" href="#the-distance-is-part-of-the-biological-model"></a>
@@ -172,10 +179,11 @@ the sampling design.</p>
 <div class="section level2">
 <h2 id="standardized-differentiation-is-a-second-calculation">Standardized differentiation is a second calculation<a class="anchor" aria-label="anchor" href="#standardized-differentiation-is-a-second-calculation"></a>
 </h2>
-<p>(_{ST}) may have a low attainable maximum when within-population
-diversity is high. Meirmans proposed standardizing the statistic by its
-maximum possible value conditional on the observed within-population
-component <span class="citation">(<a href="#ref-Meirmans2006">Meirmans
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">\Phi_{ST}</annotation></semantics></math>
+may have a low attainable maximum when within-population diversity is
+high. Meirmans proposed standardizing the statistic by its maximum
+possible value conditional on the observed within-population component
+<span class="citation">(<a href="#ref-Meirmans2006">Meirmans
 2006</a>)</span>:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow><mo>′</mo></msubsup><mo>=</mo><mfrac><msub><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow></msub><msub><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mi>a</mi><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
 \Phi'_{ST}=\frac{\Phi_{ST}}{\Phi_{ST(max)}}.
@@ -188,13 +196,19 @@ and missingness.</p>
 <code>assigner</code> currently computes the standardized statistic only
 with identity distance. The observed within-population distances are
 retained, whereas between-population distances are replaced by their
-theoretical maximum. Other distances can be used for (<em>{ST}), but
-they do not receive an automatic (’</em>{ST}) unless a defensible
-theoretical maximum is supplied.</p>
-<p>This is why (<em>{ST}) and (’</em>{ST}) need not use the same
-distance matrix. Reporting both can be useful because ordinary and
-standardized differentiation answer related but distinct questions <span class="citation">(<a href="#ref-MeirmansHedrick2011">Meirmans and
-Hedrick 2011</a>)</span>.</p>
+theoretical maximum. Other distances can be used for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">\Phi_{ST}</annotation></semantics></math>,
+but they do not receive an automatic
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow><mo>′</mo></msubsup><annotation encoding="application/x-tex">\Phi'_{ST}</annotation></semantics></math>
+unless a defensible theoretical maximum is supplied.</p>
+<p>This is why
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">\Phi_{ST}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow><mo>′</mo></msubsup><annotation encoding="application/x-tex">\Phi'_{ST}</annotation></semantics></math>
+need not use the same distance matrix. Reporting both can be useful
+because ordinary and standardized differentiation answer related but
+distinct questions <span class="citation">(<a href="#ref-MeirmansHedrick2011">Meirmans and Hedrick
+2011</a>)</span>.</p>
 </div>
 <div class="section level2">
 <h2 id="why-incomplete-genomic-data-need-special-treatment">Why incomplete genomic data need special treatment<a class="anchor" aria-label="anchor" href="#why-incomplete-genomic-data-need-special-treatment"></a>
@@ -304,9 +318,10 @@ single-completion, frequency-based approaches. They should not be
 described as a modern multiple-imputation framework designed to
 propagate uncertainty from the high and structured missingness often
 observed in RADseq datasets. GenoDive’s standardized AMOVA is closely
-connected to Meirmans’ derivation of (’_{ST}) <span class="citation">(<a href="#ref-Meirmans2006">Meirmans 2006</a>)</span>, making it an
-important reference implementation and a useful independent comparison
-for <code>assigner</code>.</p>
+connected to Meirmans’ derivation of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow><mo>′</mo></msubsup><annotation encoding="application/x-tex">\Phi'_{ST}</annotation></semantics></math><span class="citation">(<a href="#ref-Meirmans2006">Meirmans
+2006</a>)</span>, making it an important reference implementation and a
+useful independent comparison for <code>assigner</code>.</p>
 <p>GenoDive is a standalone application rather than an R package with an
 exposed R implementation. The published papers document its
 capabilities, but not every internal computational decision can be
@@ -326,10 +341,12 @@ observations are excluded at that locus, and the AMOVA sample-size
 coefficients are recalculated from the represented haplotypes. It
 supports minimum sample proportions per population and minimum numbers
 of represented populations.</p>
-<p>Stacks calculates haplotype (_{ST}) using nucleotide-substitution
-distances. For standardized differentiation, it separately uses identity
-distances and constructs a maximum between-population distance. These
-choices strongly influenced the <code>assigner</code> design.</p>
+<p>Stacks calculates haplotype
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">\Phi_{ST}</annotation></semantics></math>
+using nucleotide-substitution distances. For standardized
+differentiation, it separately uses identity distances and constructs a
+maximum between-population distance. These choices strongly influenced
+the <code>assigner</code> design.</p>
 <p>Stacks is nevertheless a complete RADseq processing pipeline with its
 own data model and output conventions. It is not intended as a general R
 AMOVA engine for arbitrary tidy genomic inputs or user-defined
@@ -346,13 +363,17 @@ calculations with an explicit incomplete-genomic-data contract:</p>
 <li>the observations and hierarchical units contributing to every locus
 are recalculated rather than inferred from the full input strata;</li>
 <li>global statistics are ratios of <strong>summed locus variance
-components</strong>, not arithmetic means of locus ()-statistics;</li>
+components</strong>, not arithmetic means of locus
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Φ</mi><annotation encoding="application/x-tex">\Phi</annotation></semantics></math>-statistics;</li>
 <li>marker call rates, represented groups, sample sizes, retained loci,
 eigenvalues, and geometric corrections are returned for audit;</li>
 <li>distance methods have explicit names and allow a custom
 squared-distance function;</li>
-<li>ordinary ()-statistics and standardized (’_{ST}) are kept as
-separate calculations;</li>
+<li>ordinary
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Φ</mi><annotation encoding="application/x-tex">\Phi</annotation></semantics></math>-statistics
+and standardized
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi mathvariant="normal">Φ</mi><mrow><mi>S</mi><mi>T</mi></mrow><mo>′</mo></msubsup><annotation encoding="application/x-tex">\Phi'_{ST}</annotation></semantics></math>
+are kept as separate calculations;</li>
 <li>permutation occurs at the exchangeable unit appropriate to the
 tested hierarchy level;</li>
 <li>imputation is intentionally outside the function.</li>
@@ -650,9 +671,10 @@ should be validated in layers:</p>
 <ol style="list-style-type: decimal">
 <li>
 <strong>Complete balanced data:</strong> compare sums of squares,
-mean squares, variance components, and ()-statistics with
-<code>ade4</code>, <code>pegas</code>, GenoDive, and Stacks where their
-input models overlap.</li>
+mean squares, variance components, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Φ</mi><annotation encoding="application/x-tex">\Phi</annotation></semantics></math>-statistics
+with <code>ade4</code>, <code>pegas</code>, GenoDive, and Stacks where
+their input models overlap.</li>
 <li>
 <strong>Complete unbalanced data:</strong> verify
 unequal-sample-size coefficients against worked calculations and
@@ -691,7 +713,8 @@ estimators with similar labels need not be identical <span class="citation">(<a 
 1984</a>)</span>.</li>
 <li>Meirmans for standardized AMOVA differentiation <span class="citation">(<a href="#ref-Meirmans2006">Meirmans
 2006</a>)</span>.</li>
-<li>Meirmans and Hedrick for the interpretation of (F_{ST}),
+<li>Meirmans and Hedrick for the interpretation of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>F</mi><mrow><mi>S</mi><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">F_{ST}</annotation></semantics></math>,
 standardized (F’_{ST}), and related measures <span class="citation">(<a href="#ref-MeirmansHedrick2011">Meirmans and Hedrick
 2011</a>)</span>.</li>
 <li>Fitzpatrick for the limits of hierarchical permutation power <span class="citation">(<a href="#ref-Fitzpatrick2009">Fitzpatrick
