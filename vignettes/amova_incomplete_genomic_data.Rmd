@@ -336,16 +336,16 @@ example_amova <- expand.grid(
 individual_strata <- data.frame(
   INDIVIDUALS = sprintf("ind_%02d", 1:24),
   REGION = rep(c("north", "south"), each = 12),
-  POP_ID = rep(c("n1", "n2", "s1", "s2"), each = 6)
+  STRATA = rep(c("n1", "n2", "s1", "s2"), each = 6)
 )
 
 example_amova <- merge(example_amova, individual_strata, by = "INDIVIDUALS")
 population_effect <- c(n1 = 0.1, n2 = 0.6, s1 = 1.2, s2 = 1.7)
-example_amova$GT_BIN <- rbinom(
+example_amova$GT <- rbinom(
   nrow(example_amova), 2,
-  plogis(-1 + population_effect[example_amova$POP_ID])
+  plogis(-1 + population_effect[example_amova$STRATA])
 )
-example_amova$GT_BIN[sample(nrow(example_amova), 30)] <- NA
+example_amova$GT[sample(nrow(example_amova), 30)] <- NA
 
 head(example_amova)
 ```
@@ -355,8 +355,7 @@ head(example_amova)
 ```{r locuswise}
 fit <- amova_genomic(
   data = example_amova,
-  hierarchy = c("REGION", "POP_ID"),
-  value = "GT_BIN",
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "locuswise",
   min.groups = 2,
@@ -374,8 +373,7 @@ head(fit$marker_audit)
 ```{r filtered}
 fit_filtered <- amova_genomic(
   data = example_amova,
-  hierarchy = c("REGION", "POP_ID"),
-  value = "GT_BIN",
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "filter",
   min.call.rate = 0.75,
@@ -397,7 +395,7 @@ maxima have not been implemented.
 ```{r standardized-example, eval = FALSE}
 fit_identity <- amova_genomic(
   data = haplotype_data,
-  hierarchy = c("REGION", "POP_ID"),
+  hierarchy = c("REGION", "STRATA"),
   value = "HAPLOTYPE",
   distance = "identity",
   missing = "locuswise",
@@ -410,8 +408,7 @@ fit_identity <- amova_genomic(
 ```{r permutations, eval = FALSE}
 fit_permuted <- amova_genomic(
   data = example_amova,
-  hierarchy = c("REGION", "POP_ID"),
-  value = "GT_BIN",
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "locuswise",
   standardized = FALSE,

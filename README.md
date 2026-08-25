@@ -41,8 +41,8 @@ Use `assigner` to:
 - estimate global and pairwise FST with confidence intervals;
 - run hierarchical AMOVA on incomplete genomic data with auditable
   locus-wise sample support, selectable molecular distances, Euclidean
-  diagnostics, hierarchy-aware permutations, marker confidence
-  intervals, and population sensitivity analysis; and
+  diagnostics, hierarchy-aware permutations, marker confidence intervals,
+  and population sensitivity analysis; and
 - keep analyses reproducible with recorded arguments, random seeds,
   intermediate results, and dated output folders.
 
@@ -82,7 +82,7 @@ and GenoDive.
 ``` r
 amova_result <- assigner::amova_genomic(
   data = "genomic_data.gds",
-  hierarchy = c("REGION", "POP_ID"),
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "locuswise",
   min.groups = 2,
@@ -102,8 +102,8 @@ supported. A Meirmans-style standardized statistic is currently limited
 to identity distance, where the maximum distance has a defined meaning;
 distances are never standardized by their observed sample maximum.
 
-The `data` argument follows the rest of `assigner`: use a GDS file path
-or an open GDS object supported by `genometranslator::read_genome()`.
+The `data` argument follows the rest of `assigner`: use a GDS file path or
+an open GDS object supported by `genometranslator::read_genome()`.
 Standard diploid dosage is selected automatically. Use `strata` when
 hierarchy columns are kept in a separate strata file, or set `value`
 explicitly for haplotype and custom distance analyses.
