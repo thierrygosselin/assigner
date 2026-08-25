@@ -69,13 +69,22 @@ with at least one missing genotype.</p>
 <span>  value <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"euclidean"</span>, <span class="st">"identity"</span>, <span class="st">"nucleotide"</span>, <span class="st">"manhattan"</span><span class="op">)</span>,</span>
 <span>  missing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"locuswise"</span>, <span class="st">"filter"</span>, <span class="st">"complete"</span><span class="op">)</span>,</span>
-<span>  min_call_rate <span class="op">=</span> <span class="fl">0.8</span>,</span>
-<span>  min_groups <span class="op">=</span> <span class="fl">2L</span>,</span>
-<span>  min_individuals <span class="op">=</span> <span class="fl">2L</span>,</span>
+<span>  min.call.rate <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  min.groups <span class="op">=</span> <span class="fl">2L</span>,</span>
+<span>  min.individuals <span class="op">=</span> <span class="fl">2L</span>,</span>
 <span>  euclidean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"check"</span>, <span class="st">"lingoes"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
 <span>  standardized <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">distance</span>, <span class="st">"identity"</span><span class="op">)</span>,</span>
 <span>  permutations <span class="op">=</span> <span class="fl">0L</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  resampling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"locus"</span>, <span class="st">"block"</span><span class="op">)</span>,</span>
+<span>  bootstrap <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>  confidence <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  block <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  chromosome <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  position <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  block.size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  population.jackknife <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  tolerance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -92,7 +101,7 @@ accepted for programmatic use and testing.</p></dd>
 
 <dt id="arg-hierarchy">hierarchy<a class="anchor" aria-label="anchor" href="#arg-hierarchy"></a></dt>
 <dd><p>Character vector naming nested grouping columns, ordered
-from highest to lowest level (for example <code>c("REGION", "POP_ID")</code>).</p></dd>
+from highest to lowest level (for example <code>c("REGION", "STRATA")</code>).</p></dd>
 
 
 <dt id="arg-strata">strata<a class="anchor" aria-label="anchor" href="#arg-strata"></a></dt>
@@ -129,17 +138,17 @@ thresholds and then works locus-wise. <code>"complete"</code> uses only individu
 called at every retained marker. No imputation is performed.</p></dd>
 
 
-<dt id="arg-min-call-rate">min_call_rate<a class="anchor" aria-label="anchor" href="#arg-min-call-rate"></a></dt>
+<dt id="arg-min-call-rate">min.call.rate<a class="anchor" aria-label="anchor" href="#arg-min-call-rate"></a></dt>
 <dd><p>Minimum called proportion required in every lowest-level
 group when <code>missing = "filter"</code>.</p></dd>
 
 
-<dt id="arg-min-groups">min_groups<a class="anchor" aria-label="anchor" href="#arg-min-groups"></a></dt>
+<dt id="arg-min-groups">min.groups<a class="anchor" aria-label="anchor" href="#arg-min-groups"></a></dt>
 <dd><p>Minimum number of represented lowest-level groups required
 at a locus.</p></dd>
 
 
-<dt id="arg-min-individuals">min_individuals<a class="anchor" aria-label="anchor" href="#arg-min-individuals"></a></dt>
+<dt id="arg-min-individuals">min.individuals<a class="anchor" aria-label="anchor" href="#arg-min-individuals"></a></dt>
 <dd><p>Minimum called individuals required per represented
 lowest-level group.</p></dd>
 
@@ -159,11 +168,49 @@ observed sample maximum.</p></dd>
 
 <dt id="arg-permutations">permutations<a class="anchor" aria-label="anchor" href="#arg-permutations"></a></dt>
 <dd><p>Number of hierarchy-aware randomizations. Zero disables
-permutation tests.</p></dd>
+permutation tests. A single hierarchy randomization is shared by all loci
+in an iteration, so loci are not treated as independent population-level
+replicates.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Optional random seed used for permutations.</p></dd>
+
+
+<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
+<dd><p>Significance level used to flag hierarchy tests whose finite
+permutation space cannot attain the requested level.</p></dd>
+
+
+<dt id="arg-resampling">resampling<a class="anchor" aria-label="anchor" href="#arg-resampling"></a></dt>
+<dd><p>Marker uncertainty method: <code>"none"</code>, <code>"locus"</code>, or
+<code>"block"</code>.</p></dd>
+
+
+<dt id="arg-bootstrap">bootstrap<a class="anchor" aria-label="anchor" href="#arg-bootstrap"></a></dt>
+<dd><p>Number of marker-bootstrap replicates.</p></dd>
+
+
+<dt id="arg-confidence">confidence<a class="anchor" aria-label="anchor" href="#arg-confidence"></a></dt>
+<dd><p>Confidence level for percentile bootstrap intervals.</p></dd>
+
+
+<dt id="arg-block">block<a class="anchor" aria-label="anchor" href="#arg-block"></a></dt>
+<dd><p>Optional column containing genomic-block identifiers.</p></dd>
+
+
+<dt id="arg-chromosome-position">chromosome, position<a class="anchor" aria-label="anchor" href="#arg-chromosome-position"></a></dt>
+<dd><p>Columns used with <code>block.size</code> to construct
+physical genomic blocks when <code>block</code> is not supplied.</p></dd>
+
+
+<dt id="arg-block-size">block.size<a class="anchor" aria-label="anchor" href="#arg-block-size"></a></dt>
+<dd><p>Positive physical block width.</p></dd>
+
+
+<dt id="arg-population-jackknife">population.jackknife<a class="anchor" aria-label="anchor" href="#arg-population-jackknife"></a></dt>
+<dd><p>Calculate leave-one-lowest-level-population-out
+sensitivity estimates.</p></dd>
 
 
 <dt id="arg-tolerance">tolerance<a class="anchor" aria-label="anchor" href="#arg-tolerance"></a></dt>
@@ -177,12 +224,42 @@ locus variance components, missing-data diagnostics, and permutation
 results when requested.</p>
     </div>
     <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p><code>assigner</code> makes the finite-permutation limitation explicit and auditable,
+especially for genomic datasets where thousands of loci can give a
+misleading impression of high replication. A single hierarchy
+randomization is applied consistently to every locus in an iteration. Loci
+therefore cannot masquerade as additional population-level replicates. The
+permutation design table reports the exchangeable unit, number of unique
+allocations, theoretical minimum P-value, and whether <code>alpha</code> is attainable
+for each component.</p>
+<p>A permutation P-value addresses compatibility with a specified null model;
+it does not describe the precision or biological magnitude of a Phi
+statistic. Locus and genomic-block intervals describe marker-sampling
+uncertainty; the population jackknife describes sensitivity to particular
+sampled populations. Neither is a substitute for population replication in
+a higher-level component, and the returned uncertainty report labels that
+distinction explicitly.</p>
+    </div>
+    <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Excoffier L, Smouse PE, Quattro JM (1992). Analysis of molecular
 variance inferred from metric distances among DNA haplotypes. Genetics 131,
 479-491.</p>
 <p>Meirmans PG (2006). Using the AMOVA framework to estimate a standardized
 genetic differentiation measure. Evolution 60, 2399-2402.</p>
+<p>Fitzpatrick BM (2009). Power and sample size for nested analysis of
+molecular variance. Molecular Ecology 18, 3961-3966.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>The package vignette
+<a href="../doc/amova_incomplete_genomic_data.html">AMOVA for incomplete genomic data</a>,
+available with
+<code><a href="../articles/amova_incomplete_genomic_data.html">vignette("amova_incomplete_genomic_data", package = "assigner")</a></code>,
+provides the theoretical background, implementation comparisons,
+missing-data guidance, finite-permutation audit, and interpretation of
+genomic AMOVA results.</p></div>
     </div>
 
     <div class="section level2">
@@ -191,7 +268,7 @@ genetic differentiation measure. Evolution 60, 2399-2402.</p>
 <span class="r-in"><span><span class="co"># Hierarchy stored in GDS sample metadata:</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">amova_genomic</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="st">"genomic_data.gds"</span>,</span></span>
-<span class="r-in"><span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"POP_ID"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"STRATA"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  distance <span class="op">=</span> <span class="st">"euclidean"</span>,</span></span>
 <span class="r-in"><span>  missing <span class="op">=</span> <span class="st">"locuswise"</span>,</span></span>
 <span class="r-in"><span>  standardized <span class="op">=</span> <span class="cn">FALSE</span></span></span>
@@ -201,7 +278,7 @@ genetic differentiation measure. Evolution 60, 2399-2402.</p>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">amova_genomic</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="st">"genomic_data.gds"</span>,</span></span>
 <span class="r-in"><span>  strata <span class="op">=</span> <span class="st">"amova_strata.tsv"</span>,</span></span>
-<span class="r-in"><span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"POP_ID"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"STRATA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>

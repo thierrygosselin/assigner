@@ -7,6 +7,24 @@
 #' the locus-wise strategy used by Stacks rather than deleting every individual
 #' with at least one missing genotype.
 #'
+#' @details
+#' `assigner` makes the finite-permutation limitation explicit and auditable,
+#' especially for genomic datasets where thousands of loci can give a
+#' misleading impression of high replication. A single hierarchy
+#' randomization is applied consistently to every locus in an iteration. Loci
+#' therefore cannot masquerade as additional population-level replicates. The
+#' permutation design table reports the exchangeable unit, number of unique
+#' allocations, theoretical minimum P-value, and whether `alpha` is attainable
+#' for each component.
+#'
+#' A permutation P-value addresses compatibility with a specified null model;
+#' it does not describe the precision or biological magnitude of a Phi
+#' statistic. Locus and genomic-block intervals describe marker-sampling
+#' uncertainty; the population jackknife describes sensitivity to particular
+#' sampled populations. Neither is a substitute for population replication in
+#' a higher-level component, and the returned uncertainty report labels that
+#' distinction explicitly.
+#'
 #' @param data A GDS file path or open GDS object accepted by
 #'   [genometranslator::read_genome()]. A long genomic data frame is also
 #'   accepted for programmatic use and testing.
@@ -15,7 +33,7 @@
 #'   columns named in `hierarchy`. When supplied, these hierarchy columns take
 #'   precedence over metadata stored in the GDS.
 #' @param hierarchy Character vector naming nested grouping columns, ordered
-#'   from highest to lowest level (for example `c("REGION", "POP_ID")`).
+#'   from highest to lowest level (for example `c("REGION", "STRATA")`).
 #' @param individual,marker Column names containing individual and marker IDs.
 #' @param value Optional genotype-value column. With `value = NULL`, the
 #'   function derives diploid alternate-allele dosage from `ALT_DOSAGE`, numeric
@@ -31,11 +49,11 @@
 #'   observations at each locus. `"filter"` first applies marker-level call-rate
 #'   thresholds and then works locus-wise. `"complete"` uses only individuals
 #'   called at every retained marker. No imputation is performed.
-#' @param min_call_rate Minimum called proportion required in every lowest-level
+#' @param min.call.rate Minimum called proportion required in every lowest-level
 #'   group when `missing = "filter"`.
-#' @param min_groups Minimum number of represented lowest-level groups required
+#' @param min.groups Minimum number of represented lowest-level groups required
 #'   at a locus.
-#' @param min_individuals Minimum called individuals required per represented
+#' @param min.individuals Minimum called individuals required per represented
 #'   lowest-level group.
 #' @param euclidean How to handle a non-Euclidean squared-distance matrix.
 #'   `"check"` records the result, `"lingoes"` applies a Lingoes correction,
@@ -45,8 +63,22 @@
 #'   defined. It is deliberately not obtained by dividing distances by their
 #'   observed sample maximum.
 #' @param permutations Number of hierarchy-aware randomizations. Zero disables
-#'   permutation tests.
+#'   permutation tests. A single hierarchy randomization is shared by all loci
+#'   in an iteration, so loci are not treated as independent population-level
+#'   replicates.
 #' @param seed Optional random seed used for permutations.
+#' @param alpha Significance level used to flag hierarchy tests whose finite
+#'   permutation space cannot attain the requested level.
+#' @param resampling Marker uncertainty method: `"none"`, `"locus"`, or
+#'   `"block"`.
+#' @param bootstrap Number of marker-bootstrap replicates.
+#' @param confidence Confidence level for percentile bootstrap intervals.
+#' @param block Optional column containing genomic-block identifiers.
+#' @param chromosome,position Columns used with `block.size` to construct
+#'   physical genomic blocks when `block` is not supplied.
+#' @param block.size Positive physical block width.
+#' @param population.jackknife Calculate leave-one-lowest-level-population-out
+#'   sensitivity estimates.
 #' @param tolerance Numerical tolerance for Euclidean checks.
 #'
 #' @return An object of class `assigner_amova` containing global statistics,
@@ -58,7 +90,7 @@
 #' # Hierarchy stored in GDS sample metadata:
 #' fit <- amova_genomic(
 #'   data = "genomic_data.gds",
-#'   hierarchy = c("REGION", "POP_ID"),
+#'   hierarchy = c("REGION", "STRATA"),
 #'   distance = "euclidean",
 #'   missing = "locuswise",
 #'   standardized = FALSE
@@ -68,7 +100,7 @@
 #' fit <- amova_genomic(
 #'   data = "genomic_data.gds",
 #'   strata = "amova_strata.tsv",
-#'   hierarchy = c("REGION", "POP_ID")
+#'   hierarchy = c("REGION", "STRATA")
 #' )
 #' }
 #'
@@ -79,6 +111,18 @@
 #'
 #' Meirmans PG (2006). Using the AMOVA framework to estimate a standardized
 #' genetic differentiation measure. Evolution 60, 2399-2402.
+#'
+#' Fitzpatrick BM (2009). Power and sample size for nested analysis of
+#' molecular variance. Molecular Ecology 18, 3961-3966.
+#'
+#' @seealso
+#' The package vignette
+#' [AMOVA for incomplete genomic data](../doc/amova_incomplete_genomic_data.html),
+#' available with
+#' `vignette("amova_incomplete_genomic_data", package = "assigner")`,
+#' provides the theoretical background, implementation comparisons,
+#' missing-data guidance, finite-permutation audit, and interpretation of
+#' genomic AMOVA results.
 #' @md
 amova_genomic <- function(
   data,
@@ -89,13 +133,22 @@ amova_genomic <- function(
   value = NULL,
   distance = c("euclidean", "identity", "nucleotide", "manhattan"),
   missing = c("locuswise", "filter", "complete"),
-  min_call_rate = 0.8,
-  min_groups = 2L,
-  min_individuals = 2L,
+  min.call.rate = 0.8,
+  min.groups = 2L,
+  min.individuals = 2L,
   euclidean = c("check", "lingoes", "none"),
   standardized = identical(distance, "identity"),
   permutations = 0L,
   seed = NULL,
+  alpha = 0.05,
+  resampling = c("none", "locus", "block"),
+  bootstrap = 0L,
+  confidence = 0.95,
+  block = NULL,
+  chromosome = NULL,
+  position = NULL,
+  block.size = NULL,
+  population.jackknife = FALSE,
   tolerance = sqrt(.Machine$double.eps)
 ) {
   if (!is.character(hierarchy) || !length(hierarchy)) {
@@ -132,7 +185,12 @@ amova_genomic <- function(
                                    distance = distance)
   data <- prepared$data
   value <- prepared$value
-  needed <- unique(c(individual, marker, value, hierarchy))
+  resampling <- match.arg(resampling)
+  block.columns <- if (resampling != "block") character() else if (!is.null(block)) block else c(chromosome, position)
+  if (resampling == "block" && (any(vapply(block.columns, is.null, logical(1))) || !length(block.columns))) {
+    stop("Block resampling requires `block`, or `chromosome` and `position`.", call. = FALSE)
+  }
+  needed <- unique(c(individual, marker, value, hierarchy, block.columns))
   absent <- setdiff(needed, names(data))
   if (length(absent)) {
     stop("Missing columns: ", paste(absent, collapse = ", "), call. = FALSE)
@@ -148,7 +206,15 @@ amova_genomic <- function(
   if (is.na(permutations) || permutations < 0L) {
     stop("`permutations` must be a non-negative integer.", call. = FALSE)
   }
+  if (length(alpha) != 1L || !is.finite(alpha) || alpha <= 0 || alpha >= 1) {
+    stop("`alpha` must be a single number between zero and one.", call. = FALSE)
+  }
   if (!is.null(seed)) set.seed(seed)
+  bootstrap <- as.integer(bootstrap)
+  if (is.na(bootstrap) || bootstrap < 0L || (resampling != "none" && bootstrap < 1L))
+    stop("`bootstrap` must be positive when resampling is requested.", call. = FALSE)
+  if (!is.finite(confidence) || confidence <= 0 || confidence >= 1)
+    stop("`confidence` must be between zero and one.", call. = FALSE)
 
   x <- data[needed]
   names(x)[match(c(individual, marker, value), names(x))] <-
@@ -163,14 +229,24 @@ amova_genomic <- function(
     stop("Hierarchy columns cannot contain missing values.", call. = FALSE)
   }
   .amova_validate_nested(x, hierarchy, ".individual")
+  if (resampling == "block") {
+    if (!is.null(block)) x$.amova_block <- as.character(x[[block]]) else {
+      if (is.null(block.size) || !is.finite(block.size) || block.size <= 0)
+        stop("A positive `block.size` is required.", call. = FALSE)
+      x$.amova_block <- paste(x[[chromosome]], floor(as.numeric(x[[position]]) / block.size), sep = ":")
+    }
+    if (anyNA(x$.amova_block) || any(tapply(x$.amova_block, x$.marker, function(z) length(unique(z))) != 1L))
+      stop("Each marker must have one non-missing genomic-block identifier.", call. = FALSE)
+  }
+  jackknife.source <- x
 
   retained <- rep(TRUE, nrow(x))
   marker_audit <- .amova_marker_audit(x, hierarchy[length(hierarchy)])
-  marker_audit$retained <- marker_audit$groups_present >= min_groups &
-    marker_audit$minimum_called >= min_individuals
+  marker_audit$retained <- marker_audit$groups_present >= min.groups &
+    marker_audit$minimum_called >= min.individuals
   if (missing == "filter") {
     marker_audit$retained <- marker_audit$retained &
-      marker_audit$minimum_call_rate >= min_call_rate
+      marker_audit$minimum_call_rate >= min.call.rate
   }
   keep_markers <- marker_audit$.marker[marker_audit$retained]
   x <- x[x$.marker %in% keep_markers, , drop = FALSE]
@@ -184,13 +260,15 @@ amova_genomic <- function(
     if (!nrow(x)) stop("No complete individuals remain.", call. = FALSE)
   }
 
+  master_hierarchy <- unique(x[c(".individual", hierarchy)])
+
   loci <- split(x, x$.marker, drop = TRUE)
   fits <- lapply(loci, function(z) {
     z <- z[!is.na(z$.value), , drop = FALSE]
     low_counts <- table(z[[hierarchy[length(hierarchy)]]])
     z <- z[z[[hierarchy[length(hierarchy)]]] %in%
-             names(low_counts)[low_counts >= min_individuals], , drop = FALSE]
-    if (length(unique(z[[hierarchy[length(hierarchy)]]])) < min_groups) return(NULL)
+             names(low_counts)[low_counts >= min.individuals], , drop = FALSE]
+    if (length(unique(z[[hierarchy[length(hierarchy)]]])) < min.groups) return(NULL)
     gr <- .amova_nested_factors(z, hierarchy)
     if (any(vapply(gr, nlevels, integer(1)) < 2L)) return(NULL)
     d2 <- .amova_distance(z$.value, distance)
@@ -208,8 +286,10 @@ amova_genomic <- function(
     fit$n <- nrow(z)
     fit$groups <- nlevels(gr[[length(gr)]])
     fit$marker <- as.character(z$.marker[1])
+    fit$block <- if (resampling == "block") as.character(z$.amova_block[1]) else NA_character_
     fit$gr <- gr
     fit$raw_gr <- z[hierarchy]
+    fit$individuals <- as.character(z$.individual)
     fit$d2 <- d2
     fit
   })
@@ -225,6 +305,8 @@ amova_genomic <- function(
   rownames(components) <- vapply(fits, `[[`, character(1), "marker")
   global_sigma <- colSums(components)
   phi <- .amova_phi(global_sigma)
+  marker_uncertainty <- .amova_marker_bootstrap(components, fits, phi,
+                                                 resampling, bootstrap, confidence)
 
   standardized_result <- NULL
   if (standardized) {
@@ -241,24 +323,41 @@ amova_genomic <- function(
     standardized_result[!is.finite(standardized_result)] <- NA_real_
   }
 
-  permutation_result <- NULL
+  permutation_design <- .amova_permutation_design(master_hierarchy, hierarchy, alpha)
+  unattainable <- !is.na(permutation_design$minimum_p) &
+    permutation_design$minimum_p > alpha
+  if (permutations > 0L && any(unattainable)) {
+    warning(
+      "The requested alpha is unattainable for: ",
+      paste(permutation_design$component[unattainable], collapse = ", "),
+      ". See `permutation$design`.", call. = FALSE
+    )
+  }
+  permutation_result <- list(components = NULL, p_value = NULL,
+                             monte_carlo_p = NULL, iterations = permutations,
+                             seed = seed, design = permutation_design)
   if (permutations > 0L) {
     observed <- global_sigma
     permuted <- array(NA_real_, c(permutations, length(observed)),
                       dimnames = list(NULL, names(observed)))
     for (b in seq_len(permutations)) {
       for (j in seq_along(observed)) {
+        master_permuted <- .amova_permute_master(master_hierarchy, hierarchy, j)
         permuted[b, j] <- sum(vapply(fits, function(z) {
-          gp <- .amova_permute_component(z$raw_gr, j)
+          rows <- match(z$individuals, master_permuted$.individual)
+          gp <- .amova_nested_factors(master_permuted[rows, hierarchy, drop = FALSE], hierarchy)
           .amova_fit(z$d2, gp)$sigma[j]
         }, numeric(1)))
       }
     }
-    p <- (colSums(sweep(permuted, 2, observed, `>=`), na.rm = TRUE) + 1) /
+    monte_carlo_p <- (colSums(sweep(permuted, 2, observed, `>=`), na.rm = TRUE) + 1) /
       (permutations + 1)
+    p <- pmax(monte_carlo_p, permutation_design$minimum_p, na.rm = TRUE)
     p[length(p)] <- NA_real_
-    permutation_result <- list(components = permuted, p_value = p,
-                               iterations = permutations, seed = seed)
+    monte_carlo_p[length(monte_carlo_p)] <- NA_real_
+    permutation_result$components <- permuted
+    permutation_result$p_value <- p
+    permutation_result$monte_carlo_p <- monte_carlo_p
   }
 
   locus_table <- data.frame(
@@ -278,11 +377,42 @@ amova_genomic <- function(
     standardized = if (is.null(standardized_result)) NA_real_ else unname(standardized_result),
     row.names = NULL
   )
+  population_sensitivity <- NULL
+  if (population.jackknife) {
+    low <- hierarchy[length(hierarchy)]
+    population_sensitivity <- do.call(rbind, lapply(unique(as.character(jackknife.source[[low]])), function(pop) {
+      dat <- jackknife.source[as.character(jackknife.source[[low]]) != pop, , drop = FALSE]
+      refit <- tryCatch(suppressWarnings(amova_genomic(
+        dat, hierarchy, individual = ".individual", marker = ".marker", value = ".value",
+        distance = distance, missing = missing, min.call.rate = min.call.rate,
+        min.groups = min.groups, min.individuals = min.individuals,
+        euclidean = euclidean, standardized = standardized,
+        permutations = 0L, resampling = "none", population.jackknife = FALSE,
+        tolerance = tolerance)), error = identity)
+      if (inherits(refit, "error")) return(data.frame(
+        omitted = pop, statistic = names(phi), estimate = NA_real_, change = NA_real_,
+        retained.loci = 0L, status = conditionMessage(refit)))
+      est <- stats::setNames(refit$global$estimate, refit$global$statistic)[names(phi)]
+      data.frame(omitted = pop, statistic = names(phi), estimate = unname(est),
+                 change = unname(est - phi), retained.loci = nrow(refit$per_locus), status = "estimable")
+    }))
+  }
+  uncertainty_report <- data.frame(
+    method = c(if (resampling == "none") character() else paste(resampling, "bootstrap"),
+               if (population.jackknife) "population jackknife", "finite permutation audit"),
+    unit = c(if (resampling == "locus") "locus" else if (resampling == "block") "genomic block" else character(),
+             if (population.jackknife) hierarchy[length(hierarchy)], "hierarchy-specific"),
+    interpretation = c(if (resampling == "none") character() else "marker-sampling uncertainty",
+                       if (population.jackknife) "sensitivity to sampled populations",
+                       "component-specific null randomization")
+  )
   structure(
     list(
       call = match.call(), global = global, variance_components = global_sigma,
       per_locus = locus_table, marker_audit = marker_audit,
       permutation = permutation_result,
+      uncertainty = list(report = uncertainty_report, marker = marker_uncertainty,
+                         population.jackknife = population_sensitivity),
       settings = list(distance = if (is.function(distance)) "custom" else distance,
                       missing = missing, hierarchy = hierarchy,
                       value = value, euclidean = euclidean,
@@ -290,6 +420,27 @@ amova_genomic <- function(
     ),
     class = "assigner_amova"
   )
+}
+
+.amova_marker_bootstrap <- function(components, fits, phi, method, bootstrap, confidence) {
+  if (method == "none") return(NULL)
+  groups <- if (method == "block")
+    split(seq_len(nrow(components)), vapply(fits, `[[`, character(1), "block")) else NULL
+  draws <- matrix(NA_real_, bootstrap, length(phi), dimnames = list(NULL, names(phi)))
+  for (b in seq_len(bootstrap)) {
+    ii <- if (method == "locus") sample(seq_len(nrow(components)), nrow(components), TRUE) else {
+      chosen <- sample(seq_along(groups), length(groups), TRUE)
+      unlist(groups[chosen], use.names = FALSE)
+    }
+    draws[b, ] <- .amova_phi(colSums(components[ii, , drop = FALSE]))[names(phi)]
+  }
+  p <- c((1 - confidence) / 2, 1 - (1 - confidence) / 2)
+  limits <- apply(draws, 2, stats::quantile, probs = p, na.rm = TRUE, names = FALSE)
+  list(method = method, unit = if (method == "locus") "locus" else "genomic block",
+       replicates = bootstrap, confidence = confidence, estimates = draws,
+       intervals = data.frame(statistic = names(phi), estimate = unname(phi),
+                              lower = limits[1, ], upper = limits[2, ],
+                              valid.replicates = colSums(is.finite(draws))))
 }
 
 .amova_prepare_value <- function(data, marker, value, distance) {
@@ -526,31 +677,75 @@ print.assigner_amova <- function(x, ...) {
   .amova_fit(use, gr)
 }
 
-.amova_permute_component <- function(raw_gr, component) {
-  nlv <- ncol(raw_gr)
-  out <- raw_gr
-  if (component > nlv) return(.amova_nested_factors(out, names(out)))
+.amova_permute_master <- function(master, hierarchy, component) {
+  nlv <- length(hierarchy)
+  out <- master
+  if (component > nlv) return(out)
   if (nlv == 1L) {
-    out[[1]] <- sample(out[[1]])
-    return(.amova_nested_factors(out, names(out)))
+    out[[hierarchy[1]]] <- sample(out[[hierarchy[1]]])
+    return(out)
   }
   if (component == nlv) {
-    parent <- interaction(out[seq_len(nlv - 1L)], drop = TRUE, lex.order = TRUE)
-    out[[nlv]] <- unsplit(lapply(split(out[[nlv]], parent), sample), parent)
-    return(.amova_nested_factors(out, names(out)))
+    parent <- interaction(out[hierarchy[seq_len(nlv - 1L)]], drop = TRUE, lex.order = TRUE)
+    out[[hierarchy[nlv]]] <- unsplit(lapply(split(out[[hierarchy[nlv]]], parent), sample), parent)
+    return(out)
   }
-  child <- interaction(out[seq_len(component + 1L)], drop = TRUE, lex.order = TRUE)
+  child <- interaction(out[hierarchy[seq_len(component + 1L)]], drop = TRUE, lex.order = TRUE)
   unit <- !duplicated(child)
   unit_child <- child[unit]
-  labels <- out[[component]][unit]
+  labels <- out[[hierarchy[component]]][unit]
   if (component == 1L) {
     labels <- sample(labels)
   } else {
-    parent <- interaction(out[seq_len(component - 1L)], drop = TRUE, lex.order = TRUE)
+    parent <- interaction(out[hierarchy[seq_len(component - 1L)]], drop = TRUE, lex.order = TRUE)
     unit_parent <- parent[unit]
     labels <- unsplit(lapply(split(labels, unit_parent), sample), unit_parent)
   }
   map <- stats::setNames(as.character(labels), as.character(unit_child))
-  out[[component]] <- unname(map[as.character(child)])
-  .amova_nested_factors(out, names(out))
+  out[[hierarchy[component]]] <- unname(map[as.character(child)])
+  out
+}
+
+.amova_log_partitions <- function(sizes) {
+  sizes <- as.numeric(sizes)
+  lgamma(sum(sizes) + 1) - sum(lgamma(sizes + 1)) -
+    sum(lgamma(as.numeric(table(sizes)) + 1))
+}
+
+.amova_permutation_design <- function(master, hierarchy, alpha) {
+  nlv <- length(hierarchy)
+  rows <- lapply(seq_len(nlv), function(j) {
+    if (j == nlv) {
+      parent <- if (nlv == 1L) factor(rep("all", nrow(master))) else
+        interaction(master[hierarchy[seq_len(nlv - 1L)]], drop = TRUE, lex.order = TRUE)
+      size_sets <- lapply(split(seq_len(nrow(master)), parent), function(ii) {
+        table(master[[hierarchy[nlv]]][ii])
+      })
+      unit <- "individual"
+      units <- nrow(master)
+    } else {
+      child <- interaction(master[hierarchy[seq_len(j + 1L)]], drop = TRUE, lex.order = TRUE)
+      keep <- !duplicated(child)
+      parent <- if (j == 1L) factor(rep("all", sum(keep))) else
+        interaction(master[keep, hierarchy[seq_len(j - 1L)], drop = FALSE],
+                    drop = TRUE, lex.order = TRUE)
+      size_sets <- lapply(split(which(keep), parent), function(ii) {
+        table(master[[hierarchy[j]]][ii])
+      })
+      unit <- hierarchy[j + 1L]
+      units <- sum(keep)
+    }
+    log_n <- sum(vapply(size_sets, .amova_log_partitions, numeric(1)))
+    unique_n <- if (log_n > log(.Machine$double.xmax)) Inf else round(exp(log_n))
+    min_p <- exp(-log_n)
+    data.frame(component = hierarchy[j], exchangeable_unit = unit,
+               units = units, unique_allocations = unique_n,
+               minimum_p = min_p, alpha = alpha,
+               alpha_attainable = min_p <= alpha, check.names = FALSE)
+  })
+  within <- data.frame(component = "Within", exchangeable_unit = NA_character_,
+                       units = NA_integer_, unique_allocations = NA_real_,
+                       minimum_p = NA_real_, alpha = alpha,
+                       alpha_attainable = NA, check.names = FALSE)
+  do.call(rbind, c(rows, list(within)))
 }

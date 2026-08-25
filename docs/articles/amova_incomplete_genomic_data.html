@@ -414,8 +414,8 @@ argument.</p>
 <span>  value <span class="op">=</span> <span class="st">"GT_BIN"</span>,</span>
 <span>  distance <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
 <span>  missing <span class="op">=</span> <span class="st">"locuswise"</span>,</span>
-<span>  min_groups <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  min_individuals <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  min.groups <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  min.individuals <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  standardized <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -463,9 +463,9 @@ argument.</p>
 <span>  value <span class="op">=</span> <span class="st">"GT_BIN"</span>,</span>
 <span>  distance <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
 <span>  missing <span class="op">=</span> <span class="st">"filter"</span>,</span>
-<span>  min_call_rate <span class="op">=</span> <span class="fl">0.75</span>,</span>
-<span>  min_groups <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  min_individuals <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  min.call.rate <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span>  min.groups <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  min.individuals <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  standardized <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -508,11 +508,138 @@ implemented.</p>
 <span>  seed <span class="op">=</span> <span class="fl">2026</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fit_permuted</span><span class="op">$</span><span class="va">permutation</span><span class="op">$</span><span class="va">p_value</span></span></code></pre></div>
-<p>The permutation count should be chosen with the number of
-exchangeable units in mind. For a high-level component, adding
-individuals does not compensate for having very few populations or
-groups <span class="citation">(<a href="#ref-Fitzpatrick2009">Fitzpatrick 2009</a>)</span>.</p>
+<span><span class="va">fit_permuted</span><span class="op">$</span><span class="va">permutation</span><span class="op">$</span><span class="va">p_value</span></span>
+<span><span class="va">fit_permuted</span><span class="op">$</span><span class="va">permutation</span><span class="op">$</span><span class="va">design</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="the-finite-permutation-space-is-part-of-the-result">The finite permutation space is part of the result<a class="anchor" aria-label="anchor" href="#the-finite-permutation-space-is-part-of-the-result"></a>
+</h4>
+<p>Fitzpatrick’s key observation is combinatorial, not a competing
+estimator of AMOVA <span class="citation">(<a href="#ref-Fitzpatrick2009">Fitzpatrick 2009</a>)</span>. To test a
+group-level component, populations are the exchangeable replicates. More
+individuals or loci can improve estimation of within-population genetic
+variation, but they do not create more independent ways to allocate the
+sampled populations among groups.</p>
+<p>For group sizes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>k</mi><mi>g</mi></msub></mrow><annotation encoding="application/x-tex">k_1,\ldots,k_g</annotation></semantics></math>,
+<code><a href="../reference/amova_genomic.html">amova_genomic()</a></code> calculates the number of unique allocations
+from the multinomial coefficient and removes duplicate partitions caused
+by groups of equal size. For two groups containing two populations each,
+there are only three unique partitions. Consequently the smallest exact
+probability is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">1/3</annotation></semantics></math>,
+and a group-level test cannot attain
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>0.05</mn></mrow><annotation encoding="application/x-tex">\alpha=0.05</annotation></semantics></math>,
+regardless of how many SNPs or individuals were sampled.</p>
+<p>The <code>design</code> table reports, for every tested
+component:</p>
+<ul>
+<li>the unit that is exchangeable under its null hypothesis;</li>
+<li>the number of those units in the sampling design;</li>
+<li>the number of unique allocations;</li>
+<li>the theoretical minimum attainable
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>-value;
+and</li>
+<li>whether the requested <code>alpha</code> can be attained.</li>
+</ul>
+<p>The function warns before interpretation when a test cannot attain
+<code>alpha</code>. This is intentionally different from merely
+reporting the Monte Carlo resolution
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1/(B+1)</annotation></semantics></math>
+for <code>B</code> sampled permutations <span class="citation">(<a href="#ref-PhipsonSmyth2010">Phipson and Smyth 2010</a>)</span>. The
+returned <code>p_value</code> is not allowed below the exact
+finite-space bound; <code>monte_carlo_p</code> is retained for auditing
+the random approximation.</p>
+</div>
+<div class="section level4">
+<h4 id="genomic-loci-do-not-multiply-the-high-level-replication">Genomic loci do not multiply the high-level replication<a class="anchor" aria-label="anchor" href="#genomic-loci-do-not-multiply-the-high-level-replication"></a>
+</h4>
+<p>With incomplete genomic data, each locus can contain a different
+subset of individuals. Nevertheless, one hierarchy randomization is
+drawn per component and iteration and then applied consistently to every
+retained locus. Permuting the hierarchy independently at every locus
+would incorrectly turn loci into additional population-level replication
+and could make a weak sampling design look much more informative than it
+is.</p>
+<p>Fitzpatrick’s conclusion has been carried into later sampling-design
+guidance <span class="citation">(<a href="#ref-Werth2011">Werth
+2011</a>)</span>: for a hierarchical group test, sampling additional
+populations per group is more useful than adding individuals to a few
+populations. The limitation is also a standard property of restricted
+randomization tests. It is therefore appropriate to implement it as an
+audit and validity safeguard, not to present it as a new form of
+AMOVA.</p>
+<p>The AMOVA implementations reviewed for this vignette provide
+user-selected randomization counts, but their ordinary result objects do
+not generally expose the design-specific number of unique high-level
+allocations or warn that the chosen significance level is unattainable.
+This does <strong>not</strong> mean their AMOVA estimators are wrong,
+nor that their authors rejected Fitzpatrick’s argument. The distinction
+in <code>assigner</code> is that the limitation is calculated and
+reported alongside the component test, which is particularly important
+when thousands of loci can give a misleading impression of
+replication.</p>
+</div>
+<div class="section level4">
+<h4 id="p-values-are-not-effect-size-uncertainty">P-values are not effect-size uncertainty<a class="anchor" aria-label="anchor" href="#p-values-are-not-effect-size-uncertainty"></a>
+</h4>
+<p>Permutation tests and confidence intervals answer different
+questions. A permutation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>-value
+asks how compatible the observed component is with a particular null
+randomization. It does not show how precisely a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Φ</mi><annotation encoding="application/x-tex">\Phi</annotation></semantics></math>-statistic
+was estimated, and a small value does not imply biologically important
+differentiation. Conversely, a scientifically meaningful estimate can
+remain uncertain or have an unattainable permutation threshold when few
+populations were sampled.</p>
+<p>Confidence intervals for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>F</mi><annotation encoding="application/x-tex">F</annotation></semantics></math>-
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Φ</mi><annotation encoding="application/x-tex">\Phi</annotation></semantics></math>-statistics
+are consequently useful: they display uncertainty around the estimated
+magnitude and allow readers to judge whether zero and biologically
+negligible effects remain plausible. They should be reported alongside
+the estimate rather than treated merely as another route to a
+significance label.</p>
+<p>For hierarchical genomic AMOVA, however, the bootstrap design is part
+of the estimand:</p>
+<ul>
+<li>resampling individuals within populations represents uncertainty
+from the sampled individuals, but cannot create population-level
+replication;</li>
+<li>resampling populations within their parent groups can address a
+higher-level component when populations are the intended sampling
+units;</li>
+<li>resampling single SNPs as if independent is anticonservative under
+linkage; a locus bootstrap is appropriate only for effectively
+independent loci, while a genomic block bootstrap requires genomic
+positions and defensible blocks;</li>
+<li>uncertainty caused by imputation or non-random missingness is a
+separate layer and should eventually be propagated from
+<code>grur</code> completed datasets.</li>
+</ul>
+<p><code><a href="../reference/amova_genomic.html">amova_genomic()</a></code> therefore offers explicitly labelled
+locus and genomic-block percentile intervals. Locus resampling assumes
+effectively independent loci; block resampling is preferred when linkage
+can be represented by an existing block column or by chromosome,
+position, and a defensible physical block width.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit_uncertainty</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/amova_genomic.html">amova_genomic</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">gds</span>,</span>
+<span>  hierarchy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"REGION"</span>, <span class="st">"STRATA"</span><span class="op">)</span>,</span>
+<span>  resampling <span class="op">=</span> <span class="st">"block"</span>,</span>
+<span>  chromosome <span class="op">=</span> <span class="st">"CHROM"</span>, position <span class="op">=</span> <span class="st">"POSITION"</span>, block.size <span class="op">=</span> <span class="fl">1e6</span>,</span>
+<span>  bootstrap <span class="op">=</span> <span class="fl">999</span>, confidence <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  population.jackknife <span class="op">=</span> <span class="cn">TRUE</span>, seed <span class="op">=</span> <span class="fl">2026</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">fit_uncertainty</span><span class="op">$</span><span class="va">uncertainty</span><span class="op">$</span><span class="va">report</span></span>
+<span><span class="va">fit_uncertainty</span><span class="op">$</span><span class="va">uncertainty</span><span class="op">$</span><span class="va">marker</span><span class="op">$</span><span class="va">intervals</span></span>
+<span><span class="va">fit_uncertainty</span><span class="op">$</span><span class="va">uncertainty</span><span class="op">$</span><span class="va">population.jackknife</span></span></code></pre></div>
+<p>The population jackknife refits AMOVA after omitting each
+lowest-level population. It measures leverage, not population-sampling
+uncertainty. Marker intervals likewise do not represent population
+replication.</p>
+</div>
 </div>
 </div>
 <div class="section level2">
@@ -646,6 +773,12 @@ Paradis, Emmanuel. 2010. <span>“Pegas: An r Package for Population
 Genetics with an Integrated-Modular Approach.”</span>
 <em>Bioinformatics</em> 26 (3): 419–20. <a href="https://doi.org/10.1093/bioinformatics/btp696" class="external-link">https://doi.org/10.1093/bioinformatics/btp696</a>.
 </div>
+<div id="ref-PhipsonSmyth2010" class="csl-entry">
+Phipson, Belinda, and Gordon K. Smyth. 2010. <span>“Permutation p-Values
+Should Never Be Zero: Calculating Exact p-Values When Permutations Are
+Randomly Drawn.”</span> <em>Statistical Applications in Genetics and
+Molecular Biology</em> 9 (1): Article 39. <a href="https://doi.org/10.2202/1544-6115.1585" class="external-link">https://doi.org/10.2202/1544-6115.1585</a>.
+</div>
 <div id="ref-RochetteCatchen2019" class="csl-entry">
 Rochette, Nicolas C., Angel G. Rivera-Colón, and Julian M. Catchen.
 2019. <span>“Stacks 2: Analytical Methods for Paired-End Sequencing
@@ -656,6 +789,11 @@ Ecology</em> 28 (21): 4737–54. <a href="https://doi.org/10.1111/mec.15253" cla
 Weir, Bruce S., and C. Clark Cockerham. 1984. <span>“Estimating
 f-Statistics for the Analysis of Population Structure.”</span>
 <em>Evolution</em> 38 (6): 1358–70. <a href="https://doi.org/10.2307/2408641" class="external-link">https://doi.org/10.2307/2408641</a>.
+</div>
+<div id="ref-Werth2011" class="csl-entry">
+Werth, Silke. 2011. <span>“Optimal Sample Sizes and Allelic Diversity in
+Studies of the Genetic Variability of Mycobiont and Photobiont
+Populations.”</span> <em>The Lichenologist</em> 43 (1): 73–81. <a href="https://doi.org/10.1017/S0024282910000563" class="external-link">https://doi.org/10.1017/S0024282910000563</a>.
 </div>
 </div>
 </div>

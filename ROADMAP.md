@@ -39,12 +39,16 @@ framework with:
 - locus-wise, filtered, and complete-case missing-data strategies;
 - variance components and Phi-statistics at supported hierarchy levels;
 - Euclidean validation and optional Lingoes correction;
-- hierarchy-aware permutation tests with reproducible random seeds; and
+- hierarchy-aware permutation tests with reproducible random seeds;
+- locus and genomic-block bootstrap intervals and population jackknife
+  sensitivity with a layered uncertainty report; and
 - explicit reporting of retained loci, missing data, sample size, eigenvalues,
   corrections, and degrees of freedom.
 
 AMOVA is a separate public function rather than an option hidden inside
 `fst_WC84()`. Remaining work is validation against published examples,
+population and full hierarchical bootstraps, plus experimental parametric and
+wild-cluster bootstrap methods,
 simulations, and established programs including `ade4`, `pegas`, `poppr`,
 Arlequin, GenoDive, and Stacks; deeper testing of informative missingness; and
 profiling before moving selected numerical kernels to C++.

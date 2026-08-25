@@ -29,7 +29,8 @@ Use `assigner` to:
 - estimate global and pairwise FST with confidence intervals;
 - run hierarchical AMOVA on incomplete genomic data with auditable
   locus-wise sample support, selectable molecular distances, Euclidean
-  diagnostics, and hierarchy-aware permutations; and
+  diagnostics, hierarchy-aware permutations, marker confidence
+  intervals, and population sensitivity analysis; and
 - keep analyses reproducible with recorded arguments, random seeds,
   intermediate results, and dated output folders.
 
@@ -74,8 +75,8 @@ amova_result <- assigner::amova_genomic(
   hierarchy = c("REGION", "POP_ID"),
   distance = "euclidean",
   missing = "locuswise",
-  min_groups = 2,
-  min_individuals = 2,
+  min.groups = 2,
+  min.individuals = 2,
   standardized = FALSE
 )
 

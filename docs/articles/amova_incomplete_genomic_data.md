@@ -341,8 +341,8 @@ fit <- amova_genomic(
   value = "GT_BIN",
   distance = "euclidean",
   missing = "locuswise",
-  min_groups = 2,
-  min_individuals = 2,
+  min.groups = 2,
+  min.individuals = 2,
   standardized = FALSE
 )
 
@@ -391,9 +391,9 @@ fit_filtered <- amova_genomic(
   value = "GT_BIN",
   distance = "euclidean",
   missing = "filter",
-  min_call_rate = 0.75,
-  min_groups = 4,
-  min_individuals = 2,
+  min.call.rate = 0.75,
+  min.groups = 4,
+  min.individuals = 2,
   standardized = FALSE
 )
 
@@ -439,12 +439,127 @@ fit_permuted <- amova_genomic(
 )
 
 fit_permuted$permutation$p_value
+fit_permuted$permutation$design
 ```
 
-The permutation count should be chosen with the number of exchangeable
-units in mind. For a high-level component, adding individuals does not
-compensate for having very few populations or groups ([Fitzpatrick
-2009](#ref-Fitzpatrick2009)).
+#### The finite permutation space is part of the result
+
+Fitzpatrick’s key observation is combinatorial, not a competing
+estimator of AMOVA ([Fitzpatrick 2009](#ref-Fitzpatrick2009)). To test a
+group-level component, populations are the exchangeable replicates. More
+individuals or loci can improve estimation of within-population genetic
+variation, but they do not create more independent ways to allocate the
+sampled populations among groups.
+
+For group sizes $`k_1,\ldots,k_g`$,
+[`amova_genomic()`](https://thierrygosselin.github.io/assigner/reference/amova_genomic.md)
+calculates the number of unique allocations from the multinomial
+coefficient and removes duplicate partitions caused by groups of equal
+size. For two groups containing two populations each, there are only
+three unique partitions. Consequently the smallest exact probability is
+$`1/3`$, and a group-level test cannot attain $`\alpha=0.05`$,
+regardless of how many SNPs or individuals were sampled.
+
+The `design` table reports, for every tested component:
+
+- the unit that is exchangeable under its null hypothesis;
+- the number of those units in the sampling design;
+- the number of unique allocations;
+- the theoretical minimum attainable $`P`$-value; and
+- whether the requested `alpha` can be attained.
+
+The function warns before interpretation when a test cannot attain
+`alpha`. This is intentionally different from merely reporting the Monte
+Carlo resolution $`1/(B+1)`$ for `B` sampled permutations ([Phipson and
+Smyth 2010](#ref-PhipsonSmyth2010)). The returned `p_value` is not
+allowed below the exact finite-space bound; `monte_carlo_p` is retained
+for auditing the random approximation.
+
+#### Genomic loci do not multiply the high-level replication
+
+With incomplete genomic data, each locus can contain a different subset
+of individuals. Nevertheless, one hierarchy randomization is drawn per
+component and iteration and then applied consistently to every retained
+locus. Permuting the hierarchy independently at every locus would
+incorrectly turn loci into additional population-level replication and
+could make a weak sampling design look much more informative than it is.
+
+Fitzpatrick’s conclusion has been carried into later sampling-design
+guidance ([Werth 2011](#ref-Werth2011)): for a hierarchical group test,
+sampling additional populations per group is more useful than adding
+individuals to a few populations. The limitation is also a standard
+property of restricted randomization tests. It is therefore appropriate
+to implement it as an audit and validity safeguard, not to present it as
+a new form of AMOVA.
+
+The AMOVA implementations reviewed for this vignette provide
+user-selected randomization counts, but their ordinary result objects do
+not generally expose the design-specific number of unique high-level
+allocations or warn that the chosen significance level is unattainable.
+This does **not** mean their AMOVA estimators are wrong, nor that their
+authors rejected Fitzpatrick’s argument. The distinction in `assigner`
+is that the limitation is calculated and reported alongside the
+component test, which is particularly important when thousands of loci
+can give a misleading impression of replication.
+
+#### P-values are not effect-size uncertainty
+
+Permutation tests and confidence intervals answer different questions. A
+permutation $`P`$-value asks how compatible the observed component is
+with a particular null randomization. It does not show how precisely a
+$`\Phi`$-statistic was estimated, and a small value does not imply
+biologically important differentiation. Conversely, a scientifically
+meaningful estimate can remain uncertain or have an unattainable
+permutation threshold when few populations were sampled.
+
+Confidence intervals for $`F`$- and $`\Phi`$-statistics are consequently
+useful: they display uncertainty around the estimated magnitude and
+allow readers to judge whether zero and biologically negligible effects
+remain plausible. They should be reported alongside the estimate rather
+than treated merely as another route to a significance label.
+
+For hierarchical genomic AMOVA, however, the bootstrap design is part of
+the estimand:
+
+- resampling individuals within populations represents uncertainty from
+  the sampled individuals, but cannot create population-level
+  replication;
+- resampling populations within their parent groups can address a
+  higher-level component when populations are the intended sampling
+  units;
+- resampling single SNPs as if independent is anticonservative under
+  linkage; a locus bootstrap is appropriate only for effectively
+  independent loci, while a genomic block bootstrap requires genomic
+  positions and defensible blocks;
+- uncertainty caused by imputation or non-random missingness is a
+  separate layer and should eventually be propagated from `grur`
+  completed datasets.
+
+[`amova_genomic()`](https://thierrygosselin.github.io/assigner/reference/amova_genomic.md)
+therefore offers explicitly labelled locus and genomic-block percentile
+intervals. Locus resampling assumes effectively independent loci; block
+resampling is preferred when linkage can be represented by an existing
+block column or by chromosome, position, and a defensible physical block
+width.
+
+``` r
+
+fit_uncertainty <- amova_genomic(
+  data = gds,
+  hierarchy = c("REGION", "STRATA"),
+  resampling = "block",
+  chromosome = "CHROM", position = "POSITION", block.size = 1e6,
+  bootstrap = 999, confidence = 0.95,
+  population.jackknife = TRUE, seed = 2026
+)
+fit_uncertainty$uncertainty$report
+fit_uncertainty$uncertainty$marker$intervals
+fit_uncertainty$uncertainty$population.jackknife
+```
+
+The population jackknife refits AMOVA after omitting each lowest-level
+population. It measures leverage, not population-sampling uncertainty.
+Marker intervals likewise do not represent population replication.
 
 ## Validation strategy
 
@@ -552,6 +667,11 @@ Paradis, Emmanuel. 2010. “Pegas: An r Package for Population Genetics
 with an Integrated-Modular Approach.” *Bioinformatics* 26 (3): 419–20.
 <https://doi.org/10.1093/bioinformatics/btp696>.
 
+Phipson, Belinda, and Gordon K. Smyth. 2010. “Permutation p-Values
+Should Never Be Zero: Calculating Exact p-Values When Permutations Are
+Randomly Drawn.” *Statistical Applications in Genetics and Molecular
+Biology* 9 (1): Article 39. <https://doi.org/10.2202/1544-6115.1585>.
+
 Rochette, Nicolas C., Angel G. Rivera-Colón, and Julian M. Catchen.
 2019. “Stacks 2: Analytical Methods for Paired-End Sequencing Improve
 RADseq-Based Population Genomics.” *Molecular Ecology* 28 (21): 4737–54.
@@ -560,3 +680,8 @@ RADseq-Based Population Genomics.” *Molecular Ecology* 28 (21): 4737–54.
 Weir, Bruce S., and C. Clark Cockerham. 1984. “Estimating f-Statistics
 for the Analysis of Population Structure.” *Evolution* 38 (6): 1358–70.
 <https://doi.org/10.2307/2408641>.
+
+Werth, Silke. 2011. “Optimal Sample Sizes and Allelic Diversity in
+Studies of the Genetic Variability of Mycobiont and Photobiont
+Populations.” *The Lichenologist* 43 (1): 73–81.
+<https://doi.org/10.1017/S0024282910000563>.
