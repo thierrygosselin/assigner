@@ -12,6 +12,10 @@ control.
 
 ## Install assigner
 
+For R, Bioconductor, Miniforge, Conda/Bioconda, executable discovery,
+and troubleshooting, start with the [shared tgbase computer-setup
+guide](https://thierrygosselin.github.io/tgbase/articles/genomics_computer_setup.html).
+
 ``` r
 
 install.packages("remotes")
