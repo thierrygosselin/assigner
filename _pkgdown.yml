@@ -8,12 +8,14 @@ reference:
   - evaluate_assignment
   - assign_individuals
   - assess_assignment_mc
+  - test_source_exclusion
   - compare_unsampled_scores
 
 - title: Population differentiation
   contents:
   - fst_NEI87
   - fst_WC84
+  - plot_fst_tree
   - amova_genomic
 
 - title: Utility

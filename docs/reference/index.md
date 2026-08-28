@@ -8,6 +8,8 @@
   : Assign individuals to reference strata
 - [`assess_assignment_mc()`](https://thierrygosselin.github.io/assigner/reference/assess_assignment_mc.md)
   : Monte Carlo assessment of an assignment reference baseline
+- [`test_source_exclusion()`](https://thierrygosselin.github.io/assigner/reference/test_source_exclusion.md)
+  : Monte Carlo exclusion test for candidate source populations
 - [`compare_unsampled_scores()`](https://thierrygosselin.github.io/assigner/reference/compare_unsampled_scores.md)
   : Compare assigner and WGSassign unsampled-source scores
 
@@ -19,6 +21,8 @@
 - [`fst_WC84()`](https://thierrygosselin.github.io/assigner/reference/fst_WC84.md)
   : A fast implementation of Weir and Cockerham (1984) Fst/Theta
   (overall and paiwise estimates)
+- [`plot_fst_tree()`](https://thierrygosselin.github.io/assigner/reference/plot_fst_tree.md)
+  : Plot a population tree from pairwise FST
 - [`amova_genomic()`](https://thierrygosselin.github.io/assigner/reference/amova_genomic.md)
   : Hierarchical AMOVA for incomplete genomic data
 

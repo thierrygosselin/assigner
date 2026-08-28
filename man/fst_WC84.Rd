@@ -210,6 +210,15 @@ divergence, nucleotide diversity, Tajima's D, linkage disequilibrium, local
 PCA, read mapping, or structural-variant analyses. De novo datasets using
 synthetic \code{CHROM_1} metadata are not plotted automatically.
 
+Screen candidate inversion-associated haploblocks before LD pruning, then
+report Fst for the complete genome, for a collinear sensitivity dataset, and
+within each candidate region or inferred arrangement. A regional Fst peak can
+also reflect a centromere, low recombination, assembly or mapping problems,
+introgression, population-specific missingness, or another structural
+variant. The
+\href{https://thierrygosselin.github.io/radr/articles/detecting_inversions.html}{radr inversion vignette}
+describes this workflow. No region is excluded automatically.
+
 The \code{"kernel"} option follows the Gaussian smoothing philosophy used by
 the STACKS \code{populations} program: estimates are evaluated along the
 reference genome, marker contributions decline with distance, and the kernel

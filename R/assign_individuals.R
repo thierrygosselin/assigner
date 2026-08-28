@@ -107,9 +107,11 @@
 #' This is a classification method: candidate source strata must be defined and
 #' represented by reference samples. The native engine assigns an individual to
 #' the stratum with the greatest multilocus genotype likelihood. It does not
-#' perform a Monte Carlo exclusion test, estimate migration rates, or establish
-#' that the true source population was sampled. Those are separate inferential
-#' questions (Manel et al. 2005; Paetkau et al. 2004).
+#' itself perform a Monte Carlo exclusion test, estimate migration rates, or
+#' establish that the true source population was sampled. Use
+#' [test_source_exclusion()] as a separate absolute-fit diagnostic after native
+#' GT assignment. These remain distinct inferential questions (Manel et al.
+#' 2005; Paetkau et al. 2004).
 #'
 #' Reference individuals should normally be evaluated with
 #' `leave.one.out = TRUE`, because using the focal genotype to estimate its home
@@ -343,10 +345,12 @@ assign_individuals <- function(
     if (genotype.method != "GT") {
       rlang::abort("`genotype.method = \"GL\"` and `\"PL\"` require `engine = \"likelihood\"`.")
     }
-    return(assign_individuals_ml(
+    result <- assign_individuals_ml(
       data = data, strata = strata, engine = engine, folds = folds,
       random.seed = random.seed, verbose = verbose
-    ))
+    )
+    result$settings <- list(engine = engine, genotype.method = genotype.method)
+    return(result)
   }
   if (!is.logical(leave.one.out) || length(leave.one.out) != 1L || is.na(leave.one.out)) {
     rlang::abort("`leave.one.out` must be TRUE or FALSE.")
@@ -426,6 +430,10 @@ assign_individuals <- function(
         marker.blocks = marker.blocks, reporting.unit = NULL, verbose = FALSE
       )
     }
+    result$settings <- list(
+      engine = engine, genotype.method = genotype.method,
+      leave.one.out = leave.one.out, frequency.floor = frequency.floor
+    )
     return(result)
   }
 
@@ -657,6 +665,10 @@ assign_individuals <- function(
     likelihoods = likelihoods,
     allele.frequencies = allele.frequencies,
     marker.block.likelihoods = marker.block.likelihoods
+  )
+  result$settings <- list(
+    engine = engine, genotype.method = genotype.method,
+    leave.one.out = leave.one.out, frequency.floor = frequency.floor
   )
   if (!is.null(reporting.unit)) {
     metadata <- if (is.null(strata)) genome else

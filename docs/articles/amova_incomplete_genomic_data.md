@@ -23,8 +23,9 @@ and documents the choices made in `assigner`.
 
 ### From observations to squared distances
 
-For (n) molecular observations, let (Delta=(\_{ij}^2)) be the matrix of
-squared distances. The total sum of squared deviations can be written as
+For $`n`$ molecular observations, let $`\Delta=(\delta_{ij}^2)`$ be the
+matrix of squared distances. The total sum of squared deviations can be
+written as
 
 ``` math
 SS_T = \frac{1}{2n}\sum_{i=1}^{n}\sum_{j=1}^{n}\delta_{ij}^2.
@@ -65,6 +66,44 @@ with every estimator called $`F_{ST}`$. Weir and Cockerham’s estimator,
 for example, is derived from allelic correlations and sampling theory
 rather than from an arbitrary molecular-distance matrix ([Weir and
 Cockerham 1984](#ref-WeirCockerham1984)).
+
+### A nested-looking table is not necessarily an AMOVA hierarchy
+
+AMOVA requires more than columns that can be arranged as
+`REGION/STRATA`. The lower units must be biologically meaningful
+replicates for the higher-level inference. Capture locality, life stage,
+migratory route, inferred cluster, and reproductive population are not
+automatically interchangeable.
+
+Two recent highly migratory fish studies illustrate the distinction.
+Mikles et al. combined whole-genome data with independently observed
+movements of Atlantic bluefin tuna from Gulf of Mexico and Mediterranean
+spawning grounds ([Mikles et al. 2026](#ref-Mikles2026)). Adults and
+larvae form nested-looking categories, but they are life stages rather
+than replicated populations within each spawning region. With only two
+primary spawning populations, higher-level AMOVA has essentially no
+population replication. Their movement, ordination, differentiation, and
+demographic analyses addressed different and appropriate questions.
+
+Chevrier et al. sampled swordfish at many Indian Ocean localities and
+recovered a north-south signal associated strongly with a possible
+chromosomal inversion ([Chevrier et al. 2024](#ref-Chevrier2024)).
+Localities could form the lowest AMOVA level, but capture sites may mix
+reproductive origins, and testing a grouping discovered from the same
+SNPs is post hoc rather than independent confirmation ([Meirmans
+2015](#ref-Meirmans2015)). A useful AMOVA would be descriptive or use
+regions specified before examining the genotypes, and would compare
+linkage-pruned neutral loci, the inversion, and the genome with that
+region removed.
+
+Before fitting a hierarchy, ask whether the grouping was specified
+independently, whether lower units are biological replicates, whether
+enough units occur in every group, and whether one linked region could
+dominate the component.
+[`amova_genomic()`](https://thierrygosselin.github.io/assigner/reference/amova_genomic.md)
+can audit permutation support and linkage-aware marker uncertainty, but
+it cannot decide whether a metadata column represents a valid biological
+population. That decision belongs to the sampling design.
 
 ### The distance is part of the biological model
 
@@ -311,25 +350,25 @@ example_amova <- expand.grid(
 individual_strata <- data.frame(
   INDIVIDUALS = sprintf("ind_%02d", 1:24),
   REGION = rep(c("north", "south"), each = 12),
-  POP_ID = rep(c("n1", "n2", "s1", "s2"), each = 6)
+  STRATA = rep(c("n1", "n2", "s1", "s2"), each = 6)
 )
 
 example_amova <- merge(example_amova, individual_strata, by = "INDIVIDUALS")
 population_effect <- c(n1 = 0.1, n2 = 0.6, s1 = 1.2, s2 = 1.7)
-example_amova$GT_BIN <- rbinom(
+example_amova$GT <- rbinom(
   nrow(example_amova), 2,
-  plogis(-1 + population_effect[example_amova$POP_ID])
+  plogis(-1 + population_effect[example_amova$STRATA])
 )
-example_amova$GT_BIN[sample(nrow(example_amova), 30)] <- NA
+example_amova$GT[sample(nrow(example_amova), 30)] <- NA
 
 head(example_amova)
-#>   INDIVIDUALS MARKERS REGION POP_ID GT_BIN
-#> 1      ind_01   loc_1  north     n1      1
-#> 2      ind_01   loc_6  north     n1     NA
-#> 3      ind_01  loc_11  north     n1      0
-#> 4      ind_01   loc_5  north     n1      0
-#> 5      ind_01  loc_10  north     n1      1
-#> 6      ind_01   loc_8  north     n1      0
+#>   INDIVIDUALS MARKERS REGION STRATA GT
+#> 1      ind_01   loc_1  north     n1  1
+#> 2      ind_01   loc_6  north     n1 NA
+#> 3      ind_01  loc_11  north     n1  0
+#> 4      ind_01   loc_5  north     n1  0
+#> 5      ind_01  loc_10  north     n1  1
+#> 6      ind_01   loc_8  north     n1  0
 ```
 
 ### Locus-wise AMOVA
@@ -338,8 +377,7 @@ head(example_amova)
 
 fit <- amova_genomic(
   data = example_amova,
-  hierarchy = c("REGION", "POP_ID"),
-  value = "GT_BIN",
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "locuswise",
   min.groups = 2,
@@ -358,7 +396,7 @@ fit
 #>     PHI_CT 0.30824170           NA
 #>     PHI_SC 0.02296129           NA
 head(fit$per_locus)
-#>   MARKERS     REGION      POP_ID    Within  N GROUPS EUCLIDEAN MIN_EIGENVALUE
+#>   MARKERS     REGION      STRATA    Within  N GROUPS EUCLIDEAN MIN_EIGENVALUE
 #> 1   loc_1 -0.1828342  0.26878189 0.4739583 20      4      TRUE  -1.103578e-15
 #> 2  loc_10  0.4545455 -0.05000000 0.3000000 23      4      TRUE  -2.189257e-15
 #> 3  loc_11  0.3264038 -0.05487714 0.4188889 19      4      TRUE  -2.452294e-15
@@ -388,8 +426,7 @@ head(fit$marker_audit)
 
 fit_filtered <- amova_genomic(
   data = example_amova,
-  hierarchy = c("REGION", "POP_ID"),
-  value = "GT_BIN",
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "filter",
   min.call.rate = 0.75,
@@ -416,7 +453,7 @@ statistics whose maxima have not been implemented.
 
 fit_identity <- amova_genomic(
   data = haplotype_data,
-  hierarchy = c("REGION", "POP_ID"),
+  hierarchy = c("REGION", "STRATA"),
   value = "HAPLOTYPE",
   distance = "identity",
   missing = "locuswise",
@@ -430,8 +467,7 @@ fit_identity <- amova_genomic(
 
 fit_permuted <- amova_genomic(
   data = example_amova,
-  hierarchy = c("REGION", "POP_ID"),
-  value = "GT_BIN",
+  hierarchy = c("REGION", "STRATA"),
   distance = "euclidean",
   missing = "locuswise",
   standardized = FALSE,
@@ -627,6 +663,11 @@ An AMOVA report should state at least:
 - permutation unit, restrictions, seed, and number of permutations;
 - whether negative variance components were retained or truncated.
 
+Chevrier, Thomas, Dominique A. Cowart, Anne-Elise Nieblas, et al. 2024.
+“Population Structure of the Swordfish, Xiphias Gladius, Across the
+Indian Ocean Using Next-Generation Sequencing.” *ICES Journal of Marine
+Science* 82 (5): fsae179. <https://doi.org/10.1093/icesjms/fsae179>.
+
 Dray, Stéphane, and Anne-Béatrice Dufour. 2007. “The Ade4 Package:
 Implementing the Duality Diagram for Ecologists.” *Journal of
 Statistical Software* 22 (4): 1–20.
@@ -655,6 +696,10 @@ Meirmans, Patrick G. 2006. “Using the AMOVA Framework to Estimate a
 Standardized Genetic Differentiation Measure.” *Evolution* 60 (11):
 2399–402. <https://doi.org/10.1111/j.0014-3820.2006.tb01874.x>.
 
+Meirmans, Patrick G. 2015. “Seven Common Mistakes in Population Genetics
+and How to Avoid Them.” *Molecular Ecology* 24 (13): 3223–31.
+<https://doi.org/10.1111/mec.13243>.
+
 Meirmans, Patrick G. 2020. “GenoDive Version 3.0: Easy-to-Use Software
 for the Analysis of Genetic Data of Diploids and Polyploids.” *Molecular
 Ecology Resources* 20 (4): 1126–31.
@@ -663,6 +708,11 @@ Ecology Resources* 20 (4): 1126–31.
 Meirmans, Patrick G., and Philip W. Hedrick. 2011. “Assessing Population
 Structure: FST and Related Measures.” *Molecular Ecology Resources* 11
 (1): 5–18. <https://doi.org/10.1111/j.1755-0998.2010.02927.x>.
+
+Mikles, Chloe S., Camille M. L. S. Pagniello, Eyal Bigal, et al. 2026.
+“Adaptive Genomic Divergence Parallels Migratory Behavior in Atlantic
+Bluefin Tuna.” *Current Biology* 36: 2518–36.
+<https://doi.org/10.1016/j.cub.2026.04.006>.
 
 Paradis, Emmanuel. 2010. “Pegas: An r Package for Population Genetics
 with an Integrated-Modular Approach.” *Bioinformatics* 26 (3): 419–20.

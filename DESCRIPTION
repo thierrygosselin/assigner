@@ -38,7 +38,9 @@ Imports:
     tidyr,
     tidyselect
 Suggests:
+    ape,
     BiocManager,
+    ggtree,
     glmnet,
     knitr,
     reticulate,

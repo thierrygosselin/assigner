@@ -213,10 +213,11 @@ and can conceal assignment ambiguity among additional candidate strata.
 This is a classification method: candidate source strata must be defined
 and represented by reference samples. The native engine assigns an
 individual to the stratum with the greatest multilocus genotype
-likelihood. It does not perform a Monte Carlo exclusion test, estimate
-migration rates, or establish that the true source population was
-sampled. Those are separate inferential questions (Manel et al. 2005;
-Paetkau et al. 2004).
+likelihood. It does not itself perform a Monte Carlo exclusion test,
+estimate migration rates, or establish that the true source population
+was sampled. Use \[test_source_exclusion()\] as a separate absolute-fit
+diagnostic after native GT assignment. These remain distinct inferential
+questions (Manel et al. 2005; Paetkau et al. 2004).
 
 Reference individuals should normally be evaluated with \`leave.one.out
 = TRUE\`, because using the focal genotype to estimate its home allele
