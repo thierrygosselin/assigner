@@ -230,13 +230,37 @@ inside the training portion when their performance is being evaluated.
 ### Assignment is not a migrant test
 
 [`assign_individuals()`](https://thierrygosselin.github.io/assigner/reference/assign_individuals.md)
-ranks the supplied candidate sources. It does not run the Monte Carlo
-exclusion procedure described by Cornuet et al. (1999) and Paetkau et
-al. (2004), and it does not estimate a migration rate. A best assignment
-can still be poor in absolute terms, and the true source can be absent
-from the reference data. Migrant detection requires an explicit
-statistic, a calibrated null distribution, a stated error threshold, and
-a design appropriate to whether all possible sources were sampled.
+ranks the supplied candidate sources. A best assignment can still be
+poor in absolute terms, and the true source can be absent from the
+reference data. Use
+[`test_source_exclusion()`](https://thierrygosselin.github.io/assigner/reference/test_source_exclusion.md)
+as a separate Monte Carlo diagnostic following Cornuet et al. (1999) and
+Paetkau et al. (2004):
+
+``` r
+
+assignment_for_exclusion <- assigner::assign_individuals(
+  data = genome,
+  leave.one.out = TRUE
+)
+
+exclusion <- assigner::test_source_exclusion(
+  result = assignment_for_exclusion,
+  data = genome,
+  simulations = 10000,
+  alpha = 0.01
+)
+
+exclusion$exclusion
+exclusion$individual.summary
+```
+
+Supplying `data` reproduces the exact set of non-missing markers used
+for each individual. Without it, only the number of scored markers is
+matched. The test does not estimate a migration rate or prove that an
+excluded individual is a migrant. Migrant detection requires a stated
+error threshold and a design appropriate to whether all possible sources
+were sampled.
 
 Paetkau et al. (2004) distinguish the likelihood in the sampled home
 population from a likelihood ratio comparing home with the best
