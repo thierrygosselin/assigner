@@ -31,6 +31,8 @@ Imports:
     radr,
     readr (>= 2.1.0),
     rlang,
+    gdsfmt,
+    SeqArray,
     stats,
     stringi,
     tgbase,

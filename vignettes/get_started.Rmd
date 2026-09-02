@@ -221,6 +221,41 @@ feature selection, LD pruning thresholds, missingness filters, and decisions
 about the number of loci must all be performed inside the training portion when
 their performance is being evaluated.
 
+## Genetic-sex assignment from a validated panel
+
+Marker discovery and individual classification are intentionally separated.
+Use `radr::sexy_markers()` in discovery samples to identify candidate markers
+and write `sex_assignment_panel.tsv`. Then use `assign_genetic_sex()` in
+independent samples:
+
+```r
+genetic.sex <- assigner::assign_genetic_sex(
+  data = "validation.gds",
+  panel = "sex_assignment_panel.tsv",
+  metadata = "validation_metadata.tsv",
+  sex.column = "SEX",
+  min.panel.markers = 2,
+  min.score = 0.8,
+  min.margin = 0.2
+)
+
+genetic.sex$assignment
+```
+
+The initial classifier uses validated Y-like and W-like presence/absence
+markers. A Y-like marker supports male when present and female when absent; a
+W-like marker supports the reverse. `FEMALE_SCORE` and `MALE_SCORE` report the
+fraction of panel markers agreeing with each pattern. Weak, tied, or
+contradictory evidence returns `U` rather than forcing a classification.
+
+Recorded sex is never used to make the assignment and is never overwritten. It
+is retained only in `RECORDED_SEX` so concordance can be audited. Review the
+per-marker evidence in `genetic_sex_marker_scores.tsv`, especially when sex is
+associated with plate, lane, library, population, collection, or coverage.
+Discovery-sample concordance is not an unbiased accuracy estimate: validate the
+completed marker panel in independent samples, families, batches, and relevant
+populations before operational use.
+
 ### Assignment is not a migrant test
 
 `assign_individuals()` ranks the supplied candidate sources. A best assignment
