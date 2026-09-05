@@ -547,7 +547,11 @@ evaluate_assignment <- function(
 
   # Strata and pop levels ------------------------------------------------------
   input <- genometranslator::change_pop_names(data = input, pop.levels = pop.levels)
-  strata <-  genometranslator::generate_strata(data = input, pop.id = TRUE)
+  strata <-  dplyr::ungroup(input) |>
+      dplyr::transmute(POP_ID = .data[[if ("POP_ID" %in% names(input))
+        "POP_ID" else "STRATA"]], INDIVIDUALS = .data$INDIVIDUALS) |>
+      dplyr::distinct() |>
+      dplyr::arrange(.data$POP_ID, .data$INDIVIDUALS)
 
   # Subsampling ----------------------------------------------------------------
   subsample.list <- generate_subsamples(
@@ -766,7 +770,11 @@ assignment_subsamples <- function(
 
   # Keep a new strata
   # strata.df <- dplyr::distinct(.data = input, INDIVIDUALS, POP_ID)
-  strata <- genometranslator::generate_strata(data = input, pop.id = TRUE)
+  strata <- dplyr::ungroup(input) |>
+      dplyr::transmute(POP_ID = .data[[if ("POP_ID" %in% names(input))
+        "POP_ID" else "STRATA"]], INDIVIDUALS = .data$INDIVIDUALS) |>
+      dplyr::distinct() |>
+      dplyr::arrange(.data$POP_ID, .data$INDIVIDUALS)
 
   # If Adegenet, generate genind object
   genind.object <- NULL
@@ -1015,7 +1023,11 @@ assignment_subsamples <- function(
     message("Using training samples to rank markers based on Fst")
 
     # individuals and pop df
-    strata <- genometranslator::generate_strata(data = input, pop.id = TRUE)
+    strata <- dplyr::ungroup(input) |>
+      dplyr::transmute(POP_ID = .data[[if ("POP_ID" %in% names(input))
+        "POP_ID" else "STRATA"]], INDIVIDUALS = .data$INDIVIDUALS) |>
+      dplyr::distinct() |>
+      dplyr::arrange(.data$POP_ID, .data$INDIVIDUALS)
 
     # Will go through the individuals in the list one by one.
     hs <- generate_holdhout(
