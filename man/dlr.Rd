@@ -2,7 +2,7 @@
 % Please edit documentation in R/dlr.R
 \name{dlr}
 \alias{dlr}
-\title{Genotype likelihood ratio distance (Dlr)}
+\title{Paetkau's genotype likelihood-ratio distance (Dlr)}
 \usage{
 dlr(
   data,
@@ -45,8 +45,29 @@ A list with 5 objects:
 }
 }
 \description{
-The function computes Paetkau's et al. (1997) genotype likelihood
-ratio distance (Dlr).
+Compute the population-pair assignment distance introduced by
+  Paetkau et al. (1997).
+}
+\details{
+Here, *genotype likelihood* means the expected population frequency of an
+individual's multilocus genotype. It predates and must not be confused with
+sequencing genotype likelihoods stored in Variant Call Format fields such as
+`GL` or `PL`.
+
+For populations A and B, let \eqn{\ell_{iA}} and \eqn{\ell_{iB}} be an
+individual's log likelihood under the two candidate populations. The
+directional log-likelihood ratio for an individual sampled in A is
+\eqn{\ell_{iA}-\ell_{iB}}; the direction is reversed for an individual
+sampled in B. Dlr gives the two sampled populations equal weight:
+
+\deqn{D_{LR}(A,B)=\frac{1}{2}\left[
+\frac{1}{n_A}\sum_{i\in A}(\ell_{iA}-\ell_{iB})+
+\frac{1}{n_B}\sum_{i\in B}(\ell_{iB}-\ell_{iA})\right].}
+
+When `data` comes from [assign_individuals()] with
+`genotype.method = "GL"` or `"PL"`, each \eqn{\ell} already integrates the
+sequencing genotype likelihood over the three diploid genotypes. Therefore,
+the same Dlr calculation supports hard calls, `GL`, and `PL`.
 }
 \examples{
 \dontrun{

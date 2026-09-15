@@ -268,6 +268,13 @@
 #' \href{https://thierrygosselin.github.io/genometranslator/}{genometranslator}
 #' and \href{https://thierrygosselin.github.io/radr/}{radr} first.
 #'
+#' @section Lifecycle:
+#' `assign_individuals()` is experimental and remains under active testing. It
+#' is available for use, but its interface, assignment engines, diagnostics,
+#' and returned components may change as validation expands. Analyses should
+#' record the assigner package version and, when using a development build, the
+#' exact Git commit. See `vignette("life_cycle", package = "assigner")`.
+#'
 #' @references Manel S, Gaggiotti OE, Waples RS (2005). Assignment methods:
 #'   matching biological questions with appropriate techniques. Trends in
 #'   Ecology & Evolution, 20(3), 136-142.

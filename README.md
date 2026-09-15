@@ -18,8 +18,11 @@ data assign individuals to candidate source populations?**
 Use `assigner` to:
 
 - assign individuals with a native population-genetic likelihood method
-  written entirely in R, using called genotypes (`GT`) or genotype
-  likelihoods (`GL` and `PL`);
+  written entirely in R, using called genotypes (`GT`), log10 genotype
+  likelihoods (`GL`), or Phred-scaled genotype likelihoods (`PL`);
+- perform likelihood-aware principal component analysis (PCA) followed
+  by discriminant assignment when both genomic coordinates and
+  classification of predefined `STRATA` are required;
 - retain the likelihood of every individual in every candidate
   population, not only the best and second-best assignments;
 - compare likelihood assignment with elastic net, XGBoost, experimental
@@ -32,17 +35,21 @@ Use `assigner` to:
   untouched;
 - compare random marker panels with panels ranked by population
   differentiation;
-- calculate and visualize Dlr as a measure of assignment resolution
-  between population pairs;
+- calculate and visualize Paetkau’s genotype likelihood-ratio distance
+  (Dlr) as a measure of assignment resolution between population pairs;
+  here, “genotype likelihood” is an assignment likelihood, not
+  sequencing `GL` or `PL`;
 - quantify effective reference sample size for GL/PL data and identify
   potentially important information imbalances among source populations;
 - calculate an optional coverage-aware diagnostic for individuals that
   may originate from an unsampled source;
-- estimate global and pairwise FST with confidence intervals;
-- run hierarchical AMOVA on incomplete genomic data with auditable
-  locus-wise sample support, selectable molecular distances, Euclidean
-  diagnostics, hierarchy-aware permutations, marker confidence
-  intervals, and population sensitivity analysis; and
+- estimate global and pairwise fixation indices (FST) with confidence
+  intervals;
+- run hierarchical analysis of molecular variance (AMOVA) on incomplete
+  genomic data with auditable locus-wise sample support, selectable
+  molecular distances, Euclidean diagnostics, hierarchy-aware
+  permutations, marker confidence intervals, and population sensitivity
+  analysis; and
 - keep analyses reproducible with recorded arguments, random seeds,
   intermediate results, and dated output folders.
 
@@ -65,7 +72,7 @@ explains these distinctions, leave-one-out assignment, unsampled
 alleles, missing data, validation, and the foundational references
 behind the methods.
 
-## AMOVA for incomplete genomic data
+## Analysis of molecular variance for incomplete genomic data
 
 `amova_genomic()` implements a hierarchical analysis of molecular
 variance for long genomic datasets. Its default missing-data strategy
@@ -102,11 +109,12 @@ supported. A Meirmans-style standardized statistic is currently limited
 to identity distance, where the maximum distance has a defined meaning;
 distances are never standardized by their observed sample maximum.
 
-The `data` argument follows the rest of `assigner`: use a GDS file path
-or an open GDS object supported by `genometranslator::read_genome()`.
-Standard diploid dosage is selected automatically. Use `strata` when
-hierarchy columns are kept in a separate strata file, or set `value`
-explicitly for haplotype and custom distance analyses.
+The `data` argument follows the rest of `assigner`: use a Genomic Data
+Structure (GDS) file path or an open GDS object supported by
+`genometranslator::read_genome()`. Standard diploid dosage is selected
+automatically. Use `strata` when hierarchy columns are kept in a
+separate strata file, or set `value` explicitly for haplotype and custom
+distance analyses.
 
 The [AMOVA for incomplete genomic data
 vignette](https://thierrygosselin.github.io/assigner/articles/amova_incomplete_genomic_data.html)
@@ -141,6 +149,8 @@ assigner::check_gsi_sim()
   intervals](https://thierrygosselin.github.io/assigner/articles/fst_confidence_intervals.html)
 - [AMOVA for incomplete genomic
   data](https://thierrygosselin.github.io/assigner/articles/amova_incomplete_genomic_data.html)
+- [Likelihood-aware PCA and population
+  assignment](https://thierrygosselin.github.io/assigner/articles/likelihood-aware-assignment.html)
 - [Development
   roadmap](https://github.com/thierrygosselin/assigner/blob/main/ROADMAP.md)
 - [Issue tracker](https://github.com/thierrygosselin/assigner/issues)

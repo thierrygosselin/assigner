@@ -16,5 +16,41 @@ knitr::opts_chunk$set(
 )
 ```
 
-assigner is maturing, but in order to make the package better, changes are 
-inevitable. Experimental functions will change, argument names will change.
+assigner is maturing, and some change is inevitable as methods are evaluated
+and improved. Functions are considered stable unless their documentation says
+otherwise.
+
+## Experimental functions
+
+The following functions are available for use, but remain experimental:
+
+- `assign_individuals()`;
+- `amova_genomic()`;
+- `assign_likelihood_dapc()`;
+- `compare_unsampled_scores()`; and
+- `assess_assignment_mc()`.
+
+Their interfaces, numerical or validation strategies, and returned components
+may change. Results produced with these functions should therefore be tied to
+both the assigner version and, for a development installation, the exact Git
+commit.
+
+```{r, eval=FALSE}
+# Record the installed package version.
+utils::packageVersion("assigner")
+
+# GitHub installations made with common R installation tools may retain the
+# source commit in the installed package metadata.
+description <- utils::packageDescription("assigner")
+description[c("Version", "RemoteSha")]
+
+# When working directly from an assigner source checkout, record its commit.
+system2("git", c("rev-parse", "HEAD"), stdout = TRUE)
+```
+
+`RemoteSha` is not present in every installation. When it is absent, record the
+commit from the source checkout or the immutable GitHub commit URL used for the
+installation. Saving `sessionInfo()` with the analysis is also recommended.
+
+This terminology follows the lifecycle guidance in *R Packages (2e)*:
+<https://r-pkgs.org/lifecycle.html>.

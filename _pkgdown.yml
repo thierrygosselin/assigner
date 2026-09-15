@@ -7,6 +7,7 @@ reference:
   contents:
   - evaluate_assignment
   - assign_individuals
+  - assign_likelihood_dapc
   - assess_assignment_mc
   - test_source_exclusion
   - compare_unsampled_scores
@@ -52,6 +53,8 @@ navbar:
       href: articles/amova_incomplete_genomic_data.html
     - text: Using whitelists in assignment
       href: articles/assignment.whitelists.html
+    - text: Likelihood-aware PCA and assignment
+      href: articles/likelihood-aware-assignment.html
   - text: News
     href: news/index.html
   right:

@@ -1,7 +1,27 @@
 #' @name dlr
-#' @title Genotype likelihood ratio distance (Dlr)
-#' @description The function computes Paetkau's et al. (1997) genotype likelihood
-#' ratio distance (Dlr).
+#' @title Paetkau's genotype likelihood-ratio distance (Dlr)
+#' @description Compute the population-pair assignment distance introduced by
+#'   Paetkau et al. (1997).
+#' @details
+#' Here, *genotype likelihood* means the expected population frequency of an
+#' individual's multilocus genotype. It predates and must not be confused with
+#' sequencing genotype likelihoods stored in Variant Call Format fields such as
+#' `GL` or `PL`.
+#'
+#' For populations A and B, let \eqn{\ell_{iA}} and \eqn{\ell_{iB}} be an
+#' individual's log likelihood under the two candidate populations. The
+#' directional log-likelihood ratio for an individual sampled in A is
+#' \eqn{\ell_{iA}-\ell_{iB}}; the direction is reversed for an individual
+#' sampled in B. Dlr gives the two sampled populations equal weight:
+#'
+#' \deqn{D_{LR}(A,B)=\frac{1}{2}\left[
+#' \frac{1}{n_A}\sum_{i\in A}(\ell_{iA}-\ell_{iB})+
+#' \frac{1}{n_B}\sum_{i\in B}(\ell_{iB}-\ell_{iA})\right].}
+#'
+#' When `data` comes from [assign_individuals()] with
+#' `genotype.method = "GL"` or `"PL"`, each \eqn{\ell} already integrates the
+#' sequencing genotype likelihood over the three diploid genotypes. Therefore,
+#' the same Dlr calculation supports hard calls, `GL`, and `PL`.
 #' @param data A result returned by [assign_individuals()], its complete
 #'   `likelihoods` table, or a GenoDive assignment output file.
 #' @param strata A tab delimited file with 2 columns with header:
@@ -83,7 +103,7 @@ dlr <- function(
     }
 
     assignment <- likelihoods |>
-      dplyr::select(INDIVIDUALS, POP_ID = CURRENT, CANDIDATE, LOG_LIKELIHOOD) |>
+      dplyr::select(INDIVIDUALS, STRATA = CURRENT, CANDIDATE, LOG_LIKELIHOOD) |>
       tidyr::pivot_wider(names_from = CANDIDATE, values_from = LOG_LIKELIHOOD)
 
     if (!is.null(assignment.summary)) {
@@ -96,9 +116,9 @@ dlr <- function(
           LIK_RATIO = HOME_LIK_RATIO
         )
       assignment <- dplyr::left_join(fixed, assignment, by = "INDIVIDUALS") |>
-        dplyr::select(INDIVIDUALS, POP_ID, INFERRED, LIK_MAX, LIK_HOME, LIK_RATIO, dplyr::everything())
+        dplyr::select(INDIVIDUALS, STRATA, INFERRED, LIK_MAX, LIK_HOME, LIK_RATIO, dplyr::everything())
     }
-    get.pop <- tibble::tibble(POP_ID = sort(unique(as.character(likelihoods$CANDIDATE))))
+    get.pop <- tibble::tibble(STRATA = sort(unique(as.character(likelihoods$CANDIDATE))))
   } else {
     if (is.null(strata)) {
       rlang::abort("`strata` is required when importing a GenoDive output file.")
@@ -126,7 +146,7 @@ dlr <- function(
 
   if (isTRUE(verbose)) message("Inspecting strata")
   # strata.df <- readr::read_tsv(file = strata, col_names = TRUE, col_types = "cc")
-  strata.df <- genometranslator::read_strata(strata = strata, pop.id = TRUE) %$% strata
+  strata.df <- genometranslator::read_strata(strata = strata)$strata
   max.lines <- nrow(strata.df)
 
   # max.lines = nrow(temp.file) - 1 # previously with readr < v2.0
@@ -148,14 +168,14 @@ dlr <- function(
     ) %>%
       dplyr::filter(!is.na(Current)) %>%
       dplyr::rename(
-        INDIVIDUALS = Individual, POP_ID = Current, INFERRED = Inferred,
+        INDIVIDUALS = Individual, STRATA = Current, INFERRED = Inferred,
         LIK_MAX = Lik_max, LIK_HOME = Lik_home, LIK_RATIO = Lik_ratio)
   )
 
   temp.file <- skip.number <- NULL
 
   assignment$INDIVIDUALS <- genometranslator::clean_ind_names(assignment$INDIVIDUALS)
-  assignment$POP_ID <- genometranslator::clean_ind_names(assignment$POP_ID)
+  assignment$STRATA <- genometranslator::clean_ind_names(assignment$STRATA)
   assignment$INFERRED <- genometranslator::clean_ind_names(assignment$INFERRED)
 
   # check that same number of individuals and pop...
@@ -164,10 +184,10 @@ dlr <- function(
   }
 
   assignment.pop <- ncol(assignment) - 6
-  strata.pop <- dplyr::n_distinct(strata.df$POP_ID)
+  strata.pop <- dplyr::n_distinct(strata.df$STRATA)
   if (assignment.pop != strata.pop) stop("Assignment file and strata don't have the same number of populations")
 
-  fixed.header <- c("INDIVIDUALS", "POP_ID", "INFERRED", "LIK_MAX", "LIK_HOME", "LIK_RATIO")
+  fixed.header <- c("INDIVIDUALS", "STRATA", "INFERRED", "LIK_MAX", "LIK_HOME", "LIK_RATIO")
 
   header.pop <- purrr::discard(.x = colnames(assignment), .p = colnames(assignment) %in% fixed.header) %>%
     genometranslator::clean_ind_names(x = .)
@@ -177,22 +197,22 @@ dlr <- function(
     dplyr::filter(INDIVIDUALS %in% header.pop) %>%
     dplyr::mutate(
       INDIVIDUALS = factor(x = INDIVIDUALS, levels = header.pop),
-      POP_ID = as.character(POP_ID)
+      STRATA = as.character(STRATA)
       ) %>%
     dplyr::arrange(INDIVIDUALS)
 
   strata.df <- NULL
 
   # Change header for the real pop names
-  colnames(assignment) <- c(fixed.header, get.pop$POP_ID)
+  colnames(assignment) <- c(fixed.header, get.pop$STRATA)
 
-  # Change POP_ID and inferred for the real pop name
+  # Change STRATA and inferred for the real pop name
   assignment %<>%
     dplyr::mutate(
-      POP_ID = stringi::stri_replace_all_fixed(
-        str = POP_ID, pattern = get.pop$INDIVIDUALS, replacement = get.pop$POP_ID, vectorize_all = FALSE),
+      STRATA = stringi::stri_replace_all_fixed(
+        str = STRATA, pattern = get.pop$INDIVIDUALS, replacement = get.pop$STRATA, vectorize_all = FALSE),
       INFERRED = stringi::stri_replace_all_fixed(
-        str = INFERRED, pattern = get.pop$INDIVIDUALS, replacement = get.pop$POP_ID, vectorize_all = FALSE)
+        str = INFERRED, pattern = get.pop$INDIVIDUALS, replacement = get.pop$STRATA, vectorize_all = FALSE)
     )
 
   # check if some columns are filled with NA.. (small sample size...)
@@ -205,7 +225,7 @@ dlr <- function(
     message("Removing problematic strata")
     assignment %<>%
       dplyr::select(-dplyr::one_of(pop.prob))
-    get.pop %<>% dplyr::filter(!POP_ID %in% pop.prob)
+    get.pop %<>% dplyr::filter(!STRATA %in% pop.prob)
   }
 
   }
@@ -214,7 +234,7 @@ dlr <- function(
 
   # All combination of populations----------------------------------------------
   message("Calculating Dlr...")
-  pop.pairwise <- utils::combn(unique(get.pop$POP_ID), 2)
+  pop.pairwise <- utils::combn(unique(get.pop$STRATA), 2)
   # pop.pairwise <- matrix(pop.pairwise, nrow = 2)
 
   # Dlr for all pairwise populations--------------------------------------------
@@ -229,17 +249,17 @@ dlr <- function(
   # pop.pairwise <- NULL
 
   # Table with Dlr--------------------------------------------------------------
-  names.pairwise <- utils::combn(unique(get.pop$POP_ID), 2, paste, collapse = '-')
+  names.pairwise <- utils::combn(unique(get.pop$STRATA), 2, paste, collapse = '-')
 
   dlr.table <- tibble::tibble(PAIRWISE_POP = as.character(names.pairwise), DLR = dlr.all.pop) %>%
     dplyr::mutate(DLR = round(as.numeric(DLR), 2))
 
   # Dist and Matrix-------------------------------------------------------------
-  dlr.dist <- stats::dist(1:length(unique(get.pop$POP_ID)))
+  dlr.dist <- stats::dist(1:length(unique(get.pop$STRATA)))
   dlr.dist.matrix <- dlr.all.pop
   attributes(dlr.dist.matrix) <- attributes(dlr.dist)
   dlr.dist.matrix <- as.matrix(dlr.dist.matrix)
-  colnames(dlr.dist.matrix) <- rownames(dlr.dist.matrix) <- unique(get.pop$POP_ID)
+  colnames(dlr.dist.matrix) <- rownames(dlr.dist.matrix) <- unique(get.pop$STRATA)
   dlr.dist.matrix <- stats::as.dist(dlr.dist.matrix)
 
   dlr.matrix <- tibble::as_tibble(x = as.matrix(dlr.dist.matrix), rownames = "POP")
@@ -255,7 +275,7 @@ dlr <- function(
   # Dlr plots ------------------------------------------------------------------
   if (plots) {
     # all combination of individual pair
-    pop.pairwise <- utils::combn(unique(get.pop$POP_ID), 2, simplify = FALSE)
+    pop.pairwise <- utils::combn(unique(get.pop$STRATA), 2, simplify = FALSE)
     # names(pop.pairwise) <- pop.pairwise
 
     # get the number of pairwise comp.
@@ -327,11 +347,11 @@ dlr <- function(
 # dlr.absolute <- assignment %>%
 #   dplyr::group_by(INDIVIDUALS) %>%
 #   dplyr::mutate(RATIO = dplyr::if_else(
-#     POP_ID == rlang::UQ(pop1),
+#     STRATA == rlang::UQ(pop1),
 #     rlang::.data[[pop1]] - rlang::.data[[pop2]],
 #     rlang::.data[[pop2]] - rlang::.data[[pop1]])
 #   ) %>%
-#   dplyr::group_by(POP_ID) %>%
+#   dplyr::group_by(STRATA) %>%
 #   dplyr::summarise(DLR_ABSOLUTE = sum(RATIO)/length(RATIO)) %>%
 #   dplyr::ungroup(.) %>%
 #   dplyr::summarise(DLR_ABSOLUTE = sum(DLR_ABSOLUTE)/2)
@@ -344,24 +364,36 @@ dlr <- function(
 #' @rdname dlr_relative
 #' @export
 #' @keywords internal
-dlr_relative <- function(data, pop1, pop2){
-  dlr <- data %>%
-    dplyr::filter(POP_ID %in% c(pop1, pop2)) %>%
-    dplyr::group_by(INDIVIDUALS) %>%
+dlr_relative <- function(data, pop1, pop2) {
+  required <- c("INDIVIDUALS", "STRATA", pop1, pop2)
+  missing.columns <- setdiff(required, names(data))
+  if (length(missing.columns)) {
+    rlang::abort(paste0(
+      "Dlr input is missing: ", paste(missing.columns, collapse = ", "), "."
+    ))
+  }
+
+  # Orient each ratio toward the population in which the individual was
+  # sampled. Averaging the directional means gives both populations equal
+  # weight even when their sample sizes differ.
+  population.means <- data |>
+    dplyr::filter(.data$STRATA %in% c(pop1, pop2)) |>
     dplyr::mutate(
       RATIO = dplyr::if_else(
-        POP_ID %in% pop1,
+        .data$STRATA == pop1,
         .data[[pop1]] - .data[[pop2]],
-        # rlang::.data[[pop1]] - rlang::.data[[pop2]],
         .data[[pop2]] - .data[[pop1]]
-        # rlang::.data[[pop2]] - rlang::.data[[pop1]]
       )
-    ) %>%
-    dplyr::group_by(POP_ID) %>%
-    dplyr::summarise(DLR_RELATIVE = (sum(RATIO) / length(RATIO) ^ 2), .groups = "drop") %>%
-    dplyr::summarise(DLR_RELATIVE = sum(DLR_RELATIVE) / 2)
-  return(dlr)
-}#End dlr_relative
+    ) |>
+    dplyr::filter(is.finite(.data$RATIO)) |>
+    dplyr::group_by(.data$STRATA) |>
+    dplyr::summarise(DLR_DIRECTIONAL = mean(.data$RATIO), .groups = "drop")
+
+  if (!setequal(as.character(population.means$STRATA), c(pop1, pop2))) {
+    rlang::abort("Dlr requires at least one finite likelihood ratio per population.")
+  }
+  mean(population.means$DLR_DIRECTIONAL)
+}
 
 # plot_dlr ---------------------------------------------------------------------
 #' @name plot_dlr
@@ -416,7 +448,7 @@ plot_dlr <- function(
   if (missing(pop.pairwise)) stop("Missing pop.pairwise argument")
 
   # import data ----------------------------------------------------------------
-  assignment.select <- dplyr::rename(data, Populations = POP_ID)
+  assignment.select <- dplyr::rename(data, Populations = STRATA)
 
   POPA <- pop.pairwise[1]
   POPB <- pop.pairwise[2]

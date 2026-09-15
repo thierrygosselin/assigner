@@ -289,9 +289,11 @@ appropriate to whether all possible sources were sampled.
 Paetkau et al. (2004) distinguish the likelihood in the sampled home population
 from a likelihood ratio comparing home with the best alternative. The ratio can
 have greater power when all sources are sampled; the home likelihood is safer
-when possible sources are missing. Their Dlr measure is a population-pair
-summary useful for assessing assignment resolution, not an individual posterior
-probability.
+when possible sources are missing. Their genotype likelihood-ratio distance
+(Dlr) is a population-pair summary useful for assessing assignment resolution,
+not an individual posterior probability. In this historical name, genotype
+likelihood means the population frequency assigned to an observed multilocus
+genotype; it is not the sequencing genotype-likelihood field `GL` or `PL`.
 
 ## Native likelihood assignment
 

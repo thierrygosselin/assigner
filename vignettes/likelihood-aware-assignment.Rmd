@@ -1,0 +1,289 @@
+---
+title: "Likelihood-aware principal component analysis and population assignment"
+author: "Thierry Gosselin"
+date: "2026-09-07"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Likelihood-aware principal component analysis and population assignment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+## Why use genotype likelihoods?
+
+Hard genotype calls hide uncertainty created by read depth, base quality,
+mapping quality, allele balance, and the calling model. This is especially
+problematic for low-coverage sequencing, where a confident-looking completed
+genotype matrix may depend strongly on arbitrary calling thresholds.
+
+`assigner::assign_likelihood_dapc()` instead uses diploid biallelic Phred-scaled
+genotype likelihoods (`PL`) or log10 genotype likelihoods (`GL`) retained in a
+SeqArray Genomic Data Structure (GDS). It does not call genotypes. It estimates
+principal component analysis (PCA) coordinates while updating posterior
+genotype dosages and retaining their uncertainty, then performs a discriminant
+step in the retained PC space.
+
+## Statistical model
+
+For sample (i), locus (l), sequencing evidence (D_{il}), genotype (g),
+and an individual allele frequency (p_{il}), the model evaluates
+
+\[
+P(D_{il}\mid p_{il})=\sum_{g=0}^{2}
+P(D_{il}\mid G_{il}=g)P(G_{il}=g\mid p_{il}).
+\]
+
+The first term comes from `PL` or `GL`. The second is a Hardy--Weinberg
+genotype prior.
+
+### Allele-frequency estimation
+
+Let (q_l) be the ALT-allele frequency at locus (l), and let
+(L_{ilg}=P(D_{il}\mid G_{il}=g)) be the genotype likelihood for ALT dosage
+(g\in\{0,1,2\}). Under diploid Hardy--Weinberg proportions, the genotype
+prior is
+
+\[
+\boldsymbol{\pi}(q_l)=
+\left((1-q_l)^2,\;2q_l(1-q_l),\;q_l^2\right).
+\]
+
+The observed-data likelihood for one locus is
+
+\[
+\mathcal{L}(q_l)=
+\prod_{i\in\mathcal{O}_l}
+\sum_{g=0}^{2}L_{ilg}\,\pi_g(q_l),
+\]
+
+where \(\mathcal{O}_l\) contains training samples with a complete likelihood
+vector at that locus. Missing vectors are excluded from this frequency
+estimate; no genotype is manufactured for them.
+
+The estimator uses an expectation--maximization update. At iteration (t),
+the posterior probability of genotype (g) is
+
+\[
+w_{ilg}^{(t)}=
+\frac{L_{ilg}\,\pi_g(q_l^{(t)})}
+{\sum_{h=0}^{2}L_{ilh}\,\pi_h(q_l^{(t)})},
+\]
+
+and the next ALT-allele frequency is the mean posterior ALT dosage,
+
+\[
+q_l^{(t+1)}=
+\frac{1}{2|\mathcal{O}_l|}
+\sum_{i\in\mathcal{O}_l}\sum_{g=0}^{2}g\,w_{ilg}^{(t)}.
+\]
+
+Thus, a strongly supported heterozygote contributes approximately one ALT
+allele, whereas an uncertain sample contributes a fractional expected dosage.
+The returned `allele.frequency` retains the VCF REF/ALT orientation: it is the
+ALT frequency, not necessarily the minor-allele frequency. For a requested MAF
+threshold (m), a marker is retained when
+
+\[
+m\le q_l\le 1-m,
+\]
+
+which is equivalent to \(\min(q_l,1-q_l)\ge m\).
+
+Posterior dosages and individual allele frequencies are subsequently updated
+using a truncated singular-value decomposition. The final genomic covariance
+corrects its diagonal with the posterior expectation of the squared
+standardized genotype deviation. Its eigendecomposition therefore yields
+genuine likelihood-aware principal components.
+
+This distinction matters: normalized genotype likelihoods are not posterior
+genotype probabilities. A prior model is required before posterior genotype
+uncertainty can be calculated.
+
+The principal components are estimated without group labels. Known groups are
+used afterwards to estimate group means and a pooled within-group covariance in
+PC space, following linear discriminant analysis. Assignment probabilities
+also incorporate an approximate covariance for each sample's PC score, so
+weakly informed samples are represented as uncertain rather than as precise
+points.
+
+## Reading the data
+
+Import a Variant Call Format (VCF) file containing `PL` and/or `GL` with
+`genometranslator`. Keep the
+likelihood fields in the GDS and retain technical metadata in the strata table.
+
+```{r read, eval=FALSE}
+genome <- genometranslator::read_genome(
+  data = "variants.vcf.gz",
+  strata = "strata.tsv"
+)
+```
+
+The initial implementation accepts only diploid biallelic records with three
+likelihoods in VCF genotype order: REF/REF, REF/ALT, and ALT/ALT. Fully missing
+vectors are allowed. Partial vectors are rejected because their interpretation
+is ambiguous.
+
+## Strata and group labels
+
+These terms describe related but different objects:
+
+- **Strata** are the complete sample metadata table, with one row per individual
+  and columns such as `STRATA`, `SITE`, `SEX`, `YEAR`, `PLATE`, `LIBRARY`, or
+  `LANE`.
+- **Group labels** are the values from one selected strata column used as the
+  response in the discriminant analysis.
+
+With `groups = NULL`, `assign_likelihood_dapc()` reads the metadata stored in the GDS.
+The `group.column` argument selects which column supplies the labels; its
+default is `STRATA`. Alternatively, `groups` can be a strata data frame or a
+named vector containing the selected labels directly.
+
+The other metadata columns are not silently added to the statistical model.
+For example, using `group.column = "STRATA"` asks whether samples can be
+discriminated among the biological strata. It does not adjust the analysis for
+`PLATE` or `LIBRARY`. Those variables remain essential diagnostics: agreement
+between a grouping result and a technical batch may indicate confounding rather
+than biological population structure.
+
+## Fit and project
+
+```{r fit, eval=FALSE}
+training.ids <- readLines("training_samples.txt")
+
+fit <- assigner::assign_likelihood_dapc(
+  data = genome,
+  group.column = "STRATA",
+  likelihood = "PL",
+  n.components = 3,
+  training.samples = training.ids,
+  group.prior = "equal"
+)
+
+fit$assignments
+fit$probability.table
+```
+
+Only `training.samples` estimate allele frequencies and principal components.
+Other active samples are projected using the fitted marker axes. Group labels
+never enter PCA estimation.
+
+If all labelled samples are used for training, their assignments are
+descriptive and in-sample. They are not cross-validation results. Predictive
+assessment requires predefined test samples or complete refitting inside each
+resampling fold.
+
+## Diagnostics that remain essential
+
+Likelihood-aware analysis preserves uncertainty; it does not make laboratory
+or bioinformatic artefacts disappear. Examine:
+
+- observed likelihood vectors per individual and marker;
+- likelihood entropy and depth by individual;
+- inferred coordinates against plate, library, lane, chip, sequencing run,
+  mapping workflow, sampling site, and biological group;
+- assignment stability across defensible marker filters and component counts;
+- sensitivity to equal versus empirical group priors;
+- convergence of the PCA reconstruction error.
+
+When technical batches are not randomized across biological groups, the model
+may still learn technical separation. Strong assignment probabilities do not
+prove that the separation is biological.
+
+## Where this method fits
+
+No single method is best for every population-genomic question. The important
+distinction is whether the objective is unsupervised structure, ancestry
+estimation, or assignment to predefined reference groups.
+
+| Method | Primary question | Advantages | Important limitations |
+|---|---|---|---|
+| `assigner::assign_individuals()` | Which reference source best explains an individual's data? | Direct population-genetic likelihood; accepts `GT`, `GL`, or `PL`; supports leave-one-out estimation, external evaluation, effective sample-size diagnostics, marker blocks, and an unsampled-source diagnostic. | Linked loci produce a composite likelihood; requires defensible reference sources and representative allele-frequency estimates; does not provide low-dimensional genomic coordinates. |
+| `assigner::assign_likelihood_dapc()` | Can likelihood-aware genomic variation discriminate predefined groups? | Combines uncertainty-aware PCA coordinates, visualization, and supervised classification; group labels do not influence PCA estimation; approximate sample-specific PC uncertainty enters assignment. | New and experimental; requires choosing the number of PCs; assumes a pooled within-group covariance; probability calibration and score uncertainty are approximate; currently restricted to diploid biallelic data. |
+| Conventional Discriminant Analysis of Principal Components (DAPC) | Can PCs derived from called genotypes discriminate groups? | Established and familiar; strong visualization ecosystem; separates PCA from discriminant analysis. | Hard calls discard genotype uncertainty; missing-data treatment and imputation can alter the PCs; tuning and validation must be performed without information leakage. |
+| PCAngsd | What major axes of structure are supported by genotype likelihoods? | Established likelihood-aware PCA for low-depth sequencing; does not require predefined groups. | Primarily an unsupervised structure method, not a complete reference-population assignment and validation framework. |
+| NGSadmix | What ancestry proportions are supported for a selected value of \(K\)? | Uses genotype likelihoods and explicitly models admixture in low-depth data. | Ancestry estimation is not classification; \(K\) and model assumptions affect interpretation; reference-group assignment diagnostics are outside its main purpose. |
+| DAPC and stockR | What clusters or stock-structure patterns occur in prepared genotype data? | Useful exploratory approaches and valuable comparisons with established workflows. | They answer clustering or stock-structure questions, not direct likelihood-based assignment from uncertain genotypes. |
+
+### What `assign_likelihood_dapc()` adds
+
+The method fills a specific gap:
+
+\[
+\mathrm{GL/PL}
+\longrightarrow
+\text{likelihood-aware PCA}
+\longrightarrow
+\text{discriminant assignment}.
+\]
+
+It is not meant to replace direct assignment, PCAngsd, NGSadmix, or
+conventional DAPC. It adds a GDS-native route for users who need both
+uncertainty-aware genomic coordinates and discrimination of predefined
+`STRATA`. Agreement among methods is useful evidence; disagreement should
+trigger examination of coverage, missingness, batches, linked markers,
+reference sampling, PC selection, and biological assumptions.
+
+### Relationship to DAPC
+
+DAPC applies discriminant analysis after PCA of a genotype-derived numeric
+matrix (Jombart, Devillard, and Balloux 2010). `assign_likelihood_dapc()` retains that
+separation between unsupervised dimension reduction and supervised
+classification. Its PCA is estimated from genotype likelihoods using an
+independent R/GDS implementation informed by PCAngsd; it does not call
+`adegenet::dapc()` or PCAngsd and should not be described as an exact
+reimplementation of either.
+
+ANGSD calculates genotype likelihoods and related summaries from sequencing
+data. PCAngsd is the separate likelihood-based population-structure method that
+informed the PCA stage used here. The GDS remains the boundary for assigner: this
+function consumes likelihoods already imported by `genometranslator` rather
+than processing reads or BAM files.
+
+## Current boundaries
+
+This first implementation does not yet provide:
+
+- multiallelic, haploid, polyploid, pooled, or gVCF reference-block models;
+- automatic selection of PC dimensionality;
+- covariate adjustment for sequencing batches;
+- resampling-based model validation;
+- blocked optimization for millions of variants;
+- ancestry-proportion estimation.
+
+These are deliberate boundaries. Extending the model requires statistical
+validation, simulations, and comparisons with established likelihood-based
+population-structure methods.
+
+## References
+
+Jombart, T., Devillard, S., & Balloux, F. (2010). Discriminant analysis of
+principal components: a new method for the analysis of genetically structured
+populations. *BMC Genetics*, 11, 94.
+https://doi.org/10.1186/1471-2156-11-94
+
+Korneliussen, T. S., Albrechtsen, A., & Nielsen, R. (2014). ANGSD: analysis of
+next generation sequencing data. *BMC Bioinformatics*, 15, 356.
+https://doi.org/10.1186/s12859-014-0356-4
+
+Meisner, J., & Albrechtsen, A. (2018). Inferring population structure and
+admixture proportions in low-depth NGS data. *Genetics*, 210, 719--731.
+https://doi.org/10.1534/genetics.118.301336
+
+Meisner, J., & Albrechtsen, A. (2019). Testing for Hardy--Weinberg equilibrium
+in structured populations using genotype or low-depth next generation
+sequencing data. *Molecular Ecology Resources*, 19, 1144--1152.
+https://doi.org/10.1111/1755-0998.13019
+
+Patterson, N., Price, A. L., & Reich, D. (2006). Population structure and
+eigenanalysis. *PLoS Genetics*, 2, e190.
+https://doi.org/10.1371/journal.pgen.0020190
+
+Skotte, L., Korneliussen, T. S., & Albrechtsen, A. (2013). Estimating
+individual admixture proportions from next generation sequencing data.
+*Genetics*, 195, 693--702.
+https://doi.org/10.1534/genetics.113.154138

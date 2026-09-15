@@ -142,6 +142,15 @@ sampled populations. Neither is a substitute for population replication in
 a higher-level component, and the returned uncertainty report labels that
 distinction explicitly.
 }
+\section{Lifecycle}{
+
+\code{amova_genomic()} is experimental and remains under active testing. It is
+available for use, but its interface, inferential safeguards, and returned
+components may change as validation expands. Analyses should record the
+assigner package version and, when using a development build, the exact Git
+commit. See \code{vignette("life_cycle", package = "assigner")}.
+}
+
 \examples{
 \dontrun{
 # Hierarchy stored in GDS sample metadata:

@@ -84,6 +84,14 @@
 #' @return An object of class `assigner_amova` containing global statistics,
 #'   locus variance components, missing-data diagnostics, and permutation
 #'   results when requested.
+#'
+#' @section Lifecycle:
+#' `amova_genomic()` is experimental and remains under active testing. It is
+#' available for use, but its interface, inferential safeguards, and returned
+#' components may change as validation expands. Analyses should record the
+#' assigner package version and, when using a development build, the exact Git
+#' commit. See `vignette("life_cycle", package = "assigner")`.
+#'
 #' @export
 #' @examples
 #' \dontrun{

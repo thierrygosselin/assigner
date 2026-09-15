@@ -72,6 +72,13 @@ summarize_block_likelihoods <- function(per.marker, marker.blocks) {
 #'
 #' @return A list containing the joined scores, Pearson and Spearman
 #'   correlations, and a linear calibration model.
+#'
+#' @section Lifecycle:
+#' `compare_unsampled_scores()` is experimental. It is available for use, but
+#' its interface and returned components may change as independent validation
+#' workflows develop. Analyses should record the assigner package version and,
+#' when using a development build, the exact Git commit. See
+#' `vignette("life_cycle", package = "assigner")`.
 #' @export
 compare_unsampled_scores <- function(
   result, wgsassign, id.column = "INDIVIDUALS", score.column = "WGSASSIGN_Z"
@@ -139,6 +146,13 @@ compare_unsampled_scores <- function(
 #' individuals in every population. Marker selection and other data-dependent
 #' preprocessing should be performed independently within each training
 #' baseline when they form part of the inferential workflow.
+#'
+#' @section Lifecycle:
+#' `assess_assignment_mc()` is experimental. It is available for use, but its
+#' interface, resampling strategy, and returned components may change as the
+#' validation framework develops. Analyses should record the assigner package
+#' version and, when using a development build, the exact Git commit. See
+#' `vignette("life_cycle", package = "assigner")`.
 #'
 #' @references Moran BM, Anderson EC (2019). Bayesian inference from the
 #' conditional genetic stock identification model. Canadian Journal of

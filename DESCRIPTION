@@ -2,7 +2,7 @@ Package: assigner
 Type: Package
 Title: Population Assignment Analysis with Genomic Data
 Version: 0.7.1
-Date: 2026-08-22
+Date: 2026-09-07
 Encoding: UTF-8
 Authors@R: c(
   person("Thierry", "Gosselin", email = "thierrygosselin@icloud.com", role = c("aut", "cre")),
@@ -11,6 +11,7 @@ Authors@R: c(
 Maintainer: Thierry Gosselin <thierrygosselin@icloud.com>
 Description: Tools for population-assignment analysis with genomic data,
     including marker resampling, Training-Holdout-Leave-one-out validation,
+    direct population likelihoods, likelihood-aware discriminant analysis,
     assignment summaries, and fast implementations of common FST estimators.
 Depends:
     R (>= 4.4.0)

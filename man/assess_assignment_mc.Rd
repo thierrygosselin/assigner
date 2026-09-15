@@ -55,6 +55,15 @@ individuals in every population. Marker selection and other data-dependent
 preprocessing should be performed independently within each training
 baseline when they form part of the inferential workflow.
 }
+\section{Lifecycle}{
+
+`assess_assignment_mc()` is experimental. It is available for use, but its
+interface, resampling strategy, and returned components may change as the
+validation framework develops. Analyses should record the assigner package
+version and, when using a development build, the exact Git commit. See
+`vignette("life_cycle", package = "assigner")`.
+}
+
 \references{
 Moran BM, Anderson EC (2019). Bayesian inference from the
 conditional genetic stock identification model. Canadian Journal of

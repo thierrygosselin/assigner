@@ -33,3 +33,12 @@ Join standardized unsampled-source scores produced by
   [assign_individuals()] with independently generated WGSassign scores. This
   is a validation aid; it does not call or reproduce WGSassign.
 }
+\section{Lifecycle}{
+
+`compare_unsampled_scores()` is experimental. It is available for use, but
+its interface and returned components may change as independent validation
+workflows develop. Analyses should record the assigner package version and,
+when using a development build, the exact Git commit. See
+`vignette("life_cycle", package = "assigner")`.
+}
+

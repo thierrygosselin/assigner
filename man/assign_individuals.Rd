@@ -322,6 +322,15 @@ and quality-control the input with
 and \href{https://thierrygosselin.github.io/radr/}{radr} first.
 }
 
+\section{Lifecycle}{
+
+`assign_individuals()` is experimental and remains under active testing. It
+is available for use, but its interface, assignment engines, diagnostics,
+and returned components may change as validation expands. Analyses should
+record the assigner package version and, when using a development build, the
+exact Git commit. See `vignette("life_cycle", package = "assigner")`.
+}
+
 \examples{
 \dontrun{
 result <- assigner::assign_individuals(
