@@ -1,0 +1,12 @@
+source("inst/experimental/run-pca-kmeans-benchmark.R")
+set.seed(12);g <- matrix(rbinom(40*25,2,.4),40,25)
+s <- .pk_scores(g,5L)
+p <- colMeans(g)/2;z <- sweep(sweep(g,2,2*p,"-"),2,sqrt(2*p*(1-p)),"/")
+d <- svd(z,nu=5,nv=0);direct <- sweep(d$u,2,d$d[1:5],"*")
+stopifnot(isTRUE(all.equal(tcrossprod(s$scores),tcrossprod(direct),tolerance=1e-8)))
+a <- .pk_kmeans(s$scores,3,55);b <- .pk_kmeans(s$scores,3,55)
+stopifnot(identical(a$fits[[a$selected]]$cluster,b$fits[[b$selected]]$cluster),
+ a$selected==which.min(a$diagnostics$WITHIN_SS),all(a$diagnostics$OK))
+source("inst/experimental/diagnose-truth-starts.R")
+stopifnot(.tb_ari(c(1,1,2,2),c(2,2,1,1))==1)
+cat("PCA direct-decomposition, k-means reproducibility and objective-selection checks passed.\n")

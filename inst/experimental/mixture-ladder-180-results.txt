@@ -1,0 +1,500 @@
+Pilot run: 2026-09-16; R 4.6.1. See stock-mixture-validation.md for interpretation.
+Completed K1 replicate 1 
+Completed K1 replicate 2 
+Completed K2 replicate 1 
+Completed K2 replicate 2 
+Completed balanced replicate 1 
+Completed balanced replicate 2 
+Completed unbalanced replicate 1 
+Completed unbalanced replicate 2 
+Completed weak replicate 1 
+Completed weak replicate 2 
+Completed low_depth replicate 1 
+Completed low_depth replicate 2 
+Completed structured_missing replicate 1 
+Completed structured_missing replicate 2 
+               case replica fold K strength converged   heldout exact_partition
+                 K1       1    1 1        0      TRUE -3996.245            TRUE
+                 K1       1    1 2        0      TRUE -4078.165           FALSE
+                 K1       1    1 3        0      TRUE -4464.024           FALSE
+                 K1       1    1 4        0      TRUE -5003.816           FALSE
+                 K1       1    2 1        0      TRUE -3962.246            TRUE
+                 K1       1    2 2        0      TRUE -4113.891           FALSE
+                 K1       1    2 3        0      TRUE -4538.784           FALSE
+                 K1       1    2 4        0      TRUE -4399.547           FALSE
+                 K1       1    1 1        2      TRUE -3996.245            TRUE
+                 K1       1    1 2        2      TRUE -4036.342           FALSE
+                 K1       1    1 3        2      TRUE -4163.375           FALSE
+                 K1       1    1 4        2      TRUE -4206.262           FALSE
+                 K1       1    2 1        2      TRUE -3962.246            TRUE
+                 K1       1    2 2        2      TRUE -4049.000           FALSE
+                 K1       1    2 3        2      TRUE -4144.877           FALSE
+                 K1       1    2 4        2      TRUE -4099.374           FALSE
+                 K1       2    1 1        0      TRUE -3997.167            TRUE
+                 K1       2    1 2        0      TRUE -4152.550           FALSE
+                 K1       2    1 3        0      TRUE -4607.761           FALSE
+                 K1       2    1 4        0      TRUE -4776.533           FALSE
+                 K1       2    2 1        0      TRUE -4004.762            TRUE
+                 K1       2    2 2        0      TRUE -4223.362           FALSE
+                 K1       2    2 3        0      TRUE -4305.554           FALSE
+                 K1       2    2 4        0      TRUE -4739.470           FALSE
+                 K1       2    1 1        2      TRUE -3997.167            TRUE
+                 K1       2    1 2        2      TRUE -4061.174           FALSE
+                 K1       2    1 3        2      TRUE -4134.462           FALSE
+                 K1       2    1 4        2      TRUE -4230.274           FALSE
+                 K1       2    2 1        2      TRUE -4004.762            TRUE
+                 K1       2    2 2        2      TRUE -4093.119           FALSE
+                 K1       2    2 3        2      TRUE -4175.825           FALSE
+                 K1       2    2 4        2      TRUE -4176.524           FALSE
+                 K2       1    1 1        0      TRUE -5076.006           FALSE
+                 K2       1    1 2        0      TRUE -4505.751            TRUE
+                 K2       1    1 3        0      TRUE -5147.199           FALSE
+                 K2       1    1 4        0      TRUE -5417.098           FALSE
+                 K2       1    2 1        0      TRUE -4905.167           FALSE
+                 K2       1    2 2        0      TRUE -4419.578            TRUE
+                 K2       1    2 3        0      TRUE -4499.371           FALSE
+                 K2       1    2 4        0      TRUE -4585.901           FALSE
+                 K2       1    1 1        2      TRUE -5076.006           FALSE
+                 K2       1    1 2        2      TRUE -4101.325            TRUE
+                 K2       1    1 3        2      TRUE -4188.271           FALSE
+                 K2       1    1 4        2      TRUE -4217.682           FALSE
+                 K2       1    2 1        2      TRUE -4905.167           FALSE
+                 K2       1    2 2        2      TRUE -3941.152            TRUE
+                 K2       1    2 3        2      TRUE -3976.540           FALSE
+                 K2       1    2 4        2      TRUE -4003.814           FALSE
+                 K2       2    1 1        0      TRUE -4864.226           FALSE
+                 K2       2    1 2        0      TRUE -4457.113            TRUE
+                 K2       2    1 3        0      TRUE -4948.030           FALSE
+                 K2       2    1 4        0      TRUE -5360.902           FALSE
+                 K2       2    2 1        0      TRUE -4758.451           FALSE
+                 K2       2    2 2        0      TRUE -4294.689            TRUE
+                 K2       2    2 3        0      TRUE -4654.758           FALSE
+                 K2       2    2 4        0      TRUE -5098.402           FALSE
+                 K2       2    1 1        2      TRUE -4864.226           FALSE
+                 K2       2    1 2        2      TRUE -3977.951            TRUE
+                 K2       2    1 3        2      TRUE -4054.469           FALSE
+                 K2       2    1 4        2      TRUE -4102.121           FALSE
+                 K2       2    2 1        2      TRUE -4758.451           FALSE
+                 K2       2    2 2        2      TRUE -3874.410            TRUE
+                 K2       2    2 3        2      TRUE -3935.872           FALSE
+                 K2       2    2 4        2      TRUE -4012.672           FALSE
+           balanced       1    1 1        0      TRUE -5323.266           FALSE
+           balanced       1    1 2        0      TRUE -5001.987           FALSE
+           balanced       1    1 3        0      TRUE -5113.351            TRUE
+           balanced       1    1 4        0      TRUE -5659.964           FALSE
+           balanced       1    2 1        0      TRUE -5334.184           FALSE
+           balanced       1    2 2        0      TRUE -5097.503           FALSE
+           balanced       1    2 3        0      TRUE -5061.618            TRUE
+           balanced       1    2 4        0      TRUE -5777.398           FALSE
+           balanced       1    1 1        2      TRUE -5323.266           FALSE
+           balanced       1    1 2        2      TRUE -4680.545           FALSE
+           balanced       1    1 3        2      TRUE -4069.424            TRUE
+           balanced       1    1 4        2      TRUE -4117.950           FALSE
+           balanced       1    2 1        2      TRUE -5334.184           FALSE
+           balanced       1    2 2        2      TRUE -4699.621           FALSE
+           balanced       1    2 3        2      TRUE -4091.406            TRUE
+           balanced       1    2 4        2      TRUE -4125.795           FALSE
+           balanced       2    1 1        0      TRUE -5226.526           FALSE
+           balanced       2    1 2        0      TRUE -4946.828           FALSE
+           balanced       2    1 3        0      TRUE -4957.941            TRUE
+           balanced       2    1 4        0      TRUE -5353.120           FALSE
+           balanced       2    2 1        0      TRUE -5247.996           FALSE
+           balanced       2    2 2        0      TRUE -5176.032           FALSE
+           balanced       2    2 3        0      TRUE -4947.517            TRUE
+           balanced       2    2 4        0      TRUE -5457.428           FALSE
+           balanced       2    1 1        2      TRUE -5226.526           FALSE
+           balanced       2    1 2        2      TRUE -4623.390           FALSE
+           balanced       2    1 3        2      TRUE -4046.503            TRUE
+           balanced       2    1 4        2      TRUE -4082.714           FALSE
+           balanced       2    2 1        2      TRUE -5247.996           FALSE
+           balanced       2    2 2        2      TRUE -4715.153           FALSE
+           balanced       2    2 3        2      TRUE -4099.674            TRUE
+           balanced       2    2 4        2      TRUE -4137.255           FALSE
+         unbalanced       1    1 1        0      TRUE -5055.529           FALSE
+         unbalanced       1    1 2        0      TRUE -4420.545           FALSE
+         unbalanced       1    1 3        0      TRUE -4914.979            TRUE
+         unbalanced       1    1 4        0      TRUE -5730.610           FALSE
+         unbalanced       1    2 1        0      TRUE -5043.694           FALSE
+         unbalanced       1    2 2        0      TRUE -4759.093           FALSE
+         unbalanced       1    2 3        0      TRUE -5318.477            TRUE
+         unbalanced       1    2 4        0      TRUE -5593.992           FALSE
+         unbalanced       1    1 1        2      TRUE -5055.529           FALSE
+         unbalanced       1    1 2        2      TRUE -4210.945           FALSE
+         unbalanced       1    1 3        2      TRUE -4053.298            TRUE
+         unbalanced       1    1 4        2      TRUE -4157.221           FALSE
+         unbalanced       1    2 1        2      TRUE -5043.694           FALSE
+         unbalanced       1    2 2        2      TRUE -4225.665           FALSE
+         unbalanced       1    2 3        2      TRUE -4045.331            TRUE
+         unbalanced       1    2 4        2      TRUE -4105.037           FALSE
+         unbalanced       2    1 1        0      TRUE -4990.896           FALSE
+         unbalanced       2    1 2        0      TRUE -4572.750           FALSE
+         unbalanced       2    1 3        0      TRUE -5066.953            TRUE
+         unbalanced       2    1 4        0      TRUE -5209.294           FALSE
+         unbalanced       2    2 1        0      TRUE -4969.256           FALSE
+         unbalanced       2    2 2        0      TRUE -4675.135           FALSE
+         unbalanced       2    2 3        0      TRUE -4999.993            TRUE
+         unbalanced       2    2 4        0      TRUE -5436.489           FALSE
+         unbalanced       2    1 1        2      TRUE -4990.896           FALSE
+         unbalanced       2    1 2        2      TRUE -4268.223           FALSE
+         unbalanced       2    1 3        2      TRUE -4090.834            TRUE
+         unbalanced       2    1 4        2      TRUE -4120.490           FALSE
+         unbalanced       2    2 1        2      TRUE -4969.256           FALSE
+         unbalanced       2    2 2        2      TRUE -4258.001           FALSE
+         unbalanced       2    2 3        2      TRUE -4113.346            TRUE
+         unbalanced       2    2 4        2      TRUE -4179.808           FALSE
+               weak       1    1 1        0      TRUE -5028.672           FALSE
+               weak       1    1 2        0      TRUE -5098.671           FALSE
+               weak       1    1 3        0      TRUE -5310.178           FALSE
+               weak       1    1 4        0      TRUE -5287.785           FALSE
+               weak       1    2 1        0      TRUE -5027.419           FALSE
+               weak       1    2 2        0      TRUE -5129.190           FALSE
+               weak       1    2 3        0      TRUE -5149.432           FALSE
+               weak       1    2 4        0      TRUE -5442.760           FALSE
+               weak       1    1 1        2      TRUE -5028.672           FALSE
+               weak       1    1 2        2      TRUE -5090.442           FALSE
+               weak       1    1 3        2      TRUE -5166.346           FALSE
+               weak       1    1 4        2      TRUE -5203.226           FALSE
+               weak       1    2 1        2      TRUE -5027.419           FALSE
+               weak       1    2 2        2      TRUE -5108.424           FALSE
+               weak       1    2 3        2      TRUE -5156.537           FALSE
+               weak       1    2 4        2      TRUE -5225.172           FALSE
+               weak       2    1 1        0      TRUE -4875.618           FALSE
+               weak       2    1 2        0      TRUE -4977.899           FALSE
+               weak       2    1 3        0      TRUE -5095.809           FALSE
+               weak       2    1 4        0      TRUE -5290.972           FALSE
+               weak       2    2 1        0      TRUE -4913.543           FALSE
+               weak       2    2 2        0      TRUE -5019.005           FALSE
+               weak       2    2 3        0      TRUE -5279.284           FALSE
+               weak       2    2 4        0      TRUE -5417.447           FALSE
+               weak       2    1 1        2      TRUE -4875.618           FALSE
+               weak       2    1 2        2      TRUE -4957.795           FALSE
+               weak       2    1 3        2      TRUE -5014.839           FALSE
+               weak       2    1 4        2      TRUE -5049.967           FALSE
+               weak       2    2 1        2      TRUE -4913.543           FALSE
+               weak       2    2 2        2      TRUE -5000.925           FALSE
+               weak       2    2 3        2      TRUE -5101.836           FALSE
+               weak       2    2 4        2      TRUE -5174.659           FALSE
+          low_depth       1    1 1        0      TRUE -3663.114           FALSE
+          low_depth       1    1 2        0      TRUE -3454.180           FALSE
+          low_depth       1    1 3        0      TRUE -3358.896            TRUE
+          low_depth       1    1 4        0      TRUE -3484.267           FALSE
+          low_depth       1    2 1        0      TRUE -3678.770           FALSE
+          low_depth       1    2 2        0      TRUE -3441.068           FALSE
+          low_depth       1    2 3        0      TRUE -3319.012            TRUE
+          low_depth       1    2 4        0      TRUE -3572.711           FALSE
+          low_depth       1    1 1        2      TRUE -3663.111           FALSE
+          low_depth       1    1 2        2      TRUE -3344.780           FALSE
+          low_depth       1    1 3        2      TRUE -3017.474            TRUE
+          low_depth       1    1 4        2      TRUE -3033.566           FALSE
+          low_depth       1    2 1        2      TRUE -3678.783           FALSE
+          low_depth       1    2 2        2      TRUE -3335.477           FALSE
+          low_depth       1    2 3        2      TRUE -3014.498            TRUE
+          low_depth       1    2 4        2      TRUE -3056.149           FALSE
+          low_depth       2    1 1        0      TRUE -3557.457           FALSE
+          low_depth       2    1 2        0      TRUE -3314.985           FALSE
+          low_depth       2    1 3        0      TRUE -3126.092            TRUE
+          low_depth       2    1 4        0      TRUE -3206.518           FALSE
+          low_depth       2    2 1        0      TRUE -3583.317           FALSE
+          low_depth       2    2 2        0      TRUE -3413.029           FALSE
+          low_depth       2    2 3        0      TRUE -3241.705            TRUE
+          low_depth       2    2 4        0      TRUE -3387.468           FALSE
+          low_depth       2    1 1        2      TRUE -3557.459           FALSE
+          low_depth       2    1 2        2      TRUE -3233.348           FALSE
+          low_depth       2    1 3        2      TRUE -2918.186            TRUE
+          low_depth       2    1 4        2      TRUE -2953.199           FALSE
+          low_depth       2    2 1        2      TRUE -3583.317           FALSE
+          low_depth       2    2 2        2      TRUE -3309.065           FALSE
+          low_depth       2    2 3        2      TRUE -2984.527            TRUE
+          low_depth       2    2 4        2      TRUE -3027.681           FALSE
+ structured_missing       1    1 1        0      TRUE -3828.969           FALSE
+ structured_missing       1    1 2        0      TRUE -4073.227           FALSE
+ structured_missing       1    1 3        0      TRUE -4505.491            TRUE
+ structured_missing       1    1 4        0      TRUE -4685.655           FALSE
+ structured_missing       1    2 1        0      TRUE -3945.602           FALSE
+ structured_missing       1    2 2        0      TRUE -3872.294           FALSE
+ structured_missing       1    2 3        0      TRUE -4337.580            TRUE
+ structured_missing       1    2 4        0      TRUE -5075.594           FALSE
+ structured_missing       1    1 1        2      TRUE -3828.969           FALSE
+ structured_missing       1    1 2        2      TRUE -3353.220           FALSE
+ structured_missing       1    1 3        2      TRUE -3013.353            TRUE
+ structured_missing       1    1 4        2      TRUE -3033.045           FALSE
+ structured_missing       1    2 1        2      TRUE -3945.602           FALSE
+ structured_missing       1    2 2        2      TRUE -3461.354           FALSE
+ structured_missing       1    2 3        2      TRUE -3115.588            TRUE
+ structured_missing       1    2 4        2      TRUE -3153.126           FALSE
+ structured_missing       2    1 1        0      TRUE -3825.600           FALSE
+ structured_missing       2    1 2        0      TRUE -3731.396           FALSE
+ structured_missing       2    1 3        0      TRUE -4296.663            TRUE
+ structured_missing       2    1 4        0      TRUE -4560.202           FALSE
+ structured_missing       2    2 1        0      TRUE -3824.133           FALSE
+ structured_missing       2    2 2        0      TRUE -3677.580           FALSE
+ structured_missing       2    2 3        0      TRUE -4188.964            TRUE
+ structured_missing       2    2 4        0      TRUE -5050.176           FALSE
+ structured_missing       2    1 1        2      TRUE -3825.600           FALSE
+ structured_missing       2    1 2        2      TRUE -3365.584           FALSE
+ structured_missing       2    1 3        2      TRUE -3029.132            TRUE
+ structured_missing       2    1 4        2      TRUE -3057.632           FALSE
+ structured_missing       2    2 1        2      TRUE -3824.133           FALSE
+ structured_missing       2    2 2        2      TRUE -3369.580           FALSE
+ structured_missing       2    2 3        2      TRUE -3044.453            TRUE
+ structured_missing       2    2 4        2      TRUE -3082.626           FALSE
+ error
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+Complete-comparison winners (no coverage claim):
+               case replica K strength    heldout
+           balanced       1 2        0 -10099.490
+                 K1       1 1        0  -7958.492
+                 K2       1 2        0  -8925.330
+          low_depth       1 3        0  -6677.908
+ structured_missing       1 1        0  -7774.571
+         unbalanced       1 2        0  -9179.638
+               weak       1 1        0 -10056.091
+           balanced       2 3        0  -9905.458
+                 K1       2 1        0  -8001.929
+                 K2       2 2        0  -8751.802
+          low_depth       2 3        0  -6367.797
+ structured_missing       2 2        0  -7408.977
+         unbalanced       2 2        0  -9247.885
+               weak       2 1        0  -9789.161
+           balanced       1 3        2  -8160.830
+                 K1       1 1        2  -7958.492
+                 K2       1 2        2  -8042.477
+          low_depth       1 3        2  -6031.972
+ structured_missing       1 3        2  -6128.941
+         unbalanced       1 3        2  -8098.629
+               weak       1 1        2 -10056.091
+           balanced       2 3        2  -8146.177
+                 K1       2 1        2  -8001.929
+                 K2       2 2        2  -7852.360
+          low_depth       2 3        2  -5902.713
+ structured_missing       2 3        2  -6073.585
+         unbalanced       2 3        2  -8204.179
+               weak       2 1        2  -9789.161
+Warning messages:
+1: In .sm_multistart(f$reader, f$blocks, matrix(0.5, m, k), rep(1/k,  :
+  One or more starts failed; inspect start.diagnostics.
+2: In .sm_multistart(f$reader, f$blocks, matrix(0.5, m, k), rep(1/k,  :
+  One or more starts failed; inspect start.diagnostics.

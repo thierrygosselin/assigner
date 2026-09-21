@@ -1,0 +1,502 @@
+Pilot run: 2026-09-16; R 4.6.1. See stock-mixture-validation.md for interpretation.
+Completed K1 replicate 1 
+Completed K1 replicate 2 
+Completed K2 replicate 1 
+Completed K2 replicate 2 
+Completed balanced replicate 1 
+Completed balanced replicate 2 
+Completed unbalanced replicate 1 
+Completed unbalanced replicate 2 
+Completed weak replicate 1 
+Completed weak replicate 2 
+Completed low_depth replicate 1 
+Completed low_depth replicate 2 
+Completed structured_missing replicate 1 
+Completed structured_missing replicate 2 
+               case replica fold K strength converged    heldout
+                 K1       1    1 1        0      TRUE -1285.7018
+                 K1       1    1 2        0      TRUE -1333.3638
+                 K1       1    1 3        0      TRUE -1467.1790
+                 K1       1    1 4        0      TRUE -1468.9783
+                 K1       1    2 1        0      TRUE -1348.0014
+                 K1       1    2 2        0      TRUE -1386.2603
+                 K1       1    2 3        0      TRUE -1462.5085
+                 K1       1    2 4        0      TRUE -1460.4771
+                 K1       1    1 1        2      TRUE -1285.7018
+                 K1       1    1 2        2      TRUE -1312.4538
+                 K1       1    1 3        2      TRUE -1337.3657
+                 K1       1    1 4        2      TRUE -1346.1539
+                 K1       1    2 1        2      TRUE -1348.0014
+                 K1       1    2 2        2      TRUE -1369.6858
+                 K1       1    2 3        2      TRUE -1398.5559
+                 K1       1    2 4        2      TRUE -1412.2798
+                 K1       2    1 1        0      TRUE -1305.0682
+                 K1       2    1 2        0      TRUE -1428.8468
+                 K1       2    1 3        0      TRUE -1438.7814
+                 K1       2    1 4        0      TRUE -1750.0651
+                 K1       2    2 1        0      TRUE -1292.1295
+                 K1       2    2 2        0      TRUE -1458.6613
+                 K1       2    2 3        0      TRUE -1469.7000
+                 K1       2    2 4        0      TRUE -1596.1015
+                 K1       2    1 1        2      TRUE -1305.0682
+                 K1       2    1 2        2      TRUE -1341.5071
+                 K1       2    1 3        2      TRUE -1358.2644
+                 K1       2    1 4        2      TRUE -1392.9540
+                 K1       2    2 1        2      TRUE -1292.1295
+                 K1       2    2 2        2      TRUE -1331.7827
+                 K1       2    2 3        2      TRUE -1352.8258
+                 K1       2    2 4        2      TRUE -1381.8171
+                 K2       1    1 1        0      TRUE -1648.7269
+                 K2       1    1 2        0      TRUE -1452.1575
+                 K2       1    1 3        0      TRUE -1796.2440
+                 K2       1    1 4        0      TRUE -1677.5008
+                 K2       1    2 1        0      TRUE -1595.9842
+                 K2       1    2 2        0      TRUE -1397.7511
+                 K2       1    2 3        0      TRUE -1472.8193
+                 K2       1    2 4        0      TRUE -1732.3450
+                 K2       1    1 1        2      TRUE -1648.7269
+                 K2       1    1 2        2      TRUE -1388.1505
+                 K2       1    1 3        2      TRUE -1420.1781
+                 K2       1    1 4        2      TRUE -1430.8872
+                 K2       1    2 1        2      TRUE -1595.9842
+                 K2       1    2 2        2      TRUE -1342.0893
+                 K2       1    2 3        2      TRUE -1374.6767
+                 K2       1    2 4        2      TRUE -1382.7068
+                 K2       2    1 1        0      TRUE -1724.9953
+                 K2       2    1 2        0      TRUE -1614.9532
+                 K2       2    1 3        0      TRUE -1838.5819
+                 K2       2    1 4        0      TRUE -1865.9126
+                 K2       2    2 1        0      TRUE -1684.2686
+                 K2       2    2 2        0      TRUE -1388.3884
+                 K2       2    2 3        0      TRUE -1789.3065
+                 K2       2    2 4        0      TRUE -1939.9431
+                 K2       2    1 1        2      TRUE -1724.9953
+                 K2       2    1 2        2      TRUE -1407.8774
+                 K2       2    1 3        2      TRUE -1433.6012
+                 K2       2    1 4        2      TRUE -1428.1303
+                 K2       2    2 1        2      TRUE -1684.2686
+                 K2       2    2 2        2      TRUE -1321.6755
+                 K2       2    2 3        2      TRUE -1367.6914
+                 K2       2    2 4        2      TRUE -1381.8428
+           balanced       1    1 1        0      TRUE -1710.3576
+           balanced       1    1 2        0      TRUE -1717.9010
+           balanced       1    1 3        0      TRUE -1673.2121
+           balanced       1    1 4        0      TRUE -1775.9157
+           balanced       1    2 1        0      TRUE -1703.3994
+           balanced       1    2 2        0      TRUE -1666.5938
+           balanced       1    2 3        0      TRUE -1725.6525
+           balanced       1    2 4        0      TRUE -1917.9134
+           balanced       1    1 1        2      TRUE -1710.3576
+           balanced       1    1 2        2      TRUE -1530.2221
+           balanced       1    1 3        2      TRUE -1359.1405
+           balanced       1    1 4        2      TRUE -1374.0873
+           balanced       1    2 1        2      TRUE -1703.3994
+           balanced       1    2 2        2      TRUE -1527.1103
+           balanced       1    2 3        2      TRUE -1378.5748
+           balanced       1    2 4        2      TRUE -1396.5674
+           balanced       2    1 1        0      TRUE -1797.9328
+           balanced       2    1 2        0      TRUE -1847.3877
+           balanced       2    1 3        0      TRUE -1872.1577
+           balanced       2    1 4        0      TRUE -2057.4355
+           balanced       2    2 1        0      TRUE -1766.5318
+           balanced       2    2 2        0      TRUE -1611.2906
+           balanced       2    2 3        0      TRUE -1551.1943
+           balanced       2    2 4        0      TRUE -1770.1927
+           balanced       2    1 1        2      TRUE -1797.9328
+           balanced       2    1 2        2      TRUE -1607.9589
+           balanced       2    1 3        2      TRUE -1423.6393
+           balanced       2    1 4        2      TRUE -1421.1374
+           balanced       2    2 1        2      TRUE -1766.5318
+           balanced       2    2 2        2      TRUE -1542.4182
+           balanced       2    2 3        2      TRUE -1364.3220
+           balanced       2    2 4        2      TRUE -1372.1380
+         unbalanced       1    1 1        0      TRUE -1596.7020
+         unbalanced       1    1 2        0      TRUE -1447.2574
+         unbalanced       1    1 3        0      TRUE -1646.2735
+         unbalanced       1    1 4        0      TRUE -1775.0800
+         unbalanced       1    2 1        0      TRUE -1585.8255
+         unbalanced       1    2 2        0      TRUE -1436.6292
+         unbalanced       1    2 3        0      TRUE -1641.8435
+         unbalanced       1    2 4        0      TRUE -1741.2405
+         unbalanced       1    1 1        2      TRUE -1596.7020
+         unbalanced       1    1 2        2      TRUE -1377.2049
+         unbalanced       1    1 3        2      TRUE -1314.3464
+         unbalanced       1    1 4        2      TRUE -1338.8540
+         unbalanced       1    2 1        2      TRUE -1585.8255
+         unbalanced       1    2 2        2      TRUE -1381.1033
+         unbalanced       1    2 3        2      TRUE -1333.6865
+         unbalanced       1    2 4        2      TRUE -1367.4796
+         unbalanced       2    1 1        0      TRUE -1678.2836
+         unbalanced       2    1 2        0      TRUE -1489.5037
+         unbalanced       2    1 3        0      TRUE -1599.6172
+         unbalanced       2    1 4        0      TRUE -1716.8871
+         unbalanced       2    2 1        0      TRUE -1667.2968
+         unbalanced       2    2 2        0      TRUE -1525.9909
+         unbalanced       2    2 3        0      TRUE -1579.1299
+         unbalanced       2    2 4        0      TRUE -1653.5006
+         unbalanced       2    1 1        2      TRUE -1678.2836
+         unbalanced       2    1 2        2      TRUE -1417.1268
+         unbalanced       2    1 3        2      TRUE -1347.7549
+         unbalanced       2    1 4        2      TRUE -1367.3714
+         unbalanced       2    2 1        2      TRUE -1667.2968
+         unbalanced       2    2 2        2      TRUE -1391.1056
+         unbalanced       2    2 3        2      TRUE -1319.3831
+         unbalanced       2    2 4        2      TRUE -1339.2472
+               weak       1    1 1        0      TRUE -1684.9781
+               weak       1    1 2        0      TRUE -1699.0740
+               weak       1    1 3        0      TRUE -1741.4759
+               weak       1    1 4        0      TRUE -1790.6657
+               weak       1    2 1        0      TRUE -1670.5441
+               weak       1    2 2        0      TRUE -1708.4279
+               weak       1    2 3        0      TRUE -1776.9264
+               weak       1    2 4        0      TRUE -1801.0579
+               weak       1    1 1        2      TRUE -1684.9781
+               weak       1    1 2        2      TRUE -1697.4006
+               weak       1    1 3        2      TRUE -1723.4158
+               weak       1    1 4        2      TRUE -1743.8297
+               weak       1    2 1        2      TRUE -1670.5441
+               weak       1    2 2        2      TRUE -1703.7914
+               weak       1    2 3        2      TRUE -1724.8477
+               weak       1    2 4        2      TRUE -1752.4955
+               weak       2    1 1        0      TRUE -1671.8782
+               weak       2    1 2        0      TRUE -1709.1497
+               weak       2    1 3        0      TRUE -1813.3586
+               weak       2    1 4        0      TRUE -1889.5647
+               weak       2    2 1        0      TRUE -1631.8508
+               weak       2    2 2        0      TRUE -1673.2353
+               weak       2    2 3        0      TRUE -1708.9928
+               weak       2    2 4        0      TRUE -1804.5268
+               weak       2    1 1        2      TRUE -1671.8782
+               weak       2    1 2        2      TRUE -1702.3605
+               weak       2    1 3        2      TRUE -1734.3863
+               weak       2    1 4        2      TRUE -1781.5950
+               weak       2    2 1        2      TRUE -1631.8508
+               weak       2    2 2        2      TRUE -1665.2556
+               weak       2    2 3        2      TRUE -1691.1139
+               weak       2    2 4        2      TRUE -1718.7545
+          low_depth       1    1 1        0      TRUE -1159.4941
+          low_depth       1    1 2        0      TRUE -1128.4762
+          low_depth       1    1 3        0      TRUE -1072.2512
+          low_depth       1    1 4        0      TRUE -1130.6059
+          low_depth       1    2 1        0      TRUE -1168.5954
+          low_depth       1    2 2        0      TRUE -1109.6810
+          low_depth       1    2 3        0      TRUE -1128.9809
+          low_depth       1    2 4        0      TRUE -1171.4048
+          low_depth       1    1 1        2      TRUE -1159.4948
+          low_depth       1    1 2        2      TRUE -1093.6687
+          low_depth       1    1 3        2      TRUE -1004.1991
+          low_depth       1    1 4        2      TRUE -1009.6578
+          low_depth       1    2 1        2      TRUE -1168.5948
+          low_depth       1    2 2        2      TRUE -1086.9688
+          low_depth       1    2 3        2      TRUE -1010.7607
+          low_depth       1    2 4        2      TRUE -1017.0468
+          low_depth       2    1 1        0      TRUE -1227.7588
+          low_depth       2    1 2        0      TRUE -1134.9993
+          low_depth       2    1 3        0      TRUE -1126.0783
+          low_depth       2    1 4        0      TRUE -1183.2206
+          low_depth       2    2 1        0      TRUE -1205.6623
+          low_depth       2    2 2        0      TRUE -1083.7966
+          low_depth       2    2 3        0      TRUE -1024.8446
+          low_depth       2    2 4        0      TRUE -1077.2746
+          low_depth       2    1 1        2      TRUE -1227.7589
+          low_depth       2    1 2        2      TRUE -1109.0371
+          low_depth       2    1 3        2      TRUE -1018.7383
+          low_depth       2    1 4        2      TRUE -1023.5635
+          low_depth       2    2 1        2      TRUE -1205.6605
+          low_depth       2    2 2        2      TRUE -1072.0362
+          low_depth       2    2 3        2      TRUE  -967.9256
+          low_depth       2    2 4        2      TRUE  -981.7905
+ structured_missing       1    1 1        0      TRUE -1239.3853
+ structured_missing       1    1 2        0      TRUE -1303.4286
+ structured_missing       1    1 3        0      TRUE -1405.2060
+ structured_missing       1    1 4        0      TRUE -1574.6943
+ structured_missing       1    2 1        0      TRUE -1232.3218
+ structured_missing       1    2 2        0      TRUE -1259.6519
+ structured_missing       1    2 3        0      TRUE -1487.6364
+ structured_missing       1    2 4        0      TRUE -1695.2595
+ structured_missing       1    1 1        2      TRUE -1239.3853
+ structured_missing       1    1 2        2      TRUE -1103.7337
+ structured_missing       1    1 3        2      TRUE -1014.8768
+ structured_missing       1    1 4        2      TRUE -1026.8633
+ structured_missing       1    2 1        2      TRUE -1232.3218
+ structured_missing       1    2 2        2      TRUE -1109.4060
+ structured_missing       1    2 3        2      TRUE -1030.0620
+ structured_missing       1    2 4        2      TRUE -1045.2944
+ structured_missing       2    1 1        0      TRUE -1305.7846
+ structured_missing       2    1 2        0      TRUE -1410.8724
+ structured_missing       2    1 3        0      TRUE -1836.0995
+ structured_missing       2    1 4        0      TRUE -2084.8373
+ structured_missing       2    2 1        0      TRUE -1309.7003
+ structured_missing       2    2 2        0      TRUE -1224.0643
+ structured_missing       2    2 3        0      TRUE -1376.3801
+ structured_missing       2    2 4        0      TRUE -1578.8559
+ structured_missing       2    1 1        2      TRUE -1305.7846
+ structured_missing       2    1 2        2      TRUE -1160.3235
+ structured_missing       2    1 3        2      TRUE -1057.6030
+ structured_missing       2    1 4        2      TRUE -1060.4791
+ structured_missing       2    2 1        2      TRUE -1309.7003
+ structured_missing       2    2 2        2      TRUE -1126.0690
+ structured_missing       2    2 3        2      TRUE -1042.8065
+ structured_missing       2    2 4        2      TRUE -1049.1338
+ exact_partition error
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+           FALSE      
+           FALSE      
+            TRUE      
+           FALSE      
+Complete-comparison winners (no coverage claim):
+               case replica K strength   heldout
+           balanced       1 2        0 -3384.495
+                 K1       1 1        0 -2633.703
+                 K2       1 2        0 -2849.909
+          low_depth       1 3        0 -2201.232
+ structured_missing       1 1        0 -2471.707
+         unbalanced       1 2        0 -2883.887
+               weak       1 1        0 -3355.522
+           balanced       2 3        0 -3423.352
+                 K1       2 1        0 -2597.198
+                 K2       2 2        0 -3003.342
+          low_depth       2 3        0 -2150.923
+ structured_missing       2 1        0 -2615.485
+         unbalanced       2 2        0 -3015.495
+               weak       2 1        0 -3303.729
+           balanced       1 3        2 -2737.715
+                 K1       1 1        2 -2633.703
+                 K2       1 2        2 -2730.240
+          low_depth       1 3        2 -2014.960
+ structured_missing       1 3        2 -2044.939
+         unbalanced       1 3        2 -2648.033
+               weak       1 1        2 -3355.522
+           balanced       2 3        2 -2787.961
+                 K1       2 1        2 -2597.198
+                 K2       2 2        2 -2729.553
+          low_depth       2 3        2 -1986.664
+ structured_missing       2 3        2 -2100.409
+         unbalanced       2 3        2 -2667.138
+               weak       2 1        2 -3303.729
+Warning messages:
+1: In .sm_multistart(f$reader, f$blocks, matrix(0.5, m, k), rep(1/k,  :
+  One or more starts failed; inspect start.diagnostics.
+2: In .sm_multistart(f$reader, f$blocks, matrix(0.5, m, k), rep(1/k,  :
+  One or more starts failed; inspect start.diagnostics.
+3: In .sm_multistart(f$reader, f$blocks, matrix(0.5, m, k), rep(1/k,  :
+  One or more starts failed; inspect start.diagnostics.

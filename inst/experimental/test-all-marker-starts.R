@@ -1,0 +1,15 @@
+source("../grur/R/simulation_benchmark.R")
+source("inst/experimental/benchmark-stockr-paired.R")
+source("inst/experimental/benchmark-all-marker-starts.R")
+set.seed(716)
+g<-matrix(rbinom(41*53,2,.3),41,53)
+z<-scale(g,center=TRUE,scale=FALSE); sv<-svd(z,nu=10,nv=0)
+expected<-sweep(sv$u,2,sv$d[1:10],"*")
+for(size in c(1,7,53)) {
+  got<-.bp_all_scores(g,block.snps=size)
+  stopifnot(isTRUE(all.equal(tcrossprod(got),tcrossprod(expected),tolerance=1e-8)))
+}
+stopifnot(identical(.bp_all_starts(g,3,54),.bp_all_starts(g,3,54)))
+stopifnot(identical(.bp_all_starts(g,3,54)[4:7],.bp_starts(g,3,54)[4:7]))
+stopifnot(inherits(try(.bp_all_scores(g,max.sample.cells=100),silent=TRUE),"try-error"))
+cat("All-marker blockwise PCA agrees with direct SVD; seeds and memory guard passed\n")

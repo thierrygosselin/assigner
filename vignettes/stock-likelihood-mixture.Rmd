@@ -1,0 +1,359 @@
+---
+title: "Experimental stock mixtures from genotype likelihoods"
+author: "Thierry Gosselin"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Experimental stock mixtures from genotype likelihoods}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+## Status and purpose
+
+### Interpreting support rather than just a winner
+
+The fit's `assignments` table now includes `PROBABILITY_MARGIN` (largest minus
+second-largest membership probability), `NORMALIZED_ENTROPY` (zero for a
+concentrated assignment, one for uniform probabilities), and `ASSIGNMENT_STATUS`.
+No universal confidence cutoff is imposed. These quantities are conditional on
+the fitted model and K, not calibrated probabilities that a biological assignment
+is correct. No-information samples and exact ties remain unassigned; an unfinished
+fit is explicitly labelled. For K = 1, margin and entropy are undefined (`NA`):
+probability one is not evidence of panmixia.
+
+`start.diagnostics` reports label-invariant `PARTITION_ARI_VS_SELECTED` and
+`N_COMPARABLE`, alongside objective gaps and convergence. Only informative,
+positive-weight training samples with untied assignments are compared. An ARI of
+one means identical partitions, not correct populations. Inspect failed and
+unfinished starts separately. If compact partition storage exceeds
+`max.genotypes`, `start.partition.assessment` says not assessed, and comparison
+values are `NA`. No matrices of all starts' allele frequencies are retained.
+
+The CV result adds `fold.support`, per-K `GAP_FROM_BEST` in `summary`, and
+`support.flags`. Fold ties are retained rather than counted as decisive wins.
+Flags identify incomplete comparisons, disagreeing/tied fold winners, a winner
+at the upper grid boundary, and recorded fitting warnings. Shared training data
+make folds dependent: votes and score gaps are descriptive, not confidence
+intervals, significance tests or posterior probabilities of K. A K = 1 winner
+means no supported split under this fitted comparison, not proven panmixia.
+No flags does not certify reliable structure. Assignment agreement across CV
+refits is not currently calculated; fold support concerns predictive K only.
+
+See `inst/experimental/stock-mixture-evidence-review.md` for the consolidated
+simulation findings and unresolved validation requirements for Scott's review.
+
+**Research prototype: not yet a validated stock-delineation workflow.**
+The functions below are internal, unexported development interfaces. Their names
+and results may change. Scott Foster's methodological and code review is required
+before release. In particular, successful numerical tests do not establish
+confidence-interval coverage or reliable estimation of the number of stocks.
+
+This model extends the discrete-mixture idea discussed by Foster and colleagues
+to uncertain genotypes. It is separate from `assign_likelihood_dapc()`: there is
+no discriminant training step and no supplied population labels in fitting.
+It is also **not an admixture model**. An individual belongs to one latent
+component; its membership probabilities express uncertainty about that component,
+not fractions of its genome inherited from different ancestral populations.
+
+Genetic clusters alone do not establish demographically independent management
+stocks. Sampling design, movement, reproduction, temporal stability and ecological
+evidence remain necessary for a management interpretation.
+
+## Data contract and preparation
+
+Supply an existing SeqArray Genomic Data Structure (GDS) file or open handle.
+Only active samples and variants are analysed. Borrowed handles and filters are
+restored, and the input file is not modified. Genotypes must be diploid and
+biallelic, with likelihoods ordered REF/REF, REF/ALT, ALT/ALT.
+
+| Field | Meaning | Treatment |
+|:--|:--|:--|
+| GL | Log10 genotype likelihood | Converted to natural logs |
+| PL | Nonnegative integer Phred likelihood | Converted to natural logs |
+| GP | Genotype posterior probability | Not accepted as a likelihood substitute |
+| GT | Hard genotype call | No automatic fallback |
+| Fully missing or flat vector | No genotype evidence | Neutral in the likelihood |
+| Partly missing vector | Incomplete likelihood record | Rejected |
+
+Automatic selection prefers PL, then GL; specify the field explicitly when both
+exist. Having three values does not prove the variant caller used an appropriate
+diploid model. Check calling settings, reference/ALT coding and retained fields.
+
+Filter mapping/calling artefacts, inspect missingness by sample, population and
+batch, and address close relatives and linkage disequilibrium before interpreting
+structure. GL/PL accounts for genotype uncertainty, **not** biased mapping,
+allele dropout or incorrect likelihood calibration. Sparse non-model datasets
+can cluster by technical quality rather than biology.
+
+Optional metadata uses `INDIVIDUALS` and, when available, `STRATA`. Metadata is
+matched by ID and returned for auditing, not used as known component labels.
+Sampling strata and inferred components need not correspond.
+
+## Model and computation
+
+For individual \(i\), marker \(l\), stock \(k\), genotype \(g\), ALT frequency
+\(p_{lk}\), mixture proportion \(\pi_k\), and likelihood \(L_{ilg}\),
+
+\[
+\ell = \sum_i w_i \log\left[
+  \sum_{k=1}^{K}\pi_k\prod_l\sum_{g=0}^2
+  L_{ilg}{2\choose g}p_{lk}^{g}(1-p_{lk})^{2-g}
+\right].
+\]
+
+The Hardy--Weinberg genotype prior is conditional on stock. Markers are treated
+as independent conditional on stock. Strong linkage can therefore exaggerate
+membership certainty; streaming more markers does not resolve that assumption.
+
+Expectation--maximization (EM) integrates genotype uncertainty and updates
+frequencies and proportions. Missing observations do not contribute fabricated
+allele counts. Samples with no informative likelihoods receive the mixture prior
+and an `NA` assignment. All-uninformative markers cause an explicit error.
+
+Likelihoods are streamed in blocks. Memory still includes marker-by-stock
+frequencies and sample-by-stock memberships: `max.genotypes` limits one block,
+not total memory. Smaller blocks reduce memory but increase reading overhead.
+
+The first start uses supplied frequencies. By default subsequent starts use
+random soft partitions; the opt-in mixed strategy is described below. The
+highest-objective converged start is selected. With no regularization the
+objective equals the data log likelihood. Inspect
+`start.diagnostics`: convergence is not proof of a global optimum, and random
+starts may miss small groups. Component labels are arbitrary.
+
+## Fit a specified K
+
+This example assumes a prepared file; it is not run during vignette building.
+Starting frequencies require **GDS variant IDs**, not VCF annotation IDs.
+
+```{r fit, eval=FALSE}
+gds <- SeqArray::seqOpen("likelihoods.gds", readonly = TRUE)
+ids <- SeqArray::seqGetData(gds, "variant.id")
+initial <- matrix(0.5, length(ids), 3,
+                  dimnames = list(as.character(ids), paste0("STOCK_", 1:3)))
+fit <- assigner:::.sm_fit_gds(
+  gds, frequency = initial, likelihood = "PL",
+  n.starts = 13, start.strategy = "mixed", init.max.snps = 1000,
+  seed = 2026, block.snps = 500
+)
+fit$start.diagnostics
+fit$proportion
+fit$membership
+fit$frequency.estimable
+fit$likelihood.information.audit
+SeqArray::seqClose(gds)
+```
+
+Identical starting columns cannot split by themselves; this example needs the
+additional starts. Thirteen starts is illustrative, not a validated sufficient
+number. Repeat with independent seeds and compare likelihoods and partitions.
+
+`frequency.support` is the membership-weighted count of informative individuals
+per stock and marker, not sequencing depth. Unsupported frequencies are optimizer
+placeholders, not estimates. Even a positive count may be too small for reliable
+inference. Mixture proportions describe this sampling panel, not population size.
+
+### Diverse starting points
+
+`start.strategy = "mixed"` cycles through PCA/k-means starts using 2, 5 and 10
+axes (limited by rank), a random soft partition, a split of a fitted K-1
+component, and a perturbation of the best frequencies. The first supplied
+start plus one cycle requires seven starts. Subsequent split starts cycle
+through the lower-K components. A lower-K seed itself uses five random starts.
+Failed starts and nonconvergence remain visible in `start.diagnostics`.
+
+PCA uses at most `init.max.snps` evenly spaced active markers and only positive
+weight, informative training individuals. The matrix is also capped by
+`max.genotypes`, although SVD adds workspace. Missing likelihoods are temporarily
+represented by pooled expected dosages for this initialization only. These
+values never replace likelihoods in EM or modify the GDS. Repeated k-means
+initialization is not simulated annealing, and none of these choices guarantees
+that PCA has removed missingness or batch effects. Compare inferred memberships
+with call rate, depth and technical metadata.
+
+`likelihood.information.audit` reports component-weighted uninformative fractions and
+training-sample membership correlations with those fractions. Flat likelihoods
+count as uninformative even when a genotype record exists. Correlations are
+unweighted across unique informative training individuals, and are `NA` when
+either variable is constant. An association merits investigation, not automatic
+sample removal. `near.best.starts` counts converged starts within the relative
+objective tolerance of the selected fit; it is not a global-optimum certificate.
+
+### Regularized prediction
+
+`epsilon` bounds frequencies away from zero and one. It is not a sequencing
+error estimate or a fitted prior. A small component may lack a rare allele in
+training yet contain it in new samples; the bound then strongly affects prediction.
+Do not choose it simply to obtain a preferred K.
+
+Two optional regularizers are available, leaving `regularization = "none"` as
+the unchanged default. `"symmetric"` fixes the center q to 0.5; `"pooled"`
+estimates a separate q per marker from training likelihoods alone. A positive
+`prior.strength = s` specifies Beta(1+s*q, 1+s*(1-q)) priors. The fitted objective
+is the data log likelihood plus
+
+\[
+s\sum_{l,k}\{q_l\log p_{lk}+(1-q_l)\log(1-p_{lk})\}.
+\]
+
+The M step adds s*q pseudo-ALT counts and s total pseudo-allele counts to the
+expected counts. This is a bounded maximum-a-posteriori update, **not** a
+posterior mean or integration over frequency uncertainty. Pooled centers stay
+fixed during each fit, and are re-estimated from the relevant training or
+bootstrap individuals. This is not a fully fitted hierarchical model.
+
+```{r regularized, eval=FALSE}
+fit_regularized <- assigner:::.sm_fit_gds(
+  "likelihoods.gds", initial, start.strategy = "mixed", n.starts = 13,
+  regularization = "pooled", prior.strength = 2, seed = 2026
+)
+fit_regularized$objective.history  # penalized objective should increase
+fit_regularized$history            # data likelihood alone need not increase
+```
+
+The value 2 is an illustrative fixed candidate, not an established default or
+optimal setting. Excessive shrinkage can obscure private alleles and weak
+structure. Any tuning needs training-only inner validation and an untouched
+outer evaluation. Held-out scores exclude the prior penalty. Do not compare
+penalized objectives across different K or prior settings. Unsupported
+stock-marker frequencies may be prior-driven and remain flagged as unsupported.
+
+The strength matters most for small groups. With four fully informative
+diploid training individuals, s = 2 contributes 2/(8+2), or 20%, of the
+frequency update's total allele-count weight. With two individuals it contributes
+one third. These are pseudo-counts, not extra genotypes or independent evidence.
+The effective count can be fractional when stock membership is uncertain.
+
+## Fixed-K uncertainty
+
+```{r bootstrap, eval=FALSE}
+uncertainty <- assigner:::.sm_bootstrap_gds(
+  "likelihoods.gds", fit, B = 200, seed = 2026,
+  n.starts = 3, frequency.variants = character()
+)
+uncertainty$diagnostics
+uncertainty$intervals
+```
+
+This is an ordinary whole-individual bootstrap, **not stockR's Bayesian
+bootstrap**. Refit components are aligned to reference frequencies before
+percentile intervals are formed. Alignment currently supports K at most 12.
+It can be ambiguous when components merge or overlap. Individuals are assumed
+independent; relatedness and repeated samples need a different resampling design.
+
+Intervals condition on K and the selected marker panel. They do not include
+uncertainty about K, ascertainment, or unobserved alleles. Whole-individual
+resampling preserves linked marker vectors but does not correct the model's
+independence assumption. Coverage under realistic low-depth data remains untested.
+Any unusable replicate withholds the interval summary; inspect failures rather
+than silently discarding them. Selected frequency intervals require supported
+cells. `max.values` limits retained bootstrap arrays.
+
+## Held-out comparison of K
+
+```{r comparison, eval=FALSE}
+# A named fold vector must be supplied from the sampling design.
+# Keep relatives, repeated samples and other dependent units together.
+comparison <- assigner:::.sm_cv_gds(
+  "likelihoods.gds", K = 1:4, folds = folds_by_sample_id,
+  n.starts = 13, seed = 2026, likelihood = "PL", start.strategy = "mixed",
+  regularization = "pooled", prior.strength = 2
+)
+comparison$summary
+comparison$diagnostics
+```
+
+Each fold estimates parameters from training individuals only and scores the
+held-out individual's marginal mixture likelihood, not its best component.
+The grid must include K = 1. All comparisons must use the same observations.
+Incomplete comparisons return no preferred K. A winner at the upper grid boundary
+does not demonstrate that larger K would be worse.
+
+**Best predictive K is not a biological stock count.** The bundled stockR
+simulation has three generating groups. Matched initialization recovers its
+partition, but the initial 300-marker held-out comparison preferred K = 1 with
+the default frequency bound and K = 2 with larger bounds. Consequently, automatic
+stock-count selection is not validated. The reproducible investigation and
+results are retained under `inst/experimental/`; this failure is not hidden by
+the passing unit tests.
+
+A follow-up separated optimization from prediction. The generating groups
+contain 60, 6 and 34 individuals. Ten random starts missed the exact training
+partition; training-only PCA initialization improved likelihood but also missed
+it. Diagnostic initialization using the known training labels recovered it,
+yet K = 3 still did not win held-out prediction. In the smallest group, each
+fold has only four training individuals; 26–33 of the 300 markers contain an
+allele seen in that group's held-out samples but absent in training. Better
+initialization alone therefore does not resolve this benchmark. Those historical
+results predate the mixed strategy and regularization extensions described here.
+Oracle labels remain diagnostic only and are never used by the fitting interface.
+
+## Validation and remaining limitations
+
+A larger clean-data proof of concept used fresh population-frequency realizations,
+300 training and 300 independent test individuals, and 1,000–10,000 markers.
+With pooled strength fixed at 100 from an earlier pilot, predictive selection
+recovered the generating K = 3 at drift approximately 0.005 in one of three
+1,000-marker realizations and two of three at each larger marker count. Panels
+were nested, not independent replicates across marker counts. Native stockR
+Kmeans.EM fits evaluated by their returned AIC/BIC did not select K = 3 in those
+panels, although supplying K = 3 gave perfect native test recovery at 5,000 and
+10,000 markers. Both fresh null controls selected K = 1; both controls near
+FST 0.001 remained unresolved. These small experiments support the regularized
+workflow as a proof of concept, not a universal marker threshold, recommended
+default strength or advantage of GL encoding itself. They use near-certain GLs
+and different selection criteria. Full settings, failures and diagnostics are
+recorded in `inst/experimental/stock-proof-fresh.md`.
+
+A subsequent controlled experiment held 3,000 markers and initialization fixed
+while increasing training samples from 100 to 200 to 300 fish per population.
+Across three fresh frequency realizations, both fixed-strength and strength-tuned
+predictive selection recovered K = 3 at each sample size; mean test ARI increased
+from approximately 0.93–0.94 to 0.99 and 1.00. Tuning selected strength 200 and
+improved predictive log scores, but did not improve hard classification at the
+smallest sample size. All nested null panels retained K = 1. A separate post-hoc
+revisit of an earlier missed realization recovered K = 3 with strength 500;
+that value was at the grid boundary and is not a recommended default. Joint
+strength/K selection here is an experimental benchmark workflow, not an added
+public argument. See `inst/experimental/strength-size-experiment.md` for the
+design, native stockR comparisons and qualifications.
+
+In the first independent pilot (60 markers, two simulation seeds per scenario),
+pooled strength 2 selected K=3 for balanced, unbalanced, low-depth and
+population-structured-missingness three-group simulations. The K=1 and K=2
+controls selected their generating K. Weak differentiation selected K=1, and
+the original stockR example still selected K=2 rather than K=3. A separate
+one-population missingness-only control selected K=1. These are small pilot
+results, not estimated success rates or proof of robustness. Full numerical
+outputs and reproducible scripts are retained in `inst/experimental/`.
+Repeating the seven designs with 180 markers gave the same regularized winners
+for both seeds. Across 60 and 180 markers, all 448 selected fits converged;
+some individual starts failed and were reported. More markers alone did not
+resolve the unregularized predictor's difficulty with small groups.
+
+The 5,000-marker, 100-individual stockR example tests the near-certain genotype
+limit. Matching that example does not validate uncertain low-coverage GL/PL.
+Required further work includes replicated simulations across depth, missingness,
+weak differentiation, unequal group sizes, LD and relatives; interval coverage;
+initialization sensitivity; and predictive calibration of the new regularizers.
+Model violations such as admixture, inbreeding or technical batches may produce
+apparently strong but misleading components.
+
+Retain the source commit, package versions, likelihood field, active sample and
+marker IDs, QC choices, seeds, starts, folds, frequency bounds and convergence
+diagnostics. No default removes the need to examine the biological sampling design.
+
+## Reference and attribution
+
+Foster SD, Feutry P, Grewe PM, Berry O, Hui FKC, Davies CR (2018).
+Reliably discriminating stock structure with genetic markers: Mixture models
+with robust and fast computation. *Molecular Ecology Resources*, 18, 1310–1325.
+<https://doi.org/10.1111/1755-0998.12920>.
+
+The experimental implementation is informed by stockR's discrete-mixture model;
+it does not claim equivalence to every stockR optimization or bootstrap option.
+See the source review notes for attribution and pre-release review requirements.

@@ -1,0 +1,287 @@
+---
+title: "Likelihood-aware stock mixture"
+subtitle: "Research prototype - methodological review requested"
+date: "2026-09-18"
+format:
+  html:
+    embed-resources: true
+    toc: true
+    theme: cosmo
+  pdf:
+    pdf-engine: xelatex
+    toc: false
+    fontsize: 11pt
+    geometry: margin=23mm
+execute:
+  echo: false
+  warning: false
+---
+
+```{r}
+d <- readRDS("data/review-results.rds")
+library(ggplot2)
+theme_set(theme_minimal(base_size = 11))
+```
+
+## Review in brief
+
+The prototype extends a **discrete population mixture** to diploid biallelic
+genotype likelihoods (GL/PL), with blockwise GDS input, multiple starts and optional
+pooled regularization. It is not an admixture model. Genetic clusters alone do not
+establish demographically independent management stocks.
+
+**The positive result:** likelihood-aware assignment can retain useful information
+at low coverage. **The unresolved result:** selecting the true number of groups is
+not reliably calibrated, particularly under weak differentiation or null data.
+Convergence, confident membership and agreement between folds do not certify a
+biologically correct partition.
+
+Scott's permission to use his code is appreciated. This document requests his
+methodological and implementation review; it does not imply endorsement.
+
+### What the experiments support
+
+- No universal 10-fold coverage requirement emerged. At simulated drift
+  $F=0.005$, known-$K$ assignment improved substantially between 2-fold and 5-fold
+  coverage; the benefit of extra depth then diminished in this design.
+- GL outperformed the tested hard-call rule at intermediate coverage. This is a
+  matched simulation comparison, not a comparison against every variant caller.
+- Low differentiation remained difficult even with true genotypes. Oracle
+  frequencies recovered much more structure, implicating frequency estimation
+  from limited training samples as an important limitation.
+- Automatic predictive $K$ selection can split null data. A separate six-null
+  experiment at 1-fold coverage selected $K>1$ in five cases. This small count is
+  a warning, not a precise general false-positive rate.
+
+### Decision requested
+
+Keep this internal and experimental. Review the model and optimization first;
+then freeze the method before fresh, independent calibration experiments.
+Neither a public stock-delineation claim nor an automatic confidence threshold
+is justified by the present evidence.
+
+{{< pagebreak >}}
+
+## Model and implementation
+
+For individual $i$, marker $l$ and component $k$, the likelihood is
+
+$$
+P(D_i)=\sum_k\pi_k\prod_l\sum_{g=0}^2
+L_{ilg}{2\choose g}p_{lk}^{g}(1-p_{lk})^{2-g}.
+$$
+
+Here $g$ is alternate-allele dosage and $L_{ilg}$ is the genotype likelihood.
+The model assumes Hardy-Weinberg equilibrium within components and conditional
+independence across markers. EM estimates component frequencies and proportions.
+The extension builds on the stockR mixture framework, rather than its admixture
+interpretation or a verbatim implementation (Foster and colleagues, 2018).
+
+Optional pooled regularization adds
+$s\sum_{lk}[q_l\log p_{lk}+(1-q_l)\log(1-p_{lk})]$, where $q_l$ is estimated
+from training data alone and held fixed during the fit. This corresponds to
+Beta parameters $1+s q_l$ and $1+s(1-q_l)$.
+The frequency update adds $s q_l$ to the expected alternate count and $s$ to
+the informative allele-count denominator.
+
+Starts are ranked by the penalized objective within a fit. Held-out prediction
+uses marginal data log likelihood, not the penalty. Penalized objectives are
+not a criterion for comparing different $K$ or prior settings.
+
+### Operational safeguards
+
+- GDS is read in marker blocks. Owned handles open read-only; borrowed handles
+  remain open and active filters are restored.
+- Automatic input selection prefers PL, then GL. There is no silent GT or GP
+  fallback. The hard-genotype benchmarks encode calls as near-certain likelihoods;
+  they do not establish a direct GT input API.
+- Flat or fully missing likelihoods are neutral. They do not contribute to
+  allele-frequency updates. Entirely uninformative individuals receive no
+  assignment; malformed likelihood vectors are rejected.
+- Zero-weight held-out individuals do not estimate frequencies, the pooled
+  center, mixture proportions or initial partitions. STRATA is descriptive
+  metadata, not a fitting predictor.
+- Streaming reduces genotype memory, but frequency and membership matrices
+  remain in memory. Initialization has separate memory guards.
+
+### Experimental settings are not defaults
+
+Recent pilots used pooled strength 500, seven blind starts, all-marker PCA
+initialization and strict convergence settings. The internal interface defaults
+to no regularization and random starts; its initialization marker limit differs.
+Strength 500 is not a validated general recommendation.
+
+{{< pagebreak >}}
+
+## Coverage and genotype representation
+
+The matched pilot used 3,000 independent SNPs, 150 training individuals
+(50 per group), 300 independent test individuals and two frequency realizations
+per condition. Reads had known error probability 0.01. Depths shared underlying
+genotypes. The simulation's drift $F$ is **not measured WC84 $F_{ST}$**.
+
+```{r}
+#| fig-width: 6.5
+#| fig-height: 3.1
+#| fig-cap: "Independent-test assignment with K fixed at 3, drift F = 0.005. Means of two realizations; not confidence intervals."
+x <- subset(d$calls$means, SCENARIO == "F0.005" & ARM %in% c("GL", "GT_ML") & DEPTH %in% c("1","2","3","5","10","20"))
+stopifnot(nrow(x) == 12L)
+x$coverage <- as.numeric(x$DEPTH)
+ggplot(x, aes(coverage, TEST_ARI, colour = ARM)) +
+  geom_line(linewidth = .8) + geom_point(size = 2) +
+  scale_colour_manual(values = c(GL = "#007C83", GT_ML = "#B55B29"),
+                      labels = c(GL = "Genotype likelihoods", GT_ML = "Maximum-likelihood calls")) +
+  scale_x_continuous(breaks = c(1,2,3,5,10,20)) +
+  labs(x = "Expected sequencing depth", y = "Adjusted Rand index", colour = NULL) +
+  theme(legend.position = "bottom")
+```
+
+At 3-fold coverage, GL mean test ARI was 0.569 versus 0.307 for maximum-likelihood
+calls; at 5-fold it was 0.841 versus 0.773. At 20-fold the values were 0.936 and
+0.941, too close in this small pilot to claim general GT superiority. ARI measures
+partition agreement with simulated truth and is approximately zero at chance.
+
+Strict calling required a normalized genotype likelihood of at least 0.99,
+equivalent to an equal-genotype-prior rule, **not production-caller GQ**. It retained
+only 8.8% of calls at 3-fold coverage and 30.6% at 5-fold, sacrificing substantial
+information. Missing calls were not replaced with reference genotypes.
+
+These are known-$K$ results. Success when $K=3$ is supplied does not validate
+automatic recovery of $K$. Raw prediction scores across different representations
+are not directly comparable; the experiment also retained common-target scores.
+
+{{< pagebreak >}}
+
+## Why weak structure remains difficult
+
+At drift $F=0.001$, blind true-genotype fits gave chance-level test assignment.
+The following controls separate unavailable knowledge from deployable methods:
+
+| True-genotype control, K = 3 | Mean test ARI |
+|:--|--:|
+| Blind pooled fit | approximately 0.000 |
+| Frozen generating frequencies (oracle) | 0.806 |
+| True training labels, estimated frequencies | 0.146 |
+| Generating-frequency start, then EM | 0.151 |
+
+Two realizations; strength 500 where frequencies were estimated. The oracle uses
+privileged generating frequencies and is not an operational solution. The
+supervised control uses training labels only, not test labels. These results
+implicate finite-sample frequency estimation; they do not prove that recovery is
+information-theoretically impossible.
+
+Blind fits had higher training objectives than the better-generalizing
+truth-start fits. More starts alone therefore cannot be assumed to fix the
+problem. Removing regularization increased confidence without reliably improving
+accuracy. Conditional beta-binomial prediction and a separate joint variational
+pilot did not rescue weak-group recovery. Both used true GT and a restricted
+$K\in\{1,3\}$ comparison; neither is adopted or resolves GL null splitting.
+
+## Technical heterogeneity
+
+The latest paired pilot used two null and two structured realizations, the same
+sample sizes and 3,000 SNPs. Technical batches coincided with biological groups
+only in structured data. Extra masks were genotype-independent within batch;
+this did not simulate allele dropout or reference bias.
+
+```{r}
+#| results: asis
+t <- subset(d$technical$known.means, SCENARIO == "F0.005")
+labels <- c(equal3 = "Uniform 3-fold depth", depth1_3_5 = "Batch depths 1 / 3 / 5",
+ random_missing30 = "Random extra 30% missing", group_missing10_30_50 = "Batch extra 10 / 30 / 50% missing")
+stopifnot(all(t$ARM %in% names(labels)))
+knitr::kable(data.frame(Condition = unname(labels[t$ARM]),
+  `Test ARI, K fixed at 3` = round(t$TEST_ARI, 3), check.names = FALSE))
+```
+
+Uniform depth and heterogeneous depth have the same expected mean of 3-fold.
+The masked arms retain about 2.1-fold average depth. Structured missingness was
+worse on average, not in every replicate. There was no demonstrated increase in
+null splitting over the matched controls in this small experiment. One wrong
+$K=2$ solution nevertheless had agreeing fold winners and mean maximum membership
+0.825: those diagnostics are not guarantees of correctness.
+
+{{< pagebreak >}}
+
+## Safeguards and questions for Scott
+
+Current reporting separates the numerical predictive winner from its support:
+fold winners (including ties), score gaps, grid-boundary flags, incomplete
+comparisons and fit warnings. Start agreement is label-invariant and reports the
+number of comparable individuals. Memory-limited non-assessment is explicit.
+Individual output includes membership margin, entropy and assignment status.
+
+These are descriptive safeguards, not calibrated acceptance rules. Agreement
+between fold $K$ winners is not across-fold membership stability. A single
+near-best start cannot demonstrate near-optimal stability. $K=1$ means no selected
+split under the tested rule, not proof of panmixia.
+
+### Requested review
+
+1. **Likelihood and EM:** Are the genotype ordering, missing-information treatment,
+   weighted updates and GL/PL extension faithful to the intended mixture model?
+2. **Regularization:** Is training-only pooled shrinkage scientifically appropriate,
+   and what tuning/uncertainty treatment would be defensible with limited fish?
+3. **Choosing K:** What calibrated alternative or abstention strategy should replace
+   an unqualified maximum predictive-score winner under weak and null structure?
+4. **Uncertainty:** Which diagnostics or resampling scheme can quantify assignment
+   reliability while allowing linkage, relatedness and estimation uncertainty?
+5. **Scope:** What evidence and independent validation would be needed before
+   exposing this as a public assigner function?
+
+### Next validation, after methodological review
+
+Freeze fitting and selection choices; test new independent realizations under
+unequal sampling, relatedness, linkage, depth error, allele-dependent missingness
+and reference bias. Include measured differentiation, realistic GL generation and
+external datasets. Reusing pilots to choose methods makes them developmental,
+not confirmatory validation. Management-stock independence additionally requires
+demographic and ecological evidence outside this mixture model.
+
+### Reference
+
+Foster SD, Feutry P, Grewe PM, Berry O, Hui FKC, Davies CR (2018).
+Reliably discriminating stock structure with genetic markers: Mixture models
+with robust and fast computation. *Molecular Ecology Resources*, 18, 1310-1325.
+<https://doi.org/10.1111/1755-0998.12920>
+
+{{< pagebreak >}}
+
+## Appendix: code and reproducibility review
+
+This is internal inspection, not independent certification or a complete R CMD
+check. The latest targeted run passed `r nrow(readRDS("data/test-results.rds"))`
+tests with no failed expectations or errors (18 September 2026).
+
+| Area | Checks present in the targeted test suite |
+|:--|:--|
+| Likelihoods | GL/PL equivalence; hard-call binomial identity; neutral missingness; malformed input |
+| Computation | Scalar/streamed equivalence; block sizes; weighted and penalized updates |
+| Leakage | Training-only starts and pooled center; zero-weight holdouts |
+| GDS | Identifier alignment; filter restoration; handle cleanup on errors |
+| Reproducibility | RNG restoration; failed starts retained; seed propagation |
+| Reporting | Label-invariant ARI; ties; entropy/margin; incomplete comparisons |
+
+### Remaining limitations found in inspection
+
+- The scalar core header still describes CV/bootstrap as absent; separate utilities
+  now exist. This is documentation drift, recorded here rather than silently edited.
+- Numerical frequency support above a tiny tolerance is not evidence of adequate
+  biological sample size or allele-frequency precision.
+- Cross-validation does not repeat upstream marker selection/QC within folds.
+  Overlapping training folds do not supply independent confidence intervals.
+- The bootstrap is fixed-$K$, whole-individual resampling, not stockBOOT Bayesian
+  resampling. Its low-coverage interval coverage has not been established. Failed
+  replicates invalidate interval reporting rather than being silently dropped.
+- No current diagnostic calibrates an operational reject/abstain threshold.
+
+### Rebuilding and provenance
+
+Render `review.qmd` using Quarto. It reads `data/review-results.rds`, never reruns
+simulations. `prepare-review.R` refreshes compact saved results and source copies.
+Historical benchmark source hashes and complete per-panel outputs remain in the
+original experiment directories. Current snapshot hashes must not be substituted
+for historical benchmark hashes.
+
+This compact package is not the full raw-data reproduction archive. Obtain the
+original experiment directories and runners before independent reproduction.

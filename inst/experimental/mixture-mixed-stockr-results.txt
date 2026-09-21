@@ -1,0 +1,44 @@
+Pilot run: 2026-09-16; R 4.6.1. See stock-mixture-validation.md for interpretation.
+  fold K strength converged    loglik   heldout selected exact_partition
+1    1 1        0      TRUE -8592.819 -4803.353 supplied           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    1 1        2      TRUE -8592.819 -4803.353 supplied           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    1 2        0      TRUE -7834.848 -5046.149     pca2           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    1 2        2      TRUE -7842.381 -4645.943     pca5           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    1 3        0      TRUE -7617.446 -5131.099    pca10           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    1 3        2      TRUE -7636.278 -4697.716  perturb           FALSE
+  fold K strength converged   loglik   heldout selected exact_partition
+1    2 1        0      TRUE -8774.38 -4555.281 supplied           FALSE
+  fold K strength converged   loglik   heldout selected exact_partition
+1    2 1        2      TRUE -8774.38 -4555.281 supplied           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    2 2        0      TRUE -8027.683 -4699.811  perturb           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    2 2        2      TRUE -8034.472 -4381.929  perturb           FALSE
+  fold K strength converged    loglik  heldout selected exact_partition
+1    2 3        0      TRUE -7837.254 -4897.65     pca5           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    2 3        2      TRUE -7851.215 -4410.083  perturb           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    3 1        0      TRUE -8747.366 -4532.624 supplied           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    3 1        2      TRUE -8747.366 -4532.624 supplied           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    3 2        0      TRUE -8012.737 -4573.867     pca5           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    3 2        2      TRUE -8020.395 -4311.242     pca5           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    3 3        0      TRUE -7816.278 -4812.687     pca5           FALSE
+  fold K strength converged    loglik   heldout selected exact_partition
+1    3 3        2      TRUE -7831.137 -4351.927  perturb           FALSE
+  K strength   heldout
+1 1        0 -13891.26
+2 2        0 -14319.83
+3 3        0 -14841.44
+4 1        2 -13891.26
+5 2        2 -13339.11
+6 3        2 -13459.73

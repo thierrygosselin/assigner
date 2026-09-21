@@ -1,0 +1,92 @@
+Run: 2026-09-16; stockR 1.0.76; R 4.6.1
+Source: investigate-mixture-k.R
+
+truth
+ 1  2  3 
+60  6 34 
+ epsilon fold K method converged  training   heldout truth.match
+   1e-08    1 1 random      TRUE -8592.819 -4803.353       FALSE
+   1e-08    1 1    pca      TRUE -8592.819 -4803.353       FALSE
+   1e-08    1 2 random      TRUE -7828.223 -5035.969       FALSE
+   1e-08    1 2    pca      TRUE -7836.661 -5018.471       FALSE
+   1e-08    1 3 random      TRUE -7679.761 -5420.807       FALSE
+   1e-08    1 3    pca      TRUE -7620.279 -5127.722       FALSE
+   1e-08    1 3 oracle      TRUE -7613.206 -5098.306        TRUE
+   1e-08    2 1 random      TRUE -8774.380 -4555.281       FALSE
+   1e-08    2 1    pca      TRUE -8774.380 -4555.281       FALSE
+   1e-08    2 2 random      TRUE -8028.135 -4690.487       FALSE
+   1e-08    2 2    pca      TRUE -8033.395 -4668.045       FALSE
+   1e-08    2 3 random      TRUE -7867.063 -4904.714       FALSE
+   1e-08    2 3    pca      TRUE -7837.254 -4897.650       FALSE
+   1e-08    2 3 oracle      TRUE -7830.601 -4751.804        TRUE
+   1e-08    3 1 random      TRUE -8747.366 -4532.624       FALSE
+   1e-08    3 1    pca      TRUE -8747.366 -4532.624       FALSE
+   1e-08    3 2 random      TRUE -8019.655 -4563.409       FALSE
+   1e-08    3 2    pca      TRUE -8012.737 -4573.867       FALSE
+   1e-08    3 3 random      TRUE -7896.622 -4678.655       FALSE
+   1e-08    3 3    pca      TRUE -7816.278 -4812.687       FALSE
+   1e-08    3 3 oracle      TRUE -7805.635 -4635.891        TRUE
+   1e-03    1 1 random      TRUE -8594.190 -4631.371       FALSE
+   1e-03    1 1    pca      TRUE -8594.190 -4631.371       FALSE
+   1e-03    1 2 random      TRUE -7832.081 -4500.789       FALSE
+   1e-03    1 2    pca      TRUE -7840.317 -4494.289       FALSE
+   1e-03    1 3 random      TRUE -7677.416 -4590.756       FALSE
+   1e-03    1 3    pca      TRUE -7625.438 -4551.596       FALSE
+   1e-03    1 3 oracle      TRUE -7617.890 -4515.856        TRUE
+   1e-03    2 1 random      TRUE -8775.628 -4440.764       FALSE
+   1e-03    2 1    pca      TRUE -8775.628 -4440.764       FALSE
+   1e-03    2 2 random      TRUE -8031.610 -4278.149       FALSE
+   1e-03    2 2    pca      TRUE -8036.808 -4278.068       FALSE
+   1e-03    2 3 random      TRUE -7854.870 -4386.519       FALSE
+   1e-03    2 3    pca      TRUE -7842.138 -4345.880       FALSE
+   1e-03    2 3 oracle      TRUE -7834.845 -4304.670        TRUE
+   1e-03    3 1 random      TRUE -8748.448 -4464.031       FALSE
+   1e-03    3 1    pca      TRUE -8748.448 -4464.031       FALSE
+   1e-03    3 2 random      TRUE -8016.069 -4270.578       FALSE
+   1e-03    3 2    pca      TRUE -8016.069 -4270.578       FALSE
+   1e-03    3 3 random      TRUE -7864.404 -4365.556       FALSE
+   1e-03    3 3    pca      TRUE -7820.831 -4330.588       FALSE
+   1e-03    3 3 oracle      TRUE -7809.787 -4292.213        TRUE
+   1e-02    1 1 random      TRUE -8606.588 -4603.276       FALSE
+   1e-02    1 1    pca      TRUE -8606.588 -4603.276       FALSE
+   1e-02    1 2 random      TRUE -7866.977 -4405.473       FALSE
+   1e-02    1 2    pca      TRUE -7873.385 -4402.957       FALSE
+   1e-02    1 3 random      TRUE -7705.902 -4478.611       FALSE
+   1e-02    1 3    pca      TRUE -7672.099 -4447.334       FALSE
+   1e-02    1 3 oracle      TRUE -7660.261 -4410.466        TRUE
+   1e-02    2 1 random      TRUE -8786.923 -4423.293       FALSE
+   1e-02    2 1    pca      TRUE -8786.923 -4423.293       FALSE
+   1e-02    2 2 random      TRUE -8063.049 -4210.784       FALSE
+   1e-02    2 2    pca      TRUE -8067.686 -4211.534       FALSE
+   1e-02    2 3 random      TRUE -7893.226 -4262.167       FALSE
+   1e-02    2 3    pca      TRUE -7886.318 -4254.876       FALSE
+   1e-02    2 3 oracle      TRUE -7873.235 -4230.343        TRUE
+   1e-02    3 1 random      TRUE -8758.242 -4454.621       FALSE
+   1e-02    3 1    pca      TRUE -8758.242 -4454.621       FALSE
+   1e-02    3 2 random      TRUE -8049.904 -4217.145       FALSE
+   1e-02    3 2    pca      TRUE -8046.205 -4222.752       FALSE
+   1e-02    3 3 random      TRUE -7897.693 -4255.971       FALSE
+   1e-02    3 3    pca      TRUE -7862.007 -4247.860       FALSE
+   1e-02    3 3 oracle      TRUE -7847.344 -4238.592        TRUE
+ epsilon K method  training   heldout truth.match
+   1e-08 3 oracle -23249.44 -14486.00           3
+   1e-03 3 oracle -23262.52 -13112.74           3
+   1e-02 3 oracle -23380.84 -12879.40           3
+   1e-08 1    pca -26114.56 -13891.26           0
+   1e-03 1    pca -26118.27 -13536.17           0
+   1e-02 1    pca -26151.75 -13481.19           0
+   1e-08 2    pca -23882.79 -14260.38           0
+   1e-03 2    pca -23893.19 -13042.93           0
+   1e-02 2    pca -23987.28 -12837.24           0
+   1e-08 3    pca -23273.81 -14838.06           0
+   1e-03 3    pca -23288.41 -13228.06           0
+   1e-02 3    pca -23420.42 -12950.07           0
+   1e-08 1 random -26114.56 -13891.26           0
+   1e-03 1 random -26118.27 -13536.17           0
+   1e-02 1 random -26151.75 -13481.19           0
+   1e-08 2 random -23876.01 -14289.86           0
+   1e-03 2 random -23879.76 -13049.52           0
+   1e-02 2 random -23979.93 -12833.40           0
+   1e-08 3 random -23443.45 -15004.18           0
+   1e-03 3 random -23396.69 -13342.83           0
+   1e-02 3 random -23496.82 -12996.75           0

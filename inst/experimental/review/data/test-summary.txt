@@ -1,0 +1,1 @@
+28 tests; 0 failed expectations; 0 errors. Run on 18 September 2026. Targeted stock-mixture tests only.

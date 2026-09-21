@@ -1,0 +1,8 @@
+source("inst/experimental/prepare-ppr-popcluster.R")
+g <- matrix(c(0L, 1L, 2L, NA_integer_, 2L, 0L), nrow = 2L)
+stopifnot(identical(ppr_decode(ppr_encode(g)), g))
+stopifnot(identical(ppr_decode(ppr_encode(matrix(2L, 1L, 1L))), matrix(2L, 1L, 1L)))
+stopifnot(inherits(try(ppr_encode(matrix(0.5)), silent = TRUE), "try-error"))
+stopifnot(inherits(try(ppr_decode(c("01", "012")), silent = TRUE), "try-error"))
+stopifnot(inherits(try(ppr_decode("014"), silent = TRUE), "try-error"))
+cat("PopCluster genotype encoding checks passed.\n")
