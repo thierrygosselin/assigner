@@ -12,6 +12,7 @@ amova_genomic(
   marker = "MARKERS",
   value = NULL,
   distance = c("euclidean", "identity", "nucleotide", "manhattan"),
+  engine = c("auto", "dosage", "distance"),
   missing = c("locuswise", "filter", "complete"),
   min.call.rate = 0.8,
   min.groups = 2L,

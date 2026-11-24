@@ -140,6 +140,7 @@ amova_genomic <- function(
   marker = "MARKERS",
   value = NULL,
   distance = c("euclidean", "identity", "nucleotide", "manhattan"),
+  engine = c("auto", "dosage", "distance"),
   missing = c("locuswise", "filter", "complete"),
   min.call.rate = 0.8,
   min.groups = 2L,
@@ -194,6 +195,15 @@ amova_genomic <- function(
   data <- prepared$data
   value <- prepared$value
   resampling <- match.arg(resampling)
+  engine <- match.arg(engine)
+  dosage_engine <- engine == "dosage" ||
+    (engine == "auto" && !is.function(distance) && distance == "euclidean" &&
+       !standardized)
+  if (engine == "dosage" &&
+      (is.function(distance) || distance != "euclidean" || standardized)) {
+    stop("`engine = \"dosage\"` requires Euclidean dosage distance and `standardized = FALSE`.",
+         call. = FALSE)
+  }
   block.columns <- if (resampling != "block") character() else if (!is.null(block)) block else c(chromosome, position)
   if (resampling == "block" && (any(vapply(block.columns, is.null, logical(1))) || !length(block.columns))) {
     stop("Block resampling requires `block`, or `chromosome` and `position`.", call. = FALSE)
@@ -279,15 +289,21 @@ amova_genomic <- function(
     if (length(unique(z[[hierarchy[length(hierarchy)]]])) < min.groups) return(NULL)
     gr <- .amova_nested_factors(z, hierarchy)
     if (any(vapply(gr, nlevels, integer(1)) < 2L)) return(NULL)
-    d2 <- .amova_distance(z$.value, distance)
-    euc <- .amova_euclidean(d2, tolerance)
     correction <- 0
-    if (!euc$euclidean && euclidean == "lingoes") {
-      correction <- -euc$minimum_eigenvalue
-      d2[row(d2) != col(d2)] <- d2[row(d2) != col(d2)] + 2 * correction
+    if (dosage_engine) {
+      fit <- .amova_fit_dosage(z$.value, gr)
+      euc <- list(euclidean = TRUE, minimum_eigenvalue = 0)
+      d2 <- NULL
+    } else {
+      d2 <- .amova_distance(z$.value, distance)
       euc <- .amova_euclidean(d2, tolerance)
+      if (!euc$euclidean && euclidean == "lingoes") {
+        correction <- -euc$minimum_eigenvalue
+        d2[row(d2) != col(d2)] <- d2[row(d2) != col(d2)] + 2 * correction
+        euc <- .amova_euclidean(d2, tolerance)
+      }
+      fit <- .amova_fit(d2, gr)
     }
-    fit <- .amova_fit(d2, gr)
     fit$euclidean <- euc$euclidean
     fit$minimum_eigenvalue <- euc$minimum_eigenvalue
     fit$correction <- correction
@@ -299,6 +315,7 @@ amova_genomic <- function(
     fit$raw_gr <- z[hierarchy]
     fit$individuals <- as.character(z$.individual)
     fit$d2 <- d2
+    fit$value <- if (dosage_engine) z$.value else NULL
     fit
   })
   fits <- Filter(Negate(is.null), fits)
@@ -354,7 +371,8 @@ amova_genomic <- function(
         permuted[b, j] <- sum(vapply(fits, function(z) {
           rows <- match(z$individuals, master_permuted$.individual)
           gp <- .amova_nested_factors(master_permuted[rows, hierarchy, drop = FALSE], hierarchy)
-          .amova_fit(z$d2, gp)$sigma[j]
+          if (dosage_engine) .amova_fit_dosage(z$value, gp)$sigma[j] else
+            .amova_fit(z$d2, gp)$sigma[j]
         }, numeric(1)))
       }
     }
@@ -424,7 +442,8 @@ amova_genomic <- function(
       settings = list(distance = if (is.function(distance)) "custom" else distance,
                       missing = missing, hierarchy = hierarchy,
                       value = value, euclidean = euclidean,
-                      standardized = standardized)
+                      standardized = standardized,
+                      engine = if (dosage_engine) "dosage" else "distance")
     ),
     class = "assigner_amova"
   )
@@ -608,6 +627,35 @@ print.assigner_amova <- function(x, ...) {
   df[1] <- df[1] - 1L
   df[nlv + 2L] <- n - 1L
   if (any(df[-length(df)] <= 0)) stop("Insufficient replication in the represented hierarchy.", call. = FALSE)
+  msd <- ssd / df
+  coef <- .amova_ncoef(gr, N, n)
+  sigma <- .amova_varcomp(msd, nlv, coef, names(gr))
+  list(ssd = ssd, df = df, msd = msd, coefficient = coef, sigma = sigma)
+}
+
+.amova_fit_dosage <- function(value, gr) {
+  value <- as.numeric(value)
+  n <- length(value)
+  nlv <- ncol(gr)
+  N <- lapply(gr, tabulate)
+  ssd <- numeric(nlv + 2L)
+  ssd[nlv + 2L] <- sum((value - mean(value))^2)
+  for (i in seq_len(nlv)) {
+    group <- gr[[i]]
+    means <- tapply(value, group, mean)
+    residual <- value - means[as.character(group)]
+    ssd[i + 1L] <- sum(residual^2)
+  }
+  if (nlv > 1L) for (i in 2:nlv) ssd[i] <- ssd[i] - ssd[i + 1L]
+  ssd[1] <- ssd[nlv + 2L] - sum(ssd[-(nlv + 2L)])
+  df <- numeric(nlv + 2L)
+  df[seq_len(nlv)] <- lengths(N)
+  df[nlv + 1L] <- n
+  for (i in (nlv + 1L):2L) df[i] <- df[i] - df[i - 1L]
+  df[1] <- df[1] - 1L
+  df[nlv + 2L] <- n - 1L
+  if (any(df[-length(df)] <= 0))
+    stop("Insufficient replication in the represented hierarchy.", call. = FALSE)
   msd <- ssd / df
   coef <- .amova_ncoef(gr, N, n)
   sigma <- .amova_varcomp(msd, nlv, coef, names(gr))

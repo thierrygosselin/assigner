@@ -80,12 +80,14 @@
 #' hypothesis can be rejected and you can also have an appreciation of the real
 #' magnitude of the statistical differentiation whether its large or small.
 
-#' @param data A tidy data frame object in the global environment or
+#' @param data A biallelic diploid GDS file or open GDS connection, or a tidy data frame object in the global environment or
 #' a tidy data frame in wide or long format in the working directory.
 #' \emph{How to get a tidy data frame ?}
 #' Look into \pkg{genometranslator} \code{\link[genometranslator]{read_genome}}.
 #' You can also use this function to filter your dataset using
 #' whitelist of markers, blacklist of individuals and genotypes.
+#' GDS input uses the intersection of saved whitelists and the active selection.
+#' Missing calls remain missing; an open connection and its selection are preserved.
 
 #' @param snprelate (optional, logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
 #' to compute the Fst.
@@ -353,7 +355,7 @@ fst_WC84 <- function(
     outlier.sd = 4,
     digits = 9,
     filename = "fst_WC84",
-    parallel.core = parallel::detectCores() - 2,
+    parallel.core = max(1L, parallel::detectCores() - 2L, na.rm = TRUE),
     verbose = FALSE,
     ...
 ) {
@@ -383,9 +385,10 @@ fst_WC84 <- function(
   on.exit(tgbase::teardown(.start), add = TRUE)
   file.date <- .start$file.date
   opt.digits <- getOption("digits")
+  opt.scipen <- getOption("scipen")
   options(digits = digits, scipen = 999)
   res <- list() # where the results will be stored
-  on.exit(options(digits = opt.digits), add = TRUE)
+  on.exit(options(digits = opt.digits, scipen = opt.scipen), add = TRUE)
 
   # Function call and dotslist -------------------------------------------------
   fst.dots <- tgbase::resolve_dots(
@@ -466,6 +469,8 @@ fst_WC84 <- function(
   data <- prep_strata(
     data = data,
     strata = strata,
+    pop.levels = pop.levels,
+    blacklist.id = blacklist.id,
     verbose = verbose
   )
 
@@ -561,10 +566,6 @@ fst_WC84 <- function(
   )
   # names(args.for.prep)
 
-  options(cli.progress_handlers = "progressr", cli.progress_bar_width = 80)
-  progressr::handlers(global = TRUE)
-  # progressr::handlers(progressr::handler_txtprogressbar(char = "\U1F41F"))
-  progressr::handlers(progressr::handler_txtprogressbar(char = " ><((('> "))
 
 
   fst.temp.files <- purrr::map(
@@ -586,7 +587,6 @@ fst_WC84 <- function(
   )
   args.for.prep <- NULL
 
-  options(cli.progress_handlers = NULL)
 
   if (pairwise) {
     if (!is.factor(data$STRATA_SEQ)) data$STRATA_SEQ <- factor(data$STRATA_SEQ)
@@ -628,10 +628,20 @@ fst_WC84 <- function(
   # args.for.fst doesnt function with furrr...
 
   # Set up parallel processing plan
-  future::plan(future::multisession, workers = parallel::detectCores() - 1)
+  if (length(parallel.core) != 1L || !is.numeric(parallel.core) ||
+      !is.finite(parallel.core) || parallel.core < 1 || parallel.core != floor(parallel.core)) {
+    rlang::abort("parallel.core must be one positive integer.")
+  }
+  previous.plan <- future::plan()
+  on.exit(future::plan(previous.plan), add = TRUE)
+  if (parallel.core == 1L) {
+    future::plan(future::sequential)
+  } else {
+    future::plan(future::multisession, workers = parallel.core)
+  }
 
   # Ensure the plan is reset after this block (optional but recommended)
-  on.exit(future::plan(future::sequential), add = TRUE)
+
 
   res <- list()
   global <- furrr::future_map(
@@ -666,9 +676,6 @@ fst_WC84 <- function(
     # if (verbose) message("Number of pairwise computations: ", length(pop.pairwise))
     # if (verbose) cli::cli_progress_message("Number of pairwise computations: {length(pop.pairwise)}")
 
-    future::plan(future::multisession, workers = parallel::detectCores() - 1)
-    on.exit(future::plan(future::sequential), add = TRUE)
-
     pairwise.fst <- furrr::future_map(
       .x = fst.temp.files,
       .f = function(file) {
@@ -690,7 +697,6 @@ fst_WC84 <- function(
     pop.pairwise <- NULL
   }# END pairwise
 
-  options(cli.progress_handlers = NULL)
 
   # delete the temp files
   temp.files.paths <- unlist(fst.temp.files)
@@ -726,8 +732,8 @@ fst_WC84 <- function(
 
   # defaults:
   pairwise.fst <- "pairwise fst not selected"
-  upper.mat.fst <- "pairwise fst not selected"
-  full.mat.fst <- "pairwise fst not selected"
+  pairwise.fst.upper.matrix <- "pairwise fst not selected"
+  pairwise.fst.full.matrix <- "pairwise fst not selected"
   pairwise.fst.ci.matrix <- "pairwise fst not selected"
 
   if (pairwise) {
@@ -852,8 +858,8 @@ fst_WC84 <- function(
   # write results
   if (!is.null(filename)) {
     purrr::walk(
-      .x = list("sigma.loc", "fst.markers", "fst.ranked", "fst.overall",
-                "fis.markers", "fis.overall", "pairwise.fst"),
+      .x = c("sigma.loc", "fst.markers", "fst.ranked", "fst.overall",
+                "fis.markers", "fis.overall", if (pairwise) "pairwise.fst"),
       .f = fst_write, list.sub = res, path.folder = path.folder
     )
     if (isTRUE(linkage.group)) {
@@ -913,6 +919,7 @@ fst_WC84 <- function(
     sep2 <- ""
     sep3 <- ""
 
+    min.fst <- max.fst <- ""
     mean.fst <- res$fst.overall[[if (is.null(subsample)) "FST" else "MEAN"]]
 
     if (ci) {
@@ -1308,11 +1315,41 @@ import_data <- function(data, calibrate.alleles = FALSE, verbose = FALSE) {
   } else if (data.type %in% c("SeqVarGDSClass", "gds.file")) {
     tgbase::check_package(package = "SeqArray", cran = FALSE, bioc = TRUE)
 
-    if (data.type == "gds.file") {
-      data %<>% genometranslator::read_genome(data = ., verbose = TRUE)
+    # read_genome now returns a GDS connection, not a tidy genotype table.
+    # Preserve an existing connection's active selection and saved whitelists.
+    owned <- identical(data.type, "gds.file")
+    gds <- if (owned) SeqArray::seqOpen(data, readonly = TRUE) else data
+    if (owned) on.exit(SeqArray::seqClose(gds), add = TRUE)
+    SeqArray::seqSetFilter(gds, action = "push", verbose = FALSE)
+    on.exit(SeqArray::seqSetFilter(gds, action = "pop", verbose = FALSE), add = TRUE, after = FALSE)
+    samples <- genometranslator::extract_individuals_metadata(gds, whitelist = TRUE, verbose = FALSE)
+    markers <- genometranslator::extract_markers_metadata(gds, whitelist = TRUE, verbose = FALSE)
+    SeqArray::seqSetFilter(gds,
+      sample.id = intersect(SeqArray::seqGetData(gds, "sample.id"), samples$INDIVIDUALS),
+      variant.id = intersect(SeqArray::seqGetData(gds, "variant.id"), markers$VARIANT_ID), verbose = FALSE)
+    alleles <- SeqArray::seqGetData(gds, "allele")
+    if (any(lengths(strsplit(alleles, ",", fixed = TRUE)) != 2L)) {
+      rlang::abort("fst_WC84 GDS input requires biallelic variants; select them before analysis.")
+    }
+    sid <- SeqArray::seqGetData(gds, "sample.id")
+    vid <- SeqArray::seqGetData(gds, "variant.id")
+    genotypes <- SeqArray::seqGetData(gds, "genotype")
+    if (dim(genotypes)[1] != 2L) rlang::abort("fst_WC84 requires diploid genotypes.")
+    dosage <- matrix(genotypes[1,,], nrow = length(sid)) +
+      matrix(genotypes[2,,], nrow = length(sid))
+    gt <- c("001001", "001002", "002002")[as.integer(dosage) + 1L]
+    gt[is.na(gt)] <- "000000"
+    data <- tibble::tibble(
+      INDIVIDUALS = rep(sid, times = length(vid)),
+      MARKERS = rep(as.character(vid), each = length(sid)),
+      VARIANT_ID = rep(vid, each = length(sid)),
+      CHROM = rep(SeqArray::seqGetData(gds, "chromosome"), each = length(sid)),
+      POS = rep(as.numeric(SeqArray::seqGetData(gds, "position")), each = length(sid)),
+      GT = gt)
+    if ("STRATA" %in% names(samples)) {
+      data$STRATA <- samples$STRATA[match(data$INDIVIDUALS, samples$INDIVIDUALS)]
     }
 
-    data %<>% genometranslator::read_genome(data = ., import.metadata = TRUE)
   } else {
     rlang::abort("Input not supported for this function: read function documentation")
   }
@@ -1340,23 +1377,23 @@ import_data <- function(data, calibrate.alleles = FALSE, verbose = FALSE) {
 prep_strata <- function(data, strata, pop.levels = NULL, blacklist.id = NULL, verbose = FALSE) {
   if (verbose) cli::cli_progress_step(msg = "Preparing the stratification")
 
-  # Strata
-  strata <- genometranslator::read_strata(
-    strata = strata,
-    pop.id = TRUE,
-    blacklist.id = blacklist.id,
-    pop.levels = NULL,
-    verbose = verbose) %$%
-    strata
-
-  # population levels and strata
+  # Metadata joins are explicit: IDs must be unique and unmatched samples are
+  # excluded when a strata whitelist is supplied. Do not rely on legacy APIs.
   if (!is.null(strata)) {
-    data <- genometranslator::join_strata(
-      data = data,
-      strata = strata,
-      pop.id = FALSE,
-      verbose = FALSE
-    )
+    strata <- genometranslator::read_strata(
+      strata = strata, pop.levels = pop.levels,
+      write.dictionary = FALSE, verbose = verbose)$strata
+    if (anyDuplicated(strata$INDIVIDUALS)) rlang::abort("Duplicate sample IDs in strata.")
+    data <- data %>%
+      dplyr::select(-tidyselect::any_of(c("STRATA", "POP_ID"))) %>%
+      dplyr::inner_join(dplyr::select(strata, INDIVIDUALS, STRATA), by = "INDIVIDUALS")
+  }
+  if (!is.null(blacklist.id)) {
+    if (is.character(blacklist.id) && length(blacklist.id) == 1L && file.exists(blacklist.id)) {
+      blacklist.id <- genometranslator::read_blacklist_id(blacklist.id, verbose = verbose)
+      if (is.data.frame(blacklist.id)) blacklist.id <- blacklist.id$INDIVIDUALS
+    }
+    data <- dplyr::filter(data, !.data$INDIVIDUALS %in% blacklist.id)
   }
 
   # no longer use POP_ID
@@ -2432,11 +2469,13 @@ fst_stats <- function(
   #3. adjust some objects
   # pairwise.fst
   if (x == "pairwise.fst") {
+    if (!"CI_LOW" %in% names(res1)) res1$CI_LOW <- NA_real_
+    if (!"CI_HIGH" %in% names(res1)) res1$CI_HIGH <- NA_real_
     res1 %<>%
       dplyr::mutate(dplyr::across(c(POP1, POP2), as.integer)) %>%
       dplyr::mutate(
         dplyr::across(
-          .cols = c("FST", "CI_LOW", "CI_HIGH"),
+          .cols = tidyselect::any_of(c("FST", "CI_LOW", "CI_HIGH")),
           .fns = ~ pmax(.x, 0)
         )
       )
@@ -2452,8 +2491,8 @@ fst_stats <- function(
           FST = format_mean_range(FST, min.max = FALSE, digits = digits),
           N_MARKERS = format_mean_range(N_MARKERS, digits = 0),
           N_MONOMORPHIC_BL = format_mean_range(N_MONOMORPHIC_BL, digits = 0),
-          CI_LOW = utils_formatC(min(CI_LOW, na.rm = TRUE), fmt.args = fmt.args),
-          CI_HIGH = utils_formatC(max(CI_HIGH, na.rm = TRUE), fmt.args = fmt.args),
+          CI_LOW = utils_formatC(if (all(is.na(CI_LOW))) NA_real_ else min(CI_LOW, na.rm = TRUE), fmt.args = fmt.args),
+          CI_HIGH = utils_formatC(if (all(is.na(CI_HIGH))) NA_real_ else max(CI_HIGH, na.rm = TRUE), fmt.args = fmt.args),
           .groups = "drop"
         )
     } else {
@@ -2469,8 +2508,8 @@ fst_stats <- function(
     }
     res1 %<>%
       dplyr::mutate(
-        NS = dplyr::if_else(as.numeric(CI_LOW) == 0, TRUE, FALSE),
-        FST_HEATMAP = dplyr::if_else(NS, paste0(FST, "*"), FST),
+        NS = dplyr::if_else(as.numeric(replace(CI_LOW, trimws(CI_LOW) == "NA", NA_character_)) == 0, TRUE, FALSE),
+        FST_HEATMAP = dplyr::if_else(NS, paste0(FST, "*"), FST, missing = FST),
         ITERATIONS = rep(iteration.subsample, dplyr::n())
       ) %>%
       dplyr::left_join(s, by = c("POP1" = "STRATA_SEQ")) %>%

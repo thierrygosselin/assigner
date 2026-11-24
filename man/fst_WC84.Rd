@@ -23,18 +23,20 @@ fst_WC84(
   outlier.sd = 4,
   digits = 9,
   filename = "fst_WC84",
-  parallel.core = parallel::detectCores() - 2,
+  parallel.core = max(1L, parallel::detectCores() - 2L, na.rm = TRUE),
   verbose = FALSE,
   ...
 )
 }
 \arguments{
-\item{data}{A tidy data frame object in the global environment or
+\item{data}{A biallelic diploid GDS file or open GDS connection, or a tidy data frame object in the global environment or
 a tidy data frame in wide or long format in the working directory.
 \emph{How to get a tidy data frame ?}
 Look into \pkg{genometranslator} \code{\link[genometranslator]{read_genome}}.
 You can also use this function to filter your dataset using
-whitelist of markers, blacklist of individuals and genotypes.}
+whitelist of markers, blacklist of individuals and genotypes.
+GDS input uses the intersection of saved whitelists and the active selection.
+Missing calls remain missing; an open connection and its selection are preserved.}
 
 \item{snprelate}{(optional, logical) Use \href{https://github.com/zhengxwen/SNPRelate}{SNPRelate}
 to compute the Fst.
